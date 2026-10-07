@@ -1,0 +1,317 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — the day card: header, accuracy ring, competition groups,
+   fixture rows, "How this card was built", day links.
+   Markup: site/lib/fixtures.js + site/lib/ring.js. Tokens: base.css.
+
+   Phone first (360px): every track is minmax(0, …), names clamp to two lines,
+   and the price never wraps away from its selection. Nothing scrolls sideways.
+   The 3px left edge mirrors the row's state; the state is always also written.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.day{ display:flex; flex-direction:column; gap:18px; }
+
+/* ── 1. HEADER ─────────────────────────────────────────────────────────────── */
+.day-head{
+  display:grid; grid-template-columns:minmax(0,1fr);
+  gap:14px 28px; align-items:start;
+}
+.day-head__title{ display:flex; flex-direction:column; gap:6px; }
+.day-head__title .t-lbl{ margin-bottom:2px; }
+/* "Today"/"Tomorrow": empty and hidden in the static HTML; stale.js fills it for the visitor's date. */
+.day-head__rel[hidden],.day-strip__tag[hidden]{ display:none; }
+.day-head__date{ margin:0; font-size:17px; font-weight:600; color:var(--ink); letter-spacing:-.01em; }
+.day-head__count{ margin:0; font-size:12.5px; color:var(--muted); }
+.day-head__note{ margin:0; font-size:13px; line-height:1.55; color:var(--muted); max-width:62ch; }
+.day-head__note a{ color:var(--ink-2); }
+.day-head__note a:hover{ color:var(--accent); }
+
+.day-receipt{ margin:0; font-size:11.5px; line-height:1.6; color:var(--muted-2); }
+.day-receipt__link{
+  display:inline-flex; align-items:center; min-height:var(--tap);
+  color:var(--ink-2); text-decoration-color:var(--line-2);
+}
+.day-receipt__link:hover{ color:var(--accent); text-decoration-color:currentColor; }
+
+@media (min-width:760px){
+  .day-head{ grid-template-columns:minmax(0,1fr) minmax(0,380px); }
+  .day-head__title{ grid-column:1; grid-row:1; align-self:center; }
+  .day-head .ring{ grid-column:2; grid-row:1 / span 2; }
+  .day-head__note{ grid-column:1; grid-row:2; }
+  .day-receipt{ grid-column:1 / -1; }
+}
+
+/* ── 2. THE RING ───────────────────────────────────────────────────────────────
+   The one loud thing on the card. The fraction is the hero (it is the part a
+   stranger can check); the percentage sits small in the dial.
+   ─────────────────────────────────────────────────────────────────────────── */
+.ring{
+  display:flex; align-items:center; gap:16px;
+  padding:14px 16px 14px 14px;
+  background:linear-gradient(150deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line); border-radius:var(--r-3);
+}
+.ring[data-state="graded"]{ border-color:rgba(34,197,94,.3); }
+
+.ring__dial{
+  order:-1; position:relative; flex:0 0 auto;
+  width:72px; height:72px; display:grid; place-items:center;
+}
+.ring__svg{ position:absolute; inset:0; width:72px; height:72px; }
+.ring__track{ fill:none; stroke:var(--line); stroke-width:4.5; }
+/* No results yet: an open, dashed dial (the dash pattern is an SVG attribute). */
+.ring__track--empty{ stroke:var(--line-2); stroke-width:2.5; }
+.ring__arc{ fill:none; stroke:var(--accent); stroke-width:4.5; stroke-linecap:round; }
+.ring__pct{
+  position:relative; font-size:12.5px; font-weight:700; color:var(--accent);
+  letter-spacing:-.03em;
+}
+
+.ring__body{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+.ring__label{ font-size:12.5px; line-height:1.4; color:var(--ink-2); }
+.ring__hero{
+  font-size:15px; font-weight:600; line-height:1.15; color:var(--muted);
+  letter-spacing:-.01em;
+}
+.ring__hero b{ font-size:26px; font-weight:800; color:var(--ink); letter-spacing:-.04em; }
+.ring__landed{ color:var(--ink-2); }
+.ring[data-state="empty"] .ring__hero{
+  font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--ink);
+}
+.ring__stated{ font-size:12.5px; line-height:1.45; color:var(--ink-2); }
+.ring__meta{ font-size:11px; color:var(--muted); }
+
+/* ── 3. COMPETITION GROUPS ─────────────────────────────────────────────────── */
+.day-groups{ display:flex; flex-direction:column; gap:8px; }
+
+.comp{ border-top:1px solid var(--line); }
+.comp:first-child{ border-top:0; }
+.comp > summary{
+  display:flex; align-items:center; gap:10px; min-height:var(--tap);
+  padding:6px 2px; list-style:none;
+}
+.comp > summary::after{
+  content:''; flex:0 0 auto; width:7px; height:7px; margin:0 6px 3px 2px;
+  border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
+  transform:rotate(45deg); transition:transform .15s ease;
+}
+.comp[open] > summary::after{ transform:rotate(-135deg); margin-bottom:-3px; }
+.comp > summary:hover .comp__name{ color:var(--ink); }
+/* An <h2> inside the summary, styled as the summary line (no heading margins or scale). */
+.comp__name{
+  flex:1 1 auto; min-width:0; margin:0;
+  font-family:var(--font-ui); line-height:1.4; letter-spacing:0;
+  font-size:13.5px; font-weight:600; color:var(--ink-2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.comp__count{ flex:0 0 auto; font-size:11px; color:var(--muted-2); }
+
+.fx-list{ display:flex; flex-direction:column; gap:6px; padding-bottom:10px; container-type:inline-size; }
+
+/* ── 4. FIXTURE ROW ────────────────────────────────────────────────────────── */
+/* The 56px time column fits the longest status word (POSTPONED, WITHDRAWN) at 9px without breaking it. */
+.fx{
+  display:grid; grid-template-columns:56px minmax(0,1fr);
+  column-gap:12px; row-gap:9px; align-items:center;
+  padding:11px 13px 11px 10px;
+  background:var(--surface);
+  border:1px solid var(--line); border-left:3px solid var(--line);
+  border-radius:var(--r-2);
+  overflow-wrap:normal;
+}
+.fx[data-state="won"]{ border-left-color:var(--won); }
+.fx[data-state="lost"]{ border-left-color:var(--lost); }
+.fx[data-state="pending"]{ border-left-color:var(--hold); }
+.fx[data-state="push"],
+.fx[data-state="void"],
+.fx[data-state="withdrawn"]{ border-left-color:var(--void); }
+
+.fx__time{ grid-column:1; grid-row:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; }
+.fx__ko{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12.5px; font-weight:600; color:var(--ink-2); }
+.fx__time em{
+  font-style:normal; font-family:var(--font-mono); font-size:9px; line-height:1.25;
+  letter-spacing:.03em; text-transform:uppercase; color:var(--muted);
+  overflow-wrap:anywhere;
+}
+.fx__time em[data-live]{ display:inline-flex; align-items:center; gap:4px; color:var(--accent); }
+/* A static dot, not a pulse: the status is as of the last update, not this second. */
+.fx__time em[data-live]::before{ content:''; width:5px; height:5px; border-radius:var(--r-pill); background:var(--accent); }
+
+.fx__teams{ grid-column:2; grid-row:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
+.fx__team{
+  font-size:14.5px; font-weight:600; line-height:1.3; color:var(--ink);
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2;
+  overflow:hidden; overflow-wrap:anywhere;
+}
+
+/* The outcome block: pick, withdrawn, late or nothing. */
+.fx__pick{
+  grid-column:1 / -1; grid-row:2;
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:baseline;
+  padding-top:9px; border-top:1px solid var(--line);
+}
+.fx__pick p{ margin:0; }
+.fx__pickhead{
+  grid-column:1 / -1;
+  display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;
+}
+.fx__sel{ grid-column:1; display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 7px; min-width:0; }
+.fx__selname{ min-width:0; font-size:14px; font-weight:600; color:var(--ink); overflow-wrap:anywhere; }
+.fx__prob{ grid-column:2; grid-row:2; text-align:right; white-space:nowrap; }
+.fx__cap{ display:block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2); }
+.fx__prob--none{ font-size:12px; color:var(--muted); white-space:normal; max-width:12ch; line-height:1.3; }
+.fx__why,.fx__note,.fx__msg{ grid-column:1 / -1; }
+.fx__why{ font-size:12.5px; line-height:1.45; color:var(--muted); }
+.fx__note{
+  font-size:12.5px; line-height:1.45; color:var(--hold);
+  padding-left:9px; border-left:2px solid var(--hold);
+}
+.fx__msg{ font-size:13px; line-height:1.45; color:var(--muted); }
+.fx__noprice{ font-size:12px; font-style:italic; color:var(--muted); white-space:nowrap; }
+
+/* Grade chip: the written state. Slightly tighter than the base chip. */
+.fx__grade{ padding:3px 9px; font-size:10px; }
+
+/* Estimated price: the chip is the marker; its full meaning is in title + .vh text. */
+.fx__est{
+  padding:1px 7px; font-size:9.5px; letter-spacing:.06em; text-transform:none;
+  color:var(--hold); border-color:rgba(240,181,66,.38); background:transparent;
+  align-self:center;
+}
+
+/* Rows without a recommendation stay quiet. */
+.fx__pick--none{ grid-template-columns:minmax(0,1fr); }
+.fx[data-state="late"] .fx__team,
+.fx[data-state="nopick"] .fx__team{ color:var(--ink-2); }
+
+/* Withdrawn: the published pick stays visible, struck, and plainly not graded. */
+.fx__pick--struck s{ text-decoration-thickness:1px; text-decoration-color:var(--muted); }
+.fx__pick--struck .fx__selname,
+.fx__pick--struck .bg-odds,
+.fx__pick--struck .bg-prob{ color:var(--muted); }
+.fx__offcard{
+  font-family:var(--font-mono); font-size:9.5px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted);
+}
+.fx[data-state="withdrawn"] .fx__team{ color:var(--ink-2); }
+
+/* Kickoff moved before the freeze: shown, never counted. */
+.fx[data-uncounted] .fx__grade{ border-style:dashed; border-color:currentColor; }
+
+/* Pick-block leaves shared with the brand (bg.css §11). */
+.bg-eyebrow{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--font-mono); font-size:9.5px; font-weight:700;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--gold); white-space:nowrap;
+}
+.bg-star{ color:var(--gold); font-size:13px; line-height:1; text-shadow:0 0 11px rgba(245,179,1,.45); }
+.bg-odds{
+  flex:0 0 auto; white-space:nowrap;
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:700;
+  font-size:13px; letter-spacing:-.01em; color:var(--ink);
+}
+.bg-prob{
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  font-size:17px; font-weight:800; line-height:1.1; letter-spacing:-.02em; color:var(--accent);
+}
+
+/* Wide rows: kickoff | teams | pick rail. Revealed by the list's own width. */
+@container (min-width:720px){
+  .fx{
+    grid-template-columns:56px minmax(0,1fr) minmax(300px,380px);
+    padding:12px 16px 12px 12px;
+  }
+  .fx__pick{
+    grid-column:3; grid-row:1;
+    padding:0 0 0 16px; border-top:0; border-left:1px solid var(--line);
+  }
+}
+
+/* ── 5. EMPTY DAY ──────────────────────────────────────────────────────────── */
+.day-empty{ margin-top:4px; }
+
+/* ── 6. HOW THIS CARD WAS BUILT ────────────────────────────────────────────── */
+.day-how{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+}
+.day-how > summary{
+  display:flex; align-items:center; min-height:var(--tap); padding:6px 16px;
+  font-size:13.5px; font-weight:600; color:var(--ink-2);
+}
+.day-how > summary::after{
+  content:'+'; margin-left:auto; padding-left:12px;
+  font-family:var(--font-mono); font-size:16px; color:var(--muted);
+}
+.day-how[open] > summary::after{ content:'−'; }
+.day-how__body{
+  display:flex; flex-direction:column; gap:10px;
+  padding:2px 16px 16px; font-size:13.5px; line-height:1.6; color:var(--muted); max-width:72ch;
+}
+.day-how__body p{ margin:0; }
+
+/* ── 7. DAY LINKS ──────────────────────────────────────────────────────────── */
+.day-nav{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.day-nav__link{
+  display:flex; flex-direction:column; justify-content:center; gap:2px;
+  min-height:var(--tap); padding:9px 14px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+  text-decoration:none; color:var(--ink);
+}
+.day-nav__link:hover{ border-color:var(--line-2); background:var(--surface-2); color:var(--ink); }
+.day-nav__link--prev{ grid-column:1; }
+.day-nav__link--next{ grid-column:2; text-align:right; }
+.day-nav__dir{
+  font-family:var(--font-mono); font-size:10px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+}
+.day-nav__date{ font-size:13.5px; font-weight:600; }
+
+/* ── 8. HOME, ARCHIVE AND STATUS (build.mjs, day.js, stale.js) ─────────────────
+   The 7-day strip shares the width evenly (minmax(0,1fr) columns: seven days fit
+   at 360px with no sideways scroll). Archive stubs reuse the day header; day.js
+   swaps the full card into #day-root or appends an error box.
+   ─────────────────────────────────────────────────────────────────────────── */
+.stale p{ margin:0; }
+
+.day-strip__list{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; }
+.day-strip__link{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+  min-height:var(--tap); padding:6px 2px; text-align:center;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-1);
+  color:var(--ink-2); text-decoration:none;
+}
+.day-strip__link:hover{ border-color:var(--line-2); background:var(--surface-2); color:var(--ink); }
+.day-strip__link[aria-current]{ border-color:var(--accent); background:var(--accent-quiet); color:var(--ink); }
+.day-strip__dow{
+  font-family:var(--font-mono); font-size:9.5px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted);
+}
+.day-strip__date{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12px; font-weight:600; white-space:nowrap; }
+.day-strip__tag{ font-size:9.5px; line-height:1.2; color:var(--accent); overflow-wrap:anywhere; }
+@media (min-width:640px){
+  .day-strip__dow{ font-size:10.5px; }
+  .day-strip__date{ font-size:13px; }
+  .day-strip__tag{ font-size:10.5px; }
+}
+
+.home-head{ margin-bottom:4px; }
+.home-notice{
+  padding:12px 14px 12px 16px; border-radius:var(--r-1);
+  background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--hold);
+  font-size:14px; line-height:1.5; color:var(--ink-2);
+}
+.home-notice p{ margin:0; }
+.home-next{ margin:0 0 4px; font-size:14px; line-height:1.5; color:var(--ink-2); }
+.home-next a{ color:var(--accent); font-weight:600; }
+.home-empty{ margin-top:8px; }
+main > .home-notice,
+main > .home-next,
+main > .day-strip{ margin-bottom:16px; }
+
+.day-stub__note{ margin:0; font-size:13.5px; line-height:1.55; color:var(--muted); }
+.day-stub__note a{ color:var(--ink-2); overflow-wrap:anywhere; }
+.day-load{ margin:0; font-size:13.5px; color:var(--muted); }
+.day-error{ margin-top:4px; border-color:rgba(229,72,77,.45); }
+.day-error a{ color:var(--ink-2); overflow-wrap:anywhere; }
+
+.nf{ margin-block:24px; }
+.nf h1{ margin:0; }

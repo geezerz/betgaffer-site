@@ -1,0 +1,369 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — base: tokens, type, shell, primitives.
+   Ported from the brand stylesheet (betgaffer/assets/css/bg.css) and trimmed to
+   what this site renders. Token values are the brand's, verbatim. Dark only.
+
+   The build concatenates base.css, fixtures.css, record.css, content.css and
+   waitlist.css (in that order) into /assets/css/site.css. No inline styles
+   anywhere: the CSP is style-src 'self'.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. TOKENS ─────────────────────────────────────────────────────────────── */
+:root{
+  --bg:#0B1017;
+  --surface:#101822;
+  --surface-2:#131C27;
+  --surface-3:#192432;
+  --line:#22303F;
+  --line-2:#2E3F52;
+  --muted-2:#55677E;
+  --muted:#8494A8;          /* 6.2:1 on --bg: legal for body copy */
+  --ink-2:#C0CAD8;
+  --ink:#EDF1F6;            /* 16.9:1 */
+
+  --accent:#22C55E;         /* 8.2:1 on --bg */
+  --accent-hi:#4ADE80;
+  --accent-lo:#16A34A;
+  --accent-quiet:rgba(34,197,94,.12);
+  --on-accent:#04160B;
+
+  /* Outcome semantics. Green is reserved for settled-won (and the accent). */
+  --won:#22C55E;
+  --lost:#E5484D;
+  --hold:#F0B542;
+  --void:#55677E;
+
+  /* The recommended pick's star and eyebrow, and NOTHING else (fixtures.css). */
+  --gold:#F5B301;
+
+  --r-1:10px;
+  --r-2:14px;
+  --r-3:18px;
+  --r-pill:999px;
+
+  --font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-display:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --wrap:80rem;
+  --gutter:16px;
+  --bar-h:56px;
+  --bar-h-lg:64px;
+  --tap:44px;               /* minimum touch target */
+  color-scheme:dark;
+}
+@media (min-width:640px){ :root{ --gutter:24px; } }
+
+@font-face{
+  font-family:'Inter';
+  src:url('../fonts/inter-latin.woff2') format('woff2');
+  font-weight:100 900;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('../fonts/jetbrains-mono-latin.woff2') format('woff2');
+  font-weight:100 800;
+  font-style:normal;
+  font-display:swap;
+}
+
+/* ── 2. BASE ───────────────────────────────────────────────────────────────── */
+*,*::before,*::after{ box-sizing:border-box; min-width:0; }
+
+html{
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  background:var(--bg);
+  /* Anchor jumps (the skip link, #main) land below the sticky bar, not under it. */
+  scroll-padding-top:calc(var(--bar-h) + 52px);
+}
+@media (min-width:640px){ html{ scroll-padding-top:calc(var(--bar-h) + 12px); } }
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  background:var(--bg);
+  color:var(--ink-2);
+  font-family:var(--font-ui);
+  font-size:15px;            /* 15, not 14: this is read on phones */
+  line-height:1.6;
+  max-width:100%;
+  overflow-x:clip;           /* belt and braces; every component also wraps or truncates */
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+
+img,svg,video{ max-width:100%; height:auto; }
+svg{ display:block; }
+
+a{ color:var(--accent); text-underline-offset:.18em; text-decoration-thickness:1px; }
+a:hover{ color:var(--accent-hi); }
+
+h1,h2,h3,h4{ color:var(--ink); }
+
+/* A long unbreakable string (a URL, a hash, a club name) sets a track's
+   min-content width and pushes the page sideways at 360px. */
+p,li,dd,dt,td,th,h1,h2,h3,h4,summary,.mono{ overflow-wrap:anywhere; }
+
+::selection{ background:rgba(34,197,94,.28); color:var(--ink); }
+
+:focus-visible{ outline:2px solid var(--accent-hi); outline-offset:2px; }
+main:focus{ outline:none; }   /* the skip-link target is not a control */
+
+hr{ border:0; border-top:1px solid var(--line); margin:24px 0; }
+
+details > summary{ cursor:pointer; }
+details > summary::-webkit-details-marker{ display:none; }
+
+ul[role="list"],ol[role="list"]{ list-style:none; margin:0; padding:0; }
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* Screen-reader text. .visually-hidden is the brand doc's name for the same rule. */
+.vh,.visually-hidden{
+  position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
+}
+
+/* ── 3. TYPE ───────────────────────────────────────────────────────────────── */
+.t-d1{ font-family:var(--font-display); font-weight:800; font-size:clamp(28px,7.5vw,46px); line-height:1.03; letter-spacing:-.03em;  color:var(--ink); margin:0; }
+.t-d2{ font-family:var(--font-display); font-weight:800; font-size:clamp(21px,5vw,30px);   line-height:1.1;  letter-spacing:-.025em; color:var(--ink); margin:0; }
+.t-h { font-family:var(--font-display); font-weight:700; font-size:clamp(17px,3.6vw,20px); line-height:1.25; letter-spacing:-.015em; color:var(--ink); margin:0; }
+.t-b { font-size:15px; line-height:1.6; color:var(--ink-2); margin:0; }
+.t-s { font-size:13.5px; line-height:1.55; color:var(--muted); margin:0; }
+.t-lbl{
+  font-family:var(--font-mono); font-size:11px; font-weight:600;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0;
+}
+.t-lbl--quiet{ color:var(--muted); }
+.mono{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+/* ── 4. LAYOUT ─────────────────────────────────────────────────────────────── */
+.bg-wrap{ width:100%; max-width:var(--wrap); margin-inline:auto; padding-inline:var(--gutter); }
+.bg-page{ flex:1 0 auto; padding-block:20px 56px; }
+@media (min-width:1024px){ .bg-page{ padding-block:28px 72px; } }
+
+.bg-stack{ display:flex; flex-direction:column; gap:14px; }
+.bg-inline{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.bg-rule{ flex:1; height:1px; background:var(--line); }
+
+.bg-card{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+  padding:16px;
+}
+@media (min-width:640px){ .bg-card{ padding:20px 22px; } }
+
+/* ── 5. SKIP LINK ──────────────────────────────────────────────────────────── */
+.bg-skip{
+  position:absolute; left:var(--gutter); top:8px; z-index:100;
+  display:inline-flex; align-items:center; min-height:var(--tap); padding:0 16px;
+  background:var(--accent); color:var(--on-accent); border-radius:var(--r-1);
+  font-family:var(--font-mono); font-size:12.5px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; text-decoration:none;
+  transform:translateY(-200%);
+}
+.bg-skip:focus,.bg-skip:focus-visible{ transform:none; color:var(--on-accent); }
+
+/* ── 6. TOPBAR ─────────────────────────────────────────────────────────────────
+   Sticky glass bar. backdrop-filter makes it a containing block for fixed
+   descendants, so nothing position:fixed may live inside it.
+   Below 600px the nav drops to its own full-width row of three equal tabs:
+   it wraps, it never scrolls sideways, and it needs no JS and no hamburger.
+   ─────────────────────────────────────────────────────────────────────────── */
+.bg-topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(11,16,23,.88);
+  -webkit-backdrop-filter:blur(12px) saturate(140%);
+  backdrop-filter:blur(12px) saturate(140%);
+  border-bottom:1px solid var(--line);
+}
+.bg-topbar__in{
+  max-width:var(--wrap); margin-inline:auto; padding-inline:var(--gutter);
+  display:flex; flex-wrap:wrap; align-items:center; column-gap:16px;
+  min-height:var(--bar-h);
+}
+
+.bg-wordmark{
+  display:inline-flex; align-items:center; min-height:52px;
+  font-family:var(--font-display); font-weight:800; font-size:18px; line-height:1;
+  letter-spacing:-.035em; color:#fff; text-decoration:none; white-space:nowrap;
+  margin-right:auto;
+}
+.bg-wordmark em{ font-style:normal; color:var(--accent); }
+a.bg-wordmark:hover{ color:#fff; }
+@media (min-width:1024px){ .bg-wordmark{ font-size:21px; } }
+
+.bg-topbar__nav{ flex:1 1 100%; margin-inline:calc(var(--gutter) * -1); border-top:1px solid var(--line); }
+.bg-topbar__nav ul{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.bg-topbar__nav a{
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  min-height:var(--tap); padding:6px 6px;
+  color:var(--muted); text-decoration:none;
+  font-family:var(--font-mono); font-size:11px; font-weight:600; line-height:1.2;
+  letter-spacing:.06em; text-transform:uppercase;
+  border-bottom:2px solid transparent;
+  transition:color .14s ease, background .14s ease, border-color .14s ease;
+}
+.bg-topbar__nav a:hover{ color:var(--ink); background:var(--surface-2); }
+.bg-topbar__nav a[aria-current]{ color:var(--accent); border-bottom-color:var(--accent); }
+.bg-topbar__nav a:focus-visible{ outline-offset:-3px; }
+
+@media (min-width:600px){
+  .bg-topbar__in{ flex-wrap:nowrap; }
+  .bg-topbar__nav{ flex:0 1 auto; margin-inline:0; border-top:0; }
+  .bg-topbar__nav ul{ display:flex; gap:4px; }
+  .bg-topbar__nav a{
+    padding:0 14px; border-radius:var(--r-1); border-bottom:0;
+    font-size:11.5px; letter-spacing:.07em; white-space:nowrap;
+  }
+  .bg-topbar__nav a[aria-current]{ background:var(--accent-quiet); }
+}
+@media (min-width:1024px){ .bg-topbar__in{ min-height:var(--bar-h-lg); } }
+
+/* ── 7. STALENESS BANNER ───────────────────────────────────────────────────────
+   Empty and hidden in the static HTML; stale.js fills it with textContent and
+   removes [hidden]. [hidden] must win over the display below.
+   ─────────────────────────────────────────────────────────────────────────── */
+.stale{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px;
+  margin:0 0 18px; padding:12px 14px 12px 16px;
+  background:rgba(240,181,66,.08); color:var(--ink);
+  border:1px solid rgba(240,181,66,.32); border-left:3px solid var(--hold);
+  border-radius:var(--r-1);
+  font-size:14px; line-height:1.5;
+}
+.stale[hidden]{ display:none; }
+.stale a{ color:var(--hold); font-weight:600; }
+
+/* ── 8. BUTTONS, CHIPS ─────────────────────────────────────────────────────── */
+.bg-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  white-space:nowrap;
+  min-height:44px; padding:0 20px; border-radius:var(--r-1);
+  border:1px solid transparent; cursor:pointer; text-decoration:none;
+  font-family:var(--font-mono); font-weight:600; font-size:12.5px;
+  letter-spacing:.06em; text-transform:uppercase;
+  transition:background .15s ease, color .15s ease, border-color .15s ease, transform .15s ease;
+}
+.bg-btn--primary{ background:var(--accent); color:var(--on-accent); }
+.bg-btn--primary:hover{ background:var(--accent-hi); color:var(--on-accent); transform:translateY(-1px); }
+.bg-btn--primary:active{ background:var(--accent-lo); transform:none; }
+.bg-btn--ghost{ background:transparent; color:var(--ink); border-color:var(--line-2); }
+.bg-btn--ghost:hover{ border-color:var(--accent); color:var(--accent); }
+/* Narrow phones: a long label wraps onto two centred lines instead of overflowing the viewport. */
+@media (max-width:399.98px){ .bg-btn{ white-space:normal; text-align:center; } }
+.bg-btn[disabled],.bg-btn[aria-disabled="true"]{
+  background:var(--surface-2); border-color:var(--line); color:var(--muted-2); cursor:not-allowed; transform:none;
+}
+
+.bg-chip{
+  display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+  font-family:var(--font-mono); font-size:10.5px; font-weight:600; line-height:1.4;
+  letter-spacing:.09em; text-transform:uppercase;
+  padding:4px 10px; border-radius:var(--r-pill);
+  border:1px solid var(--line-2); background:var(--surface-2); color:var(--muted);
+}
+.bg-chip--won { color:var(--won);  background:var(--accent-quiet);      border-color:transparent; }
+/* --lost (#E5484D) is the edge/border red; as 10.5px text on its tint it falls below 4.5:1, so the
+   chip text uses the lighter #F87171 (5.1:1 or better on every surface). */
+.bg-chip--lost{ color:#F87171;     background:rgba(229,72,77,.12);      border-color:transparent; }
+.bg-chip--open{ color:var(--hold); background:rgba(240,181,66,.12);     border-color:transparent; }
+/* --void is #55677E: too dark for text, so it tints the chip and the text stays --muted. */
+.bg-chip--void{ color:var(--muted); background:rgba(85,103,126,.18);    border-color:transparent; }
+
+/* ── 9. EMPTY STATES ───────────────────────────────────────────────────────── */
+.bg-empty{
+  background:var(--surface); border:1px dashed var(--line-2); border-radius:var(--r-3);
+  padding:38px 24px; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+}
+.bg-empty h2,.bg-empty h3{
+  font-family:var(--font-display); font-weight:800; font-size:19px; line-height:1.25;
+  letter-spacing:-.02em; color:var(--ink); margin:0;
+}
+.bg-empty p{ margin:0; font-size:13.5px; color:var(--muted); max-width:48ch; }
+.bg-empty__row{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
+
+/* ── 10. TABLES ────────────────────────────────────────────────────────────────
+   Below 640px a .bg-table stacks: each row becomes a block and each cell shows
+   its column name from data-label. Nothing scrolls sideways at 360px.
+   ─────────────────────────────────────────────────────────────────────────── */
+.bg-table{ width:100%; border-collapse:collapse; font-size:14px; }
+.bg-table th,.bg-table td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+.bg-table th{
+  font-family:var(--font-mono); font-size:10.5px; font-weight:600; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); white-space:nowrap;
+}
+.bg-table td.num,.bg-table th.num{ text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+@media (max-width:639.98px){
+  /* The .vh clip pattern. A table-header-group ignores width and overflow, so thead, its row and
+     its cells all become 1px blocks: no header box is laid out beyond the viewport. */
+  .bg-table thead{
+    display:block; position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
+  }
+  .bg-table thead tr,.bg-table thead th{ display:block; width:1px; height:1px; padding:0; overflow:hidden; border:0; }
+  .bg-table,.bg-table tbody,.bg-table tr,.bg-table td,.bg-table th[scope="row"]{ display:block; width:100%; }
+  .bg-table tr{ padding:10px 0; border-bottom:1px solid var(--line); }
+  .bg-table td,.bg-table th[scope="row"]{ border:0; padding:3px 0; }
+  .bg-table td[data-label]{ display:flex; justify-content:space-between; gap:12px; }
+  .bg-table td[data-label]::before{
+    content:attr(data-label); flex:0 0 auto;
+    font-family:var(--font-mono); font-size:10.5px; font-weight:600; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--muted); padding-top:2px;
+  }
+  .bg-table td.num{ text-align:right; }
+}
+
+/* ── 11. FOOTER ────────────────────────────────────────────────────────────── */
+.bg-foot{
+  flex-shrink:0;
+  background:var(--surface); border-top:1px solid var(--line);
+  font-size:13.5px; line-height:1.55; color:var(--muted);
+}
+.bg-foot__in{
+  display:grid; grid-template-columns:minmax(0,1fr); gap:24px;
+  padding-block:32px 28px;
+}
+@media (min-width:640px){
+  .bg-foot__in{ grid-template-columns:repeat(3,minmax(0,1fr)); column-gap:28px; }
+  .bg-foot__brand{ grid-column:1 / -1; }
+}
+@media (min-width:1024px){
+  .bg-foot__in{ grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr)); padding-block:40px 32px; }
+  .bg-foot__brand{ grid-column:auto; }
+}
+.bg-foot p{ margin:0; }
+.bg-foot__brand{ display:flex; flex-direction:column; gap:12px; max-width:52ch; }
+.bg-foot__mark{ font-size:18px; min-height:0; margin:0; }
+.bg-foot__statement{ color:var(--ink-2); }
+.bg-foot__age{ display:flex; align-items:center; gap:10px; }
+.bg-age{
+  display:inline-grid; place-items:center; flex:0 0 auto;
+  width:34px; height:34px; border-radius:var(--r-pill);
+  border:1.5px solid var(--ink-2); color:var(--ink);
+  font-family:var(--font-mono); font-size:11.5px; font-weight:700; letter-spacing:-.02em;
+}
+.bg-foot__col{ display:flex; flex-direction:column; gap:8px; }
+.bg-foot__col h2{ margin:0 0 2px; }
+.bg-foot__col ul{ display:flex; flex-direction:column; }
+.bg-foot__col a{ color:var(--ink-2); text-decoration:none; }
+.bg-foot__col a:hover{ color:var(--accent); text-decoration:underline; }
+.bg-foot__col ul a{ display:inline-flex; align-items:center; min-height:var(--tap); }
+.bg-foot__col p a{ display:inline-block; padding-block:10px; }
+.bg-foot__legal{
+  grid-column:1 / -1;
+  padding-top:18px; border-top:1px solid var(--line);
+  font-size:12px; color:var(--muted);
+}

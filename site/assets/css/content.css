@@ -1,0 +1,187 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — content pages: features, privacy, terms, refunds (Task 5).
+   Long-form legal on dark. Every legal section is a two-column grid —
+   "Now (this site)" | "At full launch" — that stacks below 640px with the
+   column label repeated per section. Reading measure capped at ~70ch per
+   column. Uses base.css tokens only; no inline styles anywhere (CSP).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. DOCUMENT + HERO ────────────────────────────────────────────────────── */
+.ct-doc{ display:flex; flex-direction:column; }
+
+.ct-hero{ display:flex; flex-direction:column; gap:12px; padding-block:8px 24px; }
+.ct-hero > *{ max-width:70ch; }
+.ct-hero .t-d1{ max-width:22ch; }
+.ct-meta{ margin:0; font-size:12px; letter-spacing:.04em; color:var(--muted); }
+.ct-meta time{ color:var(--ink-2); }
+.ct-lead{ margin:0; font-size:16.5px; line-height:1.6; color:var(--ink-2); }
+@media (min-width:640px){ .ct-lead{ font-size:17.5px; } }
+.ct-lead strong{ color:var(--ink); font-weight:600; }
+.ct-pos{
+  margin:4px 0 0; padding:10px 14px;
+  font-size:13.5px; line-height:1.55; color:var(--muted);
+  border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:var(--r-1);
+  background:var(--surface);
+}
+
+/* ── 2. OPERATOR IDENTITY ──────────────────────────────────────────────────── */
+.ct-ident{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+  padding:14px 16px;
+}
+.ct-ident dl{
+  margin:0; display:grid; gap:12px 24px;
+  grid-template-columns:minmax(0,1fr);
+}
+@media (min-width:640px){
+  .ct-ident{ padding:16px 20px; }
+  .ct-ident dl{ grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr)); }
+}
+.ct-ident dt{
+  font-family:var(--font-mono); font-size:10.5px; font-weight:600; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 3px;
+}
+.ct-ident dd{ margin:0; color:var(--ink); font-size:14px; line-height:1.5; }
+.ct-ident dd a{ display:inline-block; padding-block:4px; }
+
+/* ── 3. HOW-TO-READ + CONTENTS ─────────────────────────────────────────────── */
+.ct-howto{ margin-top:20px; }
+.ct-howto p{ margin:0; max-width:70ch; font-size:14px; line-height:1.6; color:var(--muted); }
+.ct-howto strong{ color:var(--ink-2); font-weight:600; }
+
+.ct-toc{ margin-top:24px; padding-top:16px; border-top:1px solid var(--line); }
+.ct-toc h2{ margin:0 0 6px; }
+.ct-toc ol{ display:grid; grid-template-columns:minmax(0,1fr); column-gap:24px; }
+@media (min-width:640px){ .ct-toc ol{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:1024px){ .ct-toc ol{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+.ct-toc a{
+  display:flex; align-items:center; gap:12px; min-height:var(--tap);
+  color:var(--ink-2); text-decoration:none; font-size:14px; line-height:1.35;
+  border-bottom:1px solid var(--line);
+}
+.ct-toc a:hover{ color:var(--accent); }
+.ct-toc a .mono{ flex:0 0 auto; font-size:11px; color:var(--muted-2); letter-spacing:.06em; }
+.ct-toc a:hover .mono{ color:var(--accent); }
+
+/* ── 4. TWO-COLUMN SECTIONS ────────────────────────────────────────────────────
+   Mobile: columns stack, each with its own label. ≥640px: a sticky column
+   header names the columns once; the per-section labels stay in the DOM for
+   screen readers (the header is aria-hidden) but are visually hidden.
+   ─────────────────────────────────────────────────────────────────────────── */
+.ct-colhead{ display:none; }
+
+.ct-sec{ padding-block:28px; border-top:1px solid var(--line); }
+.ct-sec__h{
+  display:flex; align-items:baseline; gap:12px; margin:0 0 16px;
+  font-family:var(--font-display); font-weight:700; font-size:clamp(17px,3.6vw,20px);
+  line-height:1.3; letter-spacing:-.015em; color:var(--ink);
+}
+.ct-sec__n{ flex:0 0 auto; font-size:12px; font-weight:600; color:var(--muted-2); letter-spacing:.06em; }
+
+.ct-cols{ display:grid; grid-template-columns:minmax(0,1fr); gap:18px; }
+
+.ct-col{ padding-left:14px; border-left:2px solid rgba(34,197,94,.55); }
+.ct-col--launch{ border-left:2px dashed var(--line-2); }
+.ct-col > *{ max-width:70ch; }
+
+.ct-col__lbl{
+  margin:0 0 8px;
+  font-family:var(--font-mono); font-size:10.5px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent);
+}
+.ct-col--launch .ct-col__lbl{ color:var(--muted); }
+
+.ct-col p{ margin:0 0 12px; font-size:15px; line-height:1.65; color:var(--ink-2); }
+.ct-col ul{ margin:0 0 12px; padding-left:1.15em; }
+.ct-col li{ font-size:15px; line-height:1.6; color:var(--ink-2); }
+.ct-col li + li{ margin-top:6px; }
+.ct-col li::marker{ color:var(--muted-2); }
+.ct-col > :last-child{ margin-bottom:0; }
+.ct-col strong{ color:var(--ink); font-weight:600; }
+.ct-col--launch p,.ct-col--launch li{ color:var(--ink-2); }
+.ct-col .ct-same{ color:var(--muted); }
+
+@media (min-width:640px){
+  .ct-colhead{
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:40px;
+    position:sticky; top:var(--bar-h); z-index:10;
+    margin-top:28px; padding-block:10px;
+    background:rgba(11,16,23,.94);
+    border-bottom:1px solid var(--line-2);
+    font-family:var(--font-mono); font-size:10.5px; font-weight:600; letter-spacing:.16em;
+    text-transform:uppercase;
+  }
+  .ct-colhead span{ padding-left:16px; position:relative; }
+  .ct-colhead span::before{
+    content:""; position:absolute; left:0; top:50%; width:8px; height:8px; margin-top:-4px;
+    border-radius:var(--r-pill);
+  }
+  .ct-colhead__now{ color:var(--accent); }
+  .ct-colhead__now::before{ background:var(--accent); }
+  .ct-colhead__launch{ color:var(--muted); }
+  .ct-colhead__launch::before{ border:1.5px dashed var(--muted); }
+
+  .ct-cols{ grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:40px; }
+  .ct-col__lbl{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
+  }
+  /* Anchor jumps land below the topbar AND the sticky column header. */
+  .ct-sec{ scroll-margin-top:44px; }
+  .ct-colhead + .ct-sec{ border-top:0; }
+}
+@media (min-width:1024px){ .ct-colhead{ top:var(--bar-h-lg); } }
+
+/* ── 5. CONTACT BLOCK ──────────────────────────────────────────────────────── */
+.ct-contact{
+  margin-top:12px; padding:18px 18px 16px;
+  background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent);
+  border-radius:var(--r-2);
+  display:flex; flex-direction:column; gap:8px;
+}
+.ct-contact h2{ margin:0 0 2px; }
+.ct-contact p{ margin:0; max-width:70ch; font-size:15px; line-height:1.6; color:var(--ink-2); }
+.ct-contact__addr{ font-size:13.5px; color:var(--muted); }
+.ct-contact p.ct-contact__addr{ color:var(--muted); font-size:13.5px; }
+
+/* ── 6. FEATURES ───────────────────────────────────────────────────────────── */
+.ct-breadth{
+  align-self:flex-start; max-width:100%;
+  margin:6px 0 0; padding:10px 14px;
+  font-size:14px; line-height:1.55; color:var(--ink-2);
+  background:var(--surface-2); border:1px solid var(--line-2); border-radius:var(--r-1);
+}
+.ct-breadth strong{ color:var(--ink); font-weight:700; }
+
+.ct-fsec{ margin-top:36px; }
+@media (min-width:1024px){ .ct-fsec{ margin-top:48px; } }
+.ct-fsec > .t-d2,.ct-fsec__head{ margin:0 0 16px; }
+.ct-fsec__head{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px; }
+.ct-fsec__head .t-d2{ margin:0; }
+
+.ct-feats{ display:grid; grid-template-columns:minmax(0,1fr); gap:12px; }
+@media (min-width:640px){ .ct-feats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:1024px){ .ct-feats{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; } }
+
+.ct-feat{
+  display:flex; flex-direction:column; gap:8px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+  padding:18px;
+}
+@media (min-width:640px){ .ct-feat{ padding:20px 22px; } }
+.ct-feat__n{ margin:0; font-size:11.5px; font-weight:600; letter-spacing:.1em; color:var(--accent); }
+.ct-feat .t-h{ margin:0; }
+.ct-feat p{ margin:0; font-size:14.5px; line-height:1.6; color:var(--ink-2); max-width:62ch; }
+.ct-feat--soon{ background:transparent; border-style:dashed; border-color:var(--line-2); }
+
+.ct-pricing p{ max-width:70ch; margin:0 0 12px; }
+.ct-pricing > p:first-of-type{ font-size:15.5px; color:var(--ink-2); }
+.ct-tiers{ max-width:28rem; margin:4px 0 10px; }
+
+.ct-waitlist{
+  padding:20px 18px; border:1px solid var(--line-2); border-radius:var(--r-3);
+  background:var(--surface);
+}
+@media (min-width:640px){ .ct-waitlist{ padding:26px 28px; } }
+
+.ct-features > .ct-ident{ margin-top:36px; }

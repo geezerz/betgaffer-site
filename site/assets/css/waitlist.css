@@ -1,0 +1,71 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — founding waitlist form and its no-JS result pages (plan Task 7).
+   Concatenated last into /assets/css/site.css; uses base.css tokens only.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bg-wl{
+  display:flex; flex-direction:column; gap:14px;
+  max-width:34rem;
+  padding:18px 16px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+}
+@media (min-width:640px){ .bg-wl{ padding:22px 24px; } }
+
+/* "500 founding places" → "n of 500 founding places left" (JS). Never a date. */
+.bg-wl__places{
+  margin:0;
+  font-size:12.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--accent);
+}
+
+.bg-wl__field{ display:flex; flex-direction:column; gap:6px; }
+.bg-wl__label{
+  font-family:var(--font-mono); font-size:11px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+}
+.bg-wl__input{
+  width:100%; min-height:var(--tap); padding:10px 12px;
+  background:var(--bg); color:var(--ink);
+  border:1px solid var(--line-2); border-radius:var(--r-1);
+  font-family:var(--font-ui); font-size:16px;   /* 16px: phones do not zoom on focus */
+  line-height:1.4;
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+.bg-wl__input::placeholder{ color:var(--muted-2); }
+.bg-wl__input:hover{ border-color:var(--muted-2); }
+.bg-wl__input:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-quiet); }
+.bg-wl__input:focus-visible{ outline:2px solid var(--accent-hi); outline-offset:1px; }
+
+/* The 18+ box: the whole row is a 44px target via its label. */
+.bg-wl__check{ display:flex; align-items:center; gap:10px; min-height:var(--tap); }
+.bg-wl__check label{ color:var(--ink); font-size:15px; cursor:pointer; padding-block:8px; }
+.bg-wl__box{
+  flex:0 0 auto; width:20px; height:20px; margin:0;
+  accent-color:var(--accent); cursor:pointer;
+}
+
+.bg-wl__consent{ margin:0; font-size:13px; line-height:1.55; color:var(--muted); }
+
+.bg-wl__actions{ display:flex; }
+.bg-wl__actions .bg-btn{ width:100%; }
+@media (min-width:480px){ .bg-wl__actions .bg-btn{ width:auto; } }
+.bg-btn[disabled]{ pointer-events:none; }
+
+/* Live region: empty until the script writes into it. */
+.bg-wl__status{ margin:0; font-size:14px; line-height:1.5; color:var(--ink-2); }
+.bg-wl__status[data-state="ok"]{
+  padding:10px 12px; border-radius:var(--r-1);
+  background:var(--accent-quiet); color:var(--ink); border-left:3px solid var(--accent);
+}
+.bg-wl__status[data-state="error"]{
+  padding:10px 12px; border-radius:var(--r-1);
+  background:rgba(229,72,77,.10); color:var(--ink); border-left:3px solid var(--lost);
+}
+
+.bg-wl[aria-busy="true"]{ cursor:progress; }
+
+/* ── no-JS result pages: /waitlist/<kind>/ ─────────────────────────────── */
+.bg-wl-result{ display:flex; flex-direction:column; gap:14px; max-width:40rem; padding-block:12px 8px; }
+.bg-wl-result .bg-wl{ margin-top:6px; }
+.bg-wl-result__back{ margin:6px 0 0; font-size:14px; color:var(--muted); }
+.bg-wl-result__back a{ display:inline-block; padding-block:10px; }

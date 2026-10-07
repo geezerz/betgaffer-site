@@ -1,0 +1,53 @@
+{
+    "basic": {
+        "fixtures": [
+            {
+                "fx": 20,
+                "api_fx": 200,
+                "home_id": 2,
+                "away_id": 3,
+                "pick": null,
+                "frozen_at": null,
+                "withdrawn": false
+            },
+            {
+                "fx": 10,
+                "api_fx": 100,
+                "home_id": 1,
+                "away_id": 4,
+                "pick": {
+                    "market": "over_1_5",
+                    "label": "Over 1.5",
+                    "pct": 88,
+                    "price": 1.2,
+                    "price_est": false,
+                    "why": "Form/xG"
+                },
+                "frozen_at": "2026-10-07T22:15:00Z",
+                "withdrawn": false
+            }
+        ],
+        "picks_hash": "sha256:77be54ba48d4aace9a1439296590130a38c9d03eaa41967a3e921c57fc436a21"
+    },
+    "unicode": {
+        "fixtures": [
+            {
+                "fx": 1,
+                "api_fx": 9,
+                "home_id": 5,
+                "away_id": 6,
+                "pick": {
+                    "market": "btts_yes",
+                    "label": "Both teams\u2028score\u2029",
+                    "pct": 81,
+                    "price": 1.56,
+                    "price_est": true,
+                    "why": "São Paulo \"quote\" back\\slash\ttab 😀"
+                },
+                "frozen_at": "2026-10-07T22:15:00Z",
+                "withdrawn": true
+            }
+        ],
+        "picks_hash": "sha256:e9cead8b92785980a18203de3fcf83455a17aa3ace351b71038c2ec07a9c756f"
+    }
+}

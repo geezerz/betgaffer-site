@@ -1,0 +1,13 @@
+{
+  "name": "betgaffer-site",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node site/build.mjs",
+    "test": "node --test \"tests/*.test.js\"",
+    "verify": "node site/verify.js"
+  }
+}
