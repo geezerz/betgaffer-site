@@ -492,14 +492,34 @@ describe('balloon.js: position', () => {
     assert.equal(s.style('top'), `${64 + GAP}px`, 'scrolled back up: the toolbar is in the flow again');
   });
 
-  test('scrolling does no work while a stored position is in use (resize still re-clamps it)', () => {
-    const s = setup({ store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 80 }) } });
+  test('a parked ring never covers the stuck toolbar: on scroll it is pushed below the floor, for display only', () => {
+    const stored = JSON.stringify({ left: 100, top: 80 });
+    const s = setup({ store: { 'bg.balloon.pos': stored } });
     assert.equal(s.style('top'), '80px');
-    s.doc.querySelector('[data-day-tools]')._rect = { top: 64, bottom: 176 };
+    s.doc.querySelector('[data-day-tools]')._rect = { top: 64, bottom: 176 }; // scrolled: the toolbar sticks
     for (const f of s.win.listeners.scroll ?? []) f({ type: 'scroll' });
-    assert.equal(s.frames.length, 0, 'no frame scheduled');
-    s.resize(1280, 800);
-    assert.equal(s.style('top'), `${176 + GAP}px`);
+    for (const f of s.win.listeners.scroll ?? []) f({ type: 'scroll' });
+    assert.equal(s.frames.length, 1, 'one frame per burst (rAF-throttled)');
+    s.flush();
+    assert.equal(s.style('top'), `${176 + GAP}px`, 'below the stuck toolbar');
+    assert.equal(s.style('left'), '100px');
+    assert.deepEqual(s.storage.writes, [], 'storage is never rewritten');
+    assert.equal(s.storage.getItem('bg.balloon.pos'), stored);
+    s.doc.querySelector('[data-day-tools]')._rect = { top: 420, bottom: 532 }; // back up: in the flow again
+    s.scroll();
+    assert.equal(s.style('top'), '80px', 'returns to where the visitor put it');
+  });
+
+  test('a parked ring below the floor is not touched on scroll (no style write)', () => {
+    const s = setup({ store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 400 }) } });
+    const before = new Map(s.el.style.props);
+    let writes = 0;
+    const set = s.el.style.setProperty;
+    s.el.style.setProperty = (k, v) => { writes++; set(k, v); };
+    s.doc.querySelector('[data-day-tools]')._rect = { top: 64, bottom: 176 };
+    s.scroll();
+    assert.equal(writes, 0, 'unchanged position: nothing written');
+    assert.deepEqual(new Map(s.el.style.props), before);
   });
 
   test('a stored desktop position is restored, re-clamped to the viewport and below the floor', () => {

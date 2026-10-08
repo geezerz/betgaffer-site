@@ -205,16 +205,24 @@ export function init({
     };
   }
 
+  // Inline-style writes only when the value changes (relayout runs once a frame while scrolling).
+  function put(k, v) {
+    if (el.style.getPropertyValue(k) !== v) el.style.setProperty(k, v);
+  }
+  function drop(k) {
+    if (el.style.getPropertyValue(k) !== '') el.style.removeProperty(k);
+  }
+
   function setXY(left, top) {
-    el.style.setProperty('left', `${left}px`);
-    el.style.setProperty('top', `${top}px`);
-    // The default anchors are right/bottom or right/top: release both, or the ring stretches.
-    el.style.setProperty('right', 'auto');
-    el.style.setProperty('bottom', 'auto');
+    put('left', `${left}px`);
+    put('top', `${top}px`);
+    // The CSS anchor is right/top: release right (and bottom), or the ring stretches.
+    put('right', 'auto');
+    put('bottom', 'auto');
   }
 
   function clearXY() {
-    for (const k of ['left', 'top', 'right', 'bottom']) el.style.removeProperty(k);
+    for (const k of ['left', 'top', 'right', 'bottom']) drop(k);
   }
 
   /** Position and show (or hide) the ring for the current size and viewport. */
@@ -235,8 +243,8 @@ export function init({
       // Not dragged: right from the CSS anchor, top just below the header (or the banner).
       const c = clamp({ left: b.vw, top: defaultTop({ barBottom: barBottom(), bannerBottom: bannerBottom(), floor: b.minTop }) }, b);
       if (c.fits) {
-        for (const k of ['left', 'right', 'bottom']) el.style.removeProperty(k);
-        el.style.setProperty('top', `${Math.round(c.top)}px`);
+        for (const k of ['left', 'right', 'bottom']) drop(k);
+        put('top', `${Math.round(c.top)}px`);
       }
       show(c.fits);
     } catch {
@@ -368,8 +376,9 @@ export function init({
     win.addEventListener('resize', relayout, { passive: true });
     win.addEventListener('orientationchange', relayout, { passive: true });
     // The toolbar sticks (raising the floor) and the banner scrolls away only as the page scrolls.
-    // A stored position is the visitor's: scrolling never moves it (resize still re-clamps it).
-    win.addEventListener('scroll', () => { if (pos === null) relayout(); }, { passive: true });
+    // Once a frame: measure, then write only what changed. A parked ring above the floor (the stuck
+    // toolbar) is shown below it; the stored position is never rewritten, so it returns there.
+    win.addEventListener('scroll', relayout, { passive: true });
   }
   if (typeof RO === 'function') {
     try {
