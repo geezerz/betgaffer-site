@@ -666,7 +666,6 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
 // hoisted, so the ones this block alone needs sit here rather than in the shared header.
 // =============================================================================================
 
-import { describe } from 'node:test';
 import { parse, findAll, find, textOf } from './html-scan.js';
 import { SUMMARY, TOTAL_PLACES } from '../site/lib/founding.js';
 
