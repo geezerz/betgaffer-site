@@ -297,10 +297,9 @@ a.bg-wordmark:hover{ color:#fff; }
   }
   .bg-topbar__nav a[aria-current]{ border-left-color:var(--accent); }
 
-  .bg-topbar__legal{
-    display:flex; flex-wrap:wrap; column-gap:4px;
-    margin:8px var(--gutter) 0; padding:6px 0 0; border-top:1px solid var(--line);
-  }
+  .bg-topbar__legal{ display:flex; flex-wrap:wrap; column-gap:4px; border-top:1px solid var(--line); }
+  /* Two classes: the ul[role="list"] reset (0,1,1) would otherwise zero this gutter. */
+  .bg-topbar__panel .bg-topbar__legal{ margin:8px var(--gutter) 0; padding:6px 0 0; }
   .bg-topbar__legal a{
     display:inline-flex; align-items:center; min-height:var(--tap); padding:0 10px 0 0;
     color:var(--muted); font-size:13.5px; text-decoration:none;

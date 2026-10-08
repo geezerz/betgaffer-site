@@ -9,7 +9,8 @@
 //   - close: the button again, Esc, a tap outside, a link in the panel, focus leaving the panel for
 //     the page, or a resize to 600 px and wider;
 //   - closing hands focus back to the button when it was inside the panel (never stealing it from a
-//     control the visitor moved to).
+//     control the visitor moved to). So a tap outside leaves focus where the visitor tapped, and Esc
+//     or a link inside the panel returns it to the button.
 // The panel is position:fixed below the bar, so opening it never changes the bar's height (the
 // sticky toolbar and the floating ring measure it). Attributes only: no markup, no style writes.
 

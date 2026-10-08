@@ -819,6 +819,30 @@ test('base.css: the ☰ layout is the DEFAULT below 600 px; at 600 px and wider 
   for (const rule of wide) for (const s of rule.sels) assert.doesNotMatch(s, /burger|panel|legal/, s);
 });
 
+test('phone menu: the legal list keeps the gutter — its margin out-ranks the ul[role="list"] reset', () => {
+  const r = cssRules('base.css');
+  // [ids, classes+attributes, elements] — enough for the selectors this sheet uses.
+  const spec = (sel) => [
+    (sel.match(/#[\w-]+/g) || []).length,
+    (sel.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+/g) || []).length,
+    (sel.replace(/\[[^\]]+\]/g, '').match(/(^|[\s>+~])[a-z][\w-]*/gi) || []).length,
+  ];
+  const beats = (a, b) => { for (let i = 0; i < 3; i++) if (a[i] !== b[i]) return a[i] > b[i]; return false; };
+  const reset = r.find((x) => x.media === null && x.sels.includes('ul[role="list"]'));
+  assert.ok(reset && reset.decls.some(([p]) => p === 'margin'), 'premise: the list reset zeroes ul margins');
+  const resetSpec = spec('ul[role="list"]');
+  assert.deepEqual(resetSpec, [0, 1, 1], 'premise: the specificity counter reads the reset as (0,1,1)');
+  for (const prop of ['margin', 'padding']) {
+    const winners = r.filter((x) => x.media === NARROW && x.decls.some(([p]) => p === prop)
+      && x.sels.some((s) => /\.bg-topbar__legal$/.test(s)));
+    assert.ok(winners.length > 0, `a small-screen rule sets the legal list's ${prop}`);
+    for (const w of winners) for (const s of w.sels.filter((x) => /\.bg-topbar__legal$/.test(x))) {
+      assert.ok(beats(spec(s), resetSpec), `${s} { ${prop} } must out-rank ul[role="list"] (got ${spec(s)})`);
+    }
+  }
+  assert.match(valueOf(r, '.bg-topbar__panel .bg-topbar__legal', 'margin', NARROW), /var\(--gutter\)/, 'the gutter itself');
+});
+
 test('nojs.css: below 600 px it restores today\'s tab row exactly (every property the menu block changes), and hides the burger', () => {
   const b = cssRules('base.css');
   const n = cssRules('nojs.css');
