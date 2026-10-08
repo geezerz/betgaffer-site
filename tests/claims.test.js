@@ -9,7 +9,8 @@ import { readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { build } from '../site/build.mjs';
-import { claimViolations, visibleText } from './html-scan.js';
+import { claimViolations, percentagesOutsideOffers, visibleText } from './html-scan.js';
+import { DISCOUNT_PCT, TOPUP_BONUS_PCT } from '../site/lib/founding.js';
 import {
   testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, htmlFiles, EDGE_DAY,
 } from './site-fixtures.js';
@@ -227,9 +228,66 @@ describe('premise: the scanner reports each injected violation', () => {
     assert.ok(claimViolations(inject(rec, row)).some((m) => /"84.10%" outside/.test(m)));
   });
 
-  test('a content page carries no percentage at all', () => {
+  // Offer figures (Plan A Task 1b): the founding offer's two percentages are allowed, and only inside
+  // an element marked data-figure="offer". Same code path as the real page scan (claimViolations).
+  test(`an offer figure licenses exactly ${DISCOUNT_PCT}% and ${TOPUP_BONUS_PCT}%, and nothing else`, () => {
+    assert.deepEqual([DISCOUNT_PCT, TOPUP_BONUS_PCT], [30, 20], 'premise: the fixtures below use the programme numbers');
+    for (const rel of SAMPLE) {
+      assert.deepEqual(claimViolations(inject(pages[rel], '<p><span data-figure="offer">30% off</span></p>')), [], `${rel}: 30% off`);
+      assert.deepEqual(claimViolations(inject(pages[rel], '<p><span data-figure="offer">20% extra</span></p>')), [], `${rel}: 20% extra`);
+      const wrong = claimViolations(inject(pages[rel], '<p><span data-figure="offer">25% off</span></p>'));
+      assert.ok(wrong.some((m) => /percentage "25%" outside an allowed figure/.test(m)), `${rel}: 25% in an offer: ${wrong}`);
+      const bare = claimViolations(inject(pages[rel], '<p>30% off</p>'));
+      assert.ok(bare.some((m) => /percentage "30%" outside an allowed figure/.test(m)), `${rel}: bare 30%: ${bare}`);
+    }
+  });
+
+  test('an offer figure holding one wrong percentage licenses none of them', () => {
+    const v = claimViolations(inject(pages['index.html'], '<p><span data-figure="offer">30% off, then 83% more</span></p>'));
+    assert.ok(v.some((m) => /"83%" outside an allowed figure/.test(m)), String(v));
+    assert.ok(v.some((m) => /"30%" outside an allowed figure/.test(m)), String(v));
+  });
+
+  test('an offer figure split over inline tags, or nested deeper, is still judged by its whole text', () => {
+    assert.deepEqual(claimViolations(inject(pages['index.html'], '<p data-figure="offer"><b>3</b>0% off <em>every</em> payment</p>')), []);
+    const v = claimViolations(inject(pages['index.html'], '<div data-figure="offer"><p>30% off</p><p>2<b>5</b>% extra</p></div>'));
+    assert.ok(v.some((m) => /"25%" outside an allowed figure/.test(m)), String(v));
+  });
+
+  test('an offer figure\'s aria-label, title and alt are held to the same two values', () => {
+    const home = pages['index.html'];
+    assert.deepEqual(claimViolations(inject(home, '<span data-figure="offer" aria-label="30% off">30% off</span>')), []);
+    for (const frag of ['<span data-figure="offer" aria-label="25% off">30% off</span>',
+      '<span data-figure="offer" title="25% off">30% off</span>',
+      '<span data-figure="offer"><img src="/x.png" alt="25% off"> 30% off</span>']) {
+      const v = claimViolations(inject(home, frag));
+      assert.ok(v.some((m) => /"25%" outside an allowed figure/.test(m)), `${frag}: ${v}`);
+    }
+  });
+
+  test('an offer figure licenses the two numbers as written, not a longer number ending in them', () => {
+    for (const fig of ['1,030% off', '130% off', '030% off', '1.30% off', '30.0% off', '5,20% extra']) {
+      const html = inject(pages['index.html'], `<p><span data-figure="offer">${fig}</span></p>`);
+      assert.ok(claimViolations(html).some((m) => /outside an allowed figure/.test(m)), `${fig}: ${claimViolations(html)}`);
+      const attr = inject(pages['index.html'], `<span data-figure="offer" aria-label="${fig}">30% off</span>`);
+      assert.ok(claimViolations(attr).some((m) => /outside an allowed figure, in aria-label/.test(m)), `aria ${fig}: ${claimViolations(attr)}`);
+    }
+  });
+
+  test('a data-figure value that only looks like "offer" licenses nothing', () => {
+    for (const fig of ['Offer', 'offers', ' offer', 'offer x']) {
+      const v = claimViolations(inject(pages['index.html'], `<p><span data-figure="${fig}">30% off</span></p>`));
+      assert.ok(v.some((m) => /"30%" outside an allowed figure/.test(m)), `${fig}: ${v}`);
+    }
+  });
+
+  test('a content page carries no percentage outside an offer figure', () => {
     for (const rel of ['features/index.html', 'privacy/index.html', 'terms/index.html', 'refunds/index.html']) {
-      assert.doesNotMatch(visibleText(pages[rel]), /\d%/, rel);
+      assert.deepEqual(percentagesOutsideOffers(pages[rel]), [], rel);
+      // Premise: the same check fires on a bare percentage and on a non-offer figure on that page.
+      assert.ok(percentagesOutsideOffers(inject(pages[rel], '<p>30% off</p>')).some((m) => /"30%"/.test(m)), `${rel}: bare`);
+      assert.ok(percentagesOutsideOffers(inject(pages[rel], '<p><span data-figure="pick-prob">83%</span></p>')).some((m) => /"83%"/.test(m)), `${rel}: pick-prob`);
+      assert.deepEqual(percentagesOutsideOffers(inject(pages[rel], '<p><span data-figure="offer">30% off</span></p>')), [], `${rel}: offer`);
     }
   });
 

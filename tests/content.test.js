@@ -7,6 +7,8 @@ import * as features from '../site/content/features.js';
 import * as privacy from '../site/content/privacy.js';
 import * as terms from '../site/content/terms.js';
 import * as refunds from '../site/content/refunds.js';
+import { lastUpdated } from '../site/content/common.js';
+import { percentagesOutsideOffers } from './html-scan.js';
 
 // A filled test operator. Every value carries HTML metacharacters so escaping is proven, and the
 // privacy address differs from the contact address so the right one is proven on each page.
@@ -163,17 +165,24 @@ test('claims: findBanned refuses a non-string', () => {
 // =============================================================================================
 
 for (const name of Object.keys(PAGES)) {
-  test(`${name}: renders a CSP-clean fragment with Last updated 2026-10-07`, () => {
+  // Per page (Plan A Task 1b): each page prints its own LAST_UPDATED, so a task can bump one page's date.
+  test(`${name}: renders a CSP-clean fragment with its own Last updated line`, () => {
     const mod = PAGES[name];
-    assert.equal(mod.LAST_UPDATED, '2026-10-07');
+    assert.match(mod.LAST_UPDATED, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(mod.LAST_UPDATED >= '2026-10-07', 'never earlier than the first published version');
+    const line = lastUpdated(mod.LAST_UPDATED);
     const html = renderPage(name);
     assert.equal(typeof html, 'string');
     assert.doesNotMatch(html, /<!doctype|<html|<main/i, 'a body fragment, not a document');
     assert.doesNotMatch(html, /<script/i);
     assert.doesNotMatch(html, /<style/i);
     assert.doesNotMatch(html, /\sstyle=/i);
-    assert.match(html, /<time datetime="2026-10-07">7 October 2026<\/time>/);
-    assert.match(visibleText(html), /Last updated 7 October 2026/);
+    assert.ok(html.includes(line), `the page prints ${line}`);
+    assert.match(visibleText(line), /^Last updated \d{1,2} [A-Z][a-z]+ \d{4}$/, 'premise: the line reads as a date');
+    assert.ok(visibleText(html).includes(visibleText(line)), 'its visible text carries the Last updated line');
+    const opener = line.slice(0, line.indexOf('<time'));
+    assert.match(opener, /Last updated $/, 'premise: the line opens with its label');
+    assert.equal(html.split(opener).length, 2, 'exactly one Last updated line');
     assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, 'exactly one h1');
   });
 
@@ -216,10 +225,17 @@ for (const name of Object.keys(PAGES)) {
     assert.match(t, /football match intelligence/);
   });
 
-  test(`${name}: no percentage and no banned phrase in visible text`, () => {
-    const t = visibleText(renderPage(name, cfg({ pricing: { show_prices: true },
-      breadth: { markets: 92, competitions: 57, fixtures: 146, day: '2026-10-07' } })));
-    assert.doesNotMatch(t, /%/, 'content pages carry no percentages');
+  test(`${name}: no percentage outside an offer figure, and no banned phrase in visible text`, () => {
+    const html = renderPage(name, cfg({ pricing: { show_prices: true },
+      breadth: { markets: 92, competitions: 57, fixtures: 146, day: '2026-10-07' } }));
+    const t = visibleText(html);
+    assert.deepEqual(percentagesOutsideOffers(html), [], 'content pages carry percentages only inside an offer figure');
+    // Premise: the same check fires on this page for a bare percentage or a wrong offer value, and
+    // passes a real offer figure.
+    const plant = (frag) => `${html}\n${frag}`;
+    assert.ok(percentagesOutsideOffers(plant('<p>30% off</p>')).some((m) => /"30%"/.test(m)), 'bare 30% reported');
+    assert.ok(percentagesOutsideOffers(plant('<p><span data-figure="offer">25% off</span></p>')).some((m) => /"25%"/.test(m)), '25% offer reported');
+    assert.deepEqual(percentagesOutsideOffers(plant('<p><span data-figure="offer">30% off</span></p>')), [], '30% offer allowed');
     assert.deepEqual(findBanned(t), []);
     assert.doesNotMatch(t, /600\+/);
   });

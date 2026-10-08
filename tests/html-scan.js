@@ -14,6 +14,7 @@
 
 import { findBanned } from '../site/lib/claims.js';
 import { fmtDayLong, isDate } from '../site/lib/time.js';
+import { DISCOUNT_PCT, TOPUP_BONUS_PCT } from '../site/lib/founding.js';
 
 const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
 // Raw-text elements: their content is text up to the matching close tag.
@@ -174,6 +175,18 @@ function segments(body) {
 const ancestors = (el) => { const out = []; for (let n = el; n && n.tag !== '#root'; n = n.parent) out.push(n); return out; };
 
 const PCT_RE = /\d+(?:\.\d+)?%/g;
+const pctOf = (s) => Number(s.slice(0, -1));
+const ATTR_COPY = ['aria-label', 'title', 'alt'];
+// The offer figure's two percentages exactly as written ("30%", "20%"). Compared as strings over
+// the whole written number (WRITTEN_RE), so "1,030%", "130%", "030%" or "30.0%" never pass as 30.
+const OFFER_WRITTEN = new Set([`${DISCOUNT_PCT}%`, `${TOPUP_BONUS_PCT}%`]);
+const WRITTEN_RE = /\d[\d.,]*%/g;
+/** The whole number a PCT_RE match at index belongs to, with any digits, "," or "." before it. */
+function written(src, index, match) {
+  let i = index;
+  while (i > 0 && /[\d.,]/.test(src[i - 1])) i -= 1;
+  return src.slice(i, index) + match;
+}
 const FRACTION_RE = /\d[\d,]* of \d[\d,]*/;
 const RETRO_RE = /\bso far\b|\bto date\b/i;
 const STATED_RE = /\bstated at\b/i;
@@ -188,10 +201,23 @@ function periodText(p) {
   return null;
 }
 
-/** Why an element may hold a percentage, or null. */
-function allowedBy(el) {
+/**
+ * Why an element may hold a percentage (pct: the whole number as written, e.g. "30%"), or null.
+ * kinds limits which figures count (null: all of them).
+ */
+function allowedBy(el, pct, kinds = null) {
+  const why = figureOf(el, pct);
+  return why !== null && (kinds === null || kinds.includes(why)) ? why : null;
+}
+
+function figureOf(el, pct) {
   const fig = el.attrs['data-figure'];
   if (fig === 'pick-prob') return 'pick-prob';
+  // The founding offer (Plan A Task 1b): the percentage itself, and every percentage in the
+  // figure's visible text, is one of the programme's two numbers. One wrong value licenses none.
+  if (fig === 'offer') {
+    return OFFER_WRITTEN.has(pct) && [...textOf(el).matchAll(WRITTEN_RE)].every((m) => OFFER_WRITTEN.has(m[0])) ? 'offer' : null;
+  }
   if (fig === 'ring') return FRACTION_RE.test(textOf(el)) ? 'ring' : null;
   if (fig === 'record-row') {
     const t = textOf(el);
@@ -210,14 +236,15 @@ function hundredOk(el) {
   return FRACTION_RE.test(t) && RETRO_RE.test(t) && STATED_RE.test(t);
 }
 
-const where = (el) => `<${el.tag}${el.attrs.class ? ` class="${el.attrs.class}"` : ''}> (line ${el.line})`;
+const where = (el) => el.tag === '#root' ? 'the top level' : `<${el.tag}${el.attrs.class ? ` class="${el.attrs.class}"` : ''}> (line ${el.line})`;
 
 /**
  * Test 16 over one built page: [] when clean, else one message per violation.
  *   - banned phrases in the visible text, the <title> or the description metadata;
- *   - a percentage in visible text outside every allowed figure (pick-prob; a ring carrying its
- *     fraction; a record row carrying its fraction and period; the headline block holding all its
- *     parts);
+ *   - a percentage in visible text, aria-label, title or alt outside every allowed figure
+ *     (pick-prob; a ring carrying its fraction; a record row carrying its fraction and period; the
+ *     headline block holding all its parts; an offer figure, data-figure="offer", whose every
+ *     percentage is DISCOUNT_PCT or TOPUP_BONUS_PCT from site/lib/founding.js);
  *   - a 100% not inside an element that also carries its fraction, "so far" and "stated at".
  */
 export function claimViolations(html) {
@@ -230,7 +257,32 @@ export function claimViolations(html) {
   const metas = findAll(doc, (n) => n.tag === 'meta' && /^(description|og:title|og:description)$/.test(n.attrs.name ?? n.attrs.property ?? ''));
   const copy = [textOf(body), title ? title.children.map((c) => c.text).join('') : '', ...metas.map((m) => m.attrs.content ?? '')];
   for (const t of copy) for (const p of findBanned(t)) out.push(`banned phrase "${p}"`);
+  // Accessible names and tooltips are copy too (review M3): aria-label, title and alt.
+  for (const el of findAll(body, (n) => ATTR_COPY.some((a) => n.attrs[a] !== undefined))) {
+    for (const a of ATTR_COPY) if (el.attrs[a] !== undefined) for (const p of findBanned(el.attrs[a])) out.push(`banned phrase "${p}"`);
+  }
 
+  return out.concat(percentageViolations(body, null, { hundredRule: true }));
+}
+
+/**
+ * Content pages (features, privacy, terms, refunds) may print a percentage only inside an offer
+ * figure (Plan A Task 1b) — no ring, record row or headline licenses one there. Takes a whole
+ * document (scans its <body>) or a body fragment; [] when clean, else one message per stray
+ * percentage in visible text, aria-label, title or alt. Same offer rule as claimViolations.
+ */
+export function percentagesOutsideOffers(html) {
+  const doc = parse(html);
+  return percentageViolations(find(doc, (n) => n.tag === 'body') ?? doc, ['offer'], { hundredRule: false });
+}
+
+/**
+ * Percentages under body that no allowed figure licenses (kinds: the figure kinds that count, null
+ * = every kind), plus, with hundredRule, the charter's 100% rule.
+ */
+function percentageViolations(body, kinds, { hundredRule }) {
+  const out = [];
+  const licensed = (chain, pct) => chain.some((x) => allowedBy(x, pct, kinds) !== null);
   const segs = segments(body);
   const flat = segs.map((s) => s.text).join('');
   const starts = [];
@@ -246,19 +298,18 @@ export function claimViolations(html) {
     return segs[lo];
   };
 
-  // Accessible names and tooltips are copy too (review M3): aria-label, title and alt.
-  for (const el of findAll(body, (n) => ['aria-label', 'title', 'alt'].some((a) => n.attrs[a] !== undefined))) {
-    for (const a of ['aria-label', 'title', 'alt']) {
+  // Percentages in accessible names and tooltips (review M3): aria-label, title and alt.
+  for (const el of findAll(body, (n) => ATTR_COPY.some((a) => n.attrs[a] !== undefined))) {
+    for (const a of ATTR_COPY) {
       const v = el.attrs[a];
       if (v === undefined) continue;
-      for (const p of findBanned(v)) out.push(`banned phrase "${p}"`);
       const chain = ancestors(el);
       for (const m of v.matchAll(PCT_RE)) {
-        if (!chain.some((x) => allowedBy(x) !== null)) {
+        if (!licensed(chain, written(v, m.index, m[0]))) {
           out.push(`percentage "${m[0]}" outside an allowed figure, in ${a}= of ${where(el)}: "${v}"`);
         }
         const selfOk = FRACTION_RE.test(v) && RETRO_RE.test(v) && STATED_RE.test(v);
-        if (Number(m[0].slice(0, -1)) === 100 && !selfOk && !chain.some(hundredOk)) {
+        if (hundredRule && pctOf(m[0]) === 100 && !selfOk && !chain.some(hundredOk)) {
           out.push(`"${m[0]}" without its fraction, "so far" and "stated at" in one element, in ${a}= of ${where(el)}: "${v}"`);
         }
       }
@@ -269,10 +320,10 @@ export function claimViolations(html) {
     const el = segAt(m.index).el;
     const chain = ancestors(el);
     const context = flat.slice(Math.max(0, m.index - 50), m.index + m[0].length + 30).replace(/\s+/g, ' ').trim();
-    if (!chain.some((a) => allowedBy(a) !== null)) {
+    if (!licensed(chain, written(flat, m.index, m[0]))) {
       out.push(`percentage "${m[0]}" outside an allowed figure, in ${where(el)}: "${context}"`);
     }
-    if (Number(m[0].slice(0, -1)) === 100 && !chain.some(hundredOk)) {
+    if (hundredRule && pctOf(m[0]) === 100 && !chain.some(hundredOk)) {
       out.push(`"${m[0]}" without its fraction, "so far" and "stated at" in one element, in ${where(el)}: "${context}"`);
     }
   }
