@@ -3,22 +3,23 @@
     "lagos_day": "2026-10-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-08T10:59:04Z",
-    "grades_as_of": "2026-10-08T23:10:02Z",
+    "grades_as_of": "2026-10-08T23:42:32Z",
     "prev_hash": null,
-    "picks_hash": "sha256:bb06f476e19f8233892d41ea1b27a1fb2e0ac73994a390ede431b2033c0ad383",
+    "picks_hash": "sha256:0c352a3c2def6303178d63859a974c541d689df324db291ccf34858c54ee29a9",
     "counts": {
         "fixtures": 143,
         "priced": 133,
-        "recommended": 108,
+        "recommended": 137,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 76,
-        "lost": 14,
+        "won": 101,
+        "lost": 15,
         "pushes": 0,
-        "graded": 90,
-        "pct": 84.44
+        "graded": 116,
+        "pct": 87.07
     },
+    "accuracy_rule": 2,
     "pick_source": {
         "strategy": "edge_reliability",
         "fallback": "probability_range",
@@ -39,12 +40,27 @@
             "home_id": 183,
             "away_id": 214,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 90,
+                "price": 1.13,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147975,
@@ -56,12 +72,27 @@
             "home_id": 4263,
             "away_id": 4265,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 89,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147976,
@@ -73,12 +104,27 @@
             "home_id": 4271,
             "away_id": 4268,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 88,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1228096,
@@ -90,12 +136,27 @@
             "home_id": 604617,
             "away_id": 604616,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 88,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551187,
@@ -107,12 +168,27 @@
             "home_id": 757760,
             "away_id": 757713,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 85,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1577362,
@@ -124,12 +200,27 @@
             "home_id": 4548,
             "away_id": 4114,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578526,
@@ -141,12 +232,27 @@
             "home_id": 4787,
             "away_id": 4768,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147952,
@@ -158,12 +264,27 @@
             "home_id": 217,
             "away_id": 207,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 83,
+                "price": 1.16,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147955,
@@ -175,12 +296,27 @@
             "home_id": 184,
             "away_id": 200,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "under_3_5",
+                "label": "Under 3.5 Goals",
+                "pct": 89,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147957,
@@ -192,12 +328,27 @@
             "home_id": 190,
             "away_id": 213,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147966,
@@ -209,12 +360,27 @@
             "home_id": 185,
             "away_id": 188,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.17,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549232,
@@ -226,12 +392,27 @@
             "home_id": 763936,
             "away_id": 605213,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "away_or_draw",
+                "label": "Away or Draw",
+                "pct": 85,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147971,
@@ -243,12 +424,27 @@
             "home_id": 193,
             "away_id": 204,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 87,
+                "price": 1.15,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147977,
@@ -260,12 +456,27 @@
             "home_id": 4276,
             "away_id": 4264,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 93,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270703,
@@ -277,12 +488,27 @@
             "home_id": 170,
             "away_id": 165,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 83,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270705,
@@ -294,12 +520,27 @@
             "home_id": 174,
             "away_id": 266,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 83,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1579007,
@@ -311,12 +552,27 @@
             "home_id": 2067,
             "away_id": 1940,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1580900,
@@ -333,7 +589,8 @@
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": null
         },
         {
             "fx": 514410,
@@ -345,12 +602,27 @@
             "home_id": 764,
             "away_id": 8976,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 91,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 514413,
@@ -362,12 +634,27 @@
             "home_id": 8975,
             "away_id": 4872,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 88,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1204558,
@@ -379,12 +666,27 @@
             "home_id": 589151,
             "away_id": 589162,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.29,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1226608,
@@ -396,12 +698,27 @@
             "home_id": 602987,
             "away_id": 602988,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 85,
+                "price": 1.15,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 514407,
@@ -413,12 +730,27 @@
             "home_id": 8978,
             "away_id": 8981,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 91,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 514412,
@@ -430,12 +762,27 @@
             "home_id": 8977,
             "away_id": 8982,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 88,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1226605,
@@ -447,12 +794,20 @@
             "home_id": 602989,
             "away_id": 4846,
             "status": "AWD",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 84,
+                "price": 1.19,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": null
         },
         {
             "fx": 1286735,
@@ -464,12 +819,27 @@
             "home_id": 8334,
             "away_id": 13440,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 89,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548572,
@@ -481,12 +851,27 @@
             "home_id": 621343,
             "away_id": 621342,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 89,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 558451,
@@ -510,7 +895,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 558454,
@@ -534,7 +927,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 558455,
@@ -558,7 +959,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1363139,
@@ -582,7 +991,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547961,
@@ -606,7 +1023,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1230328,
@@ -630,7 +1055,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "void"
+            "grade": "void",
+            "score": null
         },
         {
             "fx": 1230330,
@@ -654,7 +1080,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1363140,
@@ -678,7 +1112,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1363141,
@@ -702,7 +1144,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548408,
@@ -726,7 +1176,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1282823,
@@ -750,7 +1208,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1282824,
@@ -774,7 +1240,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1282825,
@@ -798,7 +1272,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1282826,
@@ -822,7 +1304,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1282827,
@@ -846,7 +1336,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549104,
@@ -870,7 +1368,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549105,
@@ -894,7 +1400,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1576238,
@@ -918,7 +1432,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 558462,
@@ -942,7 +1464,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1226603,
@@ -966,7 +1489,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": null
         },
         {
             "fx": 1226607,
@@ -990,7 +1514,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1274777,
@@ -1014,7 +1546,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": true,
-            "grade": "withdrawn"
+            "grade": "withdrawn",
+            "score": null
         },
         {
             "fx": 1456106,
@@ -1038,7 +1571,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": true,
-            "grade": "withdrawn"
+            "grade": "withdrawn",
+            "score": null
         },
         {
             "fx": 1456107,
@@ -1062,7 +1596,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1552336,
@@ -1086,7 +1628,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578955,
@@ -1110,7 +1660,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1579352,
@@ -1134,7 +1692,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1579353,
@@ -1158,7 +1724,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1579354,
@@ -1182,7 +1749,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1579355,
@@ -1206,7 +1774,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1580896,
@@ -1223,7 +1792,15 @@
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547621,
@@ -1235,12 +1812,27 @@
             "home_id": 5235,
             "away_id": 7804,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 81,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": false,
             "withdrawn": false,
-            "grade": null
+            "grade": "pending",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547622,
@@ -1264,7 +1856,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548573,
@@ -1288,7 +1888,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549109,
@@ -1312,7 +1920,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549106,
@@ -1336,7 +1952,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1580897,
@@ -1353,7 +1977,15 @@
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1571922,
@@ -1377,7 +2009,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1580898,
@@ -1394,7 +2034,15 @@
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1580899,
@@ -1411,7 +2059,15 @@
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 558452,
@@ -1435,7 +2091,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 283102,
@@ -1459,7 +2123,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 283097,
@@ -1483,7 +2155,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": true,
-            "grade": "withdrawn"
+            "grade": "withdrawn",
+            "score": null
         },
         {
             "fx": 283099,
@@ -1507,7 +2180,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": true,
-            "grade": "withdrawn"
+            "grade": "withdrawn",
+            "score": null
         },
         {
             "fx": 1196896,
@@ -1531,7 +2205,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1289705,
@@ -1555,7 +2237,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312967,
@@ -1579,7 +2269,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312985,
@@ -1603,7 +2301,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548311,
@@ -1627,7 +2333,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1572174,
@@ -1651,7 +2365,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549107,
@@ -1675,7 +2397,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548574,
@@ -1699,7 +2429,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1549108,
@@ -1723,7 +2461,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1289703,
@@ -1747,7 +2493,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547623,
@@ -1771,7 +2525,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547624,
@@ -1795,7 +2557,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1230327,
@@ -1819,7 +2589,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1230329,
@@ -1843,7 +2621,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "void"
+            "grade": "void",
+            "score": null
         },
         {
             "fx": 1312968,
@@ -1867,7 +2646,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1456108,
@@ -1891,7 +2678,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548312,
@@ -1915,7 +2710,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578921,
@@ -1939,7 +2742,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312974,
@@ -1963,7 +2774,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1494275,
@@ -1987,7 +2806,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312975,
@@ -2011,7 +2838,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 283100,
@@ -2035,7 +2870,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 488019,
@@ -2059,7 +2902,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 488021,
@@ -2083,7 +2934,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302466,
@@ -2107,7 +2966,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312984,
@@ -2131,7 +2998,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1494279,
@@ -2155,7 +3030,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548336,
@@ -2167,12 +3050,27 @@
             "home_id": 9007,
             "away_id": 155,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 83,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": false,
             "withdrawn": false,
-            "grade": null
+            "grade": "pending",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312969,
@@ -2196,7 +3094,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 144013,
@@ -2220,7 +3126,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 581713,
@@ -2244,7 +3158,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1289701,
@@ -2268,7 +3190,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1312976,
@@ -2292,7 +3222,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1418935,
@@ -2316,7 +3254,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147667,
@@ -2340,7 +3286,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704308,
@@ -2352,12 +3306,27 @@
             "home_id": 95,
             "away_id": 115,
             "status": "FT",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 85,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-08T23:42:32Z",
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
-            "grade": null
+            "grade": "pending",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704309,
@@ -2381,7 +3350,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704310,
@@ -2405,7 +3382,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704318,
@@ -2429,7 +3414,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704320,
@@ -2453,7 +3446,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704323,
@@ -2477,7 +3478,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1371480,
@@ -2501,7 +3510,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1371482,
@@ -2525,7 +3542,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": 1,
+                "aet_away": 3,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1418937,
@@ -2549,7 +3574,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1420049,
@@ -2573,7 +3606,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548575,
@@ -2597,7 +3638,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1551188,
@@ -2621,7 +3663,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551189,
@@ -2645,7 +3695,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 0,
+                "aet_away": 0,
+                "pen_home": 3,
+                "pen_away": 5
+            }
         },
         {
             "fx": 1551190,
@@ -2669,7 +3727,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551191,
@@ -2693,7 +3759,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578922,
@@ -2717,7 +3791,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578923,
@@ -2741,7 +3823,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 488017,
@@ -2758,7 +3848,15 @@
             "pre_ko": false,
             "late": false,
             "withdrawn": false,
-            "grade": null
+            "grade": null,
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 685174,
@@ -2782,7 +3880,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270706,
@@ -2806,7 +3912,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548340,
@@ -2830,7 +3944,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551192,
@@ -2854,7 +3976,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": 2,
+                "aet_away": 2,
+                "pen_home": 4,
+                "pen_away": 3
+            }
         },
         {
             "fx": 1549040,
@@ -2878,7 +4008,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1578924,
@@ -2902,7 +4040,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147663,
@@ -2926,7 +4072,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "lost"
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1249674,
@@ -2950,7 +4104,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1462147,
@@ -2974,7 +4136,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1548337,
@@ -2998,7 +4168,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551193,
@@ -3022,7 +4200,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1579300,
@@ -3046,7 +4232,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "won"
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704311,
@@ -3070,7 +4264,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 147953,
@@ -3081,7 +4276,7 @@
             "away": "Criciuma",
             "home_id": 210,
             "away_id": 280,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -3094,7 +4289,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 147959,
@@ -3105,7 +4301,7 @@
             "away": "Novorizontino",
             "home_id": 186,
             "away_id": 277,
-            "status": "1H",
+            "status": "HT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -3118,7 +4314,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 147969,
@@ -3129,7 +4326,7 @@
             "away": "Flamengo",
             "home_id": 203,
             "away_id": 208,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -3142,7 +4339,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 521340,
@@ -3166,7 +4364,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": true,
-            "grade": "withdrawn"
+            "grade": "withdrawn",
+            "score": null
         },
         {
             "fx": 1371481,
@@ -3190,7 +4389,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         },
         {
             "fx": 1577363,
@@ -3214,7 +4414,8 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending"
+            "grade": "pending",
+            "score": null
         }
     ]
 }
