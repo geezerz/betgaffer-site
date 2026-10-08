@@ -580,6 +580,29 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
   });
 
+  test('terms #founding: one release rule, the claiming payment, notice from founding.js, verified phone (Task 7 review)', () => {
+    const { launch } = cols(section(renderPage('terms'), 'founding'));
+    for (const s of [
+      // I1: unclaimed waitlist places and later releases follow two separate, non-contradicting rules.
+      'Waitlist places not claimed in time go to the earliest-paying subscriber without a place: first come, first served by the date of their first paid subscription.',
+      'A place released later passes as set out under "When it ends".',
+      // 5
+      'Founding status starts with the first paid subscription that claims a place: a successful payment for a paid plan.',
+      // 6
+      `founding members get an equal or better replacement, with ${F.NOTICE_DAYS} days' notice.`,
+      // 8 (operator decision): claiming a founding place requires a verified phone number.
+      'claiming a place requires a verified phone number',
+      // 9
+      'Top-ups get their own extra Credits, not double.',
+    ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
+    for (const gone of ['and any place released later, go to', 'a verified phone number is checked', 'never double',
+      'Founding status starts with your first paid subscription']) {
+      assert.ok(!launch.includes(gone), `no longer says: ${gone}`);
+    }
+    // The release sentence points at a section part that exists.
+    assert.ok(launch.includes('When it ends.'), 'the "When it ends" part exists');
+  });
+
   test('terms: no "100%" anywhere, double Credits worded "double", programme §5 omitted', () => {
     const t = visibleText(renderPage('terms'));
     assert.doesNotMatch(t, /100\s*%|100 per ?cent/i);
@@ -604,15 +627,31 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
     for (const s of [
       'Your waitlist address is used only to send your invite and to match it to the account you open with it.',
       `If you are among the first ${F.WAITLIST_PLACES} people to join, your invite offers you a founding place, which you claim by starting a paid subscription in the ${F.CLAIM_DAYS} days after the invite.`,
-      'At launch we use your address only to send your invite and to match it to the account you open with the same address.',
     ]) assert.ok(now.includes(s), `privacy says: ${s}`);
-    assert.doesNotMatch(visibleText(renderPage('privacy')), /used only to tell you when your invite is ready/, 'old purpose gone');
+    const t = visibleText(renderPage('privacy'));
+    assert.doesNotMatch(t, /used only to tell you when your invite is ready/, 'old purpose gone');
+    // Review minor 7: the purpose is stated once, not restated.
+    assert.doesNotMatch(t, /At launch we use your address only/, 'no restatement of the purpose');
   });
 
-  test('privacy: the launch column adds a phone number for phone verification or the WhatsApp community', () => {
+  test('privacy: the launch column adds the phone number verified to claim a founding place (operator decision)', () => {
     const { now, launch } = cols(section(renderPage('privacy'), 'what-we-collect'));
-    assert.ok(launch.includes('A phone number, if you verify your account by phone or join the founding-members WhatsApp community.'), launch);
+    assert.ok(launch.includes("A phone number, which you'll verify to claim a founding place and which we'll use if you join the founding-members WhatsApp community."), launch);
     assert.ok(now.includes('no phone number'), 'today: still no phone number');
+  });
+
+  test('privacy: WhatsApp is not listed as our processor; its own handling of your number is disclosed (Task 7 review I2)', () => {
+    const html = renderPage('privacy');
+    const sec = section(html, 'who-we-share-it-with');
+    const { launch } = cols(sec);
+    const processors = sec.slice(sec.indexOf('<ul>'), sec.indexOf('</ul>'));
+    assert.ok(processors.includes('Paystack'), 'premise: this is the processors list');
+    assert.doesNotMatch(processors, /WhatsApp/, 'WhatsApp is not a processor');
+    assert.ok(sec.indexOf('WhatsApp') > sec.indexOf('</ul>'), 'the WhatsApp line follows the list');
+    assert.ok(launch.includes('If you choose to join the founding-members WhatsApp community, WhatsApp (Meta) handles your phone number '
+      + 'under its own terms and privacy policy, and other members of the community may see it.'), launch);
+    const basis = cols(section(html, 'why-and-lawful-basis')).launch;
+    assert.ok(basis.includes('Consent: marketing messages, optional notifications and joining the founding-members WhatsApp community'), basis);
   });
 
   test('privacy: consent is asked before any other use of waitlist addresses', () => {

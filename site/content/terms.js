@@ -7,7 +7,7 @@
 
 import { escHtml } from '../lib/esc.js';
 import {
-  BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS,
+  BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS,
 } from '../lib/founding.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
@@ -46,20 +46,20 @@ function founding() {
 <li>Waitlist places go to the first ${waitlist} people to join the founding waitlist (18 or over, one per person), in the order their sign-ups were received, after removing duplicates and addresses whose owners asked us to delete them. At launch we email each of them an invite. A paid subscription started within ${CLAIM_DAYS} days of the invite claims the place; subscribing before the invite arrives also claims it.</li>
 <li>People who join after the first ${waitlist} stay on the waitlist and are invited too, with a head start on one of the launch places.</li>
 <li>Launch places go to paying subscribers without a waitlist place, in the order of their first paid subscription, while places remain.</li>
-<li>Waitlist places not claimed in time, and any place released later, go to the earliest-paying subscriber without a place: first come, first served by the date of their first paid subscription.</li>
+<li>Waitlist places not claimed in time go to the earliest-paying subscriber without a place: first come, first served by the date of their first paid subscription. A place released later passes as set out under "When it ends".</li>
 </ul>
-<p><strong>What counts.</strong> Founding status starts with your first paid subscription: a successful payment for a paid plan. Free trials and the free account never count. A first payment that is refunded (including the 7-day cooling-off refund) or charged back does not count, and any place it earned is released.</p>
+<p><strong>What counts.</strong> Founding status starts with the first paid subscription that claims a place: a successful payment for a paid plan. Free trials and the free account never count. A first payment that is refunded (including the 7-day cooling-off refund) or charged back does not count, and any place it earned is released.</p>
 <p><strong>Matching.</strong> A waitlist place belongs to the email address that joined, matched to the account opened with the same address (letter case is ignored).</p>
-<p><strong>One place per person.</strong> Founding places are personal: they are not transferable, cannot be sold or exchanged, and have no cash value. Sign-ups by one person under more than one address, including aliases such as +tags or Gmail dots, hold one place; a verified phone number is checked when a place is claimed.</p>
+<p><strong>One place per person.</strong> Founding places are personal: they are not transferable, cannot be sold or exchanged, and have no cash value. Sign-ups by one person under more than one address, including aliases such as +tags or Gmail dots, hold one place; claiming a place requires a verified phone number.</p>
 <p><strong>Benefits.</strong> While you hold founding status, which means while you have an active paid subscription, on any paid plan:</p>
 <ul>
 ${benefits}
 </ul>
 <p>The discount applies at every subscription payment for as long as Bet Gaffer offers subscriptions. It does not combine with other percentage discounts: if one applies, you get whichever saves you more.</p>
-<p>Double Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get their extra Credits, never double.</p>
+<p>Double Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get their own extra Credits, not double.</p>
 <p>Votes count twice in polls on features and improvements that are open to members. Fixes, security updates and changes the law requires go to everyone at once. Founding members also help build new features, by testing them and giving feedback.</p>
 <p>Priority support covers messages to our contact address and our in-app support channel.</p>
-<p><strong>No downgrades.</strong> We will not reduce your founding benefits while you hold the status. If plans, Credits or support channels change, founding members get an equal or better replacement, with 30 days' notice.</p>
+<p><strong>No downgrades.</strong> We will not reduce your founding benefits while you hold the status. If plans, Credits or support channels change, founding members get an equal or better replacement, with ${NOTICE_DAYS} days' notice.</p>
 <p><strong>Keeping it.</strong> Turning off auto-renewal is not a lapse while your paid period runs. If your last paid period ends without renewal (a cancelled renewal, a failed payment that is not recovered, or a move to the free account), you have ${GRACE_DAYS} days' grace from the end of that period. Subscribe to any paid plan in those ${GRACE_DAYS} days and everything is restored. During grace your benefits pause, your badge stays visible, and votes and early access resume when you come back.</p>
 <p><strong>When it ends.</strong> After ${GRACE_DAYS} days without a paid subscription, founding status ends for good. It also ends if you close your account, or if we close it for a breach of these terms or fraud. Either way, the place passes to the next member in line: the paying member without a place ranked highest by how early they first paid, how consistently they have subscribed and how much they have spent. Until that ranking is published, it goes to the earliest-paying subscriber without a place.</p>`,
   };

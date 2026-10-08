@@ -87,6 +87,14 @@ describe('commitments guard over the built policy pages (spec §9)', () => {
     }
   });
 
+  test('a route in PENDING_ROUTES is not built yet — once it is, take it out of PENDING_ROUTES so its scan runs', () => {
+    for (const route of PENDING_ROUTES) {
+      assert.ok(GUARDED_ROUTES.includes(route), `${route} is a guarded route`);
+      assert.equal(scan[route].built, false,
+        `${route} is built now: remove it from PENDING_ROUTES in tests/commitments.test.js so a missing page fails instead of skipping`);
+    }
+  });
+
   test('every approved sentence is still printed on each built route it is approved for (no dead approvals)', () => {
     for (const src of APPROVED_SOURCES) {
       for (const route of src.routes) {
@@ -131,6 +139,9 @@ describe('commitmentSentences', () => {
       'within twenty-four hours.', 'within thirty days.', 'within forty-eight hours.', 'within ninety days.',
       'within 1,000 days.', 'within a day.', 'within an hour.', 'within a few business days.', 'within 2 years.',
       'WITHIN  7\nDAYS.',
+      // Task 7 review I3: minutes, abbreviated units, decimals, a spaced tens-and-units number.
+      'We reply within 30 minutes.', 'within 1.5 business days.', 'within twenty four hours.', 'within 24 hrs.',
+      'within 10 mins.', 'at least 1 hr.', 'within one minute.',
     ]) assert.equal(commitmentSentences(s).length, 1, s);
     for (const s of ['We reply quickly.', 'you have 90 days to come back.', 'within those 90 days.',
       'within the Lagos area.', 'up to an hour.', 'the 7-day cooling-off refund.']) {
@@ -156,9 +167,11 @@ describe('commitmentSentences', () => {
       ['first one.', 'second within 2 days!', '(third.)', 'cloudflare, inc. hosts it within 3 days.']);
   });
 
-  test('head, script and style contents are not copy', () => {
+  test('head, script, style and template contents are not copy; <noscript> is (readers without JS see it)', () => {
     assert.deepEqual(commitmentSentences('<head><title>within 2 days</title></head><body><p>x</p></body>'), []);
     assert.deepEqual(commitmentSentences('<script>within 2 days</script><style>/* within 2 days */</style>'), []);
+    assert.deepEqual(commitmentSentences('<template><p>within 2 days</p></template>'), []);
+    assert.deepEqual(commitmentSentences('<noscript><p>We reply within 2 days.</p></noscript>'), ['we reply within 2 days.']);
   });
 
   test('refuses a non-string', () => {

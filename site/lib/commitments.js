@@ -46,13 +46,13 @@ export function normalise(s) {
  * ends at ".", "!" or "?" (with any closing bracket or quote) before a capital, a digit or an opening
  * bracket/quote, and at every block-level tag boundary (</p>, </li>, </h2>, </td>, <br> …), so a list
  * item or heading without a full stop never runs into the next one. <head>, <script>, <style>,
- * <template> and comments are not copy.
+ * <template> and comments are not copy; <noscript> is (readers without JS see it).
  */
 export function sentences(html) {
   requireString('sentences', html);
   const text = html
     .replace(/<!--[\s\S]*?-->/g, ' ')
-    .replace(/<(head|script|style|template|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+    .replace(/<(head|script|style|template)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
     .replace(BLOCK_END, ` ${END} `)
     .replace(INLINE_TAG, '')
     .replace(/<[^>]*>/g, ' ');
@@ -70,13 +70,16 @@ export function sentences(html) {
 
 const UNITS = 'one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen';
 const TENS = 'twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety';
-const NUMBER = `\\d[\\d,]*|(?:${TENS})(?:-(?:one|two|three|four|five|six|seven|eight|nine))?|${UNITS}|a\\s+hundred|one\\s+hundred|a\\s+few|few|several|a|an`;
+// Digits (with thousands commas and decimals: "1,000", "1.5"), number words ("twenty-four" or
+// "twenty four"), "a hundred", "a"/"an", "a few"/"few"/"several".
+const NUMBER = `\\d[\\d,]*(?:\\.\\d+)?|(?:${TENS})(?:(?:-|\\s+)(?:one|two|three|four|five|six|seven|eight|nine))?|${UNITS}|a\\s+hundred|one\\s+hundred|a\\s+few|few|several|a|an`;
+const UNIT = 'minutes?|mins?|hours?|hrs?|days?|weeks?|months?|years?';
 /**
  * A time commitment: within / at least / no later than + a number (digits, words, "a"/"an" or "a few")
- * + an optional business/working/calendar qualifier + a unit.
+ * + an optional business/working/calendar qualifier + a unit (minutes to years, "mins"/"hrs" included).
  */
 export const COMMITMENT_RE = new RegExp(
-  `\\b(?:within|at\\s+least|no\\s+later\\s+than)\\s+(?:${NUMBER})\\s+(?:(?:business|working|calendar)\\s+)?(?:hours?|days?|weeks?|months?|years?)\\b`, 'i');
+  `\\b(?:within|at\\s+least|no\\s+later\\s+than)\\s+(?:${NUMBER})\\s+(?:(?:business|working|calendar)\\s+)?(?:${UNIT})\\b`, 'i');
 
 /** Normalised sentences of html that make a time commitment. */
 export function commitmentSentences(html) {
