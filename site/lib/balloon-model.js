@@ -23,8 +23,14 @@ export const POS_KEYS = Object.freeze({ desktop: 'bg.balloon.pos', compact: 'bg.
 export const NOMINAL = Object.freeze({ desktop: 124, compact: 64 });
 /** Distance kept from the viewport edges. */
 export const PAD = 10;
-/** Gap kept below the sticky header + toolbar. */
+/** Gap kept below the sticky header + toolbar, and around a toolbar control the default dodges. */
 export const GAP = 8;
+/**
+ * The default anchor's distance from the right and bottom edges, per size (balloon.css says the
+ * same, plus the bottom safe area). Bottom-right at both sizes: a top-right ring sat on the day
+ * header's own ring.
+ */
+export const EDGE = Object.freeze({ desktop: Object.freeze({ x: 24, y: 24 }), compact: Object.freeze({ x: 12, y: 16 }) });
 
 const DAY_MS = 86400000;
 const HOUR_MS = 3600000;
@@ -207,6 +213,35 @@ export function ringModel(today, { date, yesterday = null, compact = false, nowM
     yday,
     aria,
   };
+}
+
+const touches = (a, r) => r.width > 0 && r.height > 0
+  && a.left < r.left + r.width + GAP && r.left - GAP < a.left + a.w
+  && a.top < r.top + r.height + GAP && r.top - GAP < a.top + a.h;
+
+/**
+ * Where the ring sits before the visitor drags it: the bottom-right corner (the CSS anchor,
+ * kind 'default') unless that would cover a visible toolbar control (within GAP) — as on a phone's
+ * first screen, where the toolbar is not stuck yet and its last row can sit at the bottom. Then the
+ * bottom-left corner ('left'), else just above the topmost control ('above') when that stays below
+ * `floor` (the header's bottom + GAP). With no such room the corner stays: never off-screen.
+ * Zero-size rects (controls that are not displayed) never count.
+ *
+ * @param {{vw:number, vh:number, w:number, h:number, edge:{x:number,y:number}, floor:number}} v
+ * @param {{left:number, top:number, width:number, height:number}[]} controls
+ * @returns {{left:number, top:number, kind:'default'|'left'|'above'}}
+ */
+export function defaultSpot({ vw, vh, w, h, edge, floor }, controls) {
+  const top = vh - h - edge.y;
+  const right = { left: vw - w - edge.x, top, w, h };
+  const live = controls.filter((r) => r.width > 0 && r.height > 0);
+  const clear = (a) => !live.some((r) => touches(a, r));
+  if (clear(right)) return { left: right.left, top, kind: 'default' };
+  const left = { left: edge.x, top, w, h };
+  if (clear(left)) return { left: left.left, top, kind: 'left' };
+  const above = { left: right.left, top: Math.min(...live.map((r) => r.top)) - h - GAP, w, h };
+  if (above.top >= floor && clear(above)) return { left: above.left, top: above.top, kind: 'above' };
+  return { left: right.left, top, kind: 'default' };
 }
 
 /**

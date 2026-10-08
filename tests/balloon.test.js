@@ -12,7 +12,7 @@ import { pathToFileURL } from 'node:url';
 
 import { build } from '../site/build.mjs';
 import {
-  DESKTOP_MIN, NOMINAL, PAD, POS_KEYS, clamp, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
+  DESKTOP_MIN, EDGE, GAP, NOMINAL, PAD, POS_KEYS, clamp, defaultSpot, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
 } from '../site/lib/balloon-model.js';
 import { fakeDocument, fire, serialize, FakeResizeObserver } from './fake-dom.js';
 import { claimViolations } from './html-scan.js';
@@ -240,6 +240,29 @@ describe('clamp, size class and storage keys', () => {
     assert.notEqual(POS_KEYS.desktop, POS_KEYS.compact);
     assert.throws(() => storageKey('tablet'), TypeError);
     assert.deepEqual(NOMINAL, { desktop: 124, compact: 64 });
+  });
+
+  test('defaultSpot: bottom-right when clear; else bottom-left; else above the controls it would cover', () => {
+    const phone = { vw: 390, vh: 700, w: 64, h: 64, edge: EDGE.compact, floor: 72 };
+    const br = { left: 390 - 64 - 12, top: 700 - 64 - 16 };
+    assert.deepEqual(EDGE, { desktop: { x: 24, y: 24 }, compact: { x: 12, y: 16 } });
+    assert.deepEqual(defaultSpot(phone, []), { ...br, kind: 'default' });
+    // A control far away does not move it.
+    assert.equal(defaultSpot(phone, [{ left: 16, top: 200, width: 100, height: 44 }]).kind, 'default');
+    // "Jump to now" under the bottom-right corner: the bottom-left is clear.
+    const jump = { left: 250, top: 640, width: 120, height: 44 };
+    assert.deepEqual(defaultSpot(phone, [jump]), { left: 12, top: br.top, kind: 'left' });
+    // A full-width search field at the bottom blocks both corners: above it.
+    const field = { left: 16, top: 630, width: 358, height: 44 };
+    assert.deepEqual(defaultSpot(phone, [field, jump]), { left: br.left, top: 630 - 64 - GAP, kind: 'above' });
+    // No room above (a toolbar this tall reaches up under the header): the corner stays, never
+    // off-screen and never above the header.
+    assert.deepEqual(defaultSpot(phone, [{ left: 0, top: 120, width: 390, height: 560 }]), { ...br, kind: 'default' });
+    // Within GAP counts as touching.
+    assert.equal(defaultSpot(phone, [{ left: 0, top: br.top + 64 + GAP - 1, width: 390, height: 10 }]).kind, 'above');
+    assert.equal(defaultSpot(phone, [{ left: 0, top: br.top + 64 + GAP, width: 390, height: 10 }]).kind, 'default', 'GAP away is clear');
+    // Zero-size (not displayed) rects are ignored.
+    assert.equal(defaultSpot(phone, [{ left: 300, top: 630, width: 0, height: 0 }]).kind, 'default');
   });
 
   test('msToLagosMidnight', () => {
@@ -501,6 +524,72 @@ describe('balloon.js: position', () => {
   });
 });
 
+describe('balloon.js: the default spot stays clear of the toolbar', () => {
+  const TOOLS = '<div class="day-tools" data-day-tools>'
+    + '<input id="q" type="search"><button id="leagues" type="button">Leagues</button>'
+    + '<p role="status">Showing</p><a id="jump" href="#fx-1">Jump to now</a><button id="gone" type="button" hidden>x</button></div>';
+  const page = () => pageOf().replace('<div class="day-tools" data-day-tools></div>', TOOLS);
+  const scroll = (s) => { for (const f of s.win.listeners.scroll ?? []) f({ type: 'scroll' }); s.flush(); };
+  const at = (s, id, r) => { s.doc.getElementById(id)._rect = r; };
+
+  test('clear: the CSS anchor (bottom-right) is left alone', () => {
+    const s = setup({ width: 390, height: 700, html: page() });
+    at(s, 'q', { left: 16, top: 300, width: 250, height: 44 });
+    scroll(s);
+    for (const k of ['left', 'top', 'right', 'bottom']) assert.equal(s.style(k), '', k);
+  });
+
+  test('phone, first screen: "Jump to now" under the corner -> bottom-left; a full-width row -> above the toolbar', () => {
+    const s = setup({ width: 390, height: 700, html: page() });
+    at(s, 'q', { left: 16, top: 560, width: 250, height: 44 });
+    at(s, 'leagues', { left: 274, top: 560, width: 100, height: 44 });
+    at(s, 'jump', { left: 270, top: 640, width: 104, height: 44 });
+    scroll(s);
+    assert.equal(s.style('left'), `${EDGE.compact.x}px`, 'bottom-left is clear');
+    assert.equal(s.style('top'), `${700 - 64 - EDGE.compact.y}px`);
+    assert.equal(s.style('right'), 'auto');
+    at(s, 'q', { left: 16, top: 640, width: 250, height: 44 }); // now the left corner is covered too
+    scroll(s);
+    assert.equal(s.style('left'), `${390 - 64 - EDGE.compact.x}px`);
+    assert.equal(s.style('top'), `${560 - 64 - GAP}px`, 'above the topmost control');
+    // Scrolled: the toolbar sticks under the header, the corner is clear again -> back to the CSS anchor.
+    at(s, 'q', { left: 16, top: 64, width: 250, height: 44 });
+    at(s, 'leagues', { left: 274, top: 64, width: 100, height: 44 });
+    at(s, 'jump', { left: 270, top: 112, width: 104, height: 44 });
+    scroll(s);
+    for (const k of ['left', 'top', 'right', 'bottom']) assert.equal(s.style(k), '', k);
+    assert.deepEqual(s.storage.writes, [], 'a dodge is never stored');
+    assert.equal(s.api.custom, false);
+  });
+
+  test('desktop does the same (its corner is 24px in)', () => {
+    const s = setup({ width: 1280, height: 800, html: page() });
+    at(s, 'jump', { left: 1100, top: 700, width: 120, height: 44 });
+    scroll(s);
+    assert.equal(s.style('left'), `${EDGE.desktop.x}px`);
+    assert.equal(s.style('top'), `${800 - NOMINAL.desktop - EDGE.desktop.y}px`);
+  });
+
+  test('a hidden control (zero box) and a stored position are not dodged', () => {
+    const s = setup({ width: 390, height: 700, html: page() });
+    at(s, 'gone', { left: 0, top: 0, width: 0, height: 0 });
+    scroll(s);
+    assert.equal(s.style('left'), '');
+    const t = setup({ width: 390, height: 700, html: page(), store: { 'bg.balloon.pos.sm': JSON.stringify({ left: 300, top: 620 }) } });
+    at(t, 'jump', { left: 270, top: 640, width: 104, height: 44 });
+    scroll(t);
+    assert.equal(t.style('left'), '300px', 'the visitor put it there');
+    assert.equal(t.style('top'), '620px');
+  });
+
+  test('a hidden toolbar is not an obstacle', () => {
+    const s = setup({ width: 390, height: 700, html: page().replace('data-day-tools>', 'data-day-tools hidden>') });
+    at(s, 'jump', { left: 270, top: 640, width: 104, height: 44 });
+    scroll(s);
+    assert.equal(s.style('left'), '');
+  });
+});
+
 describe('balloon.js: drag', () => {
   function dragSetup(o = {}) {
     const s = setup(o);
@@ -661,5 +750,17 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(css, /html\.has-balloon\s+\.bg-page/);
     assert.doesNotMatch(css.replace(/html\.has-balloon\s+\.bg-page\s*\{[^}]*\}/g, ''), /\.bg-page/, '<main> padding only under html.has-balloon');
     assert.doesNotMatch(css, /data-auth/);
+  });
+
+  test('balloon.css: both sizes anchor bottom-right, at the corners defaultSpot assumes (EDGE)', () => {
+    const css = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const block = (sel) => { const m = new RegExp(`(?:^|\\})\\s*${sel.replace(/[.[\]"=]/g, '\\$&')}\\s*\\{([^}]*)\\}`).exec(css); return m ? m[1] : ''; };
+    const base = block('.bg-balloon');
+    const desk = block('.bg-balloon[data-size="desktop"]');
+    assert.match(base, new RegExp(`right:\\s*${EDGE.compact.x}px`));
+    assert.match(base, new RegExp(`bottom:\\s*calc\\(${EDGE.compact.y}px \\+ env\\(safe-area-inset-bottom`));
+    assert.match(desk, new RegExp(`right:\\s*${EDGE.desktop.x}px`));
+    assert.match(desk, new RegExp(`bottom:\\s*calc\\(${EDGE.desktop.y}px \\+ env\\(safe-area-inset-bottom`));
+    assert.doesNotMatch(desk, /(^|[;\s])top:\s*calc/, 'no top anchor on desktop (it sat on the day header ring)');
   });
 });

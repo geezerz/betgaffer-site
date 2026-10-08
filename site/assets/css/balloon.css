@@ -7,7 +7,7 @@
    conic-gradient and hollowed by an inset ::before; --pct is set through CSSOM
    by the script (never a style attribute). --bal-size drives every dimension.
      data-size="desktop" (from 1024px): ~116-128px, today then yesterday, default
-       anchor top right under the sticky header + toolbar;
+       anchor bottom right;
      data-size="compact" (below 1024px): 64px, today's figure and fraction only,
        default anchor bottom right above the safe area.
    Perfect and empty days draw no arc (no figure is a full circle); an empty day
@@ -19,7 +19,7 @@
   --bal-thick:4px;
   position:fixed; z-index:45;
   left:auto; top:auto; right:12px;
-  bottom:calc(12px + env(safe-area-inset-bottom, 0px));
+  bottom:calc(16px + env(safe-area-inset-bottom, 0px));
   width:var(--bal-size); height:var(--bal-size);
   display:flex; align-items:center; justify-content:center;
   border-radius:50%;
@@ -60,10 +60,10 @@
 .bg-balloon[data-size="desktop"]{
   --bal-size:clamp(116px, 10vw, 128px);
   --bal-thick:calc(var(--bal-size) * .052);
-  right:24px; bottom:auto;
-  /* Under the sticky header and, on a predictions page, its sticky toolbar (both measured onto
-     <html> by predictions.js; the fallbacks hold before that or without a toolbar). */
-  top:calc(var(--bg-sticky-top, var(--bar-h-lg)) + var(--bg-tools-h, 0px) + 16px);
+  /* Bottom-right like the phone ring: top-right sat on the day header's own ring. balloon.js
+     moves it off any toolbar control it would cover (EDGE in balloon-model.js = these offsets). */
+  right:24px; top:auto;
+  bottom:calc(24px + env(safe-area-inset-bottom, 0px));
   border-width:max(1px, calc(var(--bal-size) * .015));
 }
 
