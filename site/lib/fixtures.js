@@ -13,8 +13,9 @@
 //     says so; a picked row with pre_ko === false is marked (data-uncounted + note) and not counted;
 //     rule 2: every non-withdrawn pick counts, a late row may carry a pick and no row carries a
 //     late / moved note or marker (late and pre_ko are metadata only);
-//   - a finished row (FT / AET / PEN) shows its final score when the file carries a well-formed one
-//     (checked here too: the archive renders raw fetched files); never on any other status;
+//   - a finished row (FT / AET / PEN) shows its 90-minute score (what markets settle on), plus the
+//     a.e.t. result and the pens when present, if the file carries a well-formed score (checked
+//     here too: the archive renders raw fetched files); never on any other status;
 //   - an estimated price never appears without its marker (spec test 15);
 //   - every state has its own words: the 3px edge colour is never the only channel.
 // Every per-pick probability sits in an element with data-figure="pick-prob" (claim scanner).
@@ -189,16 +190,18 @@ function timeSlot(f, hm) {
 const isGoals = (v) => Number.isInteger(v) && v >= 0;
 
 /**
- * The final score to show, or null: a finished, non-withdrawn row whose score has integer home /
+ * The score to show, or null: a finished, non-withdrawn row whose score has integer 90-minute home /
  * away goals >= 0. A malformed score (a raw archive file is not validated by data.js) is omitted,
- * never thrown on and never printed. Pens only on PEN, with both values integers >= 0.
+ * never thrown on and never printed. a.e.t. only on AET / PEN and pens only on PEN, each with both
+ * values integers >= 0.
  */
 function finalScore(f) {
   if (f.withdrawn === true || !FINISHED.has(f.status)) return null;
   const s = f.score;
   if (s === null || typeof s !== 'object' || Array.isArray(s) || !isGoals(s.home) || !isGoals(s.away)) return null;
+  const aet = (f.status === 'AET' || f.status === 'PEN') && isGoals(s.aet_home) && isGoals(s.aet_away) ? [s.aet_home, s.aet_away] : null;
   const pens = f.status === 'PEN' && isGoals(s.pen_home) && isGoals(s.pen_away) ? [s.pen_home, s.pen_away] : null;
-  return { home: s.home, away: s.away, pens };
+  return { home: s.home, away: s.away, aet, pens };
 }
 
 function teams(f) {
@@ -210,12 +213,16 @@ function teams(f) {
       + `<span class="fx__team">${escHtml(f.away)}</span>`
       + '</span>';
   }
-  // Scores sit right of each name (a two-column grid); the pens follow the away score, small.
-  const pens = sc.pens === null ? '' : `<small class="fx__pens">(${escHtml(sc.pens[0])}–${escHtml(sc.pens[1])} pens)</small>`;
+  // The 90-minute result (what markets settle on) sits right of each name in a two-column grid.
+  // Extra time and the shoot-out are small lines of their own beneath the away score, in the same
+  // column, so the two digits stay aligned.
+  const line = (label, pair) => (pair === null ? ''
+    : `<small class="fx__xtra mono">${label} ${escHtml(pair[0])}–${escHtml(pair[1])}</small>`);
   return '<span class="fx__teams fx__teams--scored">'
     + `<span class="fx__team">${escHtml(f.home)}</span><span class="fx__score mono">${escHtml(sc.home)}</span>`
     + '<span class="vh"> v </span>'
-    + `<span class="fx__team">${escHtml(f.away)}</span><span class="fx__score mono">${escHtml(sc.away)}${pens}</span>`
+    + `<span class="fx__team">${escHtml(f.away)}</span><span class="fx__score mono">${escHtml(sc.away)}</span>`
+    + line('a.e.t.', sc.aet) + line('pens', sc.pens)
     + '</span>';
 }
 
@@ -332,7 +339,7 @@ function howBuilt(day, rule) {
     // Rule 2 (spec §16.6): any row may take the card's pick, every non-withdrawn pick counts, and
     // nothing on the card speaks of late or moved kickoffs. The check still covers only the rows
     // the publisher fed it; the sentence states how many, not which.
-    const check = n === 0 ? none : `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record, ${tail}`;
+    const check = n === 0 ? none : `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record when first listed, ${tail}`;
     return '<details class="day-how"><summary>How this card was built</summary><div class="day-how__body">'
       + `<p>${escHtml(MSG.howRule2)}</p>`
       + `<p>${escHtml(check)}</p>`

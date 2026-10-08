@@ -799,7 +799,7 @@ test('rule 2: no late / moved notes, no uncounted marker; a late row with a pick
 test('rule 2: "How this card was built" names the card pick and drops every late / moved / 10-minute sentence', () => {
   const t = howText(R2);
   assert.match(t, /^How this card was built At most one recommended pick per fixture — the platform's card pick — graded after full time\. /);
-  assert.match(t, /Of the 111 fixtures checked against the graded record, the card showed a pick for 107 — 107 of them the same pick the record grades — and showed no pick for 4\./);
+  assert.match(t, /Of the 111 fixtures checked against the graded record when first listed, the card showed a pick for 107 — 107 of them the same pick the record grades — and showed no pick for 4\./);
   assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks and withdrawn picks are shown but not counted in the ring\./);
   assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
   assert.ok(!/10 minutes|\blate\b|too late|moved|in time|priced markets/i.test(t), t);
@@ -819,7 +819,10 @@ test('the archive renders the raw file: raw and validated rule-2 / rule-1 days g
   assert.equal(renderDay(EDGE_RAW, opts()), renderDay(EDGE, opts()));
 });
 
-test('scores: shown beside each team on finished rows only (FT / AET / PEN), with pens on PEN', () => {
+const xtras = (html) => [...html.matchAll(/<small class="fx__xtra mono">([\s\S]*?)<\/small>/g)].map((m) => m[1]);
+const S = (home, away, o = {}) => ({ home, away, aet_home: null, aet_away: null, pen_home: null, pen_away: null, ...o });
+
+test('scores: the 90-minute result beside each team on finished rows only (FT / AET / PEN)', () => {
   const scored = R2.fixtures.filter((f) => !f.withdrawn && FINISHED.has(f.status) && f.score !== null);
   assert.ok(scored.length > 50 && scored.some((f) => f.status === 'AET') && scored.some((f) => f.status === 'PEN'), 'premise');
   assert.equal(scoreSpans(R2_HTML).length, 2 * scored.length, 'two scores per finished row, none elsewhere');
@@ -827,18 +830,21 @@ test('scores: shown beside each team on finished rows only (FT / AET / PEN), wit
     const rw = row(R2_HTML, f.fx);
     const home = f.home.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
     assert.ok(rw.includes(`<span class="fx__teams fx__teams--scored"><span class="fx__team">${home}</span><span class="fx__score mono">${f.score.home}</span>`), `fx ${f.fx} home`);
-    const sp = scoreSpans(rw);
-    assert.equal(sp[0], String(f.score.home));
-    if (f.status === 'PEN') {
-      assert.equal(sp[1], `${f.score.away}<small class="fx__pens">(4–3 pens)</small>`);
-      assert.match(text(rw), new RegExp(`${f.score.away} \\(4–3 pens\\)`));
-    } else {
-      assert.equal(sp[1], String(f.score.away));
-      assert.ok(!rw.includes('pens'), `fx ${f.fx}: no pens text`);
-    }
+    // the two digits are the score and nothing else (the extra lines are their own elements)
+    assert.deepEqual(scoreSpans(rw), [String(f.score.home), String(f.score.away)], `fx ${f.fx}`);
+    const want = f.status === 'PEN' ? [`a.e.t. ${f.score.aet_home}–${f.score.aet_away}`, 'pens 4–3']
+      : f.status === 'AET' ? [`a.e.t. ${f.score.aet_home}–${f.score.aet_away}`] : [];
+    assert.deepEqual(xtras(rw), want, `fx ${f.fx} ${f.status}`);
   }
+  // the AET premise: 90 minutes 1–1, after extra time 2–1, and the card says both
+  const aet = R2.fixtures.find((f) => f.status === 'AET');
+  assert.notEqual(aet.score.home, aet.score.aet_home, 'premise: extra time changed the score');
+  assert.match(text(row(R2_HTML, aet.fx)), new RegExp(`${aet.score.home} .* ${aet.score.away} a\\.e\\.t\\. ${aet.score.aet_home}–${aet.score.aet_away}`));
+  // the extra lines follow the away score, inside the teams block
+  const pen = row(R2_HTML, R2.fixtures.find((f) => f.status === 'PEN').fx);
+  assert.match(pen, /<span class="fx__score mono">\d+<\/span><small class="fx__xtra mono">a\.e\.t\. \d+–\d+<\/small><small class="fx__xtra mono">pens 4–3<\/small><\/span>/);
   // old files carry no score: no score markup, the teams block unchanged
-  for (const html of [EDGE_HTML, renderDay(D07, opts())]) assert.ok(!/fx__score|fx__teams--scored|fx__pens/.test(html));
+  for (const html of [EDGE_HTML, renderDay(D07, opts())]) assert.ok(!/fx__score|fx__teams--scored|fx__xtra/.test(html));
 });
 
 test('scores: never for in-play, not-started, postponed, awarded or walkover rows; never on a withdrawn row', () => {
@@ -847,8 +853,10 @@ test('scores: never for in-play, not-started, postponed, awarded or walkover row
     const day = structuredClone(R2_RAW);
     const f = day.fixtures.find((x) => x.fx === base.fx);
     f.status = st;
-    f.score = { home: 2, away: 1, pen_home: 4, pen_away: 3 };
-    assert.equal(scoreSpans(row(renderDay(day, opts()), f.fx)).length, 0, st);
+    f.score = S(2, 1, { aet_home: 3, aet_away: 1, pen_home: 4, pen_away: 3 });
+    const rw = row(renderDay(day, opts()), f.fx);
+    assert.equal(scoreSpans(rw).length, 0, st);
+    assert.equal(xtras(rw).length, 0, st);
   }
   for (const st of ['FT', 'AET', 'PEN']) {
     const day = structuredClone(R2_RAW);
@@ -859,32 +867,37 @@ test('scores: never for in-play, not-started, postponed, awarded or walkover row
   // a withdrawn row keeps its published status; a score there would describe a different fixture
   const w = structuredClone(R2_RAW);
   const wf = w.fixtures.find((x) => x.withdrawn);
-  Object.assign(wf, { status: 'FT', score: { home: 1, away: 0, pen_home: null, pen_away: null } });
+  Object.assign(wf, { status: 'FT', score: S(1, 0) });
   assert.equal(scoreSpans(row(renderDay(w, opts()), wf.fx)).length, 0);
 });
 
-test('scores: pens text only on PEN with both pens integers', () => {
-  const pen = R2_RAW.fixtures.find((f) => f.status === 'PEN');
+test('scores: "a.e.t." only on AET / PEN with both integers; "pens" only on PEN with both integers', () => {
+  const aetFx = R2_RAW.fixtures.find((f) => f.status === 'AET').fx;
+  const penFx = R2_RAW.fixtures.find((f) => f.status === 'PEN').fx;
   const cases = [
-    [{ home: 1, away: 1, pen_home: null, pen_away: null }, false],
-    [{ home: 1, away: 1, pen_home: 5, pen_away: null }, false],
-    [{ home: 1, away: 1, pen_home: '5', pen_away: 4 }, false],
-    [{ home: 1, away: 1, pen_home: 5.5, pen_away: 4 }, false],
-    [{ home: 1, away: 1, pen_home: -1, pen_away: 4 }, false],
-    [{ home: 1, away: 1, pen_home: 0, pen_away: 0 }, true],
+    // [fx, status, score, expected extra lines]
+    [penFx, 'PEN', S(1, 1, { aet_home: 2, aet_away: 2, pen_home: 5, pen_away: 4 }), ['a.e.t. 2–2', 'pens 5–4']],
+    [penFx, 'PEN', S(0, 0, { aet_home: 0, aet_away: 0, pen_home: 0, pen_away: 0 }), ['a.e.t. 0–0', 'pens 0–0']],
+    [penFx, 'PEN', S(1, 1, { pen_home: 5, pen_away: 4 }), ['pens 5–4']],
+    [penFx, 'PEN', S(1, 1, { aet_home: 2, aet_away: 2 }), ['a.e.t. 2–2']],
+    [penFx, 'PEN', S(1, 1, { aet_home: 2, aet_away: null, pen_home: 5, pen_away: null }), []],
+    [penFx, 'PEN', S(1, 1, { aet_home: '2', aet_away: 2, pen_home: '5', pen_away: 4 }), []],
+    [penFx, 'PEN', S(1, 1, { aet_home: 2.5, aet_away: 2, pen_home: 5.5, pen_away: 4 }), []],
+    [penFx, 'PEN', S(1, 1, { aet_home: -1, aet_away: 2, pen_home: -1, pen_away: 4 }), []],
+    [penFx, 'PEN', S(1, 1, { aet_home: '<b>', aet_away: 2, pen_home: '<i>', pen_away: 4 }), []],
+    [aetFx, 'AET', S(1, 1, { aet_home: 3, aet_away: 1 }), ['a.e.t. 3–1']],
+    [aetFx, 'AET', S(1, 1, { aet_home: 3, aet_away: 1, pen_home: 4, pen_away: 3 }), ['a.e.t. 3–1']], // no shoot-out text on AET
+    [aetFx, 'AET', S(1, 1), []],
+    [aetFx, 'FT', S(1, 1, { aet_home: 3, aet_away: 1, pen_home: 4, pen_away: 3 }), []], // 90 minutes only
   ];
-  for (const [score, shown] of cases) {
+  for (const [fx, status, score, want] of cases) {
     const day = structuredClone(R2_RAW);
-    day.fixtures.find((x) => x.fx === pen.fx).score = score;
-    const rw = row(renderDay(day, opts()), pen.fx);
-    assert.equal(scoreSpans(rw).length, 2, JSON.stringify(score));
-    assert.equal(/fx__pens/.test(rw), shown, JSON.stringify(score));
+    Object.assign(day.fixtures.find((x) => x.fx === fx), { status, score });
+    const rw = row(renderDay(day, opts()), fx);
+    assert.deepEqual(scoreSpans(rw), [String(score.home), String(score.away)], JSON.stringify(score));
+    assert.deepEqual(xtras(rw), want, `${status} ${JSON.stringify(score)}`);
+    assert.ok(!/<b>|<i>/.test(rw));
   }
-  // AET with pens in the data: no pens text (only a shoot-out shows one)
-  const day = structuredClone(R2_RAW);
-  const aet = day.fixtures.find((x) => x.status === 'AET');
-  aet.score = { home: 2, away: 2, pen_home: 4, pen_away: 3 };
-  assert.ok(!/fx__pens/.test(row(renderDay(day, opts()), aet.fx)));
 });
 
 test('scores: a raw archive file with a malformed score omits it and never throws', () => {
@@ -892,20 +905,27 @@ test('scores: a raw archive file with a malformed score omits it and never throw
   const bad = ['2-1', 7, [], [2, 1], true, {}, { home: 1 }, { away: 1 }, { home: '1', away: 0 }, { home: -1, away: 0 },
     { home: 1.5, away: 0 }, { home: 1, away: null }, { home: '<img src=x onerror=alert(1)>', away: 1 }, { home: NaN, away: 1 }];
   for (const s of bad) {
-    const day = structuredClone(R2_RAW);
-    day.fixtures.find((x) => x.fx === ft.fx).score = s;
-    let html;
-    assert.doesNotThrow(() => { html = renderDay(day, opts()); }, JSON.stringify(s));
-    const rw = row(html, ft.fx);
-    assert.equal(scoreSpans(rw).length, 0, JSON.stringify(s));
-    assert.ok(!/fx__teams--scored|<img/.test(rw), JSON.stringify(s));
+    for (const status of ['FT', 'PEN']) {
+      const day = structuredClone(R2_RAW);
+      Object.assign(day.fixtures.find((x) => x.fx === ft.fx), { status, score: s });
+      let html;
+      assert.doesNotThrow(() => { html = renderDay(day, opts()); }, JSON.stringify(s));
+      const rw = row(html, ft.fx);
+      assert.equal(scoreSpans(rw).length, 0, JSON.stringify(s));
+      assert.ok(!/fx__teams--scored|fx__xtra|<img/.test(rw), JSON.stringify(s));
+    }
   }
+  // a broken 90-minute score hides the extra lines too (never "a.e.t." without the result)
+  const day = structuredClone(R2_RAW);
+  const pen = day.fixtures.find((x) => x.status === 'PEN');
+  pen.score = { ...pen.score, home: null };
+  assert.equal(xtras(row(renderDay(day, opts()), pen.fx)).length, 0);
   // score absent or null: same as an old file
   for (const s of [undefined, null]) {
-    const day = structuredClone(R2_RAW);
-    const f = day.fixtures.find((x) => x.fx === ft.fx);
+    const d = structuredClone(R2_RAW);
+    const f = d.fixtures.find((x) => x.fx === ft.fx);
     if (s === undefined) delete f.score; else f.score = s;
-    assert.equal(scoreSpans(row(renderDay(day, opts()), ft.fx)).length, 0);
+    assert.equal(scoreSpans(row(renderDay(d, opts()), ft.fx)).length, 0);
   }
 });
 
@@ -918,7 +938,7 @@ test('rule 2 + scores: no inline style / script, every percentage inside its fig
   assert.doesNotMatch(R2_HTML, /github/i);
 });
 
-test('fixtures.css: scores sit right of each team name, pens small; rule-1 marker kept', () => {
+test('fixtures.css: scores sit right of each team name, digits aligned, extra lines beneath; rule-1 marker kept', () => {
   const css = readFileSync(CSS_PATH, 'utf8');
   const top = topRules(css);
   const classes = new Set();
@@ -928,14 +948,17 @@ test('fixtures.css: scores sit right of each team name, pens small; rule-1 marke
     const re = new RegExp(`\\.${c.replace(/[-]/g, '\\-')}(?![\\w-])`);
     assert.ok(re.test(css) || re.test(base), `.${c} has a rule in fixtures.css or base.css`);
   }
-  for (const c of ['fx__score', 'fx__pens', 'fx__teams--scored']) assert.ok(classes.has(c), `premise: ${c} rendered`);
+  for (const c of ['fx__score', 'fx__xtra', 'fx__teams--scored']) assert.ok(classes.has(c), `premise: ${c} rendered`);
+  assert.ok(!/\.fx__pens/.test(css), 'no dead pens rule');
   const scoredTeams = bodyOf(top, '.fx__teams--scored');
   assert.match(scoredTeams, /display:grid/);
   assert.match(scoredTeams, /grid-template-columns:minmax\(0,1fr\) auto/);
   assert.match(bodyOf(top, '.fx__teams--scored .fx__team'), /grid-column:1/);
   const sc = bodyOf(top, '.fx__score');
   for (const d of [/grid-column:2/, /justify-self:end/, /text-align:right/, /tabular-nums/, /white-space:nowrap/]) assert.match(sc, d);
-  assert.match(bodyOf(top, '.fx__pens'), /font-size:/);
+  // the extra lines are their own grid items in the score column, right-aligned under the digits
+  const xt = bodyOf(top, '.fx__xtra');
+  for (const d of [/grid-column:2/, /justify-self:end/, /white-space:nowrap/, /font-size:/]) assert.match(xt, d);
   assert.match(css, /\.fx\[data-uncounted\] \.fx__grade\{[^}]*border-style:dashed/, 'rule-1 files still mark uncounted rows');
   assert.match(bodyOf(top, '.fx__note'), /border-left/, 'rule-1 files still show the moved note');
 });

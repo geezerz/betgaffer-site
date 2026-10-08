@@ -383,9 +383,12 @@ test('validateDay: a rule-2 file keeps its rule, its scores (allowlisted) and it
   const v = validateDay(raw, { expectDate: '2026-10-08' });
   assert.equal(v.accuracy_rule, 2);
   const vp = v.fixtures.find((f) => f.fx === pen.fx);
-  assert.deepEqual(vp.score, { home: pen.score.home, away: pen.score.away, pen_home: 4, pen_away: 3 });
+  assert.deepEqual(vp.score, { home: pen.score.home, away: pen.score.away, aet_home: pen.score.aet_home, aet_away: pen.score.aet_away, pen_home: 4, pen_away: 3 });
+  assert.ok(Number.isInteger(vp.score.aet_home), 'premise: the shoot-out row went to extra time');
+  const aet = v.fixtures.find((f) => f.status === 'AET');
+  assert.ok(Number.isInteger(aet.score.aet_home) && aet.score.pen_home === null);
   const ft = v.fixtures.find((f) => f.status === 'FT' && f.score !== null);
-  assert.equal(ft.score.pen_home, null);
+  assert.deepEqual([ft.score.aet_home, ft.score.aet_away, ft.score.pen_home, ft.score.pen_away], [null, null, null, null]);
   assert.equal(at(v, 558451).late, true);
   assert.notEqual(at(v, 558451).pick, null);
   assert.equal(v.fixtures.filter((f) => f.score !== null).length, RULE2.fixtures.filter((f) => f.score !== null).length);
@@ -404,6 +407,12 @@ test('validateDay: a malformed score throws', () => {
     ['pen negative', (s) => { s.pen_away = -3; }],
     ['pen float', (s) => { s.pen_home = 4.5; }],
     ['pen boolean', (s) => { s.pen_home = true; }],
+    ['missing aet_home', (s) => { delete s.aet_home; }],
+    ['missing aet_away', (s) => { delete s.aet_away; }],
+    ['aet string', (s) => { s.aet_home = '2'; }],
+    ['aet negative', (s) => { s.aet_away = -1; }],
+    ['aet float', (s) => { s.aet_home = 2.5; }],
+    ['aet boolean', (s) => { s.aet_away = false; }],
   ];
   for (const [name, mut] of cases) {
     const d = clone(RULE2);
@@ -417,8 +426,13 @@ test('validateDay: a malformed score throws', () => {
   }
   // and the legitimate shapes pass
   const ok = clone(RULE2);
-  at(ok, fx).score = { home: 0, away: 0, pen_home: 0, pen_away: null };
-  assert.deepEqual(at(validateDay(ok, { expectDate: '2026-10-08' }), fx).score, { home: 0, away: 0, pen_home: 0, pen_away: null });
+  const good = { home: 0, away: 0, aet_home: 0, aet_away: null, pen_home: 0, pen_away: null };
+  at(ok, fx).score = { ...good };
+  assert.deepEqual(at(validateDay(ok, { expectDate: '2026-10-08' }), fx).score, good);
+  // the pre-review four-key shape (no aet keys) is not a score this build reads
+  const four = clone(RULE2);
+  at(four, fx).score = { home: 1, away: 0, pen_home: null, pen_away: null };
+  assert.throws(() => validateDay(four, { expectDate: '2026-10-08' }), /score\.aet_home/);
 });
 
 test('validateDay: accuracy_rule is absent, 1 or 2 — anything else throws', () => {

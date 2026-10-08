@@ -131,10 +131,10 @@ describe('every built page passes the claim scan', () => {
     assert.match(mixed, /2 of 3 landed/);
   });
 
-  test('premise: the rule-2 home card really carries scores, pens and its own copy', async () => {
+  test('premise: the rule-2 home card really carries scores, a.e.t., pens and its own copy', async () => {
     const html = await readFile(join(builds.rule2.out, 'index.html'), 'utf8');
     assert.match(html, /<span class="fx__score mono">\d+<\/span>/);
-    assert.match(html, /<small class="fx__pens">\(4–3 pens\)<\/small>/);
+    assert.match(html, /<small class="fx__xtra mono">a\.e\.t\. \d+–\d+<\/small><small class="fx__xtra mono">pens 4–3<\/small>/);
     const text = visibleText(html);
     assert.match(text, /48 of 55 landed/);
     assert.match(text, /the platform's card pick — graded after full time\./);

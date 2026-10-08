@@ -268,21 +268,30 @@ function accuracyRule(c, o) {
 }
 
 /**
- * The final score (spec §16.2): absent (files published before scores) or null -> null; otherwise
- * exactly { home, away, pen_home, pen_away } with non-negative integer home / away and pens null or
- * non-negative integers. Outside picks_hash; shown only on finished rows (fixtures.js decides).
+ * The score (spec §16.2, C1 review): absent (files published before scores) or null -> null;
+ * otherwise exactly { home, away, aet_home, aet_away, pen_home, pen_away } (every key present; any
+ * other key dropped). home / away: the 90-minute result markets settle on, non-negative integers.
+ * aet_*: the result after extra time, pen_*: the shoot-out — each null or a non-negative integer.
+ * Outside picks_hash; shown only on finished rows (fixtures.js decides).
  */
 function score(c, o, path) {
   if (!has(o, 'score') || o.score === null) return null;
   const v = o.score;
   if (!isObj(v)) c.fail(`${path}score`, `must be an object or null, got ${JSON.stringify(v)}`);
   const p = `${path}score.`;
-  const pen = (k) => {
+  const opt = (k) => {
     const x = get(c, v, k, p);
     if (x !== null && (!Number.isInteger(x) || x < 0)) c.fail(`${p}${k}`, `must be a non-negative integer or null, got ${JSON.stringify(x)}`);
     return x;
   };
-  return { home: int(c, v, 'home', p), away: int(c, v, 'away', p), pen_home: pen('pen_home'), pen_away: pen('pen_away') };
+  return {
+    home: int(c, v, 'home', p),
+    away: int(c, v, 'away', p),
+    aet_home: opt('aet_home'),
+    aet_away: opt('aet_away'),
+    pen_home: opt('pen_home'),
+    pen_away: opt('pen_away'),
+  };
 }
 
 function pick(c, v, path) {
