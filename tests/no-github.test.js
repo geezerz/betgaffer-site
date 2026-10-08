@@ -1,7 +1,8 @@
 // Spec §10: no GitHub link or mention anywhere on the site. The guard builds the fixture artifact
-// and scans every shipped page, script, stylesheet and _headers for "github" (any case) and for the
-// value of config.repo. Excluded: the published data (days/, index.json — the publisher owns them)
-// and the bundled font licences (assets/fonts/: the OFL texts legitimately name github.com).
+// and scans every shipped page, script, stylesheet, SVG and _headers — font stylesheets included — for
+// "github" (any case) and for the value of config.repo. Excluded: the published data (days/,
+// index.json — the publisher owns them) and, by the extension filter, the bundled OFL font licence
+// .txt files (they legitimately name github.com).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,13 +18,13 @@ async function* files(dir) {
   }
 }
 
-/** Every github mention or repo slug in shipped HTML/JS/CSS and _headers (data files and font licences excluded). */
+/** Every github mention or repo slug in shipped HTML/JS/CSS/SVG and _headers (data files and .txt licences excluded). */
 export async function githubHits(distDir, repo) {
   const hits = [];
   for await (const f of files(distDir)) {
     const rel = f.slice(distDir.length + 1).replace(/\\/g, '/');
-    if (rel.startsWith('days/') || rel === 'index.json' || rel.startsWith('assets/fonts/')) continue;
-    if (!/\.(html|js|css)$/.test(rel) && rel !== '_headers') continue;
+    if (rel.startsWith('days/') || rel === 'index.json') continue;
+    if (!/\.(html|js|css|svg)$/.test(rel) && rel !== '_headers') continue;
     const text = await readFile(f, 'utf8');
     if (/github/i.test(text)) hits.push(`${rel}: github`);
     if (repo && text.includes(repo)) hits.push(`${rel}: ${repo}`);
@@ -55,7 +56,7 @@ test('no built page, script, stylesheet or header mentions GitHub or the repo sl
   } finally { await ws.cleanup(); }
 });
 
-test('premise: the guard reports a planted github link and a planted repo slug, and skips only data and fonts', async () => {
+test('premise: the guard reports a planted github link and a planted repo slug, font stylesheets and SVGs included; it skips only data and .txt licences', async () => {
   const ws = await workspace();
   try {
     const cfg = testConfig();
@@ -66,10 +67,14 @@ test('premise: the guard reports a planted github link and a planted repo slug, 
     await writeFile(join(ws.out, 'assets', 'css', 'deep', 'planted.css'), '/* see GITHUB */');
     await writeFile(join(ws.out, '_headers'), `${await readFile(join(ws.out, '_headers'), 'utf8')}# github\n`);
     await writeFile(join(ws.out, 'assets', 'fonts', 'OFL-planted.txt'), 'https://github.com/x/y');
+    await writeFile(join(ws.out, 'assets', 'fonts', 'planted.css'), '/* github */');
+    await writeFile(join(ws.out, 'assets', 'img', 'planted.svg'), `<svg><title>${cfg.repo}</title></svg>`);
     const hits = await githubHits(ws.out, cfg.repo);
     assert.deepEqual(hits.sort(), [
       '_headers: github',
       'assets/css/deep/planted.css: github',
+      'assets/fonts/planted.css: github',
+      `assets/img/planted.svg: ${cfg.repo}`,
       'planted.html: github',
       `planted.js: ${cfg.repo}`,
     ]);

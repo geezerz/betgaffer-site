@@ -78,7 +78,7 @@ function header(path) {
 </header>`;
 }
 
-function footer(config, op, year) {
+function footer(op, year) {
   const legal = LEGAL.map(([href, label]) => `<li><a href="${escAttr(href)}">${escHtml(label)}</a></li>`).join('');
   const ident = [
     `© ${escHtml(year)} ${escHtml(op.legal_name)}`,
@@ -180,7 +180,7 @@ ${header(path)}
 <div class="stale" role="status" hidden></div>
 ${body}
 </main>
-${footer(config, op, y)}
+${footer(op, y)}
 </body>
 </html>
 `;

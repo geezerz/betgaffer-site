@@ -43,12 +43,13 @@ export default config;
 const REQUIRED = ['legal_name', 'address', 'contact_email'];
 const present = (v) => typeof v === 'string' && v.trim() !== '';
 
-// These values land inside href attributes (mailto:, https://github.com/<repo>, canonical URLs), so
-// they are validated by shape, not just escaped: '?bcc=' or a quoted local part in an email, or a
-// path or query in an origin, would change what the link does even when correctly escaped.
+// The emails and origin land inside href attributes (mailto:, canonical URLs), so they are validated
+// by shape, not just escaped: '?bcc=' or a quoted local part in an email, or a path or query in an
+// origin, would change what the link does even when correctly escaped. The repo is validated here,
+// at config load, but never rendered: no page or browser module reads it (spec §10).
 const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 // owner/name as GitHub allows it: an owner is letters, digits and hyphens; a repository name adds
-// "." and "_" but is never "." or "..". The one rule every page that links the repository uses.
+// "." and "_" but is never "." or "..". Checked at config load only; no page links the repository.
 export const REPO_RE = /^[A-Za-z0-9-]+\/(?!\.\.?$)[A-Za-z0-9._-]+$/;
 const ORIGIN_RE = /^https:\/\/[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?::\d{1,5})?$/;
 
