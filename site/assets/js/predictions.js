@@ -154,6 +154,7 @@ export function init(root = document, {
   storage = defaultStorage(),
   setTimer = (fn, ms) => setTimeout(fn, ms),
   clearTimer = (id) => clearTimeout(id),
+  raf = (fn) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(fn) : setTimer(fn, 16)),
   now = () => Date.now(),
   hasDialog = defaultHasDialog(),
   media = defaultMedia,
@@ -171,7 +172,8 @@ export function init(root = document, {
   const total = index.filter((r) => !r.withdrawn).length;
   const counts = new Map();
   for (const r of index) counts.set(r.comp, (counts.get(r.comp) ?? 0) + (r.withdrawn ? 0 : 1));
-  const comps = [...counts.keys()].sort(cmp);
+  // A competition whose rows are all withdrawn has no fixture on this card: it is not offered.
+  const comps = [...counts.keys()].filter((c) => counts.get(c) > 0).sort(cmp);
   const dayComps = new Set(comps);
 
   const state = {
@@ -333,11 +335,11 @@ export function init(root = document, {
     }
     const filtered = state.query !== '' || sel.size > 0;
     const none = filtered && shown === 0;
+    // The sentence stays visible in the sticky toolbar (on a phone the empty box is below the
+    // fold), with Show all beside it; the box repeats it for sighted readers only (aria-hidden).
     setText(status, !filtered ? '' : none ? TEXT.empty : `Showing ${counted} of ${plural(total, 'fixture', 'fixtures')}`);
-    // The empty state carries the sentence visibly; the status region keeps it for assistive tech.
-    status.classList.toggle('vh', none);
     setHidden(empty, !none);
-    setHidden(showAll, !filtered || none);
+    setHidden(showAll, !filtered);
     if (leaguesBtn) {
       // The pill shows the number; the separator is for the accessible name ("Leagues · 3").
       const n = sel.size > 0 ? String(sel.size) : '';
@@ -411,10 +413,13 @@ export function init(root = document, {
       meta.classList.toggle('is-on', status.textContent !== '' || !showAll.hidden);
       return;
     }
-    const reduce = media('(prefers-reduced-motion: reduce)');
-    target.el.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+    // Instant, then once more on the next frame: rows above it (content-visibility:auto) take
+    // their real height as they render, which moves the target; a smooth scroll stopped short.
+    // Instant is also the reduced-motion behaviour, so one path serves both.
+    target.el.scrollIntoView({ block: 'start' });
     target.el.setAttribute('tabindex', '-1');
     target.el.focus({ preventScroll: true });
+    raf(() => target.el.scrollIntoView({ block: 'start' }));
   });
 
   slot.append(main, meta);

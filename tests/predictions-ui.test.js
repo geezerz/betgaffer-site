@@ -73,7 +73,9 @@ function setup({ day = EDGE, storage = memStorage(), now = NEXT_DAY, hasDialog =
   const doc = fakeDocument(pageOf(day));
   const t = timers();
   const clock = { now };
+  const frames = [];
   const ctl = pred.init(doc, {
+    raf: (fn) => { frames.push(fn); return frames.length; },
     storage,
     setTimer: t.setTimer,
     clearTimer: t.clearTimer,
@@ -84,7 +86,8 @@ function setup({ day = EDGE, storage = memStorage(), now = NEXT_DAY, hasDialog =
   });
   const tools = doc.querySelector('[data-day-tools]');
   const q = (sel) => doc.querySelector(sel);
-  return { doc, t, clock, ctl, tools, storage, q };
+  const flush = () => { for (const fn of frames.splice(0)) fn(); };
+  return { doc, t, clock, ctl, tools, storage, q, frames, flush };
 }
 
 const rows = (doc) => doc.querySelectorAll('li').filter((l) => l.hasAttribute('data-fx'));
@@ -272,10 +275,16 @@ describe('result line and empty state', () => {
     const box = tool(s, 'empty');
     assert.equal(box.hidden, false);
     assert.equal(status(s).textContent, 'No fixtures match your search on this day.');
-    assert.ok(box.textContent.includes('No fixtures match your search on this day.'));
+    // On a phone the box is below the fold: the toolbar's own line says it, visibly, with Show all.
+    assert.equal(status(s).classList.contains('vh'), false, 'the status sentence stays visible in the toolbar');
+    assert.equal(status(s).hasAttribute('aria-hidden'), false);
+    assert.equal(tool(s, 'show-all').hidden, false, 'Show all stays in the sticky toolbar');
+    // Screen readers hear the sentence once: the box's copy is aria-hidden.
+    const copy = box.querySelectorAll('p').filter((e) => e.textContent === 'No fixtures match your search on this day.');
+    assert.equal(copy.length, 1);
+    assert.equal(copy[0].getAttribute('aria-hidden'), 'true');
     const btn = box.querySelector('button');
     assert.equal(btn.textContent, 'Show all fixtures');
-    assert.equal(tool(s, 'show-all').hidden, true, 'one way out at a time');
     const list = s.doc.querySelector('[data-fx-list]');
     assert.equal(box.parentNode, list.parentNode, 'the empty state sits beside the list');
     fire(btn, 'click');
@@ -348,12 +357,14 @@ describe('the Leagues dialog', () => {
     assert.equal(d.open, true);
     assert.equal(d.querySelector('h2').textContent, 'Leagues');
     const names = options(s).map(optName);
-    const comps = [...new Set(EDGE.fixtures.map((f) => f.comp))].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+    const comps = [...new Set(EDGE.fixtures.filter((f) => f.withdrawn !== true).map((f) => f.comp))].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
     assert.deepEqual(names, comps);
+    assert.equal(names.includes('Beta League'), false, 'a competition with only withdrawn rows (0 fixtures) is not offered');
+    assert.ok(EDGE.fixtures.some((f) => f.comp === 'Beta League'), 'premise: Beta League has (withdrawn) rows');
     assert.equal(names[0], '"Quotes" & Ampersand Cup', 'code point: " before < before A');
     const counts = Object.fromEntries(options(s).map((c) => [optName(c), c.parentNode.querySelector('.bg-pick__n').textContent]));
     assert.equal(counts['Zeta Division'], '3');
-    assert.equal(counts['Beta League'], '0', 'withdrawn rows are not counted');
+    assert.ok(Object.values(counts).every((n) => Number(n) > 0), 'every listed count is at least 1');
   });
 
   test('a checkbox applies instantly; leagues and search combine; the button shows the count', () => {
@@ -503,6 +514,16 @@ describe('league persistence (bg.leagues)', () => {
     assert.deepEqual(JSON.parse(storage.getItem('bg.leagues')), ['Other Tab League', 'Zeta Division']);
   });
 
+  test('a stored league with only withdrawn rows today is not offered, and survives a write', () => {
+    const storage = memStorage({ 'bg.leagues': JSON.stringify(['Beta League']) });
+    const s = setup({ storage });
+    assert.equal(tool(s, 'leagues').textContent, 'Leagues', 'not selected: it has no fixture on this card');
+    assert.equal(visible(s.doc).length, EDGE.fixtures.length);
+    fire(tool(s, 'leagues'), 'click');
+    check(s, 'Zeta Division');
+    assert.deepEqual(JSON.parse(storage.getItem('bg.leagues')), ['Beta League', 'Zeta Division']);
+  });
+
   test('an invalid stored value is ignored', () => {
     const long = 'x'.repeat(121);
     const bad = ['{nope', '"Alpha League"', '{"0":"Alpha League"}', JSON.stringify(['Alpha League', 7]),
@@ -553,9 +574,14 @@ describe('Jump to now', () => {
     assert.equal(s.tools.querySelector('[role="status"]').contains(jump), false);
     fire(jump, 'click');
     const target = s.doc.getElementById('fx-900010'); // the first NS row after 13:00Z (withdrawn rows skipped)
-    assert.deepEqual(target.scrolls, [{ block: 'start', behavior: 'smooth' }]);
+    // Instant, then re-aligned next frame: rows above grow as content-visibility renders them,
+    // which made a smooth scroll stop short of its row.
+    assert.deepEqual(target.scrolls, [{ block: 'start' }]);
     assert.equal(target.getAttribute('tabindex'), '-1');
     assert.equal(s.doc.activeElement, target);
+    assert.equal(s.frames.length, 1, 'a re-alignment is queued');
+    s.flush();
+    assert.deepEqual(target.scrolls, [{ block: 'start' }, { block: 'start' }]);
   });
 
   test('the target is chosen at click time, among visible rows only', () => {
@@ -570,10 +596,11 @@ describe('Jump to now', () => {
     assert.equal(s.doc.getElementById('fx-900025').scrolls.length, 1, 'Alpha hidden: the next visible one');
   });
 
-  test('reduced motion scrolls without animation', () => {
+  test('reduced motion: the same instant scroll and re-alignment, never smooth', () => {
     const s = setup({ now: ON_DAY, reduced: true });
     fire(tool(s, 'jump'), 'click');
-    assert.deepEqual(s.doc.getElementById('fx-900010').scrolls, [{ block: 'start', behavior: 'auto' }]);
+    s.flush();
+    assert.deepEqual(s.doc.getElementById('fx-900010').scrolls, [{ block: 'start' }, { block: 'start' }]);
   });
 
   test('not shown on another day, or once nothing is left to start; a stale button hides itself', () => {
