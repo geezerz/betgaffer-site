@@ -1,7 +1,6 @@
 // The founding card's script (spec §2, §16.5): its close button and its copy rotation. Browser module,
-// loaded by layout.page() as the FIRST module script on every page that carries the card, so a
-// dismissed card is removed before any other module runs (a brief flash on a slow connection is
-// accepted).
+// loaded by layout.page() as the FIRST module script on every page that carries the card. A dismissed
+// card never paints: early.js hides it before the first paint (see Dismissal below).
 //
 // It never fetches anything: the waitlist counter is read on /waitlist/ only (KV list operations are
 // rationed). Its one import is the copy itself, ./lib/founding.js (isomorphic, shipped by the build).
@@ -14,14 +13,19 @@
 // height of its longest variant (founding.css), so the swap moves nothing below it.
 //
 // Dismissal: the static HTML ships the close button `hidden` (without JS the card cannot be closed).
-// Here the button is shown; a click stores the choice in localStorage (per browser) and removes the
-// card. Storage that is missing, blocked or full never breaks the page: the card then shows, rotates
+// Here the button is shown; a click stores the choice in localStorage (per browser), marks <html>
+// with HIDDEN_CLASS and removes the card. On later pages early.js (a classic script in <head>) reads
+// the choice before the first paint and sets the same class, so the card never paints for a
+// visitor who closed it; the removal below stays as belt and braces (early.js blocked or failed).
+// Storage that is missing, blocked or full never breaks the page: the card then shows, rotates
 // without memory, and a click still removes it for this page view.
 
 import { VARIANTS } from './lib/founding.js';
 
 export const STORAGE_KEY = 'bg.founding.banner';
 export const HIDDEN_VALUE = 'hidden';
+/** The class early.js puts on <html> for a remembered dismissal; founding.css hides the card under it. */
+export const HIDDEN_CLASS = 'fd-hidden';
 /** The variant the last page view showed: its index as a decimal string. */
 export const VARIANT_KEY = 'bg.founding.v';
 
@@ -99,11 +103,18 @@ function rotate(doc, card, storage, random) {
   }
 }
 
+/** <html> gets HIDDEN_CLASS (as early.js sets it), so nothing re-shows a dismissed card. */
+function markHidden(doc) {
+  const root = doc.documentElement;
+  if (root && root.classList) root.classList.add(HIDDEN_CLASS);
+}
+
 /** Every dependency is injectable (tests drive it with a fake DOM); in the browser it runs with the defaults. */
 export function init({ doc = document, storage = defaultStorage(), random = Math.random } = {}) {
   const card = doc.querySelector('[data-banner]');
   if (!card) return;
   if (dismissed(storage)) {
+    markHidden(doc);
     card.remove();
     return;
   }
@@ -123,6 +134,7 @@ export function init({ doc = document, storage = defaultStorage(), random = Math
     // The focused button is about to leave the document: hand focus to the page's main content
     // instead of letting it fall back to <body>.
     const main = doc.getElementById ? doc.getElementById('main') : null;
+    markHidden(doc);
     card.remove();
     if (main && typeof main.focus === 'function') main.focus({ preventScroll: true });
   });

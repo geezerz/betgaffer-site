@@ -13,28 +13,47 @@
    (banner.js swaps them after load), so the card RESERVES the height of the
    longest variant at each breakpoint: a swap never moves the page below it.
 
-   How the min-heights are sized (narrowest width of each range; conservative
-   Inter metrics, heading ≈ .62em and line ≈ .58em per character; greedy word
-   wrap; the longest variant decides — tests/layout.test.js recomputes this
-   model from VARIANTS and fails if a variant outgrows its reservation):
-     column (< 1024px): 34px padding + 2px border + heading lines × 26.4px
-       + 6px gap + line lines × 22.5px + 16px gap + 44px button
-       320px (content 254px): variant 5, heading 3 lines, line 4  -> 271.2 -> 272px
-       360px (content 294px): variant 1, heading 2 lines, line 4  -> 244.8 -> 246px
-       480px (content 414px): variant 1, heading 2 lines, line 3  -> 222.3 -> 224px
-       640px (content 558px): variant 1, heading 1 line,  line 2  -> 173.4 -> 174px
-     row (>= 1024px): 40px padding + 2px border + max(button 44px, heading
-       31.2px + 6px + line lines × 24px); text column at 1024px = 614px
-       (card 976 − border 2 − padding 88 − gap 24 − button 248):
-       variant 1, heading 1 line, line 2 -> 127.2 -> 128px
+   How the min-heights are sized: MEASURED in Chrome on 2026-10-08 (headless
+   shell build 1208, Inter + JetBrains Mono from /assets/fonts). At each width
+   banner.js's own init swapped in all ten variants with min-height lifted and
+   the card's height was read, with overlay scrollbars (phone) and with a 15px
+   classic scrollbar (desktop); "longest" is the worse of the two. Each
+   min-height is >= the longest variant + 3px at its range's narrowest width,
+   and wastes <= 30px at the range's widest width (where the longest variant
+   is shortest).
+     width   min-height  longest (phone / desktop)   shortest   headroom
+      320       248        244.78 / 244.78            199.78      3.22
+      340       248        222.28 / 244.78            199.78      3.22
+      359       248        222.28 / 222.28            199.78     25.72
+      360       226        222.28 / 222.28            199.78      3.72
+      380       226        222.28 / 222.28            199.78      3.72
+      414       226        222.28 / 222.28            173.39      3.72
+      440       226        199.78 / 222.28            173.39      3.72
+      479       226        199.78 / 199.78            173.39     26.22
+      480       203        199.78 / 199.78            173.39      3.22
+      500       203        199.78 / 199.78            173.39      3.22
+      519       203        173.39 / 173.39            150.89     29.61
+      520-639   178        173.39 / 173.39            150.89      4.61
+      640, 768  178        173.39 / 173.39            150.89      4.61
+      900, 1023 178        150.89 / 150.89            150.89     27.11
+      1024      132        127.19 / 127.19            103.19      4.81
+      1280,1440 132        103.19 / 103.19            103.19     28.81
+   (520-639 = 520, 540, 560, 580, 600, 639 all measured.) The longest is
+   variant 1 except at 480-500 (variants 2 and 5). tests/layout.test.js holds
+   this table and pins every declaration it depends on (these rules, the
+   button, the gutter, the fonts, the card copy): change any of them and that
+   test fails until the card is re-measured and the table updated.
    The close button sits over the top-right corner; a float spacer on the
    heading keeps its first line clear of it below 1024px.
    ─────────────────────────────────────────────────────────────────────────── */
+/* A visitor who closed the card: early.js marks <html> before the first paint, so the card (its
+   slot, padding included) is never laid out — no shift when banner.js later removes it. */
+html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-slot{ padding-top:14px; }
 .bg-fd-card{
   position:relative;
   display:flex; flex-direction:column; justify-content:space-between; gap:16px;
-  min-height:272px;
+  min-height:248px;
   padding:18px 16px 16px;
   border:1px solid var(--accent); border-radius:var(--r-2);
   background:
@@ -71,17 +90,19 @@
 .bg-fd-card__x:hover{ color:var(--ink); background:var(--surface-3); }
 .bg-fd-card__x[hidden]{ display:none; }
 
-@media (min-width:360px){ .bg-fd-card{ min-height:246px; } }
-@media (min-width:480px){ .bg-fd-card{ min-height:224px; } }
+/* The reservation steps (measured; see the table above). 178px holds from 520px
+   to 1023px: at 640px only the button changes (auto width, same 44px height). */
+@media (min-width:360px){ .bg-fd-card{ min-height:226px; } }
+@media (min-width:480px){ .bg-fd-card{ min-height:203px; } }
+@media (min-width:520px){ .bg-fd-card{ min-height:178px; } }
 @media (min-width:640px){
-  .bg-fd-card{ min-height:174px; }
   .bg-fd-card__cta{ width:auto; align-self:flex-start; }
 }
 @media (min-width:1024px){
   .bg-fd-slot{ padding-top:20px; }
   .bg-fd-card{
     flex-direction:row; align-items:center; gap:24px;
-    min-height:128px;
+    min-height:132px;
     padding:20px 64px 20px 24px;
   }
   .bg-fd-card__title{ font-size:26px; }

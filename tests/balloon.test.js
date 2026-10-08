@@ -556,6 +556,20 @@ describe('balloon.js: position', () => {
     assert.equal(u.style('top'), '90px');
   });
 
+  test('a card hidden from first paint (html.fd-hidden, display:none) gives no offset: the default sits below the topbar', () => {
+    // In Chrome a display:none card's box is 0x0 at the viewport origin.
+    const zero = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: 0, left: 0, width: 0, height: 0 } });
+    assert.equal(zero.style('top'), `${64 + GAP}px`);
+    // The class alone decides, whatever box a stale measurement reports: the card is not on screen.
+    const html = pageOf({ banner: true }).replace('<html lang="en-NG">', '<html lang="en-NG" class="fd-hidden">');
+    assert.match(html, /<html lang="en-NG" class="fd-hidden">/, 'premise: <html> is marked');
+    const marked = setup({ width: 360, height: 700, html, banner: { top: 64, bottom: 150 } });
+    assert.equal(marked.style('top'), `${64 + GAP}px`);
+    // Premise: the same box without the class does push the ring below the card.
+    const shown = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: 64, bottom: 150 } });
+    assert.equal(shown.style('top'), `${150 + GAP}px`);
+  });
+
   test('stored garbage is ignored: strings, non-finite, wrong shape, bad JSON, throwing storage', () => {
     for (const raw of ['{"left":"100","top":50}', '{"left":1e400,"top":50}', '[100,50]', 'null', '{bad', '{"left":100}']) {
       const s = setup({ store: { 'bg.balloon.pos': raw } });

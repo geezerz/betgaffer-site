@@ -1,6 +1,8 @@
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import vm from 'node:vm';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { page, NAV, OG_FOUNDING, navCurrent } from '../site/lib/layout.js';
@@ -9,8 +11,9 @@ import { VARIANTS, variantFor } from '../site/lib/founding.js';
 import { foundingCard } from '../site/content/waitlist.js';
 import { parse, find, findAll, textOf, claimViolations } from './html-scan.js';
 import { fakeDocument, serialize } from './fake-dom.js';
-import { build } from '../site/build.mjs';
+import { build, CSS_ORDER } from '../site/build.mjs';
 import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
+import { GAP as RING_GAP } from '../site/lib/balloon-model.js';
 
 // banner.js imports ./lib/founding.js, which resolves only in a build (the build ships site/lib's
 // isomorphic modules to /assets/js/lib/): import the browser module from a real one.
@@ -18,7 +21,9 @@ const BUILT = await workspace();
 after(() => BUILT.cleanup());
 await copyArtifact(BUILT.root);
 await build({ root: BUILT.root, out: BUILT.out, config: testConfig(), now: Date.parse('2026-10-07T12:00:00Z'), warn: () => {} });
-const { init: bannerInit, STORAGE_KEY: BANNER_KEY, VARIANT_KEY } = await import(pathToFileURL(join(BUILT.out, 'assets/js/banner.js')).href);
+const {
+  init: bannerInit, STORAGE_KEY: BANNER_KEY, HIDDEN_VALUE, HIDDEN_CLASS, VARIANT_KEY,
+} = await import(pathToFileURL(join(BUILT.out, 'assets/js/banner.js')).href);
 
 // The private platform's name, built from char codes so the literal never appears in this repo.
 const INTERNAL = String.fromCharCode(70, 111, 114, 101, 99, 97, 120, 116);
@@ -303,7 +308,8 @@ test('two mainData keys that map to the same data-* name throw instead of emitti
 // ---------------------------------------------------------------------------------------------
 
 const slotOf = (html) => find(parse(html), (n) => n.attrs?.['data-banner'] !== undefined);
-const moduleScripts = (html) => findAll(parse(html), (n) => n.tag === 'script').map((s) => s.attrs.src);
+const moduleScripts = (html) => findAll(parse(html), (n) => n.tag === 'script' && n.attrs.type === 'module').map((s) => s.attrs.src);
+const EARLY = '/assets/js/early.js';
 const segText = (segs) => segs.map((s) => s.t).join('');
 
 test('the card is on by default: directly after the header, before <main>, once; the slim banner is gone', () => {
@@ -376,6 +382,71 @@ test('banner: false renders neither the card nor banner.js; nav.js is still firs
   assert.throws(() => base({ banner: null }), /banner/);
 });
 
+test('early.js: the ONLY classic script — synchronous, in <head> before the stylesheet — on every page with the card, never without it', () => {
+  for (const o of [{}, { scripts: ['/assets/js/stale.js'] }, { path: '/' }, { path: '/day/2026-10-08/' }]) {
+    const html = base(o);
+    assertCspClean(html);
+    const doc = parse(html);
+    const head = find(doc, (n) => n.tag === 'head');
+    const scripts = findAll(doc, (n) => n.tag === 'script');
+    const classic = scripts.filter((s) => s.attrs.type !== 'module');
+    assert.deepEqual(classic.map((s) => s.attrs.src), [EARLY], 'one classic script: early.js');
+    const early = classic[0];
+    assert.ok(findAll(head, (n) => n === early).length === 1, 'in <head>');
+    for (const a of ['async', 'defer', 'type', 'nomodule']) assert.equal(early.attrs[a], undefined, `no ${a}: it must run before first paint`);
+    const at = html.indexOf(`<script src="${EARLY}"></script>`);
+    assert.ok(at > 0 && at < html.indexOf('<link rel="stylesheet" href="/assets/css/site.css">'), 'before the stylesheet');
+    assert.ok(at < html.indexOf('<script type="module"'), 'before every module script');
+  }
+  const none = base({ banner: false, scripts: ['/assets/js/waitlist.js'] });
+  assert.doesNotMatch(none, /early\.js/, 'no card, no early.js (it would be a render-blocking request for nothing)');
+  assert.equal(findAll(parse(none), (n) => n.tag === 'script' && n.attrs.type !== 'module').length, 0);
+});
+
+/** Runs the shipped early.js as the browser would (a classic script, its own global), against `storage`. */
+function runEarly(storage) {
+  const src = readFileSync(join(ASSETS, 'js', 'early.js'), 'utf8');
+  const doc = fakeDocument('<!doctype html><html lang="en-NG"><head><title>t</title></head><body></body></html>');
+  const g = { document: doc };
+  g.window = g;
+  Object.defineProperty(g, 'localStorage', {
+    get() { if (storage === 'throws') throw new Error('SecurityError: access denied'); return storage; },
+  });
+  vm.runInNewContext(src, g, { filename: 'early.js' });
+  return doc.documentElement;
+}
+
+test('early.js: a remembered dismissal (banner.js\'s own key and value) marks <html> before first paint; nothing else does', () => {
+  assert.equal(typeof HIDDEN_CLASS, 'string', 'banner.js exports the class early.js sets');
+  const store = (v) => ({ getItem: (k) => (k === BANNER_KEY ? v : null) });
+  assert.equal(runEarly(store(HIDDEN_VALUE)).classList.contains(HIDDEN_CLASS), true, 'dismissed: <html> carries the class');
+  for (const v of [null, 'shown', '', 'HIDDEN']) {
+    assert.equal(runEarly(store(v)).classList.contains(HIDDEN_CLASS), false, `value ${JSON.stringify(v)}: no class`);
+  }
+  // Storage that is missing, blocked (the property getter throws) or broken (getItem throws): no throw, card shows.
+  for (const s of [undefined, null, 'throws', { getItem() { throw new Error('SecurityError'); } }]) {
+    let html;
+    assert.doesNotThrow(() => { html = runEarly(s); }, String(s));
+    assert.equal(html.classList.contains(HIDDEN_CLASS), false, String(s));
+  }
+});
+
+test('early.js is tiny, classic and CSP-clean: no import/export, no document.write, no eval, no network', () => {
+  const src = readFileSync(join(ASSETS, 'js', 'early.js'), 'utf8');
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert.ok(Buffer.byteLength(code.replace(/\s+/g, ' ').trim()) < 400, `the code is ${Buffer.byteLength(code)} bytes`);
+  assert.doesNotMatch(code, /^\s*(?:import|export)\b|\bimport\s*\(/m, 'a classic script');
+  assert.doesNotMatch(code, /document\.write|\beval\b|Function\(|innerHTML|\.style\b|fetch\(|XMLHttpRequest/);
+  assert.doesNotThrow(() => new vm.Script(src), 'parses as a classic script');
+});
+
+test('founding.css hides the card from first paint when <html> carries early.js\'s class', () => {
+  const rules = cssRules('founding.css');
+  const hide = rules.filter((r) => r.media === null && r.sels.includes(`html.${HIDDEN_CLASS} [data-banner]`));
+  assert.equal(hide.length, 1, 'one rule');
+  assert.deepEqual(hide[0].decls, [['display', 'none']]);
+});
+
 test('balloon.js and banner.js selectors still find the card: [data-banner] is the slot, [data-banner-close] inside it', () => {
   const doc = fakeDocument(base());
   const slot = doc.querySelector('[data-banner]');
@@ -417,9 +488,11 @@ test('banner.js: shows the close button; a click remembers the choice and remove
   assert.ok(liveBanner(doc), 'still there before the click');
   assert.equal(btn.hidden, false, 'the close button is shown once JS runs');
   assert.equal(btn.listeners.click.length, 1);
+  assert.equal(doc.documentElement.classList.contains(HIDDEN_CLASS), false, 'premise: not marked before the click');
   btn.listeners.click[0]();
   assert.equal(liveBanner(doc), null, 'removed');
   assert.equal(storage.m.get('bg.founding.banner'), 'hidden');
+  assert.equal(doc.documentElement.classList.contains(HIDDEN_CLASS), true, 'the click marks <html> as early.js would');
 });
 
 test('banner.js: a remembered dismissal removes the card on load (and rotates nothing); other values do not', () => {
@@ -427,6 +500,7 @@ test('banner.js: a remembered dismissal removes the card on load (and rotates no
   const storage = fakeStorage({ 'bg.founding.banner': 'hidden' });
   bannerInit({ doc, storage, random: () => 0.5 });
   assert.equal(liveBanner(doc), null);
+  assert.equal(doc.documentElement.classList.contains(HIDDEN_CLASS), true, 'marked, as early.js would (belt and braces)');
   assert.equal(storage.m.has('bg.founding.v'), false, 'a dismissed card records no variant');
   for (const v of ['shown', '', 'HIDDEN']) {
     const d = fakeDocument(base());
@@ -636,65 +710,153 @@ test('founding.css: the stand-out card — green border, accent gradient, 44px c
   assert.doesNotMatch(s, /var\(--gold\)/, 'gold stays reserved for the recommended pick');
 });
 
-test('founding.css: the card reserves the longest variant\'s height at every breakpoint, so a variant swap shifts nothing', () => {
-  const s = FOUNDING_CSS();
-  // The min-height rules: the base (narrowest phones) and one per breakpoint, shrinking as the card widens.
-  const steps = [[0, s], [360, cssMedia(s, 360)], [480, cssMedia(s, 480)], [640, cssMedia(s, 640)], [1024, cssMedia(s, 1024)]];
-  const mins = steps.map(([w, scope]) => {
-    const v = px(cssRule(scope, '.bg-fd-card'), 'min-height');
-    assert.ok(v !== null, `a .bg-fd-card min-height for ${w ? `>= ${w}px` : 'the base'}`);
-    return v;
-  });
-  for (let i = 1; i < mins.length; i++) assert.ok(mins[i] <= mins[i - 1], `min-height never grows with width: ${mins}`);
+// The founding card's height, MEASURED in Chrome (tests can't lay text out): banner.js's own init swaps
+// in each of the ten variants with min-height lifted, and the card's height is read at each width, with
+// mobile overlay scrollbars (`phone`) and a 15px classic scrollbar (`desktop`). Measured 2026-10-08,
+// headless Chrome shell build 1208, Inter + JetBrains Mono from site/assets/fonts (founding.css header
+// comment carries the same table). Longest variant height in px, [phone, desktop]:
+const CARD_LONGEST = Object.freeze({
+  320: [244.78, 244.78], 340: [222.28, 244.78], 359: [222.28, 222.28], 360: [222.28, 222.28],
+  380: [222.28, 222.28], 414: [222.28, 222.28], 440: [199.78, 222.28], 479: [199.78, 199.78],
+  480: [199.78, 199.78], 500: [199.78, 199.78],
+  519: [173.39, 173.39], 520: [173.39, 173.39], 540: [173.39, 173.39], 560: [173.39, 173.39],
+  580: [173.39, 173.39], 600: [173.39, 173.39], 639: [173.39, 173.39], 640: [173.39, 173.39],
+  768: [173.39, 173.39], 900: [150.89, 150.89], 1023: [150.89, 150.89], 1024: [127.19, 127.19],
+  1280: [103.19, 103.19], 1440: [103.19, 103.19],
+});
+// What those measurements depend on. ANY change here invalidates them: re-measure every width above
+// (founding.css header says how), then update CARD_LONGEST, the header comment and these pins together.
+const CARD_PAINT_ONLY = new Set(['color', 'background', 'background-color', 'border-color', 'box-shadow', 'transition', 'cursor',
+  'opacity', 'outline', 'outline-offset', 'text-decoration', '-webkit-tap-highlight-color']);
+const CARD_SELECTOR = /bg-fd-card|bg-fd-slot|\bfd-hl\b|data-banner/;
+const CARD_RULES_PINNED = [
+  [null, 'html.fd-hidden [data-banner]', ['display:none']],
+  [null, '.bg-fd-slot', ['padding-top:14px']],
+  [null, '.bg-fd-card', ['position:relative', 'display:flex', 'flex-direction:column', 'justify-content:space-between', 'gap:16px',
+    'min-height:248px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
+  [null, '.bg-fd-card__body', ['display:flex', 'flex-direction:column', 'gap:6px', 'min-width:0']],
+  [null, '.bg-fd-card__title', ['margin:0', 'font-family:var(--font-display)', 'font-size:22px', 'font-weight:800', 'line-height:1.2',
+    'letter-spacing:-.02em']],
+  [null, '.bg-fd-card__title::before', ["content:''", 'float:right', 'width:32px', 'height:26px']],
+  [null, '.bg-fd-card__line', ['margin:0', 'font-size:15px', 'line-height:1.5']],
+  [null, '.fd-hl', ['font-weight:700']],
+  [null, '.bg-fd-card__title .fd-hl', ['font-weight:inherit']],
+  [null, '.bg-fd-card__cta', ['width:100%']],
+  [null, '.bg-fd-card__x', ['position:absolute', 'top:4px', 'right:4px', 'display:inline-flex', 'align-items:center',
+    'justify-content:center', 'min-width:var(--tap)', 'min-height:var(--tap)', 'padding:0', 'border:0', 'border-radius:var(--r-1)',
+    'font:inherit', 'font-size:22px', 'line-height:1']],
+  [null, '.bg-fd-card__x:hover', []],
+  [null, '.bg-fd-card__x[hidden]', ['display:none']],
+  ['(min-width:360px)', '.bg-fd-card', ['min-height:226px']],
+  ['(min-width:480px)', '.bg-fd-card', ['min-height:203px']],
+  ['(min-width:520px)', '.bg-fd-card', ['min-height:178px']],
+  ['(min-width:640px)', '.bg-fd-card__cta', ['width:auto', 'align-self:flex-start']],
+  ['(min-width:1024px)', '.bg-fd-slot', ['padding-top:20px']],
+  ['(min-width:1024px)', '.bg-fd-card', ['flex-direction:row', 'align-items:center', 'gap:24px', 'min-height:132px',
+    'padding:20px 64px 20px 24px']],
+  ['(min-width:1024px)', '.bg-fd-card__title', ['font-size:26px']],
+  ['(min-width:1024px)', '.bg-fd-card__title::before', ['content:none']],
+  ['(min-width:1024px)', '.bg-fd-card__line', ['font-size:16px']],
+  ['(min-width:1024px)', '.bg-fd-card__cta', ['flex:none', 'align-self:center']],
+  ['(min-width:1024px)', '.bg-fd-card__x', ['top:8px', 'right:10px']],
+];
+// base.css: the button inside the card, the page gutter around it, the fonts and the body defaults it inherits.
+const CARD_BASE_TOKENS = ['--font-ui', '--font-display', '--font-mono', '--wrap', '--gutter', '--tap'];
+const CARD_BASE_PINNED = [
+  [null, ':root', ["--font-ui:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",
+    "--font-display:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",
+    "--font-mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace", '--wrap:80rem', '--gutter:16px', '--tap:44px']],
+  ['(min-width:640px)', ':root', ['--gutter:24px']],
+  [null, '*, *::before, *::after', ['box-sizing:border-box', 'min-width:0']],
+  [null, 'body', ['font-family:var(--font-ui)', 'font-size:15px', 'line-height:1.6']],
+  [null, '.bg-wrap', ['width:100%', 'max-width:var(--wrap)', 'margin-inline:auto', 'padding-inline:var(--gutter)']],
+  [null, '.bg-btn', ['display:inline-flex', 'align-items:center', 'justify-content:center', 'gap:8px', 'white-space:nowrap',
+    'min-height:44px', 'padding:0 20px', 'border-radius:var(--r-1)', 'border:1px solid transparent', 'font-family:var(--font-mono)',
+    'font-weight:600', 'font-size:12.5px', 'letter-spacing:.06em', 'text-transform:uppercase']],
+  [null, '.bg-btn--primary', []],
+  [null, '.bg-btn--primary:hover', ['transform:translateY(-1px)']],
+  [null, '.bg-btn--primary:active', ['transform:none']],
+  ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
+];
+// The ten rendered cards (copy, highlights, classes, the CTA label) and the two font files.
+const CARD_MARKUP_SHA256 = '169132c032e7ea97fef94232946a358969ba4834075c1cbc70c8b67d7f1997bf';
+const FONT_SHA256 = Object.freeze({
+  'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
+  'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',
+});
+/** [media, selectors, box declarations "prop:value"] of the rules `pick` selects (paint-only properties dropped). */
+const boxRules = (file, pick) => cssRules(file).filter(pick).map((r) => [r.media, r.sels.join(', '),
+  r.decls.filter(([k]) => !CARD_PAINT_ONLY.has(k)).map(([k, v]) => `${k}:${v.replace(/\s+/g, ' ')}`)]);
+const REMEASURE = "the founding card's measured heights depend on this: re-measure every width (founding.css header), "
+  + 'then update CARD_LONGEST, the header comment and this pin together';
+/** base.css rules the card inherits from: :root (font, wrap, gutter and tap custom properties), *, body (font), .bg-wrap, .bg-btn. */
+const BASE_PICK = (r) => r.media !== '(prefers-reduced-motion:reduce)' && r.sels.some((x) => [':root', '*', 'body', '.bg-wrap'].includes(x)
+  || /^\.bg-btn(?:--primary)?(?::hover|:active)?$/.test(x));
+const baseBox = () => boxRules('base.css', BASE_PICK).map(([m, sel, d]) => [m, sel,
+  sel === ':root' ? d.filter((x) => CARD_BASE_TOKENS.includes(x.slice(0, x.indexOf(':'))))
+    : sel === 'body' ? d.filter((x) => /^(?:font-family|font-size|line-height):/.test(x)) : d]);
 
-  // The model the reservations come from (founding.css header comment). The type sizes it assumes are pinned here.
-  const base = cssRule(s, '.bg-fd-card__title');
-  assert.equal(px(base, 'font-size'), 22);
-  assert.match(base, /line-height:1\.2(;|$)/);
-  assert.equal(px(cssRule(s, '.bg-fd-card__line'), 'font-size'), 15);
-  assert.match(cssRule(s, '.bg-fd-card__line'), /line-height:1\.5(;|$)/);
-  assert.equal(px(cssRule(s, '.bg-fd-card__body'), 'gap'), 6);
-  assert.equal(px(cssRule(s, '.bg-fd-card'), 'gap'), 16);
-  assert.match(cssRule(s, '.bg-fd-card'), /padding:18px16px16px/);
-  assert.match(cssRule(s, '.bg-fd-card__title::before'), /float:right;width:32px/, 'the first-line spacer beside the close button');
-  const wide = cssMedia(s, 1024);
-  assert.equal(px(cssRule(wide, '.bg-fd-card__title'), 'font-size'), 26);
-  assert.equal(px(cssRule(wide, '.bg-fd-card__line'), 'font-size'), 16);
-  assert.match(cssRule(wide, '.bg-fd-card'), /flex-direction:row/);
-  assert.match(cssRule(wide, '.bg-fd-card'), /padding:20px64px20px24px/);
-  assert.match(cssRule(wide, '.bg-fd-card__title::before'), /content:none/);
+test('founding card: every layout declaration the measured heights depend on is pinned exactly (a change forces a re-measure)', () => {
+  assert.deepEqual(boxRules('founding.css', (r) => r.sels.some((x) => CARD_SELECTOR.test(x))), CARD_RULES_PINNED, REMEASURE);
+  assert.deepEqual(baseBox(), CARD_BASE_PINNED, REMEASURE);
+  // The card is styled in founding.css only: a rule in another stylesheet would escape the pin.
+  for (const f of [...CSS_ORDER, 'nojs.css'].filter((x) => x !== 'founding.css')) {
+    for (const r of cssRules(f)) assert.ok(!r.sels.some((x) => CARD_SELECTOR.test(x)), `${f}: ${r.sels.join(', ')} styles the card outside founding.css`);
+  }
+  const sha = (b) => createHash('sha256').update(b).digest('hex');
+  assert.equal(sha(VARIANTS.map((_, i) => foundingCard(i)).join('\n')), CARD_MARKUP_SHA256, `card copy or markup changed: ${REMEASURE}`);
+  for (const [f, h] of Object.entries(FONT_SHA256)) assert.equal(sha(readFileSync(join(ASSETS, 'fonts', f))), h, `${f} changed: ${REMEASURE}`);
+});
 
-  // Greedy word wrap at conservative Inter widths (heading .62em, line .58em per character).
-  const wrap = (text, cap, first = cap) => {
-    let lines = 1;
-    let len = 0;
-    let c = first;
-    for (const w of text.split(' ')) {
-      const next = len === 0 ? w.length : len + 1 + w.length;
-      if (next > c && len > 0) { lines++; len = w.length; c = cap; } else len = next;
+test('founding card: at every measured width the reservation holds the longest variant + 3px and wastes at most 30px', () => {
+  // The min-height in force at a viewport width: the base rule, then each (min-width:Npx) step up to it.
+  const steps = cssRules('founding.css').filter((r) => r.sels.includes('.bg-fd-card') && r.decls.some(([k]) => k === 'min-height'))
+    .map((r) => {
+      const at = r.media === null ? 0 : Number(/^\(min-width:(\d+)px\)$/.exec(r.media)?.[1]);
+      assert.ok(Number.isInteger(at), `a plain min-width step: ${r.media}`);
+      return [at, Number(/^(\d+)px$/.exec(r.decls.find(([k]) => k === 'min-height')[1])[1])];
+    }).sort((a, b) => a[0] - b[0]);
+  assert.equal(steps[0][0], 0, 'a base min-height');
+  for (let i = 1; i < steps.length; i++) assert.ok(steps[i][1] < steps[i - 1][1], `min-height shrinks as the card widens: ${JSON.stringify(steps)}`);
+  const minAt = (w) => steps.filter(([at]) => at <= w).at(-1)[1];
+  // Every step boundary is a measured width, and so is the width just below it.
+  for (const [at] of steps.slice(1)) assert.ok(CARD_LONGEST[at] && CARD_LONGEST[at - 1], `${at}px and ${at - 1}px are measured`);
+  for (const [w, both] of Object.entries(CARD_LONGEST)) {
+    const m = minAt(Number(w));
+    assert.ok(m >= Math.max(...both) + 3, `${w}px: min-height ${m}px holds the longest variant (${Math.max(...both)}px) + 3px`);
+    assert.ok(m - Math.min(...both) <= 30, `${w}px: min-height ${m}px wastes ${(m - Math.min(...both)).toFixed(2)}px (> 30px)`);
+  }
+});
+
+test('phones with the floating ring: the lines under its start spot keep a right gutter of ring + gap, from first paint (CSS only)', () => {
+  const rules = cssRules('balloon.css');
+  const MEDIA = '(scripting:enabled)and(max-width:599.98px)';
+  const SCOPE = 'main[data-ring-graded]:not([data-ring-graded="0"])';
+  // The reservation, derived from the ring's own CSS: its size and right offset, minus the page gutter, plus the gap.
+  const ring = rules.find((r) => r.media === null && r.sels.includes('.bg-balloon'));
+  const decl = (r, p) => r.decls.find(([k]) => k === p)?.[1];
+  const size = /^(\d+)px$/.exec(decl(ring, '--bal-size'));
+  const right = /^calc\((\d+)px \+ env\(safe-area-inset-right, 0px\)\)$/.exec(decl(ring, 'right'));
+  const gutter = /^(\d+)px$/.exec(valueOf(cssRules('base.css'), ':root', '--gutter'));
+  assert.ok(size && right && gutter, 'premise: ring size, ring right offset and page gutter are plain px');
+  const want = Number(size[1]) + Number(right[1]) - Number(gutter[1]) + RING_GAP;
+  assert.equal(want, 68, 'premise: 64 + 12 - 16 + 8');
+  // The lines the ring's start spot can cover: the day header's title block (label, h1, date, count), the
+  // home page's lines above it (the tomorrow line, the missing-day notice) and the late-data notice on top.
+  const lines = ['.day-head__title', '.home-next', '.home-notice', '.stale'];
+  const reserved = rules.filter((r) => r.media === MEDIA && lines.some((l) => r.sels.includes(`${SCOPE} ${l}`)));
+  assert.equal(reserved.length, 1, 'one rule');
+  assert.deepEqual(reserved[0].sels.sort(), lines.map((l) => `${SCOPE} ${l}`).sort());
+  assert.deepEqual(reserved[0].decls, [['margin-right', `calc(${want}px + env(safe-area-inset-right, 0px))`]]);
+  // Only with scripting (no ring without JS) and only where the ring shows on a phone (something graded).
+  for (const r of rules) {
+    if (r.sels.some((x) => lines.some((l) => x.endsWith(l))) && r.decls.some(([k]) => k === 'margin-right' || k === 'padding-right')) {
+      assert.equal(r.media, MEDIA, `${r.sels.join(',')}: never outside the scripting + phone query`);
     }
-    return lines;
-  };
-  const text = (segs) => segs.map((x) => x.t).join('');
-  const need = (contentW, column, hPx, lPx, spacer) => Math.max(...VARIANTS.map((v) => {
-    const h = wrap(text(v.heading), Math.floor(contentW / (hPx * 0.62)), Math.floor((contentW - spacer) / (hPx * 0.62)));
-    const l = wrap(text(v.line), Math.floor(contentW / (lPx * 0.58)));
-    const copy = h * hPx * 1.2 + 6 + l * lPx * 1.5;
-    return column ? 36 + copy + 16 + 44 : 42 + Math.max(copy, 44);
-  }));
-  // Content width at the narrowest viewport of each range: viewport − 2 gutters − 2px border − side padding.
-  const BUTTON = 248; // "SEE THE FOUNDING BENEFITS": 25 × (12.5px × .6 + .06em) + 40px padding + 2px border
-  const want = [
-    need(320 - 32 - 2 - 32, true, 22, 15, 32),
-    need(360 - 32 - 2 - 32, true, 22, 15, 32),
-    need(480 - 32 - 2 - 32, true, 22, 15, 32),
-    need(640 - 48 - 2 - 32, true, 22, 15, 32),
-    need(1024 - 48 - 2 - 88 - 24 - BUTTON, false, 26, 16, 0),
-  ];
-  want.forEach((h, i) => {
-    assert.ok(mins[i] >= h, `breakpoint ${steps[i][0]}px: min-height ${mins[i]}px holds the longest variant (${h.toFixed(1)}px)`);
-    assert.ok(mins[i] <= h + 16, `breakpoint ${steps[i][0]}px: min-height ${mins[i]}px is not far over the longest variant (${h.toFixed(1)}px)`);
-  });
+  }
+  // Premise: the scope matches what the build writes and balloon.js reads.
+  const html = page({ path: '/', title: 't', description: 'd', body: '<p>x</p>', config: cfg, year: 2026, mainData: { ringGraded: 55 } });
+  assert.match(html, /<main [^>]*data-ring-graded="55"/);
 });
 
 test('below 600px the nav is four equal tabs (one per NAV item)', () => {

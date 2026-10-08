@@ -207,10 +207,15 @@ export function init({
     const r = tools && !tools.hidden ? tools.getBoundingClientRect() : null;
     return floorTop(barBottom(), r && r.height > 0 ? { top: Math.round(r.top), bottom: Math.round(r.bottom) } : null);
   }
-  /** The founding banner's bottom while it is in the page and displayed, else null. */
+  /**
+   * The founding banner's bottom while it is in the page and displayed, else null. A card the
+   * visitor closed is display:none from first paint (early.js marks <html> with fd-hidden; its box
+   * is then 0x0): no offset either way.
+   */
   function bannerBottom() {
     const banner = doc.querySelector('[data-banner]');
     if (!banner || banner.hidden) return null;
+    if (html.classList.contains('fd-hidden')) return null;
     const r = banner.getBoundingClientRect();
     return r.height > 0 && Number.isFinite(r.bottom) ? Math.round(r.bottom) : null;
   }

@@ -1,7 +1,8 @@
 // Page shell: <head>, header + nav, the founding card, <main>, footer. BUILD ONLY (never shipped to the browser).
 //
 // CSP contract (plan S4, Task 2): the shell emits no inline <script> body, no <style> element and no
-// style= attribute. Scripts are external module scripts on same-origin root-relative paths only.
+// style= attribute. Scripts are external module scripts on same-origin root-relative paths only, plus
+// the one classic first-paint guard (EARLY_SCRIPT) on pages with the founding card.
 // Every interpolated value goes through escHtml / escAttr.
 
 import { escHtml, escAttr } from './esc.js';
@@ -24,6 +25,13 @@ export const NAV = Object.freeze([
 
 /** The founding card's script (dismiss + variant rotation): the FIRST module script on every page with the card. */
 export const BANNER_SCRIPT = '/assets/js/banner.js';
+/**
+ * The card's first-paint guard: the site's ONE classic (non-module), synchronous script, in <head>
+ * before the stylesheet on every page with the card. It marks <html> for a visitor who dismissed the
+ * card, so the card never paints and then disappears (zero layout shift). Only where the card is: on
+ * /waitlist/* it would be a render-blocking request with nothing to hide.
+ */
+export const EARLY_SCRIPT = '/assets/js/early.js';
 /** The small-screen menu's script (spec §16.3): on EVERY page, right after banner.js (or first). */
 export const NAV_SCRIPT = '/assets/js/nav.js';
 /** Restores today's tab row below 600 px when scripting is off; linked inside <noscript>, never in site.css. */
@@ -171,8 +179,10 @@ function footer(op, year) {
  * @param {number} [o.year]       copyright year (default: the current Lagos year)
  * @param {boolean} [o.banner]    the founding card under the header (spec §16.5; default true; false
  *                                on /waitlist/ and its result pages). Its static copy is
- *                                VARIANTS[variantFor(path)], so different pages carry different
- *                                copy without JS; true also loads banner.js as the first module script
+ *                                VARIANTS[variantFor(path)] (PAGE_VARIANTS for the fixed pages, the
+ *                                path hash for dated ones), so different pages carry different copy
+ *                                without JS; true also loads early.js (classic, in <head>) and
+ *                                banner.js as the first module script
  * @param {string} [o.ogImage]    site path of a 1200x630 PNG/JPEG -> og:image (absolute, from
  *                                config.origin) + og:image:width/height/alt
  * @param {string} [o.ogImageAlt] og:image:alt; defaults to the known alt of OG_FOUNDING, required
@@ -240,7 +250,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/css/site.css">
+${withBanner ? `<script src="${escAttr(EARLY_SCRIPT)}"></script>\n` : ''}<link rel="stylesheet" href="/assets/css/site.css">
 <noscript><link rel="stylesheet" href="${escAttr(NOJS_CSS)}"></noscript>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">

@@ -83,8 +83,25 @@ export function pathHash(s) {
   return h >>> 0;
 }
 
-/** The variant a page's static HTML carries: a stable hash of its site path, mod the variant count. */
+/**
+ * The static variant of every fixed page with the card, each a different one (a reader moving between
+ * them without JS sees different copy). The home page leads with variant 1, "Be one of 1,000 founding
+ * members" (operator, 2026-10-08). tests/build.test.js fails when a fixed page is added or removed
+ * without updating this map. Dated pages (/day/YYYY-MM-DD/) are not listed: they use the path hash.
+ */
+export const PAGE_VARIANTS = Object.freeze({
+  '/': 0, // Be one of 1,000 founding members
+  '/our-record/': 1, // 30% off for as long as you subscribe
+  '/features/': 4, // See new features before everyone else
+  '/privacy/': 2, // Reserve your founding place
+  '/terms/': 8, // Founding benefits that stay with you
+  '/refunds/': 6, // Help when you need it, first
+  '/404.html': 7, // Only 1,000 founding places
+});
+
+/** The variant a page's static HTML carries: its PAGE_VARIANTS entry, else a stable hash of its site path. */
 export function variantFor(path) {
   if (typeof path !== 'string') throw new TypeError(`variantFor: path must be a string, got ${typeof path}`);
+  if (Object.hasOwn(PAGE_VARIANTS, path)) return PAGE_VARIANTS[path];
   return pathHash(path) % VARIANTS.length;
 }

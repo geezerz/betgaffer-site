@@ -150,6 +150,24 @@
 html.ring-static .day-head .ring{ display:flex; }
 html.has-balloon .day-head .ring{ display:none; }
 
+/* Phones: room for the small ring's start spot (spec §16.7). Below 600px the 64px ring starts top
+   right, 12px in, just below the founding card or the header — over the right end of the first lines
+   under it: the day header's title block (label, h1, date, count), on the home page the tomorrow
+   line and the missing-day notice, and the late-data notice (.stale) above them all when it shows.
+   Those lines keep a right margin of ring + gap
+   (64 + 12 − 16px page gutter + 8px gap = 68px, plus the right safe area, as the ring's own offset),
+   so the ring covers no text. CSS only and present from the first paint: no shift. Scoped to scripting
+   (no floating ring without JS; the static ring sits in the flow) and to pages where the ring shows
+   on a phone: something graded (balloon.js hides the small ring on a day with nothing graded). */
+@media (scripting: enabled) and (max-width:599.98px){
+  main[data-ring-graded]:not([data-ring-graded="0"]) .day-head__title,
+  main[data-ring-graded]:not([data-ring-graded="0"]) .home-next,
+  main[data-ring-graded]:not([data-ring-graded="0"]) .home-notice,
+  main[data-ring-graded]:not([data-ring-graded="0"]) .stale{
+    margin-right:calc(68px + env(safe-area-inset-right, 0px));
+  }
+}
+
 @media (prefers-reduced-motion:reduce){
   .bg-balloon{ transition:none; }
 }

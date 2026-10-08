@@ -12,6 +12,7 @@ import { build, HEADERS, CSS_ORDER, ISOMORPHIC_LIB, chooseDays, parseCli, loadCo
 import realConfig from '../site/config.js';
 import { fmtDayLong, fmtStamp } from '../site/lib/time.js';
 import { nodeSha256 } from '../site/lib/data.js';
+import { PAGE_VARIANTS, VARIANTS, pathHash } from '../site/lib/founding.js';
 import * as privacy from '../site/content/privacy.js';
 import * as terms from '../site/content/terms.js';
 import * as refunds from '../site/content/refunds.js';
@@ -67,7 +68,7 @@ describe('build of the fixture artifact', () => {
     for (const f of ['favicon.svg', 'mark.svg', 'apple-touch-icon.png']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/img', f)), await readFile(join(REPO_ROOT, 'site/assets/img', f)), f);
     }
-    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js', 'banner.js', 'nav.js']) {
+    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js', 'banner.js', 'nav.js', 'early.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
     assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'founding.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
@@ -132,8 +133,17 @@ describe('build of the fixture artifact', () => {
     assert.equal(files.length, PAGE_ROUTES.length);
     for (const { rel, html } of files) {
       assert.deepEqual(cspViolations(html), [], rel);
-      for (const s of findAll(parse(html), (n) => n.tag === 'script')) {
-        assert.equal(s.attrs.type, 'module', `${rel}: scripts are modules`);
+      const doc = parse(html);
+      const head = find(doc, (n) => n.tag === 'head');
+      for (const s of findAll(doc, (n) => n.tag === 'script')) {
+        // Modules only — except the founding card's first-paint guard: classic, synchronous, in <head>.
+        if (s.attrs.src === '/assets/js/early.js') {
+          assert.equal(s.attrs.type, undefined, `${rel}: early.js is a classic script`);
+          assert.ok(find(head, (n) => n === s), `${rel}: early.js is in <head>`);
+          assert.equal(s.attrs.async ?? s.attrs.defer, undefined, `${rel}: early.js runs before first paint`);
+        } else {
+          assert.equal(s.attrs.type, 'module', `${rel}: scripts are modules`);
+        }
         assert.match(s.attrs.src, /^\/assets\/js\/[a-z-]+\.js$/, `${rel}: same-site script`);
         assert.ok(existsSync(join(ws.out, s.attrs.src)), `${rel}: ${s.attrs.src} is shipped`);
       }
@@ -164,6 +174,14 @@ describe('build of the fixture artifact', () => {
     assert.equal(withSlot, 3, 'premise: / and the two full day pages carry the slot');
   });
 
+  /** Elements carrying the class `bg-fd-card` among others (class is a whitespace-separated list). */
+  const fdCards = (doc) => findAll(doc, (n) => (n.attrs.class ?? '').split(/\s+/).includes('bg-fd-card'));
+
+  test('premise: the card count sees bg-fd-card in a multi-class list, and only as a whole class', () => {
+    const doc = parse('<div class="x bg-fd-card other"></div><div class="bg-fd-card	late"></div><div class="bg-fd-card__body"></div><div class="nobg-fd-card"></div>');
+    assert.equal(fdCards(doc).length, 2);
+  });
+
   test('the founding card (spec §16.5): none on /waitlist/ or its result pages, exactly one on every other page; no slim banner', async () => {
     let without = 0;
     let withOne = 0;
@@ -171,7 +189,9 @@ describe('build of the fixture artifact', () => {
       const doc = parse(html);
       const banners = findAll(doc, (n) => n.attrs['data-banner'] !== undefined).length;
       const bannerJs = find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/banner.js') !== null;
-      const cards = findAll(doc, (n) => (n.attrs.class ?? '').split(/s+/).includes('bg-fd-card')).length;
+      const earlyJs = findAll(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/early.js').length;
+      assert.equal(earlyJs, banners, `${rel}: early.js (the first-paint guard) exactly where the card is`);
+      const cards = fdCards(doc).length;
       assert.equal(cards, banners, `${rel}: every [data-banner] is the founding card, and the card is nowhere else`);
       assert.doesNotMatch(html, /bg-banner/, `${rel}: the slim banner is gone`);
       if (rel.startsWith('waitlist/')) { // /waitlist/ itself and its four result pages
@@ -188,12 +208,36 @@ describe('build of the fixture artifact', () => {
     assert.equal(withOne, PAGE_ROUTES.length - 5, 'premise: every other page was scanned');
   });
 
+  test('static card variant: every fixed page with the card is in PAGE_VARIANTS (and only those), each a different variant; / is variant 1', async () => {
+    const fixed = new Map();
+    const dated = /^\/day\/\d{4}-\d{2}-\d{2}\/$/;
+    let datedPages = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const slot = find(parse(html), (n) => n.attrs['data-banner'] !== undefined);
+      if (!slot) continue;
+      const path = rel === 'index.html' ? '/' : rel.endsWith('/index.html') ? `/${rel.slice(0, -'index.html'.length)}` : `/${rel}`;
+      const v = Number(slot.attrs['data-variant']);
+      if (dated.test(path)) {
+        assert.equal(v, pathHash(path) % VARIANTS.length, `${path}: a dated page keeps its path hash`);
+        datedPages++;
+      } else {
+        fixed.set(path, v);
+      }
+    }
+    assert.ok(datedPages >= 2, 'premise: day pages were built');
+    // The map's keys are exactly the built fixed pages: a new page needs its own variant, a removed one leaves no stale key.
+    assert.deepEqual([...fixed.keys()].sort(), Object.keys(PAGE_VARIANTS).sort());
+    for (const [path, v] of fixed) assert.equal(v, PAGE_VARIANTS[path], path);
+    assert.equal(new Set(fixed.values()).size, fixed.size, `all different: ${JSON.stringify([...fixed])}`);
+    assert.equal(fixed.get('/'), 0, 'the home page carries variant 1');
+  });
+
   test('every page loads nav.js once (the ☰ menu, spec §16.3): banner.js first where the banner is, then nav.js, then page scripts', async () => {
     let pages = 0;
     let waitlistPages = 0;
     for (const { rel, html } of await htmlFiles(ws.out)) {
       const doc = parse(html);
-      const srcs = findAll(doc, (n) => n.tag === 'script').map((s) => s.attrs.src);
+      const srcs = findAll(doc, (n) => n.tag === 'script' && n.attrs.type === 'module').map((s) => s.attrs.src);
       const hasBanner = find(doc, (n) => n.attrs['data-banner'] !== undefined) !== null;
       const head = hasBanner ? ['/assets/js/banner.js', '/assets/js/nav.js'] : ['/assets/js/nav.js'];
       assert.deepEqual(srcs.slice(0, head.length), head, `${rel}: ${srcs.join(', ')}`);

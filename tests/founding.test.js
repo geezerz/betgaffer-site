@@ -142,14 +142,28 @@ describe('variantFor(path): the static variant of a page', () => {
     assert.equal(F.pathHash('foobar'), 0xbf9cf968);
   });
 
-  test('an index into VARIANTS, deterministic per path', () => {
-    for (const p of ['/', '/our-record/', '/day/2026-10-08/', '/404.html']) {
+  test('a dated page (day / archive): an index into VARIANTS from its path hash, deterministic', () => {
+    for (const p of ['/day/2026-10-07/', '/day/2026-10-08/', '/day/2025-01-01/']) {
       const i = F.variantFor(p);
       assert.ok(Number.isInteger(i) && i >= 0 && i < F.VARIANTS.length, `${p}: ${i}`);
       assert.equal(F.variantFor(p), i);
       assert.equal(i, F.pathHash(p) % F.VARIANTS.length);
     }
     assert.throws(() => F.variantFor(7), TypeError);
+  });
+
+  test('the fixed pages have an explicit variant each, all different; the home page shows variant 1', () => {
+    const map = F.PAGE_VARIANTS;
+    assert.ok(Object.isFrozen(map));
+    assert.equal(map['/'], 0, "operator's pick (2026-10-08): the home page leads with variant 1");
+    assert.equal(F.VARIANTS[F.variantFor('/')].heading.map((x) => x.t).join(''), 'Be one of 1,000 founding members');
+    const values = Object.values(map);
+    assert.ok(values.every((i) => Number.isInteger(i) && i >= 0 && i < F.VARIANTS.length), String(values));
+    assert.equal(new Set(values).size, values.length, `distinct: ${JSON.stringify(map)}`);
+    for (const [p, i] of Object.entries(map)) assert.equal(F.variantFor(p), i, `${p} uses its mapped variant, not its hash`);
+    assert.ok(Object.keys(map).some((p) => F.pathHash(p) % F.VARIANTS.length !== map[p]), 'premise: the map overrides the hash somewhere');
+    assert.equal(Object.hasOwn(map, 'toString'), false);
+    assert.equal(F.variantFor('toString'), F.pathHash('toString') % F.VARIANTS.length, 'only own keys of the map count');
   });
 
   test('different pages carry different copy: at least 5 distinct variants over the site\'s paths', () => {
