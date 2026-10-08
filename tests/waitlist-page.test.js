@@ -300,17 +300,31 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.doesNotMatch(html, /waitlist\.js/);
   });
 
-  test('home and full day pages: the founding card sits immediately before the day card, above the first fixture row', async () => {
+  test('home and full day pages: the founding card sits inside the day card, under the toolbar slot, above the day bar and the first row', async () => {
     for (const rel of ['index.html', 'day/2026-10-07/index.html', 'day/2026-10-08/index.html']) {
       const html = await read(rel);
-      const cards = findAll(parse(html), (n) => n.tag === 'section' && has(n, 'bg-fd-card'));
+      const doc = parse(html);
+      const cards = findAll(doc, (n) => n.tag === 'section' && has(n, 'bg-fd-card'));
       assert.equal(cards.length, 1, `${rel}: one founding card`);
+      // Spec §5: toolbar slot → founding card → day bar → list, all children of the one day card.
+      const day = find(doc, (n) => n.tag === 'div' && has(n, 'day') && n.attrs['data-day'] !== undefined);
+      assert.ok(day, `${rel}: the day card`);
+      const kids = day.children.filter((c) => c.tag !== undefined);
+      const at = (fn) => kids.findIndex(fn);
+      const iTools = at((n) => n.attrs['data-day-tools'] !== undefined);
+      const iCard = at((n) => n === cards[0]);
+      const iBar = at((n) => has(n, 'day-bar'));
+      const iList = at((n) => n.attrs['data-fx-list'] !== undefined);
+      assert.ok(iTools >= 0, `${rel}: the toolbar slot`);
+      assert.equal(iCard, iTools + 1, `${rel}: the card directly after the toolbar slot`);
+      assert.equal(iBar, iCard + 1, `${rel}: the day bar directly after the card`);
+      assert.ok(iList > iBar, `${rel}: the list after the day bar`);
       const card = html.indexOf('<section class="bg-fd-card"');
       const row = html.search(/<li\b[^>]*\bdata-fx=/);
       assert.ok(row > 0, `${rel}: premise, the page has fixture rows`);
       assert.ok(card < row, `${rel}: card before the first row`);
-      assert.match(html, /<\/section>\s*<div class="day" data-day=/, `${rel}: directly before the day card`);
-      assert.ok(card < html.indexOf('<h1'), `${rel}: above the day header`);
+      assert.ok(card > html.indexOf('<h1'), `${rel}: below the day header (the card is not a heading: the h1 stays first)`);
+      assert.equal(findAll(cards[0], (n) => /^h[1-6]$/.test(n.tag ?? '')).length, 0, `${rel}: no heading inside the card`);
       const text = visibleText(html);
       assert.ok(text.includes(CARD_TITLE) && text.includes(SUMMARY) && text.includes('See the founding benefits'), rel);
       assert.deepEqual(claimViolations(html), [], rel);

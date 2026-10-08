@@ -39,11 +39,15 @@ const SITE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(SITE, '..');
 
 /** site.css = these files, in this order. */
-export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
-/** site/lib modules that run in the browser too, copied to /assets/js/lib/ for the archive loader. */
-export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js']);
+export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+/** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar). */
+export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js']);
 /** Same-site browser entry modules. */
-const SCRIPT = Object.freeze({ stale: '/assets/js/stale.js', day: '/assets/js/day.js', waitlist: '/assets/js/waitlist.js' });
+const SCRIPT = Object.freeze({
+  stale: '/assets/js/stale.js', day: '/assets/js/day.js', waitlist: '/assets/js/waitlist.js', predictions: '/assets/js/predictions.js',
+});
+/** The predictions toolbar loads where a day card has its toolbar slot (a zero-fixture day has none). */
+const hasDayTools = (body) => /\bdata-day-tools[\s>]/.test(body);
 
 /** dist/_headers (Cloudflare Pages), exactly as the plan states it. */
 export const HEADERS = `/*
@@ -143,11 +147,10 @@ ${strip}`;
     ? `<div class="home-notice" role="note"><p>${escHtml(`No card was published for ${fmtDayLong(today)}.`)} ${escHtml(`This is the most recent card, for ${fmtDayLong(home)}.`)}</p></div>\n`
     : '';
   const { prev, next } = neighbours(home);
-  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next });
-  // The founding card (spec §2) sits immediately before the day card (Plan B moves it under the toolbar).
+  // The founding card (spec §2, §5) sits inside the day card, between the toolbar and the list.
+  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next, beforeList: waitlist.foundingCard() });
   return `${notice}${tomorrowLine(tomorrow)}
 ${strip}
-${waitlist.foundingCard()}
 ${card}`;
 }
 
@@ -390,13 +393,14 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     pages.set(o.path, page({ config, year, ...o }));
   };
 
+  const home = homeBody({ index, choice, days, listedAsc, neighbours });
   add({
     path: '/',
     title: 'Football predictions',
     description: 'The day’s football in the competitions Bet Gaffer covers: at most one recommended pick per fixture, '
       + 'with its probability, graded in public after full time.',
-    body: homeBody({ index, choice, days, listedAsc, neighbours }),
-    scripts: [SCRIPT.stale],
+    body: home,
+    scripts: hasDayTools(home) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale],
     mainData: {
       generatedAt: index ? index.generated_at : null,
       day: choice.home,
@@ -410,9 +414,9 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const d = entry.day;
     const { prev, next } = neighbours(d);
     const full = d === choice.home || d === choice.tomorrow;
-    // A full card carries the founding card immediately before it, as on the home page (spec §2).
+    // A full card carries the founding card under its toolbar, as on the home page (spec §2, §5).
     const body = full
-      ? `${waitlist.foundingCard()}\n${renderDay(days.get(d), { prevDay: prev, nextDay: next })}`
+      ? renderDay(days.get(d), { prevDay: prev, nextDay: next, beforeList: waitlist.foundingCard() })
       : stubBody(entry, { prev, next });
     const isStubWithFetch = !full && !entry.compacted;
     add({
@@ -422,7 +426,8 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
       body: `${dayStrip(listedAsc, d, { onDayPage: true })}\n${body}`,
       // The home page shows this same card: name / as the canonical URL (review M7).
       canonicalPath: d === choice.home && d === today ? '/' : undefined,
-      scripts: isStubWithFetch ? [SCRIPT.stale, SCRIPT.day] : [SCRIPT.stale],
+      // A stub's day.js imports predictions.js itself and enhances the card once it is verified.
+      scripts: isStubWithFetch ? [SCRIPT.stale, SCRIPT.day] : hasDayTools(body) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale],
       mainData: { generatedAt: index.generated_at, day: d, tomorrow: choice.tomorrow, view: 'day', staleAfterHours },
     });
   }

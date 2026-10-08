@@ -1,0 +1,259 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — the predictions toolbar (spec §5): search, Leagues, the result
+   line, "Jump to now", the empty state and the Leagues dialog.
+   Markup: site/assets/js/predictions.js (built client-side into the hidden
+   [data-day-tools] slot fixtures.js renders). Colours, sizes: base.css. The look is the
+   UI tab's: compact pills on --surface-2, mono counts, quiet surfaces.
+
+   Every element given a display here also gets an explicit [hidden] rule: an
+   author display beats the UA's [hidden]{display:none}, and filtering must hide.
+   Phone first (320px): the field shrinks, nothing scrolls sideways.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. STICKY STACK ─────────────────────────────────────────────────────────
+   The header is sticky, the banner is not; the toolbar sticks under the header.
+   predictions.js measures both heights (ResizeObserver) into --bg-sticky-top and
+   --bg-tools-h on <html>; the values below are the fallbacks per breakpoint.
+   Scoped to html.has-day-tools (set by the same script): other pages keep base.css's. */
+html.has-day-tools{
+  scroll-padding-top:calc(var(--bg-sticky-top, 97px) + var(--bg-tools-h, 112px) + 12px);
+}
+@media (min-width:600px){
+  html.has-day-tools{ scroll-padding-top:calc(var(--bg-sticky-top, 57px) + var(--bg-tools-h, 60px) + 12px); }
+}
+
+.day-tools{
+  position:sticky; top:var(--bg-sticky-top, 97px); z-index:40;
+  display:flex; flex-direction:column;
+  /* Bleed into the gutter so rows sliding underneath never show at the sides. */
+  margin-inline:calc(var(--gutter) * -1); padding:8px var(--gutter);
+  background:rgba(11,16,23,.94);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+@media (min-width:600px){ .day-tools{ top:var(--bg-sticky-top, 57px); } }
+@media (min-width:1024px){ .day-tools{ top:var(--bg-sticky-top, 65px); } }
+.day-tools[hidden]{ display:none; }
+
+.bg-tools__row{ display:flex; align-items:center; gap:8px; min-width:0; }
+.bg-tools__row[hidden]{ display:none; }
+/* The second row (result line, Show all, Jump to now) takes room only when it has something. */
+.bg-tools__meta{ flex-wrap:wrap; column-gap:12px; row-gap:0; }
+.bg-tools__meta.is-on{ padding-top:6px; }
+
+@media (min-width:760px){
+  .day-tools{ flex-direction:row; align-items:center; gap:12px; }
+  .bg-tools__row:first-child{ flex:0 1 520px; }
+  .bg-tools__meta{ flex:1 1 auto; justify-content:flex-end; }
+  .bg-tools__meta.is-on{ padding-top:0; }
+}
+
+/* ── 2. SEARCH ───────────────────────────────────────────────────────────────── */
+.bg-search{
+  position:relative; flex:1 1 auto; min-width:0;
+  display:flex; align-items:center;
+  height:var(--tap); padding-left:14px;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-pill);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+.bg-search[hidden]{ display:none; }
+.bg-search:hover{ border-color:var(--line-2); }
+.bg-search:focus-within{ border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-quiet); }
+
+/* A magnifier drawn in CSS: a ring and a handle (no icon file, no inline SVG). */
+.bg-search__glass{
+  position:relative; flex:0 0 auto; width:13px; height:13px; margin-right:9px;
+  border:1.6px solid var(--muted-2); border-radius:50%;
+}
+.bg-search__glass::after{
+  content:''; position:absolute; right:-5px; bottom:-4px;
+  width:6px; height:1.6px; background:var(--muted-2); border-radius:1px;
+  transform:rotate(45deg);
+}
+.bg-search:focus-within .bg-search__glass{ border-color:var(--accent); }
+.bg-search:focus-within .bg-search__glass::after{ background:var(--accent); }
+
+.bg-search__input{
+  flex:1 1 auto; min-width:0; height:100%; padding:0 6px 0 0; margin:0;
+  background:none; border:0; outline:none; border-radius:0;
+  color:var(--ink); font:inherit; font-size:15px; /* ≥ 15px: iOS does not zoom the page on focus */
+  -webkit-appearance:none; appearance:none;
+}
+.bg-search__input::placeholder{ color:var(--muted-2); opacity:1; }
+.bg-search__input::-webkit-search-cancel-button,
+.bg-search__input::-webkit-search-decoration{ -webkit-appearance:none; appearance:none; }
+.bg-search__input:focus-visible{ outline:none; } /* the pill carries the focus ring */
+
+.bg-search__x{
+  flex:0 0 auto; display:inline-grid; place-items:center;
+  width:var(--tap); height:var(--tap); margin:-1px -1px -1px 0; padding:0;
+  background:none; border:0; border-radius:var(--r-pill); cursor:pointer;
+  color:var(--muted); font-size:20px; line-height:1;
+}
+.bg-search__x[hidden]{ display:none; }
+.bg-search__x:hover{ color:var(--ink); }
+.bg-search__x:focus-visible{ outline-offset:-4px; }
+
+/* ── 3. PILL TOOLS (Leagues, Jump to now) ────────────────────────────────────── */
+.bg-tool{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:8px;
+  min-height:var(--tap); padding:0 16px; margin:0;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:var(--r-pill);
+  color:var(--ink-2); font:inherit; font-size:13.5px; font-weight:500; white-space:nowrap; cursor:pointer;
+  transition:border-color .14s ease, color .14s ease;
+}
+.bg-tool[hidden]{ display:none; }
+.bg-tool:hover{ border-color:var(--line-2); color:var(--ink); }
+/* An active league filter: the outline and the count say so, never colour alone. */
+.bg-tool[data-active]{ border-color:rgba(34,197,94,.42); color:var(--ink); }
+.bg-tool__count{
+  display:inline-block; font-size:11px; font-weight:700; line-height:1.5; color:var(--accent);
+  background:var(--accent-quiet); border-radius:var(--r-pill); padding:1px 8px;
+}
+.bg-tool__count[hidden]{ display:none; }
+
+.bg-tool--jump{ margin-left:auto; min-height:36px; padding:0 13px; font-size:12.5px; position:relative; }
+/* 36px drawn, 44px to the finger. */
+.bg-tool--jump::before{ content:''; position:absolute; inset:-4px 0; }
+.bg-tool--jump::after{
+  content:''; width:6px; height:6px; margin-left:1px;
+  border-right:1.6px solid currentColor; border-bottom:1.6px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);
+}
+
+/* ── 4. RESULT LINE ──────────────────────────────────────────────────────────── */
+.bg-result{
+  margin:0; min-width:0;
+  font-size:11.5px; letter-spacing:.02em; line-height:1.4; color:var(--muted);
+}
+/* Always in the tree (a live region must be present to be announced); empty, it takes no room. */
+.bg-result:empty{
+  position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+}
+.bg-linkbtn{
+  display:inline-flex; align-items:center; min-height:var(--tap); padding:0 4px; margin:0;
+  background:none; border:0; cursor:pointer;
+  color:var(--accent); font:inherit; font-size:12.5px; font-weight:600;
+  text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px;
+}
+.bg-linkbtn[hidden]{ display:none; }
+.bg-linkbtn:hover{ color:var(--accent-hi); }
+
+/* ── 5. EMPTY STATE (the UI tab's .bg-filter-empty) ──────────────────────────── */
+.bg-filter-empty{
+  display:flex; flex-direction:column; align-items:flex-start; gap:12px;
+  padding:24px 20px; border:1px dashed var(--line-2); border-radius:var(--r-2);
+}
+.bg-filter-empty[hidden]{ display:none; }
+.bg-filter-empty__t{ margin:0; font-size:15px; font-weight:600; color:var(--ink); }
+
+/* A row reached by "Jump to now" takes focus; the ring sits inside the card's edge. */
+.fx:focus{ outline:none; }
+.fx:focus-visible{ outline:2px solid var(--accent-hi); outline-offset:-2px; }
+
+/* ── 6. THE LEAGUES DIALOG ───────────────────────────────────────────────────────
+   A modal <dialog> (showModal): a bottom sheet on phones, a centred panel from
+   640px. Fixed head and foot; the list scrolls between them.
+   ─────────────────────────────────────────────────────────────────────────── */
+.bg-pick{
+  margin:auto 0 0; padding:0; inset-inline:0;
+  width:100%; max-width:100%; max-height:min(86dvh, 680px);
+  background:var(--surface-2); color:var(--ink);
+  border:1px solid var(--line-2); border-bottom:0; border-radius:var(--r-3) var(--r-3) 0 0;
+  box-shadow:0 -18px 48px -24px rgba(0,0,0,.9);
+  overflow:hidden; overscroll-behavior:contain;
+}
+.bg-pick[open]{ display:flex; flex-direction:column; }
+.bg-pick[hidden]{ display:none; }
+.bg-pick::backdrop{ background:rgba(4,8,12,.66); }
+@media (min-width:640px){
+  .bg-pick{
+    margin:auto; width:min(440px, calc(100vw - 48px)); max-height:min(620px, calc(100dvh - 48px));
+    border-bottom:1px solid var(--line-2); border-radius:var(--r-3);
+    box-shadow:0 26px 54px -26px rgba(0,0,0,.9);
+  }
+}
+
+.bg-pick__in{ display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+.bg-pick__in[hidden]{ display:none; }
+
+.bg-pick__head{
+  display:flex; flex-direction:column; gap:3px;
+  padding:16px 18px 12px; border-bottom:1px solid var(--line);
+}
+.bg-pick__head[hidden]{ display:none; }
+/* The sheet's grab line: a sheet reads as one on sight. */
+.bg-pick__head::before{
+  content:''; align-self:center; width:36px; height:4px; margin:-6px 0 8px;
+  border-radius:var(--r-pill); background:var(--line-2);
+}
+@media (min-width:640px){ .bg-pick__head::before{ content:none; } }
+.bg-pick__title{ margin:0; font-size:16px; font-weight:700; letter-spacing:-.01em; color:var(--ink); }
+.bg-pick__title:focus{ outline:none; }
+.bg-pick__sub{ margin:0; font-size:11.5px; color:var(--muted); }
+
+.bg-pick__search{
+  display:flex; align-items:center; flex:0 0 auto;
+  height:var(--tap); margin:12px 14px 6px; padding:0 14px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-pill);
+}
+.bg-pick__search[hidden]{ display:none; }
+.bg-pick__search:focus-within{ border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-quiet); }
+.bg-pick__search input{
+  flex:1; min-width:0; height:100%; padding:0; margin:0;
+  background:none; border:0; outline:none; color:var(--ink); font:inherit; font-size:15px;
+  -webkit-appearance:none; appearance:none;
+}
+.bg-pick__search input::placeholder{ color:var(--muted-2); opacity:1; }
+.bg-pick__search input::-webkit-search-cancel-button{ -webkit-appearance:none; appearance:none; }
+
+.bg-pick__list{
+  flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  list-style:none; margin:0; padding:4px 8px 10px;
+}
+.bg-pick__item[hidden]{ display:none; }
+
+/* One option: the native checkbox, restyled (screen readers and voice control know it). */
+.bg-pick__opt{
+  display:flex; align-items:center; gap:12px;
+  min-height:var(--tap); padding:0 10px; border-radius:var(--r-1);
+  color:var(--ink-2); font-size:14px; cursor:pointer;
+}
+.bg-pick__opt[hidden]{ display:none; }
+.bg-pick__opt:hover{ background:var(--surface-3); color:var(--ink); }
+.bg-pick__opt input{
+  appearance:none; -webkit-appearance:none; flex:0 0 auto; margin:0;
+  width:18px; height:18px; border-radius:5px; cursor:pointer;
+  border:1.5px solid var(--line-2); background:var(--surface);
+  display:grid; place-content:center;
+  transition:background .12s ease, border-color .12s ease;
+}
+.bg-pick__opt input[hidden]{ display:none; }
+.bg-pick__opt input::before{
+  content:''; width:10px; height:10px; transform:scale(0);
+  clip-path:polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0, 43% 62%);
+  background:var(--on-accent); transition:transform .12s ease;
+}
+.bg-pick__opt input:checked{ background:var(--accent); border-color:var(--accent); }
+.bg-pick__opt input:checked::before{ transform:scale(1); }
+.bg-pick__opt input:focus-visible{ outline:2px solid var(--accent-hi); outline-offset:2px; }
+.bg-pick__name{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bg-pick__n{ flex:0 0 auto; font-size:11.5px; color:var(--muted); }
+.bg-pick__opt input:checked ~ .bg-pick__n{ color:var(--accent); }
+
+.bg-pick__msg{ margin:0; padding:18px 24px; font-size:13.5px; color:var(--muted); }
+
+.bg-pick__foot{
+  display:flex; gap:8px; flex:0 0 auto;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top:1px solid var(--line); background:var(--surface-2);
+}
+.bg-pick__foot[hidden]{ display:none; }
+.bg-pick__foot .bg-btn{ flex:1 1 0; }
+@media (min-width:640px){ .bg-pick__foot{ padding-bottom:12px; } }
+
+@media (prefers-reduced-motion:no-preference){
+  .bg-pick[open]{ animation:bg-pick-in .18s ease-out; }
+  @keyframes bg-pick-in{ from{ transform:translateY(16px); opacity:0; } to{ transform:none; opacity:1; } }
+}

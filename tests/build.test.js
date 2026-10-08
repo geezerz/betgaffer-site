@@ -67,10 +67,10 @@ describe('build of the fixture artifact', () => {
     for (const f of ['favicon.svg', 'mark.svg', 'apple-touch-icon.png']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/img', f)), await readFile(join(REPO_ROOT, 'site/assets/img', f)), f);
     }
-    for (const f of ['day.js', 'stale.js', 'waitlist.js']) {
+    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
-    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'time.js']);
+    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
     for (const f of ISOMORPHIC_LIB) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js/lib', f)), await readFile(join(REPO_ROOT, 'site/lib', f)), f);
     }
@@ -79,7 +79,7 @@ describe('build of the fixture artifact', () => {
 
   test('every browser module imports only files the build ships (relative ./lib/ or sibling paths)', async () => {
     const shipped = new Set(Object.keys(await snapshot(join(ws.out, 'assets/js'))));
-    assert.ok(shipped.has('day.js') && shipped.has('lib/fixtures.js'), 'premise: modules are shipped');
+    assert.ok(shipped.has('day.js') && shipped.has('lib/fixtures.js') && shipped.has('predictions.js') && shipped.has('lib/search.js'), 'premise: modules are shipped');
     for (const rel of shipped) {
       const src = await readFile(join(ws.out, 'assets/js', rel), 'utf8');
       const specs = [...src.matchAll(/^\s*(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]/gm), ...src.matchAll(/import\(\s*['"]([^'"]+)['"]\s*\)/g)].map((m) => m[1]);
@@ -92,8 +92,8 @@ describe('build of the fixture artifact', () => {
     }
   });
 
-  test('site.css concatenates the six stylesheets in the fixed order', async () => {
-    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+  test('site.css concatenates the stylesheets in the fixed order', async () => {
+    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'predictions.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
     const css = await read(ws, 'assets/css/site.css');
     let at = -1;
     for (const f of CSS_ORDER) {
@@ -150,6 +150,18 @@ describe('build of the fixture artifact', () => {
       if (hasForm) withForm++;
     }
     assert.equal(withForm, 2, 'premise: /waitlist/ and /waitlist/invalid/ carry the form, and nothing else does');
+  });
+
+  test('every page with the predictions toolbar slot loads /assets/js/predictions.js as a module; no other page does', async () => {
+    let withSlot = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const doc = parse(html);
+      const hasSlot = find(doc, (n) => n.attrs['data-day-tools'] !== undefined) !== null;
+      const hasScript = find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/predictions.js' && n.attrs.type === 'module') !== null;
+      assert.equal(hasScript, hasSlot, rel);
+      if (hasSlot) withSlot++;
+    }
+    assert.equal(withSlot, 3, 'premise: / and the two full day pages carry the slot');
   });
 
   test('the founding banner: none on /waitlist/ or its result pages, exactly one on every other page', async () => {

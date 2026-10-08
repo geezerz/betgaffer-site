@@ -8,7 +8,9 @@
 //      own hash, the recomputed hash and the index's hash the build verified (data-hash) must all
 //      agree — otherwise "This card failed its receipt check" and nothing of it is shown;
 //   4. renders it with the SAME renderer the build uses (fixtures.js renderDay, which escapes every
-//      value) into #day-root, and relabels its day labels for the visitor's date (stale.js).
+//      value) into #day-root, and relabels its day labels for the visitor's date (stale.js);
+//   5. only then hands the verified card to the predictions toolbar (predictions.js: search and
+//      the Leagues filter). A toolbar failure never touches the card: it stays fully readable.
 // The fetch bypasses the HTTP cache's freshness (cache: 'no-cache' revalidates), so a regraded
 // file is never shown stale beside a fresh summary. No WebCrypto (an insecure context, an old
 // browser) is a render failure: the receipt was not checked, so it must not be called failed.
@@ -21,6 +23,7 @@ import { picksHash } from './lib/hash.js';
 import { renderDay } from './lib/fixtures.js';
 import { isDate } from './lib/time.js';
 import { relabel } from './stale.js';
+import { init as initToolbar } from './predictions.js';
 
 const SRC_RE = /^\/days\/(\d{4}-\d{2}-\d{2})\.json$/;
 const HASH_RE = /^sha256:[0-9a-f]{64}$/;
@@ -128,9 +131,16 @@ function errorBox(doc, kind) {
   return box;
 }
 
+/** The default enhancement: the toolbar, with the Leagues dialog only where showModal exists. */
+function enhanceDay(root) {
+  const hasDialog = typeof HTMLDialogElement !== 'undefined'
+    && typeof HTMLDialogElement.prototype.showModal === 'function';
+  initToolbar(root, { hasDialog });
+}
+
 /** Load the stub's day into #day-root. Dependencies are injectable (tests drive a fake DOM). */
 export async function init({
-  doc = document, fetchImpl = globalThis.fetch, sha256hex = webSha256hex, nowMs = Date.now(),
+  doc = document, fetchImpl = globalThis.fetch, sha256hex = webSha256hex, nowMs = Date.now(), enhance = enhanceDay,
 } = {}) {
   const root = doc.getElementById('day-root');
   if (!root || !root.dataset.src) return; // compacted day: the summary is the page
@@ -146,14 +156,22 @@ export async function init({
   status.textContent = MESSAGES.loading;
   root.setAttribute('aria-busy', 'true');
   root.append(status);
+  let rendered = false;
   try {
     root.innerHTML = await loadDay({ ...stub, fetchImpl, sha256hex }); // renderDay output: every value escaped
     relabel(root, nowMs);
+    rendered = true;
   } catch (e) {
     status.remove();
     root.append(errorBox(doc, e instanceof DayLoadError ? e.kind : 'render'));
   } finally {
     root.removeAttribute('aria-busy');
+  }
+  if (!rendered) return;
+  try {
+    enhance(root);
+  } catch {
+    // The verified card is already on the page and complete; it simply has no toolbar.
   }
 }
 
