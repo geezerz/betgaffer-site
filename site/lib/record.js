@@ -118,19 +118,15 @@ ${rec.last_6.map((g) => stripDay(g, opts)).join('\n')}
 function monthRow(g, currentMonth) {
   // Only the current Lagos month is still moving; the ledger's own status is not printed.
   const chip = g.period === currentMonth ? ' <span class="bg-chip bg-chip--open rec-chip">In progress</span>' : '';
-  let frac;
-  let pct;
-  if (isEmpty(g)) {
-    frac = 'No picks settled';
-    pct = '<span class="rec-muted" aria-hidden="true">—</span>';
-  } else {
-    frac = `${int(g.won)} of ${int(g.graded)} right`;
-    pct = isPerfect(g) ? '<span class="rec-muted" aria-hidden="true">—</span>' : escHtml(pct2(shownPct(g)));
-  }
+  // Every cell says what happened: an empty month is one "No picks settled" cell across both
+  // columns; a perfect month says "Every pick right" instead of a percentage (no bare 100%).
+  const cells = isEmpty(g)
+    ? '<td class="num" colspan="2" data-label="Right">No picks settled</td>'
+    : `<td class="num" data-label="Right">${escHtml(`${int(g.won)} of ${int(g.graded)} right`)}</td>
+<td class="num" data-label="Accuracy">${isPerfect(g) ? 'Every pick right' : escHtml(pct2(shownPct(g)))}</td>`;
   return `<tr data-figure="record-row" data-period="${escAttr(g.period)}">
 <th scope="row"><span class="rec-month">${escHtml(monthName(g.period))}</span>${chip}</th>
-<td class="num" data-label="Right">${escHtml(frac)}</td>
-<td class="num" data-label="Accuracy">${pct}</td>
+${cells}
 </tr>`;
 }
 

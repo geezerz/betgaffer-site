@@ -279,16 +279,22 @@ test('"In progress" appears exactly once, on the current Lagos month, whatever t
   assert.equal(count(text(page(REC, '2026-09-30')), 'In progress'), 1);
 });
 
-test('months: a perfect month shows its fraction and no percentage; an empty month reads "No picks settled"', () => {
+test('months: a perfect month reads "Every pick right" (no %); an empty month one "No picks settled" cell; never a dash', () => {
   const r = rec((x) => {
     Object.assign(x.months[1], { won: 40, lost: 0, pushes: 0, graded: 40, pct: 100, finished_fixtures: 41, coverage: 0.9756 });
     Object.assign(x.months[2], { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null });
   });
-  const rows = monthRows(renderRecord(r, OPTS));
-  assert.match(text(rows[1]), /^September 2026 40 of 40 right/);
+  const html = renderRecord(r, OPTS);
+  const rows = monthRows(html);
+  assert.equal(text(rows[1]), 'September 2026 40 of 40 right Every pick right');
+  assert.ok(rows[1].includes('<td class="num" data-label="Accuracy">Every pick right</td>'), rows[1]);
   assert.doesNotMatch(text(rows[1]), /%/);
-  assert.match(text(rows[2]), /^August 2026 No picks settled/);
+  assert.equal(text(rows[2]), 'August 2026 No picks settled');
+  assert.ok(rows[2].includes('<td class="num" colspan="2" data-label="Right">No picks settled</td>'), rows[2]);
+  assert.equal(count(rows[2], '<td'), 1, 'one cell replaces both');
   assert.doesNotMatch(text(rows[2]), /%|0 of 0/);
+  const table = elementWith(html, 'class="bg-table rec-months"').html;
+  assert.ok(!table.includes('—'), 'no dash in the months table');
 });
 
 test('months: none yet renders an explicit empty state, not an empty table', () => {
@@ -408,15 +414,32 @@ test('CSP: no inline style, <style> or <script> in the fragment', () => {
 
 test('record.css: only rules, base tokens, and no class the renderer never emits (dead CSS)', () => {
   const css = readFileSync(join(ROOT, 'site/assets/css/record.css'), 'utf8');
-  const src = readFileSync(join(ROOT, 'site/lib/record.js'), 'utf8');
+  // Class tokens the renderer actually emits, over every state it has (full, empty, perfect, none).
+  const outputs = [
+    renderRecord(REC, OPTS),
+    renderRecord(null, OPTS),
+    renderRecord(rec((x) => {
+      x.months = [];
+      Object.assign(x.last_30, { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null, status_days: [] });
+      Object.assign(x.last_6[3], { won: 0, lost: 0, pushes: 0, graded: 0, finished_fixtures: 0, pct: null, coverage: null, status: null });
+    }), OPTS),
+    renderRecord(rec((x) => {
+      Object.assign(x.last_30, PERFECT_30);
+      Object.assign(x.months[1], { won: 40, lost: 0, pushes: 0, graded: 40, pct: 100, finished_fixtures: 41, coverage: 0.9756 });
+      Object.assign(x.months[2], { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null });
+    }), OPTS),
+  ].join('\n');
+  const emitted = new Set([...outputs.matchAll(/\sclass="([^"]*)"/g)].flatMap((m) => m[1].split(/\s+/)).filter(Boolean));
+  assert.ok(emitted.has('rec-months-card') && emitted.has('rec-empty'), 'premise: every state was rendered');
   assert.match(css, /\.rec-head/);
   assert.match(css, /\.rec-strip/);
   assert.doesNotMatch(css, /@import|url\(\s*['"]?https?:/);
   const rules = css.replace(/\/\*[^]*?\*\//g, '');
   assert.doesNotMatch(rules, /rgba?\(|#[0-9a-f]{3,8}\b/i);
   assert.doesNotMatch(rules, /!important/);
-  const classes = new Set([...rules.matchAll(/\.(rec-[a-z0-9_-]+)/g)].map((m) => m[1]));
-  assert.ok(classes.size > 5, 'premise: the stylesheet styles rec-* classes');
-  for (const c of classes) assert.ok(new RegExp(`\\b${c}\\b`).test(src), `record.css styles .${c}, which record.js never emits`);
+  // Every class selector, whole token (".rec-months" is not satisfied by "rec-months-card").
+  const classes = new Set([...rules.matchAll(/\.(-?[_a-zA-Z][_a-zA-Z0-9-]*)/g)].map((m) => m[1]));
+  assert.ok(classes.has('rec-months') && classes.has('mono') && classes.size > 5, 'premise: the stylesheet\'s class selectors were read');
+  for (const c of classes) assert.ok(emitted.has(c), `record.css styles .${c}, which renderRecord never emits as a class`);
   assert.doesNotMatch(rules, /\.rec-foot a\b/);
 });
