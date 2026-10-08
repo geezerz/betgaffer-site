@@ -255,6 +255,7 @@ describe('clamp, size class and storage keys', () => {
     assert.equal(floorTop(64, null), 72);
     assert.equal(floorTop(64, { top: 300, bottom: 360 }), 72, 'in the flow: not stuck');
     assert.equal(floorTop(64, { top: 64, bottom: 176 }), 184, 'stuck');
+    assert.equal(floorTop(64, { top: -50, bottom: 20 }), 72, 'toolbar pushed up behind the header: the floor never rises above the header');
     assert.equal(floorTop(64.4, { top: 65, bottom: 120 }), 128, 'stuck within a pixel of rounding');
     assert.equal(floorTop(64, { top: 0, bottom: 0 }), 72, 'a zero box (not displayed) is not stuck');
     assert.equal(floorTop(Number.NaN, null), 8);

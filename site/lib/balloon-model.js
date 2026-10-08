@@ -223,7 +223,7 @@ export function floorTop(barBottom, tools) {
   const bar = finite(barBottom) ? Math.max(0, barBottom) : 0;
   const stuck = tools !== null && typeof tools === 'object' && finite(tools.top) && finite(tools.bottom)
     && tools.bottom > tools.top && tools.top <= bar + 1;
-  return (stuck ? tools.bottom : bar) + GAP;
+  return Math.max(bar, stuck ? tools.bottom : bar) + GAP;
 }
 
 /**
