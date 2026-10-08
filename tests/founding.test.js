@@ -19,6 +19,16 @@ test('founding numbers match the programme rules (founding-member-programme.md Â
   assert.equal(F.NOTICE_DAYS, 30);
 });
 
+test('every printed offer percentage is derived from DISCOUNT_PCT / TOPUP_BONUS_PCT, never typed', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const src = await readFile(new URL('../site/lib/founding.js', import.meta.url), 'utf8');
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  // No literal "<digits>%" in the module's code: B1's title, SUMMARY and the sentences use the constants.
+  assert.deepEqual(code.match(/\d+%/g) ?? [], []);
+  assert.ok(F.BENEFITS[0].title.startsWith(`${F.DISCOUNT_PCT}% off`));
+  assert.ok(F.SUMMARY.startsWith(`${F.DISCOUNT_PCT}% off`));
+});
+
 test('the waitlist cap in config is the founding waitlist cap', () => {
   assert.equal(config.waitlist_places, F.WAITLIST_PLACES);
 });

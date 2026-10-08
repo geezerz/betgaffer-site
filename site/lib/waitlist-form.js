@@ -140,7 +140,7 @@ export function waitlistResultMeta(kind) {
 export function waitlistResultPage(kind) {
   const r = result(kind);
   const lines = r.lines.map((l) => `<p class="t-b">${escHtml(l)}</p>`).join('\n');
-  const form = r.form ? `\n${waitlistForm({ idPrefix: 'wl-retry' })}` : '';
+  const form = r.form ? `\n${waitlistForm({ idPrefix: 'wl-retry', places: false })}` : '';
   return `<section class="bg-wl-result" aria-labelledby="wl-result-h">
 <p class="t-lbl">Founding waitlist</p>
 <h1 class="t-d2" id="wl-result-h">${escHtml(r.heading)}</h1>

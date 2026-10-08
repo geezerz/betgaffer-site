@@ -30,14 +30,14 @@ const LAUNCH_TILE = '500 places for the first people to subscribe at launch.';
 const FULL_LINE = "All 500 waitlist places are taken. Join anyway and we'll email your invite when it's ready — with a head start on one of the 500 launch places.";
 const STEPS = [
   ['Join the waitlist.', 'The first 500 people reserve a founding place.'],
-  ['Claim it at launch.', "We'll email your invite. Start any paid plan within 30 days of it and the place is yours. Places not claimed in time go to the next people who subscribe."],
+  ['Claim it at launch.', "We'll email your invite. Start any paid plan within 30 days of it and the place is yours. Places not claimed in time go to the earliest-paying subscribers without a place."],
   ['Keep it while you subscribe.', 'If your subscription lapses, you have 90 days to come back and keep everything. After that, the place passes to the next member in line.'],
 ];
 const QUESTIONS = [
   ['When does Bet Gaffer launch?', "Invites go out in batches. Join the waitlist and we'll email you when yours is ready."],
   ['What if I miss the 30 days?', "Your waitlist place goes to the earliest-paying subscriber without a place. If launch places are still open when you subscribe, you'll get one of those."],
   ['Does the free account or a free trial count?', "No. Founding status starts with your first paid subscription. A first payment that is refunded or reversed doesn't count."],
-  ['Can I give my place to someone else?', "No. Founding places are personal and can't be transferred or exchanged for anything."],
+  ['Can I give my place to someone else?', "No. Founding places are personal and can't be transferred or exchanged for anything. Claiming a place needs a verified phone number — one place per number."],
   ['Does the 30% combine with other discounts?', 'No. If another percentage discount applies, you get whichever saves you more.'],
   ['What if I cancel?', 'You have 90 days after your last paid period ends to subscribe again and keep everything. After that, the place passes to the next member in line.'],
 ];
@@ -194,7 +194,7 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.equal(find(form, (n) => n.attrs['data-waitlist-places'] !== undefined), null, 'the form has no places line');
     const tiles = findAll(doc, (n) => has(n, 'bg-fd__tile'));
     assert.equal(tiles.length, 2);
-    assert.ok(textOf(tiles[0]).startsWith('Waitlist places'), textOf(tiles[0]));
+    assert.equal(textOf(tiles[0]), 'Waitlist places 500 places for the first 500 people to join the waitlist.');
     assert.equal(textOf(tiles[1]), `Launch places ${LAUNCH_TILE}`);
   });
 
@@ -277,6 +277,21 @@ describe('/waitlist/ and the founding card in the built site', () => {
   test('the thanks page and THANKS_MESSAGE carry the spec §3 thanks copy', async () => {
     assert.equal(THANKS_MESSAGE, THANKS);
     assert.ok(visibleText(await read('waitlist/thanks/index.html')).includes(THANKS));
+  });
+
+  test('/waitlist/invalid/: the retry form has no places line, keeps waitlist.js (progressive submit) and never fetches the counter', async () => {
+    const html = await read('waitlist/invalid/index.html');
+    const d = parse(html);
+    assert.ok(find(d, (n) => n.tag === 'form' && n.attrs['data-waitlist'] !== undefined), 'the retry form');
+    assert.equal(find(d, (n) => n.attrs['data-waitlist-places'] !== undefined), null, 'no counter');
+    assert.ok(find(d, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/waitlist.js'), 'the script still enhances the submit');
+    let loads = 0;
+    const fd = fakeDocument(html);
+    await waitlistInit({ doc: fd, load: async () => { loads++; return { places_left: 3, cap: 500 }; } });
+    assert.equal(loads, 0, 'no GET /api/waitlist on a page without a counter');
+    // Premise: on /waitlist/ (which has the counter) the same init does load once.
+    await waitlistInit({ doc: fakeDocument(page), load: async () => { loads++; return null; } });
+    assert.equal(loads, 1);
   });
 
   test('/features/ has no form and does not load waitlist.js', async () => {

@@ -38,7 +38,7 @@ const FULL_LINE = `All ${fmtInt(WAITLIST_PLACES)} waitlist places are taken. Joi
 const STEPS = Object.freeze([
   ['Join the waitlist.', `The first ${fmtInt(WAITLIST_PLACES)} people reserve a founding place.`],
   ['Claim it at launch.', `We'll email your invite. Start any paid plan within ${CLAIM_DAYS} days of it and the place `
-    + 'is yours. Places not claimed in time go to the next people who subscribe.'],
+    + 'is yours. Places not claimed in time go to the earliest-paying subscribers without a place.'],
   ['Keep it while you subscribe.', `If your subscription lapses, you have ${GRACE_DAYS} days to come back and keep `
     + 'everything. After that, the place passes to the next member in line.'],
 ]);
@@ -53,7 +53,8 @@ const QUESTIONS = Object.freeze([
     'No. Founding status starts with your first paid subscription. A first payment that is refunded or reversed '
     + "doesn't count."],
   ['Can I give my place to someone else?',
-    "No. Founding places are personal and can't be transferred or exchanged for anything."],
+    "No. Founding places are personal and can't be transferred or exchanged for anything. Claiming a place needs a "
+    + 'verified phone number — one place per number.'],
   [`Does the ${DISCOUNT_PCT}% combine with other discounts?`,
     'No. If another percentage discount applies, you get whichever saves you more.'],
   ['What if I cancel?',
@@ -107,6 +108,7 @@ export function render(cfg, { waitlistHtml } = {}) {
 <div class="bg-fd__tile bg-fd__tile--waitlist">
 <p class="t-lbl t-lbl--quiet">Waitlist places</p>
 <p class="bg-fd__count mono" data-waitlist-places>${escHtml(`${fmtInt(WAITLIST_PLACES)} places`)}</p>
+<p class="bg-fd__tile-note">${escHtml(`for the first ${fmtInt(WAITLIST_PLACES)} people to join the waitlist.`)}</p>
 </div>
 <div class="bg-fd__tile">
 <p class="t-lbl t-lbl--quiet">Launch places</p>

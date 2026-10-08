@@ -452,6 +452,8 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   for (const kind of WAITLIST_RESULT_KINDS) {
     const meta = waitlistResultMeta(kind);
     const body = waitlistResultPage(kind);
+    // A page with a form loads waitlist.js for the fetch submit; with no counter on the page, the
+    // script never calls GET /api/waitlist (the KV list budget is spent on /waitlist/ only).
     add({ ...meta, body, banner: false, scripts: /data-waitlist[\s>]/.test(body) ? [SCRIPT.waitlist] : [] });
   }
 

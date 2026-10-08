@@ -16,7 +16,7 @@ export const NOTICE_DAYS = 30;
 
 /** Public benefit cards (spec §3.4), in programme order B1-B6. */
 export const BENEFITS = Object.freeze([
-  { id: 'B1', title: '30% off, every time', text: `${DISCOUNT_PCT}% off your plan's price at every payment, for as long as you stay subscribed.` },
+  { id: 'B1', title: `${DISCOUNT_PCT}% off, every time`, text: `${DISCOUNT_PCT}% off your plan's price at every payment, for as long as you stay subscribed.` },
   { id: 'B2', title: 'Double Credits', text: "Your plan's monthly Credit allowance is doubled, on any paid plan." },
   { id: 'B3', title: 'More from every top-up', text: `Every Credit top-up comes with ${TOPUP_BONUS_PCT}% extra.` },
   { id: 'B4', title: 'A bigger say', text: 'A founding badge, and your vote counts twice when members vote on new features and improvements.' },
@@ -25,4 +25,4 @@ export const BENEFITS = Object.freeze([
 ].map(Object.freeze));
 
 /** The short summary line used on the banner, home card and Features (spec §2). */
-export const SUMMARY = '30% off every subscription payment · double Credits · first look at new features · priority support';
+export const SUMMARY = `${DISCOUNT_PCT}% off every subscription payment · double Credits · first look at new features · priority support`;
