@@ -2,9 +2,7 @@
 //
 // Seventeen features, simplest to most advanced, each stated as the problem it answers and then what
 // Bet Gaffer does about it, with a status tag: "At launch" (built on the platform today) or "Coming
-// soon". Copy is verbatim from spec §8 as amended. Left off on purpose (spec §8): booking codes,
-// Exposure alerts, Steam Alerts, the Green Month Guarantee, ROI / cash-out / suggested stake, big-odds
-// slip names, and the in-product name "Daily Slips" (the public name is "Ready-made slips").
+// soon". Copy is verbatim from spec §8 as amended. Features left off on purpose: see spec §8.
 //
 // Interface:
 //   render(cfg)  this page carries no form: it links to /waitlist/, where the founding waitlist form is.

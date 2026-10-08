@@ -134,7 +134,7 @@ function footer(op, year) {
 <div class="bg-foot__brand">
 <p class="bg-wordmark bg-foot__mark" aria-hidden="true">Bet<em>Gaffer</em></p>
 <p class="bg-foot__statement">${escHtml(NOT_A_BOOKMAKER)}</p>
-<p class="bg-foot__receipts">Every pick is frozen before kickoff and carries a receipt code.</p>
+<p class="bg-foot__receipts">Every pick on a published card is frozen before kickoff and carries a receipt code.</p>
 <p class="bg-foot__age"><span class="bg-age">18+</span><span>For adults aged 18 and over.</span></p>
 </div>
 <nav class="bg-foot__col" aria-label="Legal">

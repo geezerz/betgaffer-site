@@ -540,7 +540,7 @@ test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, l
   assert.match(foot, /<a href="mailto:hello@example.com">hello@example.com<\/a>/);
   // Spec §10: the brand column states the receipt idea; no Receipts column, no repository link.
   const brand = foot.match(/<div class="bg-foot__brand">[\s\S]*?<\/div>/)[0];
-  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick is frozen before kickoff and carries a receipt code.</p>'));
+  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick on a published card is frozen before kickoff and carries a receipt code.</p>'));
   assert.doesNotMatch(foot, /github|reposit|Receipts</i);
   assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
   // Every footer link is one of: the three legal pages, the contact mailto.

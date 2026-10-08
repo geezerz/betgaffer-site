@@ -614,7 +614,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
 
   test('terms: Credits are not refundable; a Lab Credit return is not a refund', () => {
     const { launch } = cols(section(renderPage('terms'), 'credits'));
-    assert.ok(launch.includes('Credits and top-ups are not refundable. Credits returned when a Lab slip you marked as played '
+    assert.ok(launch.includes('Credits and top-ups are not refundable, except a charge we made in error or where the law requires a refund (see the refund policy). Credits returned when a Lab slip you marked as played '
       + 'loses are a Credit return, not a refund.'), launch);
   });
 

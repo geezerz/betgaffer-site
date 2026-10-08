@@ -153,7 +153,7 @@ function sections(op) {
       title: 'Credits',
       now: `<p>No Credits exist and nothing is sold on this site.</p>`,
       launch: `<p>Credits will pay for actions that cost us to run, such as Lab generations and Gaffer conversations. Credits have no cash value, cannot be withdrawn or transferred, and are never a stake or a wager. Their prices and terms will be published before any are sold.</p>
-<p>Credits and top-ups are not refundable. Credits returned when a Lab slip you marked as played loses are a Credit return, not a refund.</p>`,
+<p>Credits and top-ups are not refundable, except a charge we made in error or where the law requires a refund (see the refund policy). Credits returned when a Lab slip you marked as played loses are a Credit return, not a refund.</p>`,
     },
     {
       id: 'subscriptions',
