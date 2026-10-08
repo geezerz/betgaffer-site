@@ -349,3 +349,145 @@ test('nodeSha256 is lowercase hex SHA-256 of the UTF-8 bytes', async () => {
   const buf = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
   assert.equal(nodeSha256(s), [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join(''));
 });
+
+// ---------------------------------------------------------------- spec §16: scores, accuracy rule 2
+
+// The publisher's real 2026-10-08 file with accuracy_rule 2, scores on finished rows, a late row
+// that carries a pick (558451) and a picked row with pre_ko false (558454). Only fields outside
+// picks_hash differ from the published file, so the receipt still recomputes.
+const RULE2 = readJson(fileURLToPath(new URL('./fixtures/rule2-day.json', import.meta.url)));
+const at = (d, fx) => d.fixtures.find((f) => f.fx === fx);
+
+test('rule-2 fixture premise: hash recomputes, a late row with a pick, scores on finished rows', async () => {
+  const { picksHash } = await import('../site/lib/hash.js');
+  assert.equal(await picksHash(RULE2.fixtures, nodeSha256), RULE2.picks_hash);
+  assert.equal(RULE2.accuracy_rule, 2);
+  assert.ok(at(RULE2, 558451).late && at(RULE2, 558451).pick !== null);
+  assert.equal(at(RULE2, 558454).pre_ko, false);
+  assert.ok(RULE2.fixtures.some((f) => f.score !== null && f.status === 'PEN'));
+});
+
+test('validateDay: old files carry no score / accuracy_rule -> rule 1, score null', () => {
+  for (const [raw, d] of [[DAY07, '2026-10-07'], [DAY08, '2026-10-08']]) {
+    assert.ok(!('accuracy_rule' in raw) && !raw.fixtures.some((f) => 'score' in f), 'premise: an old file');
+    const v = validateDay(clone(raw), { expectDate: d });
+    assert.equal(v.accuracy_rule, 1);
+    assert.ok(v.fixtures.every((f) => f.score === null));
+  }
+});
+
+test('validateDay: a rule-2 file keeps its rule, its scores (allowlisted) and its late picked row', () => {
+  const raw = clone(RULE2);
+  const pen = raw.fixtures.find((f) => f.status === 'PEN');
+  pen.score.extra = 'x';
+  const v = validateDay(raw, { expectDate: '2026-10-08' });
+  assert.equal(v.accuracy_rule, 2);
+  const vp = v.fixtures.find((f) => f.fx === pen.fx);
+  assert.deepEqual(vp.score, { home: pen.score.home, away: pen.score.away, pen_home: 4, pen_away: 3 });
+  const ft = v.fixtures.find((f) => f.status === 'FT' && f.score !== null);
+  assert.equal(ft.score.pen_home, null);
+  assert.equal(at(v, 558451).late, true);
+  assert.notEqual(at(v, 558451).pick, null);
+  assert.equal(v.fixtures.filter((f) => f.score !== null).length, RULE2.fixtures.filter((f) => f.score !== null).length);
+});
+
+test('validateDay: a malformed score throws', () => {
+  const fx = RULE2.fixtures.find((f) => f.score !== null).fx;
+  const cases = [
+    ['string home', (s) => { s.home = '1'; }],
+    ['negative away', (s) => { s.away = -1; }],
+    ['float home', (s) => { s.home = 1.5; }],
+    ['null home', (s) => { s.home = null; }],
+    ['missing away', (s) => { delete s.away; }],
+    ['missing pen_home', (s) => { delete s.pen_home; }],
+    ['pen string', (s) => { s.pen_home = '4'; }],
+    ['pen negative', (s) => { s.pen_away = -3; }],
+    ['pen float', (s) => { s.pen_home = 4.5; }],
+    ['pen boolean', (s) => { s.pen_home = true; }],
+  ];
+  for (const [name, mut] of cases) {
+    const d = clone(RULE2);
+    mut(at(d, fx).score);
+    assert.throws(() => validateDay(d, { expectDate: '2026-10-08' }), /score/, name);
+  }
+  for (const bad of [0, 'FT 2-1', [], [2, 1], true]) {
+    const d = clone(RULE2);
+    at(d, fx).score = bad;
+    assert.throws(() => validateDay(d, { expectDate: '2026-10-08' }), /score/, JSON.stringify(bad));
+  }
+  // and the legitimate shapes pass
+  const ok = clone(RULE2);
+  at(ok, fx).score = { home: 0, away: 0, pen_home: 0, pen_away: null };
+  assert.deepEqual(at(validateDay(ok, { expectDate: '2026-10-08' }), fx).score, { home: 0, away: 0, pen_home: 0, pen_away: null });
+});
+
+test('validateDay: accuracy_rule is absent, 1 or 2 — anything else throws', () => {
+  for (const rule of [1, 2]) {
+    const d = clone(DAY08);
+    d.accuracy_rule = rule;
+    assert.equal(validateDay(d, { expectDate: '2026-10-08' }).accuracy_rule, rule);
+  }
+  for (const bad of [0, 3, '2', null, 1.5, true, []]) {
+    const d = clone(RULE2);
+    d.accuracy_rule = bad;
+    assert.throws(() => validateDay(d, { expectDate: '2026-10-08' }), /accuracy_rule/, JSON.stringify(bad));
+  }
+});
+
+test('validateDay: a late row with a pick is allowed under rule 2 only', () => {
+  assert.doesNotThrow(() => validateDay(clone(RULE2), { expectDate: '2026-10-08' }));
+  const r1 = clone(RULE2);
+  delete r1.accuracy_rule;
+  assert.throws(() => validateDay(r1, { expectDate: '2026-10-08' }), /late/);
+  const explicit1 = clone(RULE2);
+  explicit1.accuracy_rule = 1;
+  assert.throws(() => validateDay(explicit1, { expectDate: '2026-10-08' }), /late/);
+});
+
+test('validateDay: a compacted summary carries its accuracy_rule (absent -> 1; bad -> throws)', () => {
+  const { fixtures, pick_source, ...rest } = clone(RULE2);
+  void fixtures; void pick_source;
+  assert.equal(validateDay({ ...rest, compacted: true }, { expectDate: '2026-10-08' }).accuracy_rule, 2);
+  const { accuracy_rule, ...old } = rest;
+  void accuracy_rule;
+  assert.equal(validateDay({ ...old, compacted: true }, { expectDate: '2026-10-08' }).accuracy_rule, 1);
+  assert.throws(() => validateDay({ ...rest, accuracy_rule: 7, compacted: true }, { expectDate: '2026-10-08' }), /accuracy_rule/);
+});
+
+test('loadSite: a full day whose index accuracy differs from its file throws (strict, every field)', async () => {
+  const fields = {
+    won: (a) => { a.won += 1; },
+    lost: (a) => { a.lost += 1; },
+    pushes: (a) => { a.pushes += 1; },
+    graded: (a) => { a.graded += 1; },
+    pct: (a) => { a.pct = 50; },
+  };
+  for (const [name, mut] of Object.entries(fields)) {
+    const dir = artifactCopy();
+    const idx = clone(INDEX);
+    const e = idx.days.find((x) => x.day === '2026-10-08');
+    // a self-consistent index entry (so validateIndex passes) that disagrees with the day file
+    Object.assign(e.accuracy, { won: 3, lost: 1, pushes: 0, graded: 4, pct: 75 });
+    mut(e.accuracy);
+    writeJson(join(dir, 'index.json'), idx);
+    await assert.rejects(loadSite(dir, quiet), /accuracy mismatch 2026-10-08/, name);
+  }
+  // equal accuracy loads (premise: the check does not reject the artifact itself)
+  await assert.doesNotReject(loadSite(artifactCopy(), quiet));
+});
+
+test('loadSite: a rule-2 day loads and its index entry must match its accuracy', async () => {
+  const dir = artifactCopy();
+  writeJson(join(dir, 'days/2026-10-08.json'), RULE2);
+  const idx = clone(INDEX);
+  const e = idx.days.find((x) => x.day === '2026-10-08');
+  Object.assign(e, { picks_hash: RULE2.picks_hash, fixtures: RULE2.fixtures.length, accuracy: clone(RULE2.accuracy) });
+  writeJson(join(dir, 'index.json'), idx);
+  const site = await loadSite(dir, quiet);
+  assert.equal(site.days.get('2026-10-08').accuracy_rule, 2);
+  e.accuracy.won -= 1;
+  e.accuracy.graded -= 1;
+  e.accuracy.pct = Math.round((10000 * e.accuracy.won) / e.accuracy.graded) / 100;
+  writeJson(join(dir, 'index.json'), idx);
+  await assert.rejects(loadSite(dir, quiet), /accuracy mismatch 2026-10-08/);
+});

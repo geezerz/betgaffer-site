@@ -12,6 +12,10 @@ import { isDate, isIsoZ } from './time.js';
 import { picksHash } from './hash.js';
 
 export const SCHEMA = 1;
+// The day file's accuracy rule (spec §16.6). Absent = 1: a pick counts only when it was published
+// before kickoff (pre_ko) and a late row never carries a pick. 2: every non-withdrawn pick counts and
+// a late row may carry one. The renderer (fixtures.js) recounts the ring with the same rule.
+export const ACCURACY_RULES = new Set([1, 2]);
 export const GRADES = new Set(['won', 'lost', 'push', 'void', 'pending', 'withdrawn']);
 // The ledger statuses known today. Validation accepts any string (a new status must not fail a
 // rebuild); renderers escape it and may style only the ones named here.
@@ -255,6 +259,32 @@ export function validateIndex(o) {
 
 // ------------------------------------------------------------------ day files
 
+/** The day's accuracy rule: absent -> 1; present -> exactly 1 or 2 (no coercion). */
+function accuracyRule(c, o) {
+  if (!has(o, 'accuracy_rule')) return 1;
+  const v = o.accuracy_rule;
+  if (!ACCURACY_RULES.has(v)) c.fail('accuracy_rule', `must be one of ${[...ACCURACY_RULES].join('|')} when present, got ${JSON.stringify(v)}`);
+  return v;
+}
+
+/**
+ * The final score (spec §16.2): absent (files published before scores) or null -> null; otherwise
+ * exactly { home, away, pen_home, pen_away } with non-negative integer home / away and pens null or
+ * non-negative integers. Outside picks_hash; shown only on finished rows (fixtures.js decides).
+ */
+function score(c, o, path) {
+  if (!has(o, 'score') || o.score === null) return null;
+  const v = o.score;
+  if (!isObj(v)) c.fail(`${path}score`, `must be an object or null, got ${JSON.stringify(v)}`);
+  const p = `${path}score.`;
+  const pen = (k) => {
+    const x = get(c, v, k, p);
+    if (x !== null && (!Number.isInteger(x) || x < 0)) c.fail(`${p}${k}`, `must be a non-negative integer or null, got ${JSON.stringify(x)}`);
+    return x;
+  };
+  return { home: int(c, v, 'home', p), away: int(c, v, 'away', p), pen_home: pen('pen_home'), pen_away: pen('pen_away') };
+}
+
 function pick(c, v, path) {
   if (v === null) return null;
   obj(c, v, path);
@@ -273,7 +303,7 @@ function pick(c, v, path) {
   };
 }
 
-function fixture(c, v, i) {
+function fixture(c, v, i, rule) {
   const path = `fixtures[${i}]`;
   obj(c, v, path);
   const p = `${path}.`;
@@ -295,6 +325,7 @@ function fixture(c, v, i) {
     late: bool(c, v, 'late', p),
     withdrawn: bool(c, v, 'withdrawn', p),
     grade: oneOf(c, v, 'grade', p, GRADES, { nullable: true }),
+    score: score(c, v, p),
   };
   // Every row, withdrawn included: the publisher nulls grade exactly when pick is null
   // (its grading step checks pick before withdrawn).
@@ -302,7 +333,8 @@ function fixture(c, v, i) {
     c.fail(`${p}grade`, `is ${JSON.stringify(f.grade)} but the row ${f.pick === null ? 'has no pick' : 'has a pick'} (grade is null exactly when there is no pick)`);
   }
   if (!f.withdrawn && f.grade === 'withdrawn') c.fail(`${p}grade`, 'is "withdrawn" on a row whose withdrawn flag is false');
-  if (f.late && f.pick !== null) c.fail(`${p}late`, 'is true but the row carries a pick (a late row never has one)');
+  // Rule 1 only: under rule 2 a late row may take the card's pick (spec §16.6).
+  if (rule === 1 && f.late && f.pick !== null) c.fail(`${p}late`, 'is true but the row carries a pick (a late row never has one under accuracy rule 1)');
   if (f.pick !== null && f.frozen_at === null) c.fail(`${p}frozen_at`, 'is null but the row carries a pick');
   return f;
 }
@@ -333,6 +365,7 @@ export function validateDay(o, { expectDate } = {}) {
   if (expectDate !== undefined && lagos_day !== expectDate) c.fail('lagos_day', `is ${lagos_day}, expected ${expectDate}`);
   let compacted = false;
   if (has(o, 'compacted')) compacted = bool(c, o, 'compacted', '');
+  const rule = accuracyRule(c, o);
 
   const out = {
     schema: SCHEMA,
@@ -344,6 +377,7 @@ export function validateDay(o, { expectDate } = {}) {
     picks_hash: hash(c, o, 'picks_hash', ''),
     counts: counts(c, get(c, o, 'counts', ''), 'counts'),
     accuracy: accuracy(c, get(c, o, 'accuracy', ''), 'accuracy'),
+    accuracy_rule: rule,
   };
   if (compacted) return { ...out, compacted: true };
 
@@ -352,7 +386,7 @@ export function validateDay(o, { expectDate } = {}) {
   if (!Array.isArray(fx)) c.fail('fixtures', 'must be an array');
   const seen = new Set();
   out.fixtures = fx.map((f, i) => {
-    const row = fixture(c, f, i);
+    const row = fixture(c, f, i, rule);
     if (seen.has(row.fx)) c.fail(`fixtures[${i}].fx`, `duplicate fx ${row.fx}`);
     seen.add(row.fx);
     return row;
@@ -418,6 +452,12 @@ export async function loadSite(rootDir, { warn = (m) => process.stderr.write(`${
       throw new Error(`${label}: compacted is ${day.compacted === true} but index.json lists ${entry.day} as compacted=${entry.compacted}`);
     }
     if (!entry.compacted) {
+      // The index's ring figures for a full day are the file's own, field for field.
+      const a = day.accuracy;
+      const b = entry.accuracy;
+      if (['won', 'lost', 'pushes', 'graded', 'pct'].some((k) => a[k] !== b[k])) {
+        throw new Error(`accuracy mismatch ${entry.day}: file says ${JSON.stringify(a)}, index says ${JSON.stringify(b)}`);
+      }
       const recomputed = await picksHash(raw.fixtures, sha256hex);
       if (recomputed !== day.picks_hash || recomputed !== entry.picks_hash) {
         throw new Error(`picks_hash mismatch ${entry.day}: recomputed ${recomputed}, file says ${day.picks_hash}, index says ${entry.picks_hash}`);

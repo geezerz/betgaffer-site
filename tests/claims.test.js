@@ -7,6 +7,7 @@ import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { build } from '../site/build.mjs';
 import { claimViolations, percentagesOutsideOffers, visibleText, HEADLINE_PARTS } from './html-scan.js';
@@ -15,6 +16,7 @@ import {
   testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, htmlFiles, EDGE_DAY,
 } from './site-fixtures.js';
 
+const RULE2_DAY = fileURLToPath(new URL('./fixtures/rule2-day.json', import.meta.url));
 const NOW = Date.parse('2026-10-07T22:30:00Z');
 const quiet = () => {};
 
@@ -55,6 +57,19 @@ async function edgeHome(root) {
   await writeJson(join(root, 'index.json'), i);
 }
 
+/**
+ * A rule-2 day (spec §16.6) with scores on its finished rows as the home card: the publisher's real
+ * 2026-10-08 file with accuracy_rule 2 (tests/fixtures/rule2-day.json).
+ */
+async function rule2Home(root) {
+  const r2 = await readJson(RULE2_DAY);
+  await writeJson(join(root, 'days/2026-10-08.json'), r2);
+  const i = await readJson(join(root, 'index.json'));
+  i.today = '2026-10-08';
+  Object.assign(i.days.find((d) => d.day === '2026-10-08'), { picks_hash: r2.picks_hash, fixtures: r2.fixtures.length, accuracy: r2.accuracy });
+  await writeJson(join(root, 'index.json'), i);
+}
+
 /** index.today moves past the newest card: home falls back to it, with a notice. */
 async function missedToday(root) {
   const i = await readJson(join(root, 'index.json'));
@@ -86,10 +101,11 @@ describe('every built page passes the claim scan', () => {
     builds.noData = await built(null, { artifact: false });
     builds.missedToday = await built(missedToday);
     builds.onlyTomorrow = await built(onlyTomorrow);
+    builds.rule2 = await built(rule2Home);
   });
   after(() => Promise.all(Object.values(builds).map((w) => w.cleanup())));
 
-  for (const name of ['plain', 'archive', 'perfect', 'mixed', 'edge', 'noData', 'missedToday', 'onlyTomorrow']) {
+  for (const name of ['plain', 'archive', 'perfect', 'mixed', 'edge', 'noData', 'missedToday', 'onlyTomorrow', 'rule2']) {
     test(`${name}: no banned phrase, no stray percentage, no bare 100%`, async () => {
       const files = await htmlFiles(builds[name].out);
       assert.ok(files.length >= 11, 'premise: the whole site was built (11 pages with no data)');
@@ -113,6 +129,17 @@ describe('every built page passes the claim scan', () => {
     assert.match(edge, /66\.67%/);
     const mixed = visibleText(await readFile(join(builds.mixed.out, 'index.html'), 'utf8'));
     assert.match(mixed, /2 of 3 landed/);
+  });
+
+  test('premise: the rule-2 home card really carries scores, pens and its own copy', async () => {
+    const html = await readFile(join(builds.rule2.out, 'index.html'), 'utf8');
+    assert.match(html, /<span class="fx__score mono">\d+<\/span>/);
+    assert.match(html, /<small class="fx__pens">\(4–3 pens\)<\/small>/);
+    const text = visibleText(html);
+    assert.match(text, /48 of 55 landed/);
+    assert.match(text, /the platform's card pick — graded after full time\./);
+    assert.ok(!/Kickoff was moved|No pick — first seen|10 minutes/.test(text));
+    assert.ok(!/data-uncounted/.test(html));
   });
 
   test('the 100% rule: a perfect day shows 100% only beside its fraction, "so far" and "stated at"', async () => {

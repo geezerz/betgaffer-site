@@ -8,12 +8,19 @@
 //
 // Row rules (spec §5 "Data facts", §7):
 //   - a withdrawn row keeps its published `status` forever, so it is rendered from `withdrawn`;
-//   - a late row never has a pick; a picked row with pre_ko === false is marked and not counted;
+//   - the day's accuracy rule (ruleOf, spec §16.6) decides what counts and what is said:
+//     rule 1 (no accuracy_rule: files published before round 3): a late row never has a pick and
+//     says so; a picked row with pre_ko === false is marked (data-uncounted + note) and not counted;
+//     rule 2: every non-withdrawn pick counts, a late row may carry a pick and no row carries a
+//     late / moved note or marker (late and pre_ko are metadata only);
+//   - a finished row (FT / AET / PEN) shows its final score when the file carries a well-formed one
+//     (checked here too: the archive renders raw fetched files); never on any other status;
 //   - an estimated price never appears without its marker (spec test 15);
 //   - every state has its own words: the 3px edge colour is never the only channel.
 // Every per-pick probability sits in an element with data-figure="pick-prob" (claim scanner).
 // The ring is cross-checked against the rows: renderDay recounts won / lost / pushes with the
-// accuracy rule (pre_ko, not withdrawn) and throws if day.accuracy (or its pct) disagrees.
+// day's own rule and throws if day.accuracy (or its pct) disagrees. There is no "accept either":
+// a file is checked against exactly one rule, the one it declares.
 
 import { escHtml, escAttr } from './esc.js';
 import { lagosParts, fmtDayLong, fmtStamp, isDate } from './time.js';
@@ -28,6 +35,8 @@ const STATUS_LABELS = Object.freeze({
   FT: 'FT', AET: 'AET', PEN: 'Pens', PST: 'Postponed', CANC: 'Cancelled', ABD: 'Abandoned',
   SUSP: 'Suspended', TBD: 'Time TBC', AWD: 'Awarded', WO: 'Walkover',
 });
+// Finished statuses: the only rows that show a score (an in-play score can be hours old).
+const FINISHED = new Set(['FT', 'AET', 'PEN']);
 // Statuses whose published kickoff time is not a time anyone should plan around.
 const NO_KICKOFF = new Set(['PST', 'CANC', 'TBD']);
 
@@ -45,6 +54,8 @@ const MSG = Object.freeze({
   late: 'No pick — first seen less than 10 minutes before kickoff, or later.',
   none: 'No recommendation.',
   moved: 'Kickoff was moved to a time before this pick was frozen — not counted in the ring.',
+  // Rule-2 days only (spec §16 amendments): the first line of "How this card was built".
+  howRule2: "At most one recommended pick per fixture — the platform's card pick — graded after full time.",
 });
 
 const HASH_RE = /^sha256:[0-9a-f]{64}$/;
@@ -78,21 +89,44 @@ export function statusLabel(code) {
   return Object.hasOwn(STATUS_LABELS, code) ? STATUS_LABELS[code] : code;
 }
 
-// The day file's accuracy rule (spec §4.3): a pick counts when it was published before kickoff
-// (pre_ko) and the row is not withdrawn. won/lost make `graded`; push is counted separately.
-const inRing = (f) => f.withdrawn !== true && f.pre_ko === true && f.pick !== null && f.pick !== undefined;
-const isCounted = (f) => inRing(f) && (f.grade === 'won' || f.grade === 'lost');
+/**
+ * The day file's accuracy rule (spec §16.6): absent -> 1 (files published before round 3);
+ * otherwise exactly 1 or 2. Anything else is refused: the ring must be checked against one rule.
+ */
+export function ruleOf(day) {
+  if (day === null || typeof day !== 'object' || !Object.hasOwn(day, 'accuracy_rule')) return 1;
+  const v = day.accuracy_rule;
+  if (v !== 1 && v !== 2) throw new TypeError(`renderDay: accuracy_rule must be 1 or 2 when present, got ${JSON.stringify(v)}`);
+  return v;
+}
+
+function checkRule(rule, fn) {
+  if (rule !== 1 && rule !== 2) throw new TypeError(`${fn}: rule must be 1 or 2, got ${JSON.stringify(rule)}`);
+}
+
+// In the ring: rule 1 (spec §4.3) - published before kickoff (pre_ko) and not withdrawn;
+// rule 2 (spec §16.6) - any pick on a non-withdrawn row. won/lost make `graded`; push is counted
+// separately.
+const inRing = (f, rule) => f.withdrawn !== true && f.pick !== null && f.pick !== undefined
+  && (rule === 2 || f.pre_ko === true);
+
+/** A settled pick the day's ring counts (won or lost) under the given rule (1 or 2). */
+export function isCounted(f, rule) {
+  checkRule(rule, 'isCounted');
+  return inRing(f, rule) && (f.grade === 'won' || f.grade === 'lost');
+}
 const isPct = (p) => Number.isInteger(p) && p >= 0 && p <= 100;
 
 /**
  * Mean stated probability (pick.pct) of the day's settled, counted picks — the forward probability
  * the ring's 100% rule needs. UNROUNDED (the ring rounds, and reads >= 99.5 as ">99"). Null when no
  * pick is counted, or when ANY counted pick lacks a usable pct: a mean over a subset would state a
- * probability the day's picks were never published at.
+ * probability the day's picks were never published at. `rule` is the day's ruleOf (1 or 2).
  */
-export function meanStatedPct(fixtures) {
+export function meanStatedPct(fixtures, rule) {
+  checkRule(rule, 'meanStatedPct');
   if (!Array.isArray(fixtures)) return null;
-  const counted = fixtures.filter(isCounted);
+  const counted = fixtures.filter((f) => isCounted(f, rule));
   if (counted.length === 0 || !counted.every((f) => isPct(f.pick.pct))) return null;
   return counted.reduce((s, f) => s + f.pick.pct, 0) / counted.length;
 }
@@ -101,14 +135,15 @@ export function meanStatedPct(fixtures) {
  * Recount won / lost / pushes from the rows and refuse a day whose accuracy disagrees: the ring is
  * a claim about these rows, so it must be derivable from them (and pct from won / graded).
  */
-function checkAccuracyAgainstRows(day) {
+function checkAccuracyAgainstRows(day, rule) {
+  checkRule(rule, 'checkAccuracyAgainstRows');
   const a = day.accuracy;
   if (a === null || typeof a !== 'object') throw new TypeError('renderDay: accuracy is missing');
   let won = 0;
   let lost = 0;
   let pushes = 0;
   for (const f of day.fixtures) {
-    if (!inRing(f)) continue;
+    if (!inRing(f, rule)) continue;
     if (f.grade === 'won') won++;
     else if (f.grade === 'lost') lost++;
     else if (f.grade === 'push') pushes++;
@@ -116,13 +151,13 @@ function checkAccuracyAgainstRows(day) {
   const graded = won + lost;
   const pct = graded ? Math.round((10000 * won) / graded) / 100 : null;
   if (a.won !== won || a.lost !== lost || a.pushes !== pushes || a.graded !== graded || a.pct !== pct) {
-    throw new Error(`renderDay: ${day.lagos_day} accuracy ${JSON.stringify({ won: a.won, lost: a.lost, pushes: a.pushes, graded: a.graded, pct: a.pct })} `
+    throw new Error(`renderDay: ${day.lagos_day} accuracy (rule ${rule}) ${JSON.stringify({ won: a.won, lost: a.lost, pushes: a.pushes, graded: a.graded, pct: a.pct })} `
       + `does not match its rows ${JSON.stringify({ won, lost, pushes, graded, pct })}`);
   }
 }
 
-/** The row's state: withdrawn | won | lost | push | void | pending | late | nopick. */
-function rowState(f) {
+/** The row's state: withdrawn | won | lost | push | void | pending | late (rule 1 only) | nopick. */
+function rowState(f, rule) {
   if (f.withdrawn === true) {
     if (f.grade !== 'withdrawn' && f.grade !== null) {
       throw new Error(`renderDay: fx ${f.fx} is withdrawn but its grade is ${JSON.stringify(f.grade)}`);
@@ -138,7 +173,7 @@ function rowState(f) {
   if (f.grade !== null && f.grade !== undefined) {
     throw new Error(`renderDay: fx ${f.fx} has no pick but grade ${JSON.stringify(f.grade)}`);
   }
-  return f.late === true ? 'late' : 'nopick';
+  return rule === 1 && f.late === true ? 'late' : 'nopick';
 }
 
 // ------------------------------------------------------------------ row parts
@@ -151,11 +186,36 @@ function timeSlot(f, hm) {
   return `<span class="fx__time">${ko}${em}</span>`;
 }
 
+const isGoals = (v) => Number.isInteger(v) && v >= 0;
+
+/**
+ * The final score to show, or null: a finished, non-withdrawn row whose score has integer home /
+ * away goals >= 0. A malformed score (a raw archive file is not validated by data.js) is omitted,
+ * never thrown on and never printed. Pens only on PEN, with both values integers >= 0.
+ */
+function finalScore(f) {
+  if (f.withdrawn === true || !FINISHED.has(f.status)) return null;
+  const s = f.score;
+  if (s === null || typeof s !== 'object' || Array.isArray(s) || !isGoals(s.home) || !isGoals(s.away)) return null;
+  const pens = f.status === 'PEN' && isGoals(s.pen_home) && isGoals(s.pen_away) ? [s.pen_home, s.pen_away] : null;
+  return { home: s.home, away: s.away, pens };
+}
+
 function teams(f) {
-  return '<span class="fx__teams">'
-    + `<span class="fx__team">${escHtml(f.home)}</span>`
+  const sc = finalScore(f);
+  if (sc === null) {
+    return '<span class="fx__teams">'
+      + `<span class="fx__team">${escHtml(f.home)}</span>`
+      + '<span class="vh"> v </span>'
+      + `<span class="fx__team">${escHtml(f.away)}</span>`
+      + '</span>';
+  }
+  // Scores sit right of each name (a two-column grid); the pens follow the away score, small.
+  const pens = sc.pens === null ? '' : `<small class="fx__pens">(${escHtml(sc.pens[0])}–${escHtml(sc.pens[1])} pens)</small>`;
+  return '<span class="fx__teams fx__teams--scored">'
+    + `<span class="fx__team">${escHtml(f.home)}</span><span class="fx__score mono">${escHtml(sc.home)}</span>`
     + '<span class="vh"> v </span>'
-    + `<span class="fx__team">${escHtml(f.away)}</span>`
+    + `<span class="fx__team">${escHtml(f.away)}</span><span class="fx__score mono">${escHtml(sc.away)}${pens}</span>`
     + '</span>';
 }
 
@@ -187,7 +247,7 @@ function selHtml(p, struck) {
   return `<p class="fx__sel">${struck ? `<s>${inner}</s>` : inner}</p>`;
 }
 
-function outcome(f, state) {
+function outcome(f, state, rule) {
   const p = f.pick;
   if (state === 'withdrawn') {
     const chip = '<span class="bg-chip bg-chip--void fx__grade">Withdrawn</span>';
@@ -210,22 +270,22 @@ function outcome(f, state) {
     + selHtml(p, false)
     + probHtml(p, false)
     + (p.why === null || p.why === undefined || p.why === '' ? '' : `<p class="fx__why">${escHtml(p.why)}</p>`)
-    + (f.pre_ko === false ? `<p class="fx__note">${escHtml(MSG.moved)}</p>` : '')
+    + (rule === 1 && f.pre_ko === false ? `<p class="fx__note">${escHtml(MSG.moved)}</p>` : '')
     + '</div>';
 }
 
-function fixtureRow(f) {
+function fixtureRow(f, rule) {
   if (!Number.isInteger(f.fx)) throw new TypeError('renderDay: a fixture has a non-integer fx');
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
-  const state = rowState(f);
-  const uncounted = state !== 'withdrawn' && f.pick && f.pre_ko === false ? ' data-uncounted' : '';
+  const state = rowState(f, rule);
+  const uncounted = rule === 1 && state !== 'withdrawn' && f.pick && f.pre_ko === false ? ' data-uncounted' : '';
   // id: the client's "Jump to now" target; data-ko / data-status: what it needs to pick one
   // (predictions.js, Plan B Task B3). Names are NOT repeated as attributes (page weight): the
   // client indexes the .fx__team / .fx__comp text.
   return `<li class="fx" id="fx-${escAttr(f.fx)}" data-fx="${escAttr(f.fx)}" data-state="${state}"`
     + ` data-ko="${escAttr(f.ko)}" data-status="${escAttr(f.status)}"${uncounted}>`
     + `<p class="fx__comp">${escHtml(f.comp === '' ? 'Competition not named' : f.comp)}</p>`
-    + timeSlot(f, hm) + teams(f) + outcome(f, state)
+    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule)
     + '</li>';
 }
 
@@ -256,7 +316,7 @@ function dayBar(d, activeCount) {
 
 // ------------------------------------------------------------------ the card
 
-function howBuilt(day) {
+function howBuilt(day, rule) {
   const ps = day.pick_source;
   if (ps === null || typeof ps !== 'object') throw new TypeError('renderDay: pick_source is missing');
   const markets = count(day.counts?.markets_per_fixture, 'counts.markets_per_fixture');
@@ -265,14 +325,28 @@ function howBuilt(day) {
   const matched = count(ps.ledger_match_matched, 'pick_source.ledger_match_matched');
   const unserved = count(ps.ledger_match_unserved, 'pick_source.ledger_match_unserved');
   // State counts only, never a cause (the data does not record one), and never the bare rate.
-  // The check covers fixtures listed in time for a pick; a late row never has one, but the graded
-  // record may still grade that fixture, so a day with late rows says so.
+  const none = 'No fixture on this card has been checked against the graded record.';
+  const tail = `the card showed a pick for ${served} — ${matched} of them the same pick the record grades`
+    + (unserved > 0 ? ` — and showed no pick for ${unserved}.` : '.');
+  if (rule === 2) {
+    // Rule 2 (spec §16.6): any row may take the card's pick, every non-withdrawn pick counts, and
+    // nothing on the card speaks of late or moved kickoffs. The check still covers only the rows
+    // the publisher fed it; the sentence states how many, not which.
+    const check = n === 0 ? none : `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record, ${tail}`;
+    return '<details class="day-how"><summary>How this card was built</summary><div class="day-how__body">'
+      + `<p>${escHtml(MSG.howRule2)}</p>`
+      + `<p>${escHtml(check)}</p>`
+      + '<p>The list shows every fixture we cover that day, with or without a pick. Pushes are not counted; '
+      + 'void picks and withdrawn picks are shown but not counted in the ring.</p>'
+      + '<p>Prices marked est. are estimates: no market price was captured for them.</p>'
+      + '</div></details>';
+  }
+  // Rule 1: the check covers fixtures listed in time for a pick; a late row never has one, but the
+  // graded record may still grade that fixture, so a day with late rows says so.
   const checked = n === 0
-    ? 'No fixture on this card has been checked against the graded record.'
+    ? none
     : `Of the ${plural(n, 'fixture', 'fixtures')} listed in time for a pick (at least 10 minutes before kickoff) `
-      + `that the graded record had a pick for, the card showed a pick for ${served} — `
-      + `${matched} of them the same pick the record grades`
-      + (unserved > 0 ? ` — and showed no pick for ${unserved}.` : '.');
+      + `that the graded record had a pick for, ${tail}`;
   const hasLate = day.fixtures.some((f) => f.late === true);
   const check = hasLate
     ? `${checked} Fixtures first listed too late carry no pick here; the graded record may still include them.`
@@ -322,8 +396,9 @@ export function renderDay(day, { prevDay = null, nextDay = null, beforeList = ''
   if (typeof day.picks_hash !== 'string' || !HASH_RE.test(day.picks_hash)) throw new TypeError('renderDay: picks_hash must be "sha256:" + 64 hex');
   const prev = optDate(prevDay, 'prevDay');
   const next = optDate(nextDay, 'nextDay');
-  day.fixtures.forEach(rowState); // every row renderable (named errors) before the ring is checked
-  checkAccuracyAgainstRows(day);
+  const rule = ruleOf(day);
+  day.fixtures.forEach((f) => rowState(f, rule)); // every row renderable (named errors) before the ring is checked
+  checkAccuracyAgainstRows(day, rule);
 
   const d = day.lagos_day;
   const longDate = fmtDayLong(d);
@@ -351,7 +426,7 @@ export function renderDay(day, { prevDay = null, nextDay = null, beforeList = ''
     + `<p class="day-head__date">${escHtml(longDate)}</p>`
     + `<p class="day-head__count mono">${escHtml(countLine)}</p>`
     + '</div>'
-    + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures), relDay: d })
+    + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures, rule), relDay: d })
     + '<p class="day-head__note">The ring counts this card’s own published picks. The graded record, every settled pick over time, is on <a href="/our-record/">Our Record</a>.</p>'
     + `<p class="day-receipt mono">Picks frozen ${escHtml(frozen)} · grades as of ${escHtml(gradedAt)} · receipt `
     + `<span class="mono">${escHtml(code)}</span></p>`
@@ -362,7 +437,7 @@ export function renderDay(day, { prevDay = null, nextDay = null, beforeList = ''
   const body = n === 0
     ? `${beforeList}<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
     : DAY_TOOLS + beforeList + dayBar(d, active.length)
-      + `<ol class="fx-list" role="list" data-fx-list>${rows.map(fixtureRow).join('')}</ol>`;
+      + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule)).join('')}</ol>`;
 
-  return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day)}${dayNav(prev, next)}</div>`;
+  return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day, rule)}${dayNav(prev, next)}</div>`;
 }

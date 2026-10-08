@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT } from '../site/lib/fixtures.js';
+import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT, ruleOf, isCounted } from '../site/lib/fixtures.js';
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
 import { picksHash } from '../site/lib/hash.js';
 import { lagosParts } from '../site/lib/time.js';
@@ -300,26 +300,26 @@ const r = (grade, pct, o = {}) => ({ fx: Math.random(), withdrawn: false, pre_ko
 
 test('meanStatedPct: settled, counted (pre_ko, not withdrawn, won/lost) picks only', () => {
   // Unrounded: the ring rounds, so a 99.67 mean can read ">99" rather than 100.
-  assert.equal(meanStatedPct(EDGE.fixtures), (82 + 78 + 84) / 3);
-  assert.equal(meanStatedPct(D08.fixtures), null); // nothing settled
-  assert.equal(meanStatedPct([]), null);
+  assert.equal(meanStatedPct(EDGE.fixtures, 1), (82 + 78 + 84) / 3);
+  assert.equal(meanStatedPct(D08.fixtures, 1), null); // nothing settled
+  assert.equal(meanStatedPct([], 1), null);
   // Each excluded row would MOVE the mean if it were counted (80 vs 60 / 70 / 66.7).
   const base = [r('won', 80), r('lost', 80)];
-  assert.equal(meanStatedPct(base), 80);
-  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })]), 80, 'moved kickoff excluded');
-  assert.equal(meanStatedPct([...base, r('withdrawn', 40, { withdrawn: true })]), 80, 'withdrawn excluded');
-  assert.equal(meanStatedPct([...base, r('push', 40)]), 80, 'push excluded');
-  assert.equal(meanStatedPct([...base, r('void', 40)]), 80, 'void excluded');
-  assert.equal(meanStatedPct([...base, r('pending', 40)]), 80, 'pending excluded');
-  assert.equal(meanStatedPct([...base, r('won', 40)]), 200 / 3, 'a counted pick is included');
+  assert.equal(meanStatedPct(base, 1), 80);
+  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 1), 80, 'moved kickoff excluded');
+  assert.equal(meanStatedPct([...base, r('withdrawn', 40, { withdrawn: true })], 1), 80, 'withdrawn excluded');
+  assert.equal(meanStatedPct([...base, r('push', 40)], 1), 80, 'push excluded');
+  assert.equal(meanStatedPct([...base, r('void', 40)], 1), 80, 'void excluded');
+  assert.equal(meanStatedPct([...base, r('pending', 40)], 1), 80, 'pending excluded');
+  assert.equal(meanStatedPct([...base, r('won', 40)], 1), 200 / 3, 'a counted pick is included');
 });
 
 test('meanStatedPct: null when ANY counted pick lacks an integer pct (never a subset mean)', () => {
-  assert.equal(meanStatedPct([r('won', 80), r('won', null)]), null);
-  assert.equal(meanStatedPct([r('won', 80), r('lost', 80.5)]), null);
-  assert.equal(meanStatedPct([r('won', 80), r('lost', 101)]), null);
+  assert.equal(meanStatedPct([r('won', 80), r('won', null)], 1), null);
+  assert.equal(meanStatedPct([r('won', 80), r('lost', 80.5)], 1), null);
+  assert.equal(meanStatedPct([r('won', 80), r('lost', 101)], 1), null);
   // an uncounted row without a pct does not poison the mean
-  assert.equal(meanStatedPct([r('won', 80), r('pending', null)]), 80);
+  assert.equal(meanStatedPct([r('won', 80), r('pending', null)], 1), 80);
 });
 
 test('meanStatedPct returns the unrounded-to-100 mean; the ring shows >= 99.5 as ">99"', () => {
@@ -690,3 +690,253 @@ test('fixtures.css: hiding really hides, rows are virtualised, the competition l
   assert.match(wide[1], /\.fx__pick\{[^}]*grid-row:1 \/ span 2/);
   assert.match(css, /\.day-bar\{/);
 });
+
+// ---------------------------------------------------------------- spec §16: accuracy rule 2, scores
+
+// The publisher's real 2026-10-08 file as a rule-2 day: scores on finished rows (one AET, one PEN),
+// 558451 late WITH a pick, 558454 picked with pre_ko false, 147972 late without a pick.
+const R2_RAW = readJson('./fixtures/rule2-day.json');
+const R2 = validateDay(R2_RAW, { expectDate: '2026-10-08' });
+const R2_HTML = renderDay(R2, opts());
+const FINISHED = new Set(['FT', 'AET', 'PEN']);
+const scoreSpans = (html) => [...html.matchAll(/<span class="fx__score mono">([\s\S]*?)<\/span>/g)].map((m) => m[1]);
+
+test('ruleOf: absent -> 1, else exactly 1 or 2; anything else throws', () => {
+  assert.equal(ruleOf({}), 1);
+  assert.equal(ruleOf(EDGE_RAW), 1);
+  assert.equal(ruleOf({ accuracy_rule: 1 }), 1);
+  assert.equal(ruleOf({ accuracy_rule: 2 }), 2);
+  assert.equal(ruleOf(R2_RAW), 2);
+  for (const bad of [0, 3, '2', null, 1.5, true, [], {}]) assert.throws(() => ruleOf({ accuracy_rule: bad }), TypeError, JSON.stringify(bad));
+  const day = structuredClone(EDGE_RAW);
+  day.accuracy_rule = '2';
+  assert.throws(() => renderDay(day, opts()), /accuracy_rule/, 'a raw archive file with a bad rule is refused');
+});
+
+test('isCounted: rule 1 needs pre_ko; rule 2 counts every non-withdrawn won/lost pick', () => {
+  const moved = r('won', 80, { pre_ko: false });
+  assert.equal(isCounted(moved, 1), false);
+  assert.equal(isCounted(moved, 2), true);
+  assert.equal(isCounted(r('lost', 80, { pre_ko: false, late: true }), 2), true);
+  for (const rule of [1, 2]) {
+    assert.equal(isCounted(r('won', 80), rule), true);
+    assert.equal(isCounted(r('withdrawn', 80, { withdrawn: true }), rule), false);
+    assert.equal(isCounted(r('won', 80, { withdrawn: true }), rule), false);
+    for (const g of ['push', 'void', 'pending']) assert.equal(isCounted(r(g, 80), rule), false, `${g} rule ${rule}`);
+    assert.equal(isCounted({ fx: 1, withdrawn: false, pre_ko: true, grade: null, pick: null }, rule), false);
+  }
+  for (const bad of [undefined, 0, 3, '1']) assert.throws(() => isCounted(r('won', 80), bad), TypeError);
+});
+
+test('meanStatedPct takes the rule: a moved-kickoff pick counts under rule 2 only', () => {
+  const base = [r('won', 80), r('lost', 80)];
+  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 1), 80);
+  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 2), 200 / 3);
+  assert.equal(meanStatedPct([...base, r('won', 40, { withdrawn: true })], 2), 80, 'withdrawn never counts');
+  const counted = R2.fixtures.filter((f) => !f.withdrawn && f.pick && (f.grade === 'won' || f.grade === 'lost'));
+  assert.ok(counted.some((f) => f.fx === 558451) && counted.some((f) => f.fx === 558454), 'premise');
+  assert.equal(meanStatedPct(R2.fixtures, 2), counted.reduce((s, f) => s + f.pick.pct, 0) / counted.length);
+  assert.notEqual(meanStatedPct(R2.fixtures, 1), meanStatedPct(R2.fixtures, 2));
+  for (const bad of [undefined, 0, 3, '2']) assert.throws(() => meanStatedPct(base, bad), TypeError, String(bad));
+});
+
+test('rule 2: the ring counts every non-withdrawn pick, and there is no "accept either" loophole', () => {
+  assert.match(text(R2_HTML), /48 of 55 landed/);
+  // The same rows read under rule 1 drop the two moved-kickoff wins: refused.
+  const asRule1 = structuredClone(R2_RAW);
+  delete asRule1.accuracy_rule;
+  assert.throws(() => renderDay(asRule1, opts()), /accuracy/);
+  // A rule-1 file relabelled rule 2 counts its moved-kickoff row (900011): refused.
+  const edge2 = structuredClone(EDGE_RAW);
+  edge2.accuracy_rule = 2;
+  assert.throws(() => renderDay(edge2, opts()), /accuracy/);
+  // ... and with the rule-2 recount it renders.
+  edge2.accuracy = { won: 3, lost: 1, pushes: 1, graded: 4, pct: 75 };
+  assert.match(text(renderDay(edge2, opts())), /3 of 4 landed/);
+});
+
+test('rule 2: a 100% day states the mean of every counted pick, moved kickoff included', () => {
+  const day = structuredClone(EDGE_RAW);
+  day.accuracy_rule = 2;
+  day.fixtures.find((x) => x.fx === 900002).grade = 'won';
+  day.accuracy = { won: 4, lost: 0, pushes: 1, graded: 4, pct: 100 };
+  const counted = day.fixtures.filter((f) => !f.withdrawn && f.pick && f.grade === 'won');
+  assert.equal(counted.length, 4);
+  assert.ok(counted.some((f) => f.fx === 900011), 'premise: the moved-kickoff pick is one of them');
+  const mean = Math.round(counted.reduce((s, f) => s + f.pick.pct, 0) / 4);
+  assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), new RegExp(`stated at an average ${mean}%`));
+});
+
+test('rule 2: no late / moved notes, no uncounted marker; a late row with a pick renders like any pick', () => {
+  const t = text(R2_HTML);
+  assert.ok(!t.includes('No pick — first seen'), 'no late note');
+  assert.ok(!t.includes('Kickoff was moved'), 'no moved note');
+  assert.ok(!/data-uncounted|fx__note/.test(R2_HTML));
+  assert.ok(!/data-state="late"/.test(R2_HTML));
+  for (const fx of [558451, 558454]) {
+    const rw = row(R2_HTML, fx);
+    assert.equal(stateOf(rw), 'won', `fx ${fx}`);
+    assert.match(text(rw), /★ Recommended pick/);
+    assert.match(rw, /data-figure="pick-prob"/);
+  }
+  const bare = row(R2_HTML, 147972);
+  assert.equal(stateOf(bare), 'nopick');
+  assert.match(text(bare), /^Serie A \(Brazil\) .* No recommendation\.$/);
+  // EDGE as rule 2 (recounted): its late row and moved row lose their notes too.
+  const edge2 = structuredClone(EDGE);
+  edge2.accuracy_rule = 2;
+  edge2.accuracy = { won: 3, lost: 1, pushes: 1, graded: 4, pct: 75 };
+  const h = renderDay(edge2, opts());
+  assert.equal(stateOf(row(h, 900009)), 'nopick');
+  assert.match(text(row(h, 900009)), /No recommendation\./);
+  assert.ok(!/data-uncounted|fx__note|Kickoff was moved|first seen/.test(h));
+  // while rule 1 (EDGE as published) keeps them
+  assert.match(EDGE_HTML, /data-uncounted/);
+  assert.match(text(EDGE_HTML), /Kickoff was moved/);
+  assert.match(text(EDGE_HTML), /No pick — first seen/);
+});
+
+test('rule 2: "How this card was built" names the card pick and drops every late / moved / 10-minute sentence', () => {
+  const t = howText(R2);
+  assert.match(t, /^How this card was built At most one recommended pick per fixture — the platform's card pick — graded after full time\. /);
+  assert.match(t, /Of the 111 fixtures checked against the graded record, the card showed a pick for 107 — 107 of them the same pick the record grades — and showed no pick for 4\./);
+  assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks and withdrawn picks are shown but not counted in the ring\./);
+  assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
+  assert.ok(!/10 minutes|\blate\b|too late|moved|in time|priced markets/i.test(t), t);
+  assert.ok(!t.includes('%'));
+  // nothing checked yet
+  const none = structuredClone(R2);
+  Object.assign(none.pick_source, { ledger_match_n: 0, ledger_match_matched: 0, ledger_match_served_n: 0, ledger_match_unserved: 0, ledger_match_rate: null });
+  assert.match(howText(none), /No fixture on this card has been checked against the graded record\./);
+  // rule 1 keeps the old copy
+  assert.match(howText(EDGE), /At most one recommended pick per fixture, chosen from 92 priced markets\./);
+  assert.ok(howText(EDGE).includes(LATE_NOTE));
+});
+
+test('the archive renders the raw file: raw and validated rule-2 / rule-1 days give the same card', () => {
+  assert.equal(renderDay(R2_RAW, opts()), R2_HTML);
+  assert.equal(renderDay(D07_RAW, opts()), renderDay(D07, opts()));
+  assert.equal(renderDay(EDGE_RAW, opts()), renderDay(EDGE, opts()));
+});
+
+test('scores: shown beside each team on finished rows only (FT / AET / PEN), with pens on PEN', () => {
+  const scored = R2.fixtures.filter((f) => !f.withdrawn && FINISHED.has(f.status) && f.score !== null);
+  assert.ok(scored.length > 50 && scored.some((f) => f.status === 'AET') && scored.some((f) => f.status === 'PEN'), 'premise');
+  assert.equal(scoreSpans(R2_HTML).length, 2 * scored.length, 'two scores per finished row, none elsewhere');
+  for (const f of scored) {
+    const rw = row(R2_HTML, f.fx);
+    const home = f.home.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
+    assert.ok(rw.includes(`<span class="fx__teams fx__teams--scored"><span class="fx__team">${home}</span><span class="fx__score mono">${f.score.home}</span>`), `fx ${f.fx} home`);
+    const sp = scoreSpans(rw);
+    assert.equal(sp[0], String(f.score.home));
+    if (f.status === 'PEN') {
+      assert.equal(sp[1], `${f.score.away}<small class="fx__pens">(4–3 pens)</small>`);
+      assert.match(text(rw), new RegExp(`${f.score.away} \\(4–3 pens\\)`));
+    } else {
+      assert.equal(sp[1], String(f.score.away));
+      assert.ok(!rw.includes('pens'), `fx ${f.fx}: no pens text`);
+    }
+  }
+  // old files carry no score: no score markup, the teams block unchanged
+  for (const html of [EDGE_HTML, renderDay(D07, opts())]) assert.ok(!/fx__score|fx__teams--scored|fx__pens/.test(html));
+});
+
+test('scores: never for in-play, not-started, postponed, awarded or walkover rows; never on a withdrawn row', () => {
+  const base = R2_RAW.fixtures.find((f) => f.status === 'FT' && f.score !== null && !f.withdrawn);
+  for (const st of ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT', 'NS', 'PST', 'CANC', 'ABD', 'SUSP', 'TBD', 'AWD', 'WO']) {
+    const day = structuredClone(R2_RAW);
+    const f = day.fixtures.find((x) => x.fx === base.fx);
+    f.status = st;
+    f.score = { home: 2, away: 1, pen_home: 4, pen_away: 3 };
+    assert.equal(scoreSpans(row(renderDay(day, opts()), f.fx)).length, 0, st);
+  }
+  for (const st of ['FT', 'AET', 'PEN']) {
+    const day = structuredClone(R2_RAW);
+    const f = day.fixtures.find((x) => x.fx === base.fx);
+    f.status = st;
+    assert.equal(scoreSpans(row(renderDay(day, opts()), f.fx)).length, 2, st);
+  }
+  // a withdrawn row keeps its published status; a score there would describe a different fixture
+  const w = structuredClone(R2_RAW);
+  const wf = w.fixtures.find((x) => x.withdrawn);
+  Object.assign(wf, { status: 'FT', score: { home: 1, away: 0, pen_home: null, pen_away: null } });
+  assert.equal(scoreSpans(row(renderDay(w, opts()), wf.fx)).length, 0);
+});
+
+test('scores: pens text only on PEN with both pens integers', () => {
+  const pen = R2_RAW.fixtures.find((f) => f.status === 'PEN');
+  const cases = [
+    [{ home: 1, away: 1, pen_home: null, pen_away: null }, false],
+    [{ home: 1, away: 1, pen_home: 5, pen_away: null }, false],
+    [{ home: 1, away: 1, pen_home: '5', pen_away: 4 }, false],
+    [{ home: 1, away: 1, pen_home: 5.5, pen_away: 4 }, false],
+    [{ home: 1, away: 1, pen_home: -1, pen_away: 4 }, false],
+    [{ home: 1, away: 1, pen_home: 0, pen_away: 0 }, true],
+  ];
+  for (const [score, shown] of cases) {
+    const day = structuredClone(R2_RAW);
+    day.fixtures.find((x) => x.fx === pen.fx).score = score;
+    const rw = row(renderDay(day, opts()), pen.fx);
+    assert.equal(scoreSpans(rw).length, 2, JSON.stringify(score));
+    assert.equal(/fx__pens/.test(rw), shown, JSON.stringify(score));
+  }
+  // AET with pens in the data: no pens text (only a shoot-out shows one)
+  const day = structuredClone(R2_RAW);
+  const aet = day.fixtures.find((x) => x.status === 'AET');
+  aet.score = { home: 2, away: 2, pen_home: 4, pen_away: 3 };
+  assert.ok(!/fx__pens/.test(row(renderDay(day, opts()), aet.fx)));
+});
+
+test('scores: a raw archive file with a malformed score omits it and never throws', () => {
+  const ft = R2_RAW.fixtures.find((f) => f.status === 'FT' && f.score !== null && !f.withdrawn);
+  const bad = ['2-1', 7, [], [2, 1], true, {}, { home: 1 }, { away: 1 }, { home: '1', away: 0 }, { home: -1, away: 0 },
+    { home: 1.5, away: 0 }, { home: 1, away: null }, { home: '<img src=x onerror=alert(1)>', away: 1 }, { home: NaN, away: 1 }];
+  for (const s of bad) {
+    const day = structuredClone(R2_RAW);
+    day.fixtures.find((x) => x.fx === ft.fx).score = s;
+    let html;
+    assert.doesNotThrow(() => { html = renderDay(day, opts()); }, JSON.stringify(s));
+    const rw = row(html, ft.fx);
+    assert.equal(scoreSpans(rw).length, 0, JSON.stringify(s));
+    assert.ok(!/fx__teams--scored|<img/.test(rw), JSON.stringify(s));
+  }
+  // score absent or null: same as an old file
+  for (const s of [undefined, null]) {
+    const day = structuredClone(R2_RAW);
+    const f = day.fixtures.find((x) => x.fx === ft.fx);
+    if (s === undefined) delete f.score; else f.score = s;
+    assert.equal(scoreSpans(row(renderDay(day, opts()), ft.fx)).length, 0);
+  }
+});
+
+test('rule 2 + scores: no inline style / script, every percentage inside its figure', () => {
+  assert.ok(!/style=|<style|<script/i.test(R2_HTML));
+  const stripped = R2_HTML
+    .replace(/<p class="fx__prob" data-figure="pick-prob">[\s\S]*?<\/p>/g, '')
+    .replace(/<div class="ring"[^>]*data-figure="ring"[\s\S]*?<\/div>/g, '');
+  assert.ok(!/\d%/.test(text(stripped)));
+  assert.doesNotMatch(R2_HTML, /github/i);
+});
+
+test('fixtures.css: scores sit right of each team name, pens small; rule-1 marker kept', () => {
+  const css = readFileSync(CSS_PATH, 'utf8');
+  const top = topRules(css);
+  const classes = new Set();
+  for (const m of R2_HTML.matchAll(/class="([^"]+)"/g)) for (const c of m[1].split(/\s+/)) classes.add(c);
+  const base = readFileSync(here('../site/assets/css/base.css'), 'utf8');
+  for (const c of classes) {
+    const re = new RegExp(`\\.${c.replace(/[-]/g, '\\-')}(?![\\w-])`);
+    assert.ok(re.test(css) || re.test(base), `.${c} has a rule in fixtures.css or base.css`);
+  }
+  for (const c of ['fx__score', 'fx__pens', 'fx__teams--scored']) assert.ok(classes.has(c), `premise: ${c} rendered`);
+  const scoredTeams = bodyOf(top, '.fx__teams--scored');
+  assert.match(scoredTeams, /display:grid/);
+  assert.match(scoredTeams, /grid-template-columns:minmax\(0,1fr\) auto/);
+  assert.match(bodyOf(top, '.fx__teams--scored .fx__team'), /grid-column:1/);
+  const sc = bodyOf(top, '.fx__score');
+  for (const d of [/grid-column:2/, /justify-self:end/, /text-align:right/, /tabular-nums/, /white-space:nowrap/]) assert.match(sc, d);
+  assert.match(bodyOf(top, '.fx__pens'), /font-size:/);
+  assert.match(css, /\.fx\[data-uncounted\] \.fx__grade\{[^}]*border-style:dashed/, 'rule-1 files still mark uncounted rows');
+  assert.match(bodyOf(top, '.fx__note'), /border-left/, 'rule-1 files still show the moved note');
+});
+

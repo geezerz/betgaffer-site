@@ -138,6 +138,19 @@
   display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2;
   overflow:hidden; overflow-wrap:anywhere;
 }
+/* Finished rows (spec §16.2): the final score right of each name; a shoot-out's pens follow the
+   away score, small. Score and name share size and line height, so they align on the first line. */
+.fx__teams--scored{
+  display:grid; grid-template-columns:minmax(0,1fr) auto;
+  column-gap:12px; row-gap:3px; align-items:start;
+}
+.fx__teams--scored .fx__team{ grid-column:1; }
+.fx__score{
+  grid-column:2; justify-self:end; text-align:right; white-space:nowrap;
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  font-size:14.5px; font-weight:800; line-height:1.3; letter-spacing:-.01em; color:var(--ink);
+}
+.fx__pens{ margin-left:6px; font-size:10.5px; font-weight:600; letter-spacing:0; color:var(--muted); }
 
 /* The outcome block: pick, withdrawn, late or nothing. */
 .fx__pick{
