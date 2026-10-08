@@ -67,10 +67,10 @@ describe('build of the fixture artifact', () => {
     for (const f of ['favicon.svg', 'mark.svg', 'apple-touch-icon.png']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/img', f)), await readFile(join(REPO_ROOT, 'site/assets/img', f)), f);
     }
-    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js']) {
+    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
-    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
+    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
     for (const f of ISOMORPHIC_LIB) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js/lib', f)), await readFile(join(REPO_ROOT, 'site/lib', f)), f);
     }
@@ -79,7 +79,7 @@ describe('build of the fixture artifact', () => {
 
   test('every browser module imports only files the build ships (relative ./lib/ or sibling paths)', async () => {
     const shipped = new Set(Object.keys(await snapshot(join(ws.out, 'assets/js'))));
-    assert.ok(shipped.has('day.js') && shipped.has('lib/fixtures.js') && shipped.has('predictions.js') && shipped.has('lib/search.js'), 'premise: modules are shipped');
+    assert.ok(shipped.has('day.js') && shipped.has('lib/fixtures.js') && shipped.has('predictions.js') && shipped.has('lib/search.js') && shipped.has('balloon.js') && shipped.has('lib/balloon-model.js'), 'premise: modules are shipped');
     for (const rel of shipped) {
       const src = await readFile(join(ws.out, 'assets/js', rel), 'utf8');
       const specs = [...src.matchAll(/^\s*(?:import|export)\s[^'"]*?from\s*['"]([^'"]+)['"]/gm), ...src.matchAll(/import\(\s*['"]([^'"]+)['"]\s*\)/g)].map((m) => m[1]);
@@ -93,7 +93,7 @@ describe('build of the fixture artifact', () => {
   });
 
   test('site.css concatenates the stylesheets in the fixed order', async () => {
-    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'predictions.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
     const css = await read(ws, 'assets/css/site.css');
     let at = -1;
     for (const f of CSS_ORDER) {
@@ -680,6 +680,93 @@ describe('archive: every listed day gets a page; older days are stubs', () => {
 
   test('only listed day files are copied, under their listed names', async () => {
     assert.deepEqual((await readdir(join(ws.out, 'days'))).sort(), ['2026-10-05.min.json', '2026-10-06.json', '2026-10-07.json', '2026-10-08.json']);
+  });
+});
+
+// ------------------------------------------------------------------ the floating ring (Task B4)
+
+describe('the floating ring: its figures on <main> and its script', () => {
+  let ws;
+  let readFigures;
+  before(async () => {
+    ws = await workspace();
+    await copyArtifact(ws.root);
+    await addArchive(ws.root); // listed: 10-05 (compacted), 10-06 (stub), 10-07 (home), 10-08 (tomorrow)
+    await run(ws);
+    ({ readFigures } = await import(pathToFileURL(join(ws.out, 'assets/js/lib/balloon-model.js')).href));
+  });
+  after(() => ws.cleanup());
+
+  const ringAttrs = (m) => Object.fromEntries(Object.entries(m.attrs).filter(([k]) => /^data-(ring|yday)-/.test(k)));
+  const ring = (won, lost, pushes, pct, date, p = 'ring') => ({
+    [`data-${p}-won`]: String(won), [`data-${p}-lost`]: String(lost), [`data-${p}-pushes`]: String(pushes),
+    [`data-${p}-graded`]: String(won + lost), ...(pct === null ? {} : { [`data-${p}-pct`]: String(pct) }), [`data-${p}-date`]: date,
+  });
+
+  test('home and the full home day: today from the day file, yesterday from the index entry for the day before', async () => {
+    const want = { ...ring(0, 0, 0, null, '2026-10-07'), ...ring(2, 1, 1, 66.67, '2026-10-06', 'yday') };
+    assert.deepEqual(ringAttrs(mainOf(await read(ws, 'index.html'))), want);
+    assert.deepEqual(ringAttrs(mainOf(await read(ws, 'day/2026-10-07/index.html'))), want);
+  });
+
+  test('tomorrow\'s page: yesterday is today, with nothing graded (no pct attribute)', async () => {
+    assert.deepEqual(ringAttrs(mainOf(await read(ws, 'day/2026-10-08/index.html'))),
+      { ...ring(0, 0, 0, null, '2026-10-08'), ...ring(0, 0, 0, null, '2026-10-07', 'yday') });
+  });
+
+  test('stub pages carry the figures too: a fetching stub, and a compacted one whose day before is not listed', async () => {
+    assert.deepEqual(ringAttrs(mainOf(await read(ws, 'day/2026-10-06/index.html'))),
+      { ...ring(2, 1, 1, 66.67, '2026-10-06'), ...ring(30, 6, 2, 83.33, '2026-10-05', 'yday') });
+    assert.deepEqual(ringAttrs(mainOf(await read(ws, 'day/2026-10-05/index.html'))), ring(30, 6, 2, 83.33, '2026-10-05'),
+      'no yesterday: 2026-10-04 is not listed');
+  });
+
+  test('every page with the figures loads /assets/js/balloon.js as a module, and the browser reads them as valid', async () => {
+    let withRing = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const doc = parse(html);
+      const main = find(doc, (n) => n.tag === 'main');
+      const has = main !== null && main.attrs['data-ring-graded'] !== undefined;
+      const scripts = findAll(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/balloon.js');
+      assert.equal(scripts.length, has ? 1 : 0, rel);
+      if (!has) continue;
+      withRing++;
+      assert.equal(scripts[0].attrs.type, 'module');
+      const figures = readFigures((name) => main.attrs[`data-${name}`] ?? null);
+      assert.notEqual(figures, null, `${rel}: the built figures pass the browser's validation`);
+    }
+    assert.equal(withRing, 5, 'premise: / and the four day pages (full, stub and compacted)');
+  });
+
+  test('a gap: when the day before is not listed there is no yesterday, even though an earlier day is', async () => {
+    const gap = await workspace();
+    try {
+      await copyArtifact(gap.root);
+      await addArchive(gap.root);
+      const index = await readJson(join(gap.root, 'index.json'));
+      index.days = index.days.filter((d) => d.day !== '2026-10-06');
+      await writeJson(join(gap.root, 'index.json'), index);
+      await rm(join(gap.root, 'days', '2026-10-06.json'));
+      await run(gap);
+      for (const rel of ['index.html', 'day/2026-10-07/index.html']) {
+        assert.deepEqual(ringAttrs(mainOf(await read(gap, rel))), ring(0, 0, 0, null, '2026-10-07'), rel);
+      }
+      assert.ok(await exists(join(gap.out, 'day/2026-10-05/index.html')), 'premise: an earlier day is listed');
+    } finally {
+      await gap.cleanup();
+    }
+  });
+
+  test('no index.json: no figures and no ring script', async () => {
+    const empty = await workspace();
+    try {
+      await run(empty);
+      const html = await read(empty, 'index.html');
+      assert.deepEqual(ringAttrs(mainOf(html)), {});
+      assert.equal(find(parse(html), (n) => n.tag === 'script' && n.attrs.src === '/assets/js/balloon.js'), null);
+    } finally {
+      await empty.cleanup();
+    }
   });
 });
 

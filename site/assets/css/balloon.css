@@ -1,0 +1,146 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — the floating accuracy ring (spec §6, §15).
+   Markup: site/assets/js/balloon.js (built client-side; the day header's static
+   SVG ring is the no-JS figure). Colours, fonts: base.css tokens.
+
+   One design at every width. The arc is the won/graded split drawn as a
+   conic-gradient and hollowed by an inset ::before; --pct is set through CSSOM
+   by the script (never a style attribute). --bal-size drives every dimension.
+     data-size="desktop" (from 1024px): ~116-128px, today then yesterday, default
+       anchor top right under the sticky header + toolbar;
+     data-size="compact" (below 1024px): 64px, today's figure and fraction only,
+       default anchor bottom right above the safe area.
+   Perfect and empty days draw no arc (no figure is a full circle); an empty day
+   has a dashed rim.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.bg-balloon{
+  --bal-size:64px;
+  --bal-thick:4px;
+  position:fixed; z-index:45;
+  left:auto; top:auto; right:12px;
+  bottom:calc(12px + env(safe-area-inset-bottom, 0px));
+  width:var(--bal-size); height:var(--bal-size);
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  background:var(--surface-3);
+  border:1px solid var(--line-2);
+  box-shadow:0 10px 28px -10px rgba(0,0,0,.75);
+  color:var(--ink); text-decoration:none;
+  cursor:grab;
+  /* Drag, not scroll, under the finger; no text selection, no native link drag, no iOS
+     long-press preview. draggable="false" on the element stops the HTML5 drag; this stops
+     WebKit's separate link drag. */
+  touch-action:none;
+  user-select:none; -webkit-user-select:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
+  -webkit-tap-highlight-color:transparent;
+  /* Nothing overhangs the circle, so its repaints stop at its own box. */
+  contain:layout paint;
+  transition:box-shadow .16s ease, border-color .16s ease;
+}
+.bg-balloon[hidden]{ display:none; }
+.bg-balloon::before{
+  content:''; position:absolute; z-index:1; inset:var(--bal-thick);
+  border-radius:50%; background:var(--surface);
+  box-shadow:inset 0 0 0 1px var(--line);
+}
+/* The arc is the data: set --pct and it repaints. */
+.bg-balloon[data-arc]{
+  background:conic-gradient(var(--accent) calc(var(--pct, 0) * 1%), var(--surface-3) 0);
+}
+.bg-balloon[data-state="none"]{ border-style:dashed; }
+.bg-balloon:hover{ border-color:var(--muted-2); box-shadow:0 12px 32px -10px rgba(0,0,0,.85); }
+.bg-balloon:active{ cursor:grabbing; }
+.bg-balloon:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
+/* will-change only while the gesture is live. */
+.bg-balloon.is-dragging{ transition:none; will-change:transform; cursor:grabbing; }
+
+.bg-balloon[data-size="desktop"]{
+  --bal-size:clamp(116px, 10vw, 128px);
+  --bal-thick:calc(var(--bal-size) * .052);
+  right:24px; bottom:auto;
+  /* Under the sticky header and, on a predictions page, its sticky toolbar (both measured onto
+     <html> by predictions.js; the fallbacks hold before that or without a toolbar). */
+  top:calc(var(--bg-sticky-top, var(--bar-h-lg)) + var(--bg-tools-h, 0px) + 16px);
+  border-width:max(1px, calc(var(--bal-size) * .015));
+}
+
+/* ── content ───────────────────────────────────────────────────────────────── */
+.bg-balloon__inner{
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:calc(var(--bal-size) * .012);
+  max-width:88%;
+  pointer-events:none; text-align:center;
+}
+.bg-balloon__inner > span{ display:block; line-height:1; white-space:nowrap; }
+.bg-balloon__pct{
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  font-weight:800; letter-spacing:-.03em; color:var(--ink);
+  font-size:calc(var(--bal-size) * .16);
+}
+.bg-balloon__pct--frac{ font-size:calc(var(--bal-size) * .13); letter-spacing:-.02em; }
+.bg-balloon__label{
+  font-family:var(--font-mono); font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2);
+  font-size:max(7.5px, calc(var(--bal-size) * .062));
+}
+/* won of graded: the checkable half of the claim, at the label's weight, never faded out. */
+.bg-balloon__frac{
+  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
+  font-weight:700; color:var(--ink-2);
+  font-size:max(8px, calc(var(--bal-size) * .07));
+}
+.bg-balloon__inner > .bg-balloon__landed{
+  font-family:var(--font-mono); font-weight:600; color:var(--muted);
+  font-size:max(7.5px, calc(var(--bal-size) * .06));
+}
+.bg-balloon__inner > .bg-balloon__none{
+  white-space:normal; max-width:72%;
+  font-weight:700; line-height:1.15; color:var(--ink-2);
+  font-size:max(10px, calc(var(--bal-size) * .085));
+}
+
+/* Yesterday, inside the ring below a hairline: a second window, not more of the same figure. */
+.bg-balloon__inner > .bg-balloon__prev{
+  display:flex; flex-direction:column; align-items:center; gap:calc(var(--bal-size) * .012);
+  width:100%;
+  margin-top:calc(var(--bal-size) * .022);
+  padding-top:calc(var(--bal-size) * .026);
+  border-top:1px solid var(--line-2);
+}
+.bg-balloon__prev > span{ display:block; line-height:1; white-space:nowrap; font-family:var(--font-mono); }
+.bg-balloon__prev-day{
+  font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);
+  font-size:max(7.5px, calc(var(--bal-size) * .058));
+}
+.bg-balloon__prev-pct{
+  font-variant-numeric:tabular-nums; font-weight:800; color:var(--ink);
+  font-size:max(9.5px, calc(var(--bal-size) * .085));
+}
+.bg-balloon__prev-frac{
+  font-variant-numeric:tabular-nums; font-weight:600; color:var(--ink-2);
+  font-size:max(7.5px, calc(var(--bal-size) * .058));
+}
+
+/* The small ring: today's figure and fraction, legible at 64px. */
+.bg-balloon[data-size="compact"] .bg-balloon__pct{ font-size:13px; }
+.bg-balloon[data-size="compact"] .bg-balloon__pct--frac{ font-size:11.5px; }
+.bg-balloon[data-size="compact"] .bg-balloon__frac{ font-size:9px; letter-spacing:-.02em; }
+.bg-balloon[data-size="compact"] .bg-balloon__landed{ font-size:8px; }
+.bg-balloon[data-size="compact"] .bg-balloon__w{ display:block; }
+.bg-balloon[data-size="compact"][data-long] .bg-balloon__frac,
+.bg-balloon[data-size="compact"][data-long] .bg-balloon__pct--frac{ font-size:8px; letter-spacing:-.05em; }
+
+/* The phone ring sits over the bottom of the page: keep the last row clear of it. */
+@media (max-width:1023.98px){
+  html.has-balloon .bg-page{
+    padding-bottom:calc(64px + 36px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .bg-balloon{ transition:none; }
+}

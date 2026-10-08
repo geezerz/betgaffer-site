@@ -39,12 +39,13 @@ const SITE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(SITE, '..');
 
 /** site.css = these files, in this order. */
-export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
-/** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar). */
-export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js']);
+export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+/** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring). */
+export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js']);
 /** Same-site browser entry modules. */
 const SCRIPT = Object.freeze({
   stale: '/assets/js/stale.js', day: '/assets/js/day.js', waitlist: '/assets/js/waitlist.js', predictions: '/assets/js/predictions.js',
+  balloon: '/assets/js/balloon.js',
 });
 /** The predictions toolbar loads where a day card has its toolbar slot (a zero-fixture day has none). */
 const hasDayTools = (body) => /\bdata-day-tools[\s>]/.test(body);
@@ -72,6 +73,26 @@ function addDays(date, n) {
   const [y, m, d] = date.split('-').map(Number);
   const t = new Date(Date.UTC(y, m - 1, d) + n * DAY_MS);
   return `${String(t.getUTCFullYear()).padStart(4, '0')}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`;
+}
+
+/**
+ * The floating ring's figures for <main> (spec §6, §15): the shown day's accuracy as data-ring-*,
+ * and the index entry for EXACTLY the day before as data-yday-* (compacted entries carry their
+ * accuracy too). No such entry: no yesterday, never an older day standing in for it. A null pct
+ * (nothing graded) becomes no attribute (page() omits nulls); balloon.js validates all of it.
+ */
+function ringData(accuracy, date, listed) {
+  const out = {};
+  const put = (p, a, d) => {
+    Object.assign(out, {
+      [`${p}Won`]: a.won, [`${p}Lost`]: a.lost, [`${p}Pushes`]: a.pushes, [`${p}Graded`]: a.graded, [`${p}Pct`]: a.pct, [`${p}Date`]: d,
+    });
+  };
+  put('ring', accuracy, date);
+  const before = addDays(date, -1);
+  const y = listed.find((e) => e.day === before);
+  if (y) put('yday', y.accuracy, before);
+  return out;
 }
 
 // ------------------------------------------------------------------ choosing days
@@ -400,13 +421,14 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     description: 'The day’s football in the competitions Bet Gaffer covers: at most one recommended pick per fixture, '
       + 'with its probability, graded in public after full time.',
     body: home,
-    scripts: hasDayTools(home) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale],
+    scripts: [...(hasDayTools(home) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale]), ...(choice.home ? [SCRIPT.balloon] : [])],
     mainData: {
       generatedAt: index ? index.generated_at : null,
       day: choice.home,
       tomorrow: choice.tomorrow,
       view: 'home',
       staleAfterHours,
+      ...(choice.home ? ringData(days.get(choice.home).accuracy, choice.home, listed) : {}),
     },
   });
 
@@ -427,8 +449,13 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
       // The home page shows this same card: name / as the canonical URL (review M7).
       canonicalPath: d === choice.home && d === today ? '/' : undefined,
       // A stub's day.js imports predictions.js itself and enhances the card once it is verified.
-      scripts: isStubWithFetch ? [SCRIPT.stale, SCRIPT.day] : hasDayTools(body) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale],
-      mainData: { generatedAt: index.generated_at, day: d, tomorrow: choice.tomorrow, view: 'day', staleAfterHours },
+      // The floating ring loads on every day page, stubs included, from the figures on <main>.
+      scripts: [...(isStubWithFetch ? [SCRIPT.stale, SCRIPT.day] : hasDayTools(body) ? [SCRIPT.stale, SCRIPT.predictions] : [SCRIPT.stale]), SCRIPT.balloon],
+      mainData: {
+        generatedAt: index.generated_at, day: d, tomorrow: choice.tomorrow, view: 'day', staleAfterHours,
+        // The same figures as the page's static ring: a full card's day file, a stub's index entry.
+        ...ringData(full ? days.get(d).accuracy : entry.accuracy, d, listed),
+      },
     });
   }
 

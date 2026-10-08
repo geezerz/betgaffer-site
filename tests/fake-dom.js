@@ -5,7 +5,9 @@
 // textContent, innerHTML (set), append, before, replaceChildren, remove, createElement, classList,
 // style.setProperty (CSSOM: never a style attribute), value/checked, focus, events dispatched on
 // their target only (no bubbling: the modules listen on the element itself), <dialog>
-// showModal/close, scrollIntoView (recorded), and a ResizeObserver stub.
+// showModal/close, scrollIntoView (recorded), a ResizeObserver stub, and for balloon.js: a
+// test-assigned layout box (getBoundingClientRect / offsetWidth), recorded pointer capture and
+// serialize() back to HTML.
 
 import { parse } from './html-scan.js';
 
@@ -136,6 +138,21 @@ export class FakeElement {
   }
   get offsetHeight() { return this._offsetHeight ?? 0; }
   set offsetHeight(v) { this._offsetHeight = v; }
+  get offsetWidth() { return this._offsetWidth ?? 0; }
+  set offsetWidth(v) { this._offsetWidth = v; }
+  /** Layout box: whatever a test assigns to _rect (zeros otherwise; the fake has no layout). */
+  getBoundingClientRect() {
+    const r = this._rect ?? {};
+    const left = r.left ?? 0;
+    const top = r.top ?? 0;
+    const width = r.width ?? 0;
+    const height = r.height ?? 0;
+    return { left, top, width, height, right: r.right ?? left + width, bottom: r.bottom ?? top + height, x: left, y: top };
+  }
+  /** Pointer capture, recorded: the id last captured (null once released). */
+  setPointerCapture(id) { this.captured = id; }
+  releasePointerCapture(id) { if (this.captured === id) this.captured = null; }
+  hasPointerCapture(id) { return this.captured === id; }
   focus() { if (this.ownerDocument) this.ownerDocument.activeElement = this; }
   blur() { if (this.ownerDocument && this.ownerDocument.activeElement === this) this.ownerDocument.activeElement = null; }
   scrollIntoView(opts) { (this.scrolls ??= []).push(opts); }
@@ -212,6 +229,16 @@ function fromTree(node, doc) {
     else el.append(fromTree(c, doc));
   }
   return el;
+}
+
+const escText = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const escAttrVal = (t) => escText(t).replace(/"/g, '&quot;');
+
+/** Serialise a fake node back to HTML (a test feeds the result to the claim scanner). */
+export function serialize(node) {
+  if (node.nodeType === 3) return escText(node.data);
+  const attrs = Object.entries(node.attrs).map(([k, v]) => (v === '' ? ` ${k}` : ` ${k}="${escAttrVal(v)}"`)).join('');
+  return `<${node.localName}${attrs}>${node.childNodes.map(serialize).join('')}</${node.localName}>`;
 }
 
 /** A fake `document` for a full HTML page. */
