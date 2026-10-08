@@ -224,22 +224,26 @@ describe('build of the fixture artifact', () => {
     }
   });
 
-  test('no-JS: the legal pages carry every section heading; features carries its sections and form', async () => {
+  test('no-JS: the legal pages carry every section heading; features carries its ladder, pricing and founding link', async () => {
     for (const [rel, mod] of [['privacy/index.html', privacy], ['terms/index.html', terms], ['refunds/index.html', refunds]]) {
       const text = visibleText(await read(ws, rel));
       assert.ok(mod.SECTION_TITLES.length > 3, `premise: ${rel} has sections`);
       for (const t of mod.SECTION_TITLES) assert.ok(text.includes(t), `${rel}: ${t}`);
       assert.ok(text.includes('Example Media Ltd'), `${rel}: operator`);
     }
-    const f = visibleText(await read(ws, 'features/index.html'));
-    for (const t of ['On this site today', 'Coming at full launch', 'Founding waitlist', 'Join the waitlist']) assert.ok(f.includes(t), t);
+    // Plan A Task 6 (spec §8): the features page has no form; it links to /waitlist/ instead.
+    const fHtml = await read(ws, 'features/index.html');
+    const f = visibleText(fHtml);
+    for (const t of ['What Bet Gaffer does', 'Every match, by kickoff', 'Ask Gaffer', 'Coming soon', 'Pricing',
+      'Join the founding waitlist']) assert.ok(f.includes(t), t);
+    assert.match(fHtml, /<a class="bg-btn bg-btn--primary" href="\/waitlist\/">Join the founding waitlist<\/a>/);
+    assert.doesNotMatch(fHtml, /<form/i);
   });
 
-  test('features breadth comes from the home day file (fixtures, competitions, markets)', async () => {
-    const active = D07.fixtures.filter((x) => !x.withdrawn);
-    const comps = new Set(active.map((x) => x.comp)).size;
+  test('features #5 takes its market count from the home day file', async () => {
+    assert.ok(Number.isSafeInteger(D07.counts.markets_per_fixture) && D07.counts.markets_per_fixture > 0, 'premise: the day has markets');
     const text = visibleText(await read(ws, 'features/index.html'));
-    assert.ok(text.includes(`On the card for ${fmtDayLong('2026-10-07')}: ${active.length} fixtures in ${comps} competitions, with up to ${D07.counts.markets_per_fixture} markets priced per fixture.`), text.slice(0, 600));
+    assert.ok(text.includes(`Our probability for every market we price — up to ${D07.counts.markets_per_fixture} per match.`), text.slice(0, 1200));
   });
 
   test('home <main> carries generated-at, the shown day, tomorrow, the view and the staleness window', async () => {
@@ -839,7 +843,7 @@ describe('no-data mode and fallback homes', () => {
       const home = visibleText(await read(ws, 'index.html'));
       assert.match(home, /The first card publishes the evening before match day/);
       assert.match(visibleText(await read(ws, 'our-record/index.html')), /No record yet/);
-      assert.doesNotMatch(visibleText(await read(ws, 'features/index.html')), /On the card for/);
+      assert.ok(visibleText(await read(ws, 'features/index.html')).includes('Our probability for every market we price.'), 'no day: #5 names no number');
       for (const r2 of ['privacy/index.html', 'terms/index.html', 'refunds/index.html', 'features/index.html', '404.html']) {
         assert.ok(await exists(join(ws.out, r2)), r2);
       }
@@ -909,7 +913,7 @@ describe('no-data mode and fallback homes', () => {
       await writeJson(join(ws.root, 'index.json'), i);
       await run(ws);
       assert.ok(visibleText(await read(ws, 'index.html')).includes(`No fixtures were scheduled in the competitions we cover on ${fmtDayLong('2026-10-07')}.`));
-      assert.doesNotMatch(visibleText(await read(ws, 'features/index.html')), /On the card for/, 'an empty day claims no breadth');
+      assert.ok(visibleText(await read(ws, 'features/index.html')).includes('Our probability for every market we price.'), 'an empty day claims no breadth');
     } finally {
       await ws.cleanup();
     }

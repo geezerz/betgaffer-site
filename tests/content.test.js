@@ -490,38 +490,14 @@ test('refunds: a Credits section in both columns (review M1)', () => {
 });
 
 // =============================================================================================
-// Features
+// Features (Plan A Task 6, spec §8) — simplest to most advanced, problem then answer.
+// Kept in one describe block so Task 7's policy blocks merge mechanically. Import declarations are
+// hoisted, so the ones this block alone needs sit here rather than in the shared header.
 // =============================================================================================
 
-const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
-  + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
-const PRICES_LATER = 'Prices will be published here before any payment is taken.';
-
-test('features: pricing intent without figures when show_prices is off (S9)', () => {
-  const html = renderPage('features', cfg({ pricing: { show_prices: false } }));
-  const t = visibleText(html);
-  assert.ok(t.includes(PRICING_INTENT), 'pricing intent');
-  assert.ok(t.includes(PRICES_LATER), 'prices later');
-  assert.doesNotMatch(t, /₦/);
-  assert.doesNotMatch(html, /ct-tiers/);
-});
-
-test('features: show_prices renders the tier table instead of the last sentence', () => {
-  const html = renderPage('features', cfg({ pricing: { show_prices: true } }));
-  const t = visibleText(html);
-  assert.ok(t.includes(PRICING_INTENT), 'intent stays');
-  assert.ok(!t.includes(PRICES_LATER), 'the prices-later sentence is replaced');
-  assert.match(html, /<table class="bg-table ct-tiers">/);
-  for (const [n, p] of [['Free', '₦0'], ['Plus', '₦1,250'], ['Max', '₦20,000']]) {
-    assert.match(html, new RegExp(`<th scope="row">${n}</th><td class="num" data-label="Monthly">${p}</td>`), n);
-  }
-  assert.match(t, /VAT-inclusive/);
-});
-
-test('features: the tier table says what separates the plans', () => {
-  const html = renderPage('features', cfg({ pricing: { show_prices: true } }));
-  assert.match(html, /Paid plans differ by the competitions they cover\./);
-});
+import { describe } from 'node:test';
+import { parse, findAll, find, textOf } from './html-scan.js';
+import { SUMMARY, TOTAL_PLACES } from '../site/lib/founding.js';
 
 test('shipped config: operator identity and published prices', async () => {
   const { default: shipped } = await import('../site/config.js');
@@ -533,87 +509,245 @@ test('shipped config: operator identity and published prices', async () => {
     [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
 });
 
-test('features: tiers come from config and are validated', () => {
-  const html = renderPage('features', cfg({ pricing: { show_prices: true, tiers: [{ name: 'A<b>', monthly: 1234567 }] } }));
-  assert.ok(html.includes('A&lt;b&gt;') && html.includes('₦1,234,567'));
-  for (const tiers of [[{ name: '', monthly: 1 }], [{ name: 'X', monthly: -1 }], [{ name: 'X', monthly: 1.5 }]]) {
-    assert.throws(() => renderPage('features', cfg({ pricing: { show_prices: true, tiers } })), TypeError, JSON.stringify(tiers));
-  }
-  // No tiers at all is refused before any page renders (requireOperator names pricing.tiers).
-  for (const tiers of [[], null]) {
-    assert.throws(() => renderPage('features', cfg({ pricing: { show_prices: true, tiers } })), /pricing\.tiers/, JSON.stringify(tiers));
-  }
-});
+describe('features (Plan A Task 6, spec §8)', () => {
+  const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
+    + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
+  const PRICES_LATER = 'Prices will be published here before any payment is taken.';
+  const INTRO = "Bet Gaffer is football match intelligence for sport investors. Here's what it does, from the "
+    + 'simplest tool to the most advanced.';
 
-test('features: show_prices with no tiers refuses to render; the shipped config renders its tier table', () => {
-  assert.match(renderPage('features', siteConfig), /<table class="bg-table ct-tiers">[\s\S]*Elite/);
-  assert.throws(() => renderPage('features', { ...siteConfig, pricing: { ...siteConfig.pricing, show_prices: true, tiers: [] } }), /pricing\.tiers/);
-  assert.doesNotMatch(renderPage('features', { ...siteConfig, pricing: { ...siteConfig.pricing, show_prices: false } }), /₦|ct-tiers/);
-});
+  // Spec §8 as amended (Plan A "Task 6 additions": #4's problem carries no number). #5's answer is
+  // asserted separately: its tail depends on cfg.breadth.
+  const SPEC = [
+    ['Every match, by kickoff', 'A Saturday can bring more than 1,500 matches spread across apps and sites.',
+      'One list of every fixture in the competitions we cover, in Lagos time, with Live, Next 3 hours and Finished views.'],
+    ['Search and league filters', 'Scrolling through hundreds of games to find yours wastes time.',
+      'Find a team or league in seconds, or show only the leagues you follow.'],
+    ['Live scores and match clock', 'Switching apps to check whether a match is still on.',
+      'Live scores and the match clock right on the fixture.'],
+    ['One recommended pick per fixture', 'There are dozens of markets on every match — too many choices.',
+      'We highlight one recommended pick for each fixture, with its probability and price.'],
+    ['Probabilities for every market', 'Bookmaker odds tell you the price, not the chance.', null],
+    ['Clearly marked prices', "You can't always tell where a price came from.",
+      'When no bookmaker price was captured, ours is clearly marked as an estimate.'],
+    ['Match centre', 'Research means opening five tabs.',
+      'Head-to-head, standings, stats, lineups and commentary in one place.'],
+    ['Early results', 'Waiting for full time to know if a pick landed.',
+      "See a pick land the moment it's decided — an over-goals line passed, or a first-half market at half time."],
+    ["Today's accuracy ring", 'No quick way to see how today is going.',
+      "A ring that shows today's settled picks at a glance."],
+    ['Our Record', 'Anyone can claim a big number.',
+      'Every recommended pick is graded and kept, misses alongside hits.'],
+    ['Power Teams', 'Too much noise when you only follow the big clubs.',
+      'One tap narrows the day to the major clubs we track most closely. Elite plan.'],
+    ['Ready-made slips', 'No time to build a slip every day.',
+      "Ready-made slips every day, for when you'd rather not build your own."],
+    ['Same-game slips', 'Combining markets from one match ignores how they affect each other.',
+      'Slips that combine several markets from one match, with the link between them taken into account.'],
+    ['My Bets', 'Slips scattered across screenshots and notes.',
+      'Every slip you build on Bet Gaffer, tracked in one place until it settles.'],
+    ['The Lab', 'Building a multi-leg slip by hand is slow and guesswork.',
+      'Assemble a multi-leg slip from our priced markets, see which leg is weakest, and change one leg.'],
+    ['Credits', 'Paying for a whole plan when you only want one thing.',
+      'Pay with Credits only for the actions you use — and get Credits back when a Lab slip you marked as played loses.'],
+    ['Ask Gaffer', 'Wanting a second opinion before you place a ticket.',
+      'Ask in plain language and get the reasoning behind a pick.'],
+  ];
+  const SOON = new Set(['Ask Gaffer']);
+  const BREADTH = { markets: 92, competitions: 57, fixtures: 1146, day: '2026-10-07' };
 
-test('features: the waitlist HTML is placed verbatim under a "Founding waitlist" heading', () => {
-  const html = renderPage('features');
-  const h = html.search(/<h2[^>]*>Founding waitlist<\/h2>/);
-  assert.ok(h > -1, 'heading present');
-  const at = html.indexOf(WAITLIST);
-  assert.ok(at > h, 'form follows the heading, verbatim');
-  assert.doesNotMatch(renderPage('features', cfg(), { waitlistHtml: undefined }), /Founding waitlist/,
-    'no heading without a form');
-  assert.throws(() => renderPage('features', cfg(), { waitlistHtml: 42 }), TypeError);
-});
+  // The rendered page has no <body>, so wrap it for the strict scanner (it also proves the markup
+  // nests the way a browser builds it: no block inside a <p>, nothing left open).
+  const doc = (html) => parse(`<body>${html}</body>`);
+  const cls = (n, c) => (n.attrs.class || '').split(/\s+/).includes(c);
+  const articles = (html) => findAll(doc(html), (n) => n.tag === 'article' && cls(n, 'ct-feature'));
+  const partOf = (art, c) => find(art, (n) => cls(n, c));
+  const render = (c = cfg()) => features.render(c);
 
-test('features: breadth is rendered from cfg.breadth and never hardcoded', () => {
-  const none = visibleText(renderPage('features'));
-  assert.doesNotMatch(none, /competitions,|markets priced per fixture/);
-  assert.doesNotMatch(none, /\b\d{2,}\s+(?:markets|leagues|competitions)\b/, 'no hardcoded breadth figure');
+  test('LAST_UPDATED is bumped for the rewrite', () => {
+    assert.equal(features.LAST_UPDATED, '2026-10-08');
+    assert.ok(render().includes(lastUpdated('2026-10-08')));
+  });
 
-  const html = renderPage('features', cfg({ breadth: { markets: 92, competitions: 57, fixtures: 1146, day: '2026-10-07' } }));
-  const t = visibleText(html);
-  assert.ok(t.includes('On the card for Wed 7 Oct 2026: 1,146 fixtures in 57 competitions, with up to 92 markets priced per fixture.'), t);
+  test('H1 and the spec §8 intro', () => {
+    const d = doc(render());
+    const h1 = findAll(d, (n) => n.tag === 'h1');
+    assert.equal(h1.length, 1);
+    assert.equal(textOf(h1[0]), 'What Bet Gaffer does');
+    assert.ok(textOf(d).includes(INTRO), 'intro verbatim');
+  });
 
-  const one = visibleText(renderPage('features', cfg({ breadth: { markets: 1, competitions: 1, fixtures: 1, day: '2026-10-07' } })));
-  assert.ok(one.includes('1 fixture in 1 competition, with up to 1 market priced per fixture.'), 'singulars');
+  test('the 17 features, in the spec order, each a ct-feature article with an h3 name', () => {
+    const arts = articles(render());
+    assert.equal(arts.length, 17);
+    assert.deepEqual(arts.map((a) => textOf(find(a, (n) => n.tag === 'h3'))), SPEC.map(([name]) => name));
+    // They sit in one ordered list: the order IS the content (simplest first).
+    const ol = find(doc(render()), (n) => n.tag === 'ol' && cls(n, 'ct-ladder'));
+    assert.ok(ol, 'an ordered list holds the features');
+    assert.equal(findAll(ol, (n) => n.tag === 'article' && cls(n, 'ct-feature')).length, 17);
+  });
 
-  const zero = visibleText(renderPage('features', cfg({ breadth: { markets: 92, competitions: 0, fixtures: 0, day: '2026-10-07' } })));
-  assert.doesNotMatch(zero, /On the card for/, 'an empty day claims no breadth');
+  // The verbatim check, shared with the premise test below so the premise exercises the real loop.
+  const assertVerbatim = (html) => {
+    const arts = articles(html);
+    assert.equal(arts.length, SPEC.length, 'premise: every spec row is rendered (an empty loop proves nothing)');
+    for (const [i, a] of arts.entries()) {
+      const [name, problem, answer] = SPEC[i];
+      const p = partOf(a, 'ct-feature__problem');
+      const w = partOf(a, 'ct-feature__answer');
+      assert.ok(p && p.tag === 'p' && w && w.tag === 'p', `${name}: problem and answer paragraphs`);
+      assert.equal(textOf(p), `The problem: ${problem}`, name);
+      if (answer !== null) assert.equal(textOf(w), `What we do: ${answer}`, name);
+      assert.ok(textOf(a).indexOf('The problem:') < textOf(a).indexOf('What we do:'), `${name}: problem before answer`);
+    }
+  };
 
-  for (const b of [{ markets: 92 }, { markets: '92', competitions: 1, fixtures: 1, day: '2026-10-07' },
-    { markets: 92, competitions: 1, fixtures: 1, day: '2026-13-01' }, { markets: -1, competitions: 1, fixtures: 1, day: '2026-10-07' }, 'x']) {
-    assert.throws(() => renderPage('features', cfg({ breadth: b })), TypeError, JSON.stringify(b));
-  }
-});
+  test('every feature states the problem, then what we do — verbatim from spec §8', () => {
+    assertVerbatim(render());
+  });
 
-test('features: what it does now and the three launch features in charter wording', () => {
-  const t = visibleText(renderPage('features'));
-  for (const s of [
-    'One pick per fixture',
-    'every fixture of the day in the competitions we cover',
-    'estimates',
-    'graded',
-    'Ask Gaffer', 'explains the reasoning',
-    'Lab', 'assemble and stress-test multi-leg slips', 'which legs to drop',
-    'Steam Alerts', 'real odds-movement alerts',
-    'Not on this site yet',
-  ]) assert.ok(t.includes(s), `features says: ${s}`);
-});
+  test('16 "At launch" tags and one "Coming soon" (Ask Gaffer)', () => {
+    const tags = articles(render()).map((a) => {
+      const t = partOf(a, 'ct-feature__tag');
+      assert.ok(t, 'each feature carries a tag chip');
+      return textOf(t);
+    });
+    assert.equal(tags.filter((t) => t === 'At launch').length, 16);
+    assert.equal(tags.filter((t) => t === 'Coming soon').length, 1);
+    assert.deepEqual(SPEC.map(([n], i) => [n, tags[i]]).filter(([, t]) => t === 'Coming soon').map(([n]) => n), [...SOON]);
+    const soon = articles(render()).filter((a) => cls(a, 'ct-feature--soon'));
+    assert.deepEqual(soon.map((a) => textOf(find(a, (n) => n.tag === 'h3'))), [...SOON], 'the soon modifier marks only Ask Gaffer');
+  });
 
-test('features (spec §10): no repository card, no GitHub link or mention', () => {
-  const html = renderPage('features');
-  const t = visibleText(html);
-  assert.doesNotMatch(t, /Receipts you can check|reposit|commit\b/i);
-  assert.doesNotMatch(html, /github/i);
-  assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
-  // The page no longer reads cfg.repo: another valid repo renders the identical page (features and terms).
-  for (const name of ['features', 'terms']) {
-    const other = { ...cfg(), repo: 'some-org/other.site' };
-    assert.notEqual(other.repo, cfg().repo);
-    assert.equal(renderPage(name, other), renderPage(name), name);
-  }
-});
+  test('#4 names no market count; #5 reads "up to {markets} per match" from cfg.breadth', () => {
+    const answer5 = (c) => textOf(partOf(articles(features.render(c))[4], 'ct-feature__answer'));
+    assert.equal(answer5(cfg({ breadth: BREADTH })), 'What we do: Our probability for every market we price — up to 92 per match.');
+    assert.equal(answer5(cfg({ breadth: { ...BREADTH, markets: 1 } })), 'What we do: Our probability for every market we price — up to 1 per match.');
+    assert.equal(answer5(cfg({ breadth: { ...BREADTH, markets: 1234 } })), 'What we do: Our probability for every market we price — up to 1,234 per match.');
+    // Absent, or an empty day: no number at all.
+    for (const c of [cfg(), cfg({ breadth: { ...BREADTH, fixtures: 0, competitions: 0 } }), cfg({ breadth: { ...BREADTH, markets: 0 } })]) {
+      assert.equal(answer5(c), 'What we do: Our probability for every market we price.');
+    }
+    const none = visibleText(render());
+    assert.doesNotMatch(none, /\b\d{2,}\s+(?:markets|leagues|competitions)\b/, 'no hardcoded breadth figure');
+    assert.doesNotMatch(none, /\d+\s+per match|over \d+ markets/i);
+    // Malformed breadth is refused rather than printed.
+    for (const b of [{ markets: 92 }, { ...BREADTH, markets: '92' }, { ...BREADTH, day: '2026-13-01' },
+      { ...BREADTH, markets: -1 }, { ...BREADTH, markets: 1.5 }, 'x', [1]]) {
+      assert.throws(() => features.render(cfg({ breadth: b })), TypeError, JSON.stringify(b));
+    }
+  });
 
-test('features: sells time and friction only — no accuracy/outcome claim, no unlaunched surfaces', () => {
-  const t = visibleText(renderPage('features', cfg({ pricing: { show_prices: true } })));
-  assert.doesNotMatch(t, /accura|\bwin\b|\bwinning\b|value bet|\bedge\b|beat the/i);
-  assert.doesNotMatch(t, /booking code|Exposure|Daily Slips|Green Month|Guarantee/i);
-  assert.doesNotMatch(t, /Token/);
+  test('left off on purpose: no unlaunched or banned surface, no form', () => {
+    const html = render(cfg({ pricing: { show_prices: true }, breadth: BREADTH }));
+    const t = visibleText(html);
+    for (const s of ['Daily Slips', 'booking code', 'Exposure', 'Steam', 'Green Month', 'cash out', 'ROI',
+      'swap any leg', 'odds you want', 'Life Changer', '50x', 'Guarantee', 'suggested stake']) {
+      assert.ok(!t.toLowerCase().includes(s.toLowerCase()), `absent: ${s}`);
+    }
+    assert.doesNotMatch(html, /<form/i);
+    assert.deepEqual(findBanned(t), []);
+    assert.doesNotMatch(t, /Token/);
+    // Sells time and friction only. "accuracy ring" (the feature's name) is the ONE accuracy phrase allowed.
+    const rest = t.replace(/accuracy ring/gi, '');
+    assert.ok(t.includes('accuracy ring'), 'premise: the allowed phrase is on the page');
+    assert.doesNotMatch(rest, /accura|\bwin\b|\bwinning\b|value bet|\bedge\b|beat the/i);
+    // Premise: the narrowed ban still catches any other accuracy wording.
+    assert.match(`${t} our accuracy is high`.replace(/accuracy ring/gi, ''), /accura/i);
+    assert.match(`${t} Accurate picks`.replace(/accuracy ring/gi, ''), /accura/i);
+  });
+
+  test('pricing: intent kept, tier table from config, Elite at ₦5,000 in the shipped config', () => {
+    const shipped = features.render(siteConfig);
+    assert.match(shipped, /<table class="bg-table ct-tiers">/);
+    assert.match(shipped, /<th scope="row">Elite<\/th><td class="num" data-label="Monthly">₦5,000<\/td>/);
+    assert.ok(visibleText(shipped).includes(PRICING_INTENT));
+    const st = visibleText(shipped);
+    assert.ok(st.includes('Monthly, in naira, VAT-inclusive. Paid plans differ by the competitions and tools they include.'), st);
+    assert.ok(!st.includes('Nothing is charged on this site.'), 'PRICING_INTENT already says nothing is sold; no repeat');
+    assert.equal(st.split('Nothing is sold on this site.').length, 2, 'the "nothing is sold" sentence appears exactly once');
+  });
+
+  test('pricing: no figures when show_prices is off (S9)', () => {
+    const html = render(cfg({ pricing: { show_prices: false } }));
+    const t = visibleText(html);
+    assert.ok(t.includes(PRICING_INTENT) && t.includes(PRICES_LATER));
+    assert.doesNotMatch(t, /₦/);
+    assert.doesNotMatch(html, /ct-tiers/);
+  });
+
+  test('pricing: show_prices renders the tier table instead of the last sentence', () => {
+    const html = render(cfg({ pricing: { show_prices: true } }));
+    const t = visibleText(html);
+    assert.ok(t.includes(PRICING_INTENT) && !t.includes(PRICES_LATER));
+    for (const [n, p] of [['Free', '₦0'], ['Plus', '₦1,250'], ['Max', '₦20,000']]) {
+      assert.match(html, new RegExp(`<th scope="row">${n}</th><td class="num" data-label="Monthly">${p}</td>`), n);
+    }
+  });
+
+  test('pricing: tiers are escaped and validated; no tiers refuses to render', () => {
+    const html = render(cfg({ pricing: { show_prices: true, tiers: [{ name: 'A<b>', monthly: 1234567 }] } }));
+    assert.ok(html.includes('A&lt;b&gt;') && html.includes('₦1,234,567'));
+    for (const tiers of [[{ name: '', monthly: 1 }], [{ name: 'X', monthly: -1 }], [{ name: 'X', monthly: 1.5 }]]) {
+      assert.throws(() => render(cfg({ pricing: { show_prices: true, tiers } })), TypeError, JSON.stringify(tiers));
+    }
+    for (const tiers of [[], null]) {
+      assert.throws(() => render(cfg({ pricing: { show_prices: true, tiers } })), /pricing\.tiers/, JSON.stringify(tiers));
+    }
+  });
+
+  test('founding summary inside an offer figure, and the primary button to /waitlist/', () => {
+    const html = render();
+    const d = doc(html);
+    const sec = find(d, (n) => n.tag === 'section' && cls(n, 'ct-founding'));
+    assert.ok(sec, 'a founding section');
+    const offer = find(sec, (n) => n.attrs['data-figure'] === 'offer');
+    assert.ok(offer, 'the summary is an offer figure');
+    assert.equal(textOf(offer), SUMMARY);
+    assert.ok(textOf(sec).includes(`Be one of ${String(TOTAL_PLACES).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} founding members`));
+    const btn = findAll(sec, (n) => n.tag === 'a' && cls(n, 'bg-btn--primary'));
+    assert.equal(btn.length, 1);
+    assert.equal(btn[0].attrs.href, '/waitlist/');
+    assert.equal(textOf(btn[0]), 'Join the founding waitlist');
+    assert.deepEqual(percentagesOutsideOffers(html), []);
+    // Order: the features, then pricing, then the founding summary.
+    const at = (c) => html.indexOf(`class="ct-fsec ${c}`);
+    assert.ok(html.indexOf('ct-ladder') > -1 && html.indexOf('ct-ladder') < at('ct-pricing') && at('ct-pricing') < at('ct-founding'));
+  });
+
+  test('the embedded waitlist form is gone; an extra waitlistHtml option is ignored', () => {
+    const plain = features.render(cfg());
+    assert.equal(features.render(cfg(), { waitlistHtml: WAITLIST }), plain, 'build.mjs may still pass it until Task 4');
+    assert.equal(features.render(cfg(), { waitlistHtml: 42 }), plain, 'no error on an odd value either');
+    assert.ok(!plain.includes(WAITLIST) && !/Founding waitlist<\/h2>/.test(plain));
+  });
+
+  test('no repository card, no GitHub link or mention (spec §10)', () => {
+    const html = render();
+    assert.doesNotMatch(visibleText(html), /Receipts you can check|reposit|commit\b/i);
+    assert.doesNotMatch(html, /github/i);
+    assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
+    for (const name of ['features', 'terms']) {
+      const other = { ...cfg(), repo: 'some-org/other.site' };
+      assert.notEqual(other.repo, cfg().repo);
+      assert.equal(renderPage(name, other), renderPage(name), name);
+    }
+  });
+
+  test('premise: the order and verbatim checks fire on a broken page', () => {
+    const html = render();
+    // Swap two features: the order check must notice.
+    const arts = html.match(/<li class="ct-ladder__step">[\s\S]*?<\/li>/g);
+    assert.equal(arts.length, 17, 'premise: one list item per feature');
+    const swapped = html.replace(arts[0], '@@SWAP@@').replace(arts[1], arts[0]).replace('@@SWAP@@', arts[1]);
+    const names = articles(swapped).map((a) => textOf(find(a, (n) => n.tag === 'h3')));
+    assert.notDeepEqual(names, SPEC.map(([n]) => n));
+    // The real verbatim loop passes the page as rendered and throws on a reworded problem or answer.
+    assertVerbatim(html);
+    for (const [from, to] of [['Research means opening five tabs.', 'Research takes ages.'],
+      ['Head-to-head, standings, stats, lineups and commentary in one place.', 'Everything in one place.']]) {
+      assert.ok(html.includes(from), `premise: the page carries ${from}`);
+      assert.throws(() => assertVerbatim(html.replace(from, to)), assert.AssertionError, from);
+    }
+  });
 });
