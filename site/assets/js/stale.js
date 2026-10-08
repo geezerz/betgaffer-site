@@ -46,6 +46,8 @@ export function relDay(date, nowMs) {
  *   next            "Today's card is published:" | "Tomorrow's card is published:" | "The card for <date> is published:"
  *   record          'Today · so far' | ''  (only today's figure is still moving; an empty label is
  *                   hidden, so a past day never reads "In progress" — Plan A Task 5)
+ *   daybar          'Today · <date>' | '<date>'  (the list's day bar, spec §5; never empty, never
+ *                   "Tomorrow": the bar is a date with an optional "Today" in front)
  * The third form (record, eyebrow, strip: the empty one) is what the build renders statically
  * (tests assert they agree).
  */
@@ -62,6 +64,8 @@ export function relLabel(date, nowMs, kind = 'ring') {
       return Word ? `${Word}'s card is published:` : `The card for ${fmtDayLong(date)} is published:`;
     case 'record':
       return r === 'today' ? 'Today · so far' : '';
+    case 'daybar':
+      return r === 'today' ? `Today · ${fmtDayLong(date)}` : fmtDayLong(date);
     default:
       throw new TypeError(`relLabel: unknown kind ${JSON.stringify(kind)}`);
   }
@@ -73,7 +77,7 @@ export function msUntilLagosMidnight(nowMs) {
   return DAY_MS - intoDay;
 }
 
-const KINDS = new Set(['eyebrow', 'strip', 'ring', 'next', 'record']);
+const KINDS = new Set(['eyebrow', 'strip', 'ring', 'next', 'record', 'daybar']);
 
 /** Rewrite every [data-rel-day] label under root for the visitor's date at nowMs. */
 export function relabel(root, nowMs) {

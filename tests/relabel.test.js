@@ -20,7 +20,7 @@ const NOW = Date.parse('2026-10-07T22:30:00Z');
 const BEFORE_MIDNIGHT = Date.parse('2026-10-07T22:59:59Z'); // 23:59:59 WAT, Wed 7 Oct
 const MIDNIGHT = Date.parse('2026-10-07T23:00:00Z'); //        00:00:00 WAT, Thu 8 Oct
 const FAR = Date.parse('2030-01-01T12:00:00Z');
-const KINDS = ['eyebrow', 'strip', 'ring', 'next', 'record'];
+const KINDS = ['eyebrow', 'strip', 'ring', 'next', 'record', 'daybar'];
 const sync = (fn) => fn();
 const noTimer = () => {};
 
@@ -54,6 +54,9 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'record'), 'Today · so far');
     // The record never says "Tomorrow" (nothing is settled ahead of its day).
     assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'record'), '');
+    // The day bar says "Today" only for today; tomorrow keeps its date form.
+    assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'daybar'), `Today · ${W7}`);
+    assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'daybar'), T8);
   });
 
   test('00:00:00 WAT on the 8th: the 7th is a date, the 8th is today', () => {
@@ -65,6 +68,8 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     // A past day carries no label at all: never "In progress" (Plan A Task 5, review I1).
     assert.equal(stale.relLabel('2026-10-07', MIDNIGHT, 'record'), '');
     assert.equal(stale.relLabel('2026-10-08', MIDNIGHT, 'record'), 'Today · so far');
+    assert.equal(stale.relLabel('2026-10-07', MIDNIGHT, 'daybar'), W7);
+    assert.equal(stale.relLabel('2026-10-08', MIDNIGHT, 'daybar'), `Today · ${T8}`);
   });
 
   test('a day two ahead, or in the past, reads as its date', () => {
@@ -72,6 +77,7 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     assert.equal(stale.relLabel('2026-10-08', FAR, 'ring'), `Picks published for ${T8}, settled so far`);
     assert.equal(stale.relLabel('2026-10-08', FAR, 'strip'), '');
     assert.equal(stale.relLabel('2026-10-08', FAR, 'record'), '');
+    assert.equal(stale.relLabel('2026-10-08', FAR, 'daybar'), T8);
   });
 
   test('relDay names only today and tomorrow; bad input never throws', () => {
@@ -141,6 +147,9 @@ describe('stale.js init on built pages (fake DOM)', () => {
     const tags = doc.querySelectorAll('[data-rel="strip"]').map((t) => [t.getAttribute('data-rel-day'), t.textContent, t.hidden]);
     assert.deepEqual(tags.filter(([d]) => d >= '2026-10-07'), [['2026-10-07', 'Today', false], ['2026-10-08', 'Tomorrow', false]]);
     assert.equal(doc.querySelector('.stale').hidden, true);
+    const bar = doc.querySelector('[data-rel="daybar"]');
+    assert.equal(bar.textContent, `Today · ${fmtDayLong('2026-10-07')}`);
+    assert.equal(bar.hidden, false, 'the day bar label is never hidden');
   });
 
   test('home at 00:00:00 WAT: the 7th reads as its date, the 8th as today, and the banner links it', async () => {
@@ -149,6 +158,7 @@ describe('stale.js init on built pages (fake DOM)', () => {
     assert.equal(ringLabel(doc), `Picks published for ${fmtDayLong('2026-10-07')}, settled so far`);
     assert.equal(doc.querySelector('[data-rel="eyebrow"]').hidden, true);
     assert.equal(doc.querySelector('[data-rel="next"]').textContent, "Today's card is published:");
+    assert.equal(doc.querySelector('[data-rel="daybar"]').textContent, fmtDayLong('2026-10-07'), 'yesterday reads as its date');
     const region = doc.querySelector('.stale');
     assert.equal(region.hidden, false);
     assert.match(region.textContent, /It's Thu 8 Oct 2026 in Lagos — today's card is here:/);
@@ -177,6 +187,8 @@ describe('stale.js init on built pages (fake DOM)', () => {
     assert.equal(after1.querySelector('[data-rel="eyebrow"]').textContent, 'Today');
     assert.equal(ringLabel(after1), "Today's published picks, settled so far");
     assert.equal(after1.querySelector('.stale').hidden, true, 'a day page never says the card is old');
+    assert.equal(before1.querySelector('[data-rel="daybar"]').textContent, fmtDayLong('2026-10-08'), 'tomorrow keeps its date');
+    assert.equal(after1.querySelector('[data-rel="daybar"]').textContent, `Today · ${fmtDayLong('2026-10-08')}`);
   });
 
   test('the record page labels its day "Today · so far" only while it is today', async () => {
@@ -236,6 +248,7 @@ describe('day.js init on built stubs (fake DOM)', () => {
     const doc = fakeDocument(await page('day/2026-10-06/index.html'));
     await dayjs.init({ doc, fetchImpl: respond(edge), nowMs: Date.parse('2026-10-06T12:00:00Z') });
     assert.equal(doc.querySelector('[data-rel="eyebrow"]').textContent, 'Today');
+    assert.equal(doc.querySelector('[data-rel="daybar"]').textContent, `Today · ${fmtDayLong('2026-10-06')}`);
   });
 
   test('a tampered file keeps the summary and shows the receipt failure, with no link', async () => {

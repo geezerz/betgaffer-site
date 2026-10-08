@@ -385,39 +385,143 @@ test('every percentage sits inside data-figure="pick-prob" or data-figure="ring"
   }
 });
 
-// ---------------------------------------------------------------- grouping
+// ---------------------------------------------------------------- one flat list by kickoff (spec §5)
 
-test('competitions ordered by earliest kickoff, then name; ties broken by name', () => {
-  const names = [...EDGE_HTML.matchAll(/<h2 class="comp__name">([^<]*)<\/h2>/g)].map((m) => decode(m[1]));
-  assert.deepEqual(names, ['<img src=x onerror=alert(1)> League', '"Quotes" & Ampersand Cup', 'Zeta Division',
-    'Alpha League', 'Beta League', 'Status Parade']);
+/** Row fx ids in document order. */
+const fxOrder = (html) => [...html.matchAll(/<li class="fx"[^>]*\sdata-fx="(\d+)"/g)].map((m) => Number(m[1]));
+const cp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+const TOOLS = '<div class="day-tools" data-day-tools hidden></div>';
+
+test('one flat list: no competition groups, one <ol data-fx-list> holding every row', () => {
+  for (const [day, n] of [[EDGE, 25], [D07, 146], [D08, 130]]) {
+    const html = renderDay(day, opts());
+    assert.ok(!/<details class="comp"/.test(html), `${day.lagos_day}: no competition group`);
+    assert.ok(!/comp__|day-groups|<h2/.test(html), `${day.lagos_day}: no group heading or wrapper`);
+    const lists = [...html.matchAll(/<ol class="fx-list" role="list" data-fx-list>([\s\S]*?)<\/ol>/g)];
+    assert.equal(lists.length, 1, `${day.lagos_day}: exactly one list`);
+    assert.ok(!/<ul\b|<ol\b/.test(html.replace(lists[0][0], '')), `${day.lagos_day}: no other list`);
+    assert.equal((lists[0][1].match(/<li class="fx"/g) || []).length, n, `${day.lagos_day}: every row once, inside it`);
+    assert.equal(new Set(fxOrder(html)).size, n);
+  }
 });
 
-test('rows within a competition run by kickoff', () => {
-  const zeta = /<details class="comp"[^>]*>(?:(?!<\/details>)[\s\S])*?Zeta Division[\s\S]*?<\/details>/.exec(EDGE_HTML)[0];
-  const order = [...zeta.matchAll(/data-fx="(\d+)"/g)].map((m) => Number(m[1]));
-  assert.deepEqual(order, [900011, 900005, 900006]);
+test('order: kickoff, then competition, then home team, then fx (edge day, hand-checked)', () => {
+  assert.deepEqual(fxOrder(EDGE_HTML), [
+    900001, //                 05T23:00
+    900004, 900003, //         10:00 same comp: "Postponed Home" < "Push Home"
+    900014, 900002, 900011, 900005, 900006,
+    900009, 900007, //         14:00 "Alpha League" < "Beta League" (the withdrawn row sorts like any other)
+    900008, 900010,
+    900012, 900013, //         18:00 same comp: "Label…" < "Pct…"
+    900017, 900015, 900016, // 19:00 Extra < Halftime < Penalties
+    900018, 900019, 900020,
+    900022, 900021, 900023, // 19:30 Awarded < Unscheduled < Walkover
+    900025, 900024, //         20:00 "Club…" < "Raw…"
+  ]);
 });
 
-test('real 2026-10-07: 57 groups, the first 12 open, the rest closed; order matches the rule', () => {
-  const html = renderDay(D07, opts({ isToday: true }));
-  const groups = [...html.matchAll(/<details class="comp"( open)?>/g)];
-  assert.equal(groups.length, 57);
-  assert.equal(groups.filter((g) => g[1]).length, 12);
-  assert.ok(groups.slice(0, 12).every((g) => g[1]) && groups.slice(12).every((g) => !g[1]));
-  const first = new Map();
-  for (const f of D07.fixtures) if (!first.has(f.comp) || f.ko < first.get(f.comp)) first.set(f.comp, f.ko);
-  const expected = [...first.keys()].sort((a, b) => (first.get(a) < first.get(b) ? -1 : first.get(a) > first.get(b) ? 1 : a < b ? -1 : a > b ? 1 : 0));
-  const got = [...html.matchAll(/<h2 class="comp__name">([^<]*)<\/h2>/g)].map((m) => decode(m[1]));
-  assert.deepEqual(got, expected);
-  // every fixture rendered exactly once
-  assert.equal((html.match(/<li class="fx"/g) || []).length, 146);
+test('order ties: same kickoff -> competition by code point (not localeCompare) -> home -> fx; input order is irrelevant', () => {
+  assert.ok('Ägypten Cup'.localeCompare('Zambia Cup', 'en') < 0, 'premise: a locale sort puts Ägypten first');
+  const day = structuredClone(EDGE);
+  const at = (fx) => day.fixtures.find((f) => f.fx === fx);
+  const KO = '2026-10-06T21:00:00Z';
+  // Home beats fx: 900010 has the lowest fx but the later home name.
+  Object.assign(at(900010), { ko: KO, comp: 'Zambia Cup', home: 'B' });
+  Object.assign(at(900012), { ko: KO, comp: 'Ägypten Cup', home: 'A' });
+  Object.assign(at(900013), { ko: KO, comp: 'Zambia Cup', home: 'A' });
+  Object.assign(at(900025), { ko: KO, comp: 'Zambia Cup', home: 'A' });
+  // Kickoff beats competition: the last name by code point kicks off first.
+  Object.assign(at(900024), { ko: '2026-10-06T20:59:00Z', comp: 'Zzz Last By Name', home: 'Zzz' });
+  // 900025 before 900013 in the input: the fx tie-break, not the input order, decides.
+  const i13 = day.fixtures.indexOf(at(900013));
+  const i25 = day.fixtures.indexOf(at(900025));
+  [day.fixtures[i13], day.fixtures[i25]] = [day.fixtures[i25], day.fixtures[i13]];
+  assert.ok(day.fixtures.indexOf(at(900025)) < day.fixtures.indexOf(at(900013)), 'premise: input order reversed');
+  const order = fxOrder(renderDay(day, opts()));
+  assert.deepEqual(order.slice(-5), [900024, 900013, 900025, 900010, 900012]);
+  assert.deepEqual(EDGE.fixtures.map((f) => f.fx), EDGE_RAW.fixtures.map((f) => f.fx), 'renderDay does not reorder its input');
 });
 
-test('group summary carries the fixture count', () => {
-  assert.match(EDGE_HTML, /<summary><h2 class="comp__name">Zeta Division<\/h2>\s*<span class="comp__count[^"]*">3 fixtures<\/span><\/summary>/);
-  // one heading per group, inside its summary
-  assert.equal((EDGE_HTML.match(/<summary><h2 class="comp__name">/g) || []).length, 6);
+test('real 2026-10-07: the list follows the rule, including kickoff ties', () => {
+  const html = renderDay(D07, opts());
+  const want = [...D07.fixtures]
+    .sort((a, b) => cp(a.ko, b.ko) || cp(a.comp, b.comp) || cp(a.home, b.home) || a.fx - b.fx)
+    .map((f) => f.fx);
+  assert.ok(new Set(D07.fixtures.map((f) => f.ko)).size < D07.fixtures.length, 'premise: kickoff ties exist');
+  assert.deepEqual(fxOrder(html), want);
+});
+
+test('rows: id="fx-{fx}", data-ko, data-status (escaped); no data-home/away/comp; the competition is the first line', () => {
+  for (const f of EDGE.fixtures) {
+    const r = row(EDGE_HTML, f.fx);
+    const open = /^<li [^>]*>/.exec(r)[0];
+    assert.ok(open.startsWith('<li class="fx" '), `fx ${f.fx}: class first`);
+    assert.ok(open.includes(` id="fx-${f.fx}"`), `fx ${f.fx}: id`);
+    assert.ok(open.includes(` data-ko="${f.ko}"`), `fx ${f.fx}: data-ko`);
+    const st = f.status.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    assert.ok(open.includes(` data-status="${st}"`), `fx ${f.fx}: data-status ${st}`);
+    assert.ok(!/data-(home|away|comp)=/.test(open), `fx ${f.fx}: no per-row name attributes`);
+    const comp = /^<li [^>]*><p class="fx__comp">([^<]*)<\/p>/.exec(r);
+    assert.ok(comp, `fx ${f.fx}: .fx__comp is the row's first child`);
+    assert.equal(decode(comp[1]), f.comp);
+  }
+  assert.ok(row(EDGE_HTML, 900024).includes('data-status="X&lt;Y"'), 'premise: a hostile status is escaped');
+  assert.ok(row(EDGE_HTML, 900001).includes('<p class="fx__comp">&lt;img src=x onerror=alert(1)&gt; League</p>'));
+  assert.ok(row(EDGE_HTML, 900003).includes('<p class="fx__comp">&quot;Quotes&quot; &amp; Ampersand Cup</p>'));
+  assert.equal((EDGE_HTML.match(/ id="fx-/g) || []).length, 25, 'one id per row');
+});
+
+test('an empty competition reads "Competition not named"', () => {
+  const day = structuredClone(EDGE);
+  day.fixtures.find((f) => f.fx === 900010).comp = '';
+  assert.match(row(renderDay(day, opts()), 900010), /<p class="fx__comp">Competition not named<\/p>/);
+});
+
+test('a non-string competition or home team is refused (the sort compares them)', () => {
+  for (const [k, v] of [['comp', 7], ['comp', null], ['home', 7], ['home', undefined]]) {
+    const day = structuredClone(EDGE);
+    day.fixtures.find((f) => f.fx === 900010)[k] = v;
+    assert.throws(() => renderDay(day, opts()), TypeError, `${k} = ${v}`);
+  }
+});
+
+test('no "Jump to now" link and no build-clock state in the static card', () => {
+  for (const html of [EDGE_HTML, renderDay(D07, opts()), renderDay(D08, opts())]) {
+    assert.ok(!/data-jump-now|Jump to now/i.test(html));
+  }
+});
+
+test('toolbar slot: empty, hidden, after the header and before the day bar and list', () => {
+  const html = EDGE_HTML;
+  assert.equal(html.split(TOOLS).length - 1, 1, 'exactly one slot, exactly this markup');
+  const slot = html.indexOf(TOOLS);
+  assert.ok(html.indexOf('</header>') < slot, 'after the day header');
+  assert.ok(slot < html.indexOf('<p class="day-bar">'), 'before the day bar');
+  assert.ok(html.indexOf('<p class="day-bar">') < html.indexOf('<ol class="fx-list"'), 'day bar before the list');
+});
+
+test('beforeList: trusted HTML placed between the toolbar slot and the day bar; must be a string', () => {
+  const MARK = '<section class="probe">before the list</section>';
+  const html = renderDay(EDGE, opts({ beforeList: MARK, prevDay: '2026-10-05', nextDay: '2026-10-07' }));
+  const at = html.indexOf(MARK);
+  assert.ok(at > html.indexOf(TOOLS), 'after the toolbar slot');
+  assert.ok(at < html.indexOf('<p class="day-bar">'), 'before the day bar');
+  assert.equal(html.split(MARK).length - 1, 1, 'once');
+  assert.equal(html.replace(MARK, ''), EDGE_HTML, 'nothing else changes');
+  assert.equal(renderDay(EDGE, opts({ beforeList: '' })), renderDay(EDGE, opts()), 'empty string = absent');
+  for (const bad of [null, 1, {}, ['x'], true]) {
+    assert.throws(() => renderDay(EDGE, opts({ beforeList: bad })), TypeError, JSON.stringify(bad));
+  }
+});
+
+test('day bar: date tagged for relabelling, non-withdrawn count, "by kickoff"', () => {
+  assert.ok(EDGE_HTML.includes('<p class="day-bar"><span data-rel-day="2026-10-06" data-rel="daybar">Tue 6 Oct 2026</span> · 23 fixtures · by kickoff</p>'));
+  const one = structuredClone(EDGE);
+  one.fixtures = one.fixtures.filter((f) => f.fx === 900010 || f.withdrawn);
+  one.accuracy = { won: 0, lost: 0, pushes: 0, graded: 0, pct: null };
+  assert.ok(renderDay(one, opts()).includes('</span> · 1 fixture · by kickoff</p>'), 'singular; withdrawn rows not counted');
+  const d08 = renderDay(D08, opts());
+  assert.ok(d08.includes('<span data-rel-day="2026-10-08" data-rel="daybar">Thu 8 Oct 2026</span> · 130 fixtures · by kickoff'));
 });
 
 // ---------------------------------------------------------------- footer + nav
@@ -430,7 +534,8 @@ test('"How this card was built": both fractions, no rate, no strategy key', () =
   assert.match(t, /At most one recommended pick per fixture, chosen from 92 priced markets\./);
   assert.match(t, /Of the 129 fixtures listed in time for a pick \(at least 10 minutes before kickoff\) that the graded record had a pick for, the card showed a pick for 120 — 120 of them the same pick the record grades — and showed no pick for 9\./);
   assert.ok(!/first listed too late/.test(t), 'D08 has no late row, so no late sentence');
-  assert.match(t, /Pushes are not counted; void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring\./);
+  assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring\./);
+  assert.ok(!/Each competition/.test(t), 'no grouping left in the copy');
   assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
   assert.ok(!t.includes('%'));
   assert.ok(!/edge_reliability|probability_range/.test(html), 'internal keys never rendered');
@@ -489,6 +594,15 @@ test('zero fixtures: header, empty ring and an explicit empty state, no groups',
   assert.match(t, /0 fixtures/);
   assert.ok(!/<details class="comp"/.test(html));
   assert.match(t, /No results yet/);
+  // Nothing to search or count: no toolbar slot, day bar or list.
+  assert.ok(!/data-day-tools|day-bar|data-rel="daybar"|<ol\b|<ul\b/.test(html));
+  // beforeList (the build's founding card) is still placed, after the header, before the empty state.
+  const MARK = '<section class="probe">before the list</section>';
+  const withCard = renderDay(day, opts({ beforeList: MARK }));
+  const at = withCard.indexOf(MARK);
+  assert.ok(at > withCard.indexOf('</header>') && at < withCard.indexOf('<div class="bg-empty day-empty">'), 'between header and empty state');
+  assert.equal(withCard.replace(MARK, ''), html);
+  assert.throws(() => renderDay(day, opts({ beforeList: 5 })), TypeError);
 });
 
 test('rejects what it cannot render honestly', () => {
@@ -529,12 +643,47 @@ test('fixtures.css exists and styles every class the renderer emits', () => {
   // an uncounted row's grade chip is dashed, not faded (fading would hurt contrast)
   assert.match(css, /\.fx\[data-uncounted\] \.fx__grade\{[^}]*border-style:dashed/);
   assert.ok(!/opacity/.test(css), 'no opacity-based state');
-  // the summary heading keeps the summary's look (no default h2 margins/size)
-  assert.match(css, /\.comp__name\{[^}]*margin:0[^}]*font-size:13\.5px/);
-  // touch targets: summaries and links in the card get the 44px token
-  assert.match(css, /\.comp > summary\{[^}]*min-height:var\(--tap\)/);
+  // the competition groups are gone, and so are their rules
+  assert.ok(!/\.comp(?![\w-])|\.comp__|\.day-groups/.test(css), 'no dead .comp* / .day-groups rules');
   // the gold token is for the recommended pick only
   for (const m of css.matchAll(/([^{}]+)\{[^}]*var\(--gold\)/g)) {
     assert.match(m[1], /bg-eyebrow|bg-star/, `--gold used outside the pick eyebrow: ${m[1].trim()}`);
   }
+});
+
+/** Top-level rules of a stylesheet (at-rule blocks removed) as [selectors[], body]. */
+function topRules(css) {
+  const flat = css.replace(/\/\*[\s\S]*?\*\//g, '').replace(/@[\w-]+[^{]*\{(?:[^{}]*\{[^}]*\})*\s*\}/g, '');
+  return [...flat.matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => [m[1].split(',').map((s) => s.trim()), m[2]]);
+}
+const bodyOf = (rules, sel) => rules.filter(([s]) => s.includes(sel)).map(([, b]) => b).join(';');
+
+test('fixtures.css: hiding really hides, rows are virtualised, the competition line is first', () => {
+  const css = readFileSync(CSS_PATH, 'utf8');
+  const top = topRules(css);
+  // .fx is display:grid, which beats the UA [hidden] rule: the explicit rule must exist.
+  assert.match(bodyOf(top, '.fx'), /display:grid/, 'premise: rows set a display');
+  assert.match(bodyOf(top, '.fx[hidden]'), /display:none/);
+  assert.match(bodyOf(top, '[data-day-tools][hidden]'), /display:none/);
+  // content-visibility with an intrinsic size per container width (narrow card / wide rail).
+  const fx = bodyOf(top, '.fx');
+  assert.match(fx, /content-visibility:auto/);
+  const narrow = /contain-intrinsic-size:auto (\d+)px/.exec(fx);
+  assert.ok(narrow, 'narrow intrinsic size');
+  const wide = /@container \(min-width:720px\)\{([\s\S]*?)\n\}/.exec(css.replace(/\/\*[\s\S]*?\*\//g, ''));
+  assert.ok(wide, 'the wide-row container rule exists');
+  const wideFx = /(?:^|\s)\.fx\{([^}]*)\}/.exec(wide[1]);
+  const wideSize = /contain-intrinsic-size:auto (\d+)px/.exec(wideFx ? wideFx[1] : '');
+  assert.ok(wideSize, 'wide intrinsic size');
+  assert.notEqual(wideSize[1], narrow[1], 'one value per layout');
+  // the competition line takes row 1; time and teams move down; the wide rail spans both rows
+  const comp = bodyOf(top, '.fx__comp');
+  for (const d of [/grid-row:1/, /white-space:nowrap/, /overflow:hidden/, /text-overflow:ellipsis/, /min-width:0/]) assert.match(comp, d);
+  for (const sel of ['.fx__time', '.fx__teams']) {
+    assert.match(bodyOf(top, sel), /grid-row:2/, sel);
+    assert.doesNotMatch(bodyOf(top, sel), /grid-row:1(?!\d)/, sel);
+  }
+  assert.match(bodyOf(top, '.fx__pick'), /grid-row:3/);
+  assert.match(wide[1], /\.fx__pick\{[^}]*grid-row:1 \/ span 2/);
+  assert.match(css, /\.day-bar\{/);
 });

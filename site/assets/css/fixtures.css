@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Bet Gaffer — the day card: header, accuracy ring, competition groups,
+   Bet Gaffer — the day card: header, accuracy ring, the kickoff list,
    fixture rows, "How this card was built", day links.
    Markup: site/lib/fixtures.js + site/lib/ring.js. Tokens: base.css.
 
@@ -77,35 +77,24 @@
 .ring__stated{ font-size:12.5px; line-height:1.45; color:var(--ink-2); }
 .ring__meta{ font-size:11px; color:var(--muted); }
 
-/* ── 3. COMPETITION GROUPS ─────────────────────────────────────────────────── */
-.day-groups{ display:flex; flex-direction:column; gap:8px; }
+/* ── 3. THE LIST: toolbar slot, day bar, one list by kickoff (spec §5) ─────── */
+/* The toolbar slot ships hidden and empty; predictions.js fills and reveals it.
+   Any display the toolbar is later given must not beat [hidden]. */
+[data-day-tools][hidden],.day-tools[hidden]{ display:none; }
 
-.comp{ border-top:1px solid var(--line); }
-.comp:first-child{ border-top:0; }
-.comp > summary{
-  display:flex; align-items:center; gap:10px; min-height:var(--tap);
-  padding:6px 2px; list-style:none;
+.day-bar{
+  margin:0; padding:0 2px;
+  font-family:var(--font-mono); font-size:11.5px; letter-spacing:.02em; color:var(--muted);
 }
-.comp > summary::after{
-  content:''; flex:0 0 auto; width:7px; height:7px; margin:0 6px 3px 2px;
-  border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
-  transform:rotate(45deg); transition:transform .15s ease;
-}
-.comp[open] > summary::after{ transform:rotate(-135deg); margin-bottom:-3px; }
-.comp > summary:hover .comp__name{ color:var(--ink); }
-/* An <h2> inside the summary, styled as the summary line (no heading margins or scale). */
-.comp__name{
-  flex:1 1 auto; min-width:0; margin:0;
-  font-family:var(--font-ui); line-height:1.4; letter-spacing:0;
-  font-size:13.5px; font-weight:600; color:var(--ink-2);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-}
-.comp__count{ flex:0 0 auto; font-size:11px; color:var(--muted-2); }
+.day-bar [data-rel="daybar"]{ color:var(--ink-2); font-weight:600; }
 
 .fx-list{ display:flex; flex-direction:column; gap:6px; padding-bottom:10px; container-type:inline-size; }
 
 /* ── 4. FIXTURE ROW ────────────────────────────────────────────────────────── */
-/* The 56px time column fits the longest status word (POSTPONED, WITHDRAWN) at 9px without breaking it. */
+/* The 56px time column fits the longest status word (POSTPONED, WITHDRAWN) at 9px without breaking it.
+   Rows: 1 competition · 2 time + teams · 3 the outcome block.
+   content-visibility skips layout and paint for off-screen rows (a peak day lists ~1,550);
+   the intrinsic size is a first guess per layout, "auto" then remembers each row's real height. */
 .fx{
   display:grid; grid-template-columns:56px minmax(0,1fr);
   column-gap:12px; row-gap:9px; align-items:center;
@@ -114,6 +103,16 @@
   border:1px solid var(--line); border-left:3px solid var(--line);
   border-radius:var(--r-2);
   overflow-wrap:normal;
+  content-visibility:auto; contain-intrinsic-size:auto 132px;
+}
+/* .fx is display:grid, which beats the UA [hidden] rule: filtering must really hide. */
+.fx[hidden]{ display:none; }
+
+/* The competition, on its own small line (the UI tab's .bg-comp pattern). */
+.fx__comp{
+  grid-column:1 / -1; grid-row:1; min-width:0; margin:0 0 -4px;
+  font-size:11.5px; line-height:1.35; color:var(--muted);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
 .fx[data-state="won"]{ border-left-color:var(--won); }
 .fx[data-state="lost"]{ border-left-color:var(--lost); }
@@ -122,7 +121,7 @@
 .fx[data-state="void"],
 .fx[data-state="withdrawn"]{ border-left-color:var(--void); }
 
-.fx__time{ grid-column:1; grid-row:1; display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; }
+.fx__time{ grid-column:1; grid-row:2; display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; }
 .fx__ko{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12.5px; font-weight:600; color:var(--ink-2); }
 .fx__time em{
   font-style:normal; font-family:var(--font-mono); font-size:9px; line-height:1.25;
@@ -133,7 +132,7 @@
 /* A static dot, not a pulse: the status is as of the last update, not this second. */
 .fx__time em[data-live]::before{ content:''; width:5px; height:5px; border-radius:var(--r-pill); background:var(--accent); }
 
-.fx__teams{ grid-column:2; grid-row:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
+.fx__teams{ grid-column:2; grid-row:2; display:flex; flex-direction:column; gap:3px; min-width:0; }
 .fx__team{
   font-size:14.5px; font-weight:600; line-height:1.3; color:var(--ink);
   display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2;
@@ -142,7 +141,7 @@
 
 /* The outcome block: pick, withdrawn, late or nothing. */
 .fx__pick{
-  grid-column:1 / -1; grid-row:2;
+  grid-column:1 / -1; grid-row:3;
   display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:baseline;
   padding-top:9px; border-top:1px solid var(--line);
 }
@@ -211,14 +210,16 @@
   font-size:17px; font-weight:800; line-height:1.1; letter-spacing:-.02em; color:var(--accent);
 }
 
-/* Wide rows: kickoff | teams | pick rail. Revealed by the list's own width. */
+/* Wide rows: competition over kickoff | teams, the pick rail beside both. Revealed by the list's own width. */
 @container (min-width:720px){
   .fx{
     grid-template-columns:56px minmax(0,1fr) minmax(300px,380px);
     padding:12px 16px 12px 12px;
+    contain-intrinsic-size:auto 104px;
   }
+  .fx__comp{ grid-column:1 / 3; }
   .fx__pick{
-    grid-column:3; grid-row:1;
+    grid-column:3; grid-row:1 / span 2;
     padding:0 0 0 16px; border-top:0; border-left:1px solid var(--line);
   }
 }

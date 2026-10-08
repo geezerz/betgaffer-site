@@ -20,8 +20,8 @@ import { lagosParts, fmtDayLong, fmtStamp, isDate } from './time.js';
 import { ring } from './ring.js';
 
 export const EST_TEXT = 'estimated price — no market price was captured';
-/** Competition groups rendered open; the rest start closed (works without JS; spec §11). */
-export const OPEN_GROUPS = 12;
+/** The empty toolbar slot predictions.js fills; hidden (and so absent) without JS (spec §5). */
+export const DAY_TOOLS = '<div class="day-tools" data-day-tools hidden></div>';
 
 const LIVE = new Set(['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT']);
 const STATUS_LABELS = Object.freeze({
@@ -219,37 +219,39 @@ function fixtureRow(f) {
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
   const state = rowState(f);
   const uncounted = state !== 'withdrawn' && f.pick && f.pre_ko === false ? ' data-uncounted' : '';
-  return `<li class="fx" data-fx="${escAttr(f.fx)}" data-state="${state}"${uncounted}>`
+  // id: the client's "Jump to now" target; data-ko / data-status: what it needs to pick one
+  // (predictions.js, Plan B Task B3). Names are NOT repeated as attributes (page weight): the
+  // client indexes the .fx__team / .fx__comp text.
+  return `<li class="fx" id="fx-${escAttr(f.fx)}" data-fx="${escAttr(f.fx)}" data-state="${state}"`
+    + ` data-ko="${escAttr(f.ko)}" data-status="${escAttr(f.status)}"${uncounted}>`
+    + `<p class="fx__comp">${escHtml(f.comp === '' ? 'Competition not named' : f.comp)}</p>`
     + timeSlot(f, hm) + teams(f) + outcome(f, state)
     + '</li>';
 }
 
-// ------------------------------------------------------------------ grouping
+// ------------------------------------------------------------------ the list
 
-function groups(fixtures) {
-  const by = new Map();
+/**
+ * The day's rows in list order (spec §5): kickoff, then competition, then home team, then fx.
+ * ISO-Z strings order chronologically; names compare by plain code unit (`<`), never
+ * localeCompare, so the build and every browser agree whatever their locale. A copy: the
+ * day's own array (the receipt's order) is never reordered.
+ */
+function kickoffOrder(fixtures) {
   for (const f of fixtures) {
     if (typeof f.comp !== 'string') throw new TypeError(`renderDay: fx ${f.fx} comp must be a string`);
-    if (!by.has(f.comp)) by.set(f.comp, []);
-    by.get(f.comp).push(f);
+    if (typeof f.home !== 'string') throw new TypeError(`renderDay: fx ${f.fx} home must be a string`);
+    if (typeof f.ko !== 'string') throw new TypeError(`renderDay: fx ${f.fx} ko must be a string`);
+    if (!Number.isInteger(f.fx)) throw new TypeError('renderDay: a fixture has a non-integer fx');
   }
-  const out = [...by.entries()].map(([comp, rows]) => {
-    rows.sort((a, b) => cmp(a.ko, b.ko) || a.fx - b.fx);
-    return { comp, rows, first: rows[0].ko };
-  });
-  // ISO-Z strings order chronologically; plain code-unit comparison keeps the build and every
-  // browser in the same order (localeCompare would depend on the host locale).
-  out.sort((a, b) => cmp(a.first, b.first) || cmp(a.comp, b.comp));
-  return out;
+  return [...fixtures].sort((a, b) => cmp(a.ko, b.ko) || cmp(a.comp, b.comp) || cmp(a.home, b.home) || a.fx - b.fx);
 }
 
-function groupHtml(g, i) {
-  const name = g.comp === '' ? 'Competition not named' : g.comp;
-  return `<details class="comp"${i < OPEN_GROUPS ? ' open' : ''}>`
-    + `<summary><h2 class="comp__name">${escHtml(name)}</h2>`
-    + `<span class="comp__count mono">${escHtml(plural(g.rows.length, 'fixture', 'fixtures'))}</span></summary>`
-    + `<ul class="fx-list" role="list">${g.rows.map(fixtureRow).join('')}</ul>`
-    + '</details>';
+/** "Thu 8 Oct 2026 · 137 fixtures · by kickoff"; the date is relabelled "Today · …" by stale.js. */
+function dayBar(d, activeCount) {
+  return '<p class="day-bar">'
+    + `<span data-rel-day="${escAttr(d)}" data-rel="daybar">${escHtml(fmtDayLong(d))}</span>`
+    + ` · ${escHtml(plural(activeCount, 'fixture', 'fixtures'))} · by kickoff</p>`;
 }
 
 // ------------------------------------------------------------------ the card
@@ -278,7 +280,7 @@ function howBuilt(day) {
   return '<details class="day-how"><summary>How this card was built</summary><div class="day-how__body">'
     + `<p>At most one recommended pick per fixture, chosen from ${escHtml(plural(markets, 'priced market', 'priced markets'))}.</p>`
     + `<p>${escHtml(check)}</p>`
-    + '<p>Each competition lists every fixture we cover that day, with or without a pick. Pushes are not counted; '
+    + '<p>The list shows every fixture we cover that day, with or without a pick. Pushes are not counted; '
     + 'void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring.</p>'
     + '<p>Prices marked est. are estimates: no market price was captured for them.</p>'
     + '</div></details>';
@@ -296,7 +298,8 @@ function dayNav(prevDay, nextDay) {
 }
 
 /**
- * The day card: header + ring + receipt, competition groups, "How this card was built", day links.
+ * The day card: header + ring + receipt, the toolbar slot, `beforeList`, the day bar, ONE list of
+ * every row by kickoff, "How this card was built", day links (spec §5).
  *
  * @param {object} day  a validated FULL day file (a compacted day has no card and throws)
  * @param {object} o
@@ -306,10 +309,13 @@ function dayNav(prevDay, nextDay) {
  * Former isToday / isTomorrow options are ignored.
  * @param {string|null} [o.prevDay] 'YYYY-MM-DD' → link to /day/<d>/
  * @param {string|null} [o.nextDay] 'YYYY-MM-DD' → link to /day/<d>/
+ * @param {string} [o.beforeList] TRUSTED HTML placed after the toolbar slot, before the day bar
+ *   (before the empty state on a day with no fixtures). Not escaped: callers pass their own markup.
  * The receipt line is plain text — frozen stamp, grades stamp, 12-hex receipt code — with no link.
  * @returns {string} HTML fragment
  */
-export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
+export function renderDay(day, { prevDay = null, nextDay = null, beforeList = '' } = {}) {
+  if (typeof beforeList !== 'string') throw new TypeError('renderDay: beforeList must be a string of HTML');
   if (day === null || typeof day !== 'object') throw new TypeError('renderDay: day must be an object');
   if (!isDate(day.lagos_day)) throw new TypeError('renderDay: day.lagos_day must be YYYY-MM-DD');
   if (!Array.isArray(day.fixtures)) throw new TypeError(`renderDay: ${day.lagos_day} has no fixtures array (a compacted day has no card)`);
@@ -323,7 +329,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const longDate = fmtDayLong(d);
   const frozen = fmtStamp(day.picks_frozen_at);
   const gradedAt = fmtStamp(day.grades_as_of);
-  const gs = groups(day.fixtures);
+  const rows = kickoffOrder(day.fixtures);
   const n = day.fixtures.length;
   // A withdrawn row is not a fixture on today's card; it stays listed (the receipt) and is
   // counted separately so the header never overstates the card.
@@ -351,9 +357,12 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
     + `<span class="mono">${escHtml(code)}</span></p>`
     + '</header>';
 
+  // Nothing to search or count on an empty day: no toolbar slot, day bar or list; the caller's
+  // beforeList (the build's founding card) keeps its place above the empty state.
   const body = n === 0
-    ? `<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
-    : `<div class="day-groups">${gs.map(groupHtml).join('')}</div>`;
+    ? `${beforeList}<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
+    : DAY_TOOLS + beforeList + dayBar(d, active.length)
+      + `<ol class="fx-list" role="list" data-fx-list>${rows.map(fixtureRow).join('')}</ol>`;
 
   return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day)}${dayNav(prev, next)}</div>`;
 }
