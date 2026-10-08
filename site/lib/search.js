@@ -14,8 +14,8 @@ const EXTRA = new Map([
   [c(0x153), 'oe'],
   [c(0xfe), 'th'], // thorn
 ]);
-// One pass for apostrophes (' U+2019 U+02BC -> removed) and the letters NFD leaves alone.
-const PRE_RE = new RegExp("['" + c(0x2019) + c(0x2bc) + [...EXTRA.keys()].join('') + ']', 'g');
+// One pass (after NFD) for apostrophes (' ` U+00B4 U+2018 U+2019 U+02BC -> removed) and the letters NFD leaves alone.
+const PRE_RE = new RegExp("['`" + c(0xb4) + c(0x2018) + c(0x2019) + c(0x2bc) + [...EXTRA.keys()].join('') + ']', 'g');
 const pre = (ch) => EXTRA.get(ch) || '';
 const MARKS_RE = /\p{M}/gu;
 const SPLIT_RE = /[^\p{L}\p{N}]+/gu;
@@ -41,11 +41,15 @@ function foldUncached(s) {
   const lower = String(s == null ? '' : s).toLowerCase();
   if (ASCII_RE.test(lower)) {
     // Fast path: nothing to decompose or map.
-    return lower.replace(/'/g, '').replace(ASCII_SPLIT_RE, ' ').trim();
+    return lower.replace(/['`]/g, '').replace(ASCII_SPLIT_RE, ' ').trim();
   }
-  const base = lower.replace(PRE_RE, pre).normalize('NFD').replace(MARKS_RE, '');
+  // Order matters: NFD first so precomposed letters (o-stroke-acute, ae-acute) expose their base
+  // letter, then the special-letter map, then drop the combining marks.
+  const base = lower.normalize('NFD').replace(PRE_RE, pre).replace(MARKS_RE, '');
   return (ASCII_RE.test(base) ? base.replace(ASCII_SPLIT_RE, ' ') : base.replace(SPLIT_RE, ' ')).trim();
 }
+
+export const _memoSize = () => MEMO.size; // test hook
 
 export function words(s) {
   return fold(s).split(' ').filter(Boolean);
@@ -57,6 +61,7 @@ export function matcher(query) {
   return (haystackWords) => q.every((qw) => haystackWords.some((hw) => hw.startsWith(qw)));
 }
 
-export function rowWords({ home, away, comp } = {}) {
+export function rowWords(r) {
+  const { home, away, comp } = r || {};
   return [...words(home), ...words(away), ...words(comp)];
 }

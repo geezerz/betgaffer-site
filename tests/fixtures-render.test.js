@@ -676,6 +676,9 @@ test('fixtures.css: hiding really hides, rows are virtualised, the competition l
   const wideSize = /contain-intrinsic-size:auto (\d+)px/.exec(wideFx ? wideFx[1] : '');
   assert.ok(wideSize, 'wide intrinsic size');
   assert.notEqual(wideSize[1], narrow[1], 'one value per layout');
+  // content-box hints: with ~24-26px padding/border they approximate measured medians (197 narrow, 113 wide)
+  assert.equal(narrow[1], '172');
+  assert.equal(wideSize[1], '88');
   // the competition line takes row 1; time and teams move down; the wide rail spans both rows
   const comp = bodyOf(top, '.fx__comp');
   for (const d of [/grid-row:1/, /white-space:nowrap/, /overflow:hidden/, /text-overflow:ellipsis/, /min-width:0/]) assert.match(comp, d);

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { fold, words, matcher, rowWords } from '../site/lib/search.js';
+import { fold, words, matcher, rowWords, _memoSize } from '../site/lib/search.js';
 
 const C = (...codes) => String.fromCharCode(...codes);
 const hit = (query, row) => matcher(query)(rowWords(row));
@@ -91,22 +91,49 @@ test('rowWords tolerates missing fields', () => {
   assert.deepEqual(rowWords({}), []);
 });
 
-test('performance: 1,550 rows indexed and filtered in < 20 ms', () => {
+test('performance: one COLD pass over 1,550 distinct rows (memo cannot help) in < 250 ms', () => {
   const rows = [];
   for (let i = 0; i < 1550; i++) {
-    rows.push({ home: 'Atl' + C(0xe9) + 'tico Club ' + i, away: "Newell's Old Boys " + i, comp: 'Premier League ' + (i % 40) });
+    const u = 'u' + i.toString(36) + 'x' + (i * 7919).toString(36);
+    rows.push({ home: 'Atl' + C(0xe9) + 'tico ' + u, away: "Newell's " + u + 'b', comp: 'Premier ' + u + 'c' });
   }
-  // Best of 5: the first pass pays one-off regex compilation / JIT warm-up (~25 ms cold), which is
-  // not the steady-state cost this sanity bound is about.
-  let dt = Infinity;
-  for (let k = 0; k < 5; k++) {
-    const t0 = performance.now();
-    const idx = rows.map(rowWords);
-    const n = idx.filter(matcher('atl prem')).length;
-    dt = Math.min(dt, performance.now() - t0);
-    assert.equal(n, 1550);
+  const t0 = performance.now();
+  const idx = rows.map(rowWords);
+  const n = idx.filter(matcher('atl prem')).length;
+  const dt = performance.now() - t0;
+  assert.equal(n, 1550);
+  assert.ok(dt < 250, 'took ' + dt + ' ms');
+});
+
+test('memo hit equals a cold fold', () => {
+  const s = 'Mem' + C(0xf8) + " Test's " + C(0xe9) + 'quipe';
+  const cold = fold(s);
+  assert.equal(fold(s), cold);
+  assert.equal(cold, 'memo tests equipe');
+});
+
+test('memo size is bounded at 4,096', () => {
+  for (let i = 0; i < 10000; i++) fold('bound-' + i);
+  assert.ok(_memoSize() <= 4096, 'size ' + _memoSize());
+  assert.ok(_memoSize() > 0);
+});
+
+test('precomposed letters fold: o-stroke-acute and ae-acute', () => {
+  assert.equal(fold(C(0x1ff) + 'sterbro'), 'osterbro');
+  assert.ok(hit('oster', { home: C(0x1ff) + 'sterbro', away: 'X', comp: 'Y' }));
+  assert.equal(fold(C(0x1fd)), 'ae');
+});
+
+test('apostrophe forms: backtick, acute accent, left single quote', () => {
+  for (const ch of ['`', C(0xb4), C(0x2018)]) {
+    assert.equal(fold('Newell' + ch + 's'), 'newells');
+    assert.ok(hit('newells', { home: 'Newell' + ch + 's Old Boys', away: 'X', comp: 'Y' }));
   }
-  assert.ok(dt < 20, 'took ' + dt + ' ms');
+});
+
+test('rowWords(null) and rowWords(undefined) do not throw', () => {
+  assert.deepEqual(rowWords(null), []);
+  assert.deepEqual(rowWords(undefined), []);
 });
 
 test('isomorphism guard: source has no node:, process, Buffer, require or imports', () => {
