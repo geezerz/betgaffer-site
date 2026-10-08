@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { renderDay, meanStatedPct, statusLabel, EST_TEXT } from '../site/lib/fixtures.js';
+import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT } from '../site/lib/fixtures.js';
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
 import { picksHash } from '../site/lib/hash.js';
 import { lagosParts } from '../site/lib/time.js';
@@ -20,8 +20,7 @@ const SRC_RAW = readFileSync(here('../site/lib/fixtures.js'), 'utf8');
 const SRC = SRC_RAW.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 const CSS_PATH = here('../site/assets/css/fixtures.css');
 
-const REPO = 'geezerz/betgaffer-site';
-const opts = (o = {}) => ({ isToday: false, isTomorrow: false, prevDay: null, nextDay: null, repo: REPO, ...o });
+const opts = (o = {}) => ({ isToday: false, isTomorrow: false, prevDay: null, nextDay: null, ...o });
 
 const decode = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
   .replace(/&#39;/g, "'").replace(/&amp;/g, '&');
@@ -250,11 +249,26 @@ test('count line with every row withdrawn', () => {
   assert.match(text(renderDay(day, opts())), /0 fixtures \(2 withdrawn\)/);
 });
 
-test('receipt line: frozen stamp, grades stamp, 12-hex receipt linking to the file history', () => {
+test('receipt line: frozen stamp, grades stamp, 12-hex receipt code as plain text (spec §10)', () => {
   const html = renderDay(D08, opts());
-  assert.match(text(html), /Picks frozen 7 Oct 2026, 23:15 WAT · grades as of 7 Oct 2026, 23:15 WAT · receipt sha256:efd3e3a637cc/);
-  assert.match(html, /href="https:\/\/github\.com\/geezerz\/betgaffer-site\/commits\/main\/days\/2026-10-08\.json"/);
+  const line = /<p class="day-receipt mono">([\s\S]*?)<\/p>/.exec(html);
+  assert.ok(line, 'the receipt line is rendered');
+  assert.equal(line[1], 'Picks frozen 7 Oct 2026, 23:15 WAT · grades as of 7 Oct 2026, 23:15 WAT · receipt <span class="mono">efd3e3a637cc</span>');
+  assert.doesNotMatch(line[1], /<a\b|href=/, 'the receipt links nowhere');
+  assert.ok(!text(html).includes('sha256:'), 'the code is printed without its algorithm prefix');
   assert.ok(!text(html).includes('efd3e3a637ccf'), 'only the first 12 hex chars');
+  assert.doesNotMatch(html, /github|commits\/main/i);
+});
+
+test('receiptCode: the 12 hex after "sha256:", and nothing it cannot vouch for', () => {
+  assert.equal(receiptCode(D08.picks_hash), 'efd3e3a637cc');
+  for (const bad of [undefined, null, 'efd3e3a637cc', `sha256:${'A'.repeat(64)}`, `sha256:${'a'.repeat(63)}`, `sha1:${'a'.repeat(64)}`]) {
+    assert.throws(() => receiptCode(bad), TypeError, String(bad));
+  }
+});
+
+test('a leftover repo option is ignored: the card is the same with or without it', () => {
+  assert.equal(renderDay(D08, { ...opts(), repo: 'geezerz/betgaffer-site' }), renderDay(D08, opts()));
 });
 
 test('relative labels are static dates tagged for the visitor\'s clock (review I2)', () => {
@@ -478,8 +492,7 @@ test('zero fixtures: header, empty ring and an explicit empty state, no groups',
 });
 
 test('rejects what it cannot render honestly', () => {
-  assert.throws(() => renderDay(D08, opts({ repo: undefined })), TypeError);
-  assert.throws(() => renderDay(D08, opts({ repo: 'evil"><x' })), TypeError);
+  assert.throws(() => renderDay({ ...D08, picks_hash: 'sha256:short' }, opts()), TypeError, 'no receipt code it cannot vouch for');
   assert.throws(() => renderDay({ ...D08, fixtures: undefined }, opts()), TypeError, 'a compacted day has no card');
   assert.throws(() => renderDay(D08, opts({ prevDay: '2026-13-01' })), TypeError);
   for (const fx of [900001, 900007, 900010]) { // picked, withdrawn, no pick

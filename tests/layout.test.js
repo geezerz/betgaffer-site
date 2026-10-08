@@ -272,7 +272,7 @@ test('two mainData keys that map to the same data-* name throw instead of emitti
 // Footer
 // ---------------------------------------------------------------------------------------------
 
-test('the footer carries the not-a-bookmaker line, 18+, legal links, ©, contact and receipts', () => {
+test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, legal links, © and contact', () => {
   const html = base();
   const foot = html.match(/<footer\b[\s\S]*?<\/footer>/)[0];
   assert.ok(foot.includes(NOT_A_BOOKMAKER), 'not-a-bookmaker line verbatim');
@@ -282,7 +282,14 @@ test('the footer carries the not-a-bookmaker line, 18+, legal links, ©, contact
   }
   assert.match(foot, /© 2026 Example Media Ltd/);
   assert.match(foot, /<a href="mailto:hello@example.com">hello@example.com<\/a>/);
-  assert.match(foot, /<a href="https:\/\/github.com\/geezerz\/betgaffer-site"[^>]*>/);
+  // Spec §10: the brand column states the receipt idea; no Receipts column, no repository link.
+  const brand = foot.match(/<div class="bg-foot__brand">[\s\S]*?<\/div>/)[0];
+  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick is frozen before kickoff and carries a receipt code.</p>'));
+  assert.doesNotMatch(foot, /github|reposit|Receipts</i);
+  assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
+  // Every footer link is one of: the three legal pages, the contact mailto.
+  assert.deepEqual([...foot.matchAll(/<a href="([^"]*)"/g)].map((m) => m[1]),
+    ['/privacy/', '/terms/', '/refunds/', 'mailto:hello@example.com']);
 });
 
 test('the footer year is the injected year', () => {

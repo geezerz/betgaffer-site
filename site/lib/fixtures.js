@@ -47,10 +47,18 @@ const MSG = Object.freeze({
   moved: 'Kickoff was moved to a time before this pick was frozen — not counted in the ring.',
 });
 
-const REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 const HASH_RE = /^sha256:[0-9a-f]{64}$/;
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+/**
+ * The receipt code a card prints: the first 12 hex characters after "sha256:" of its picks_hash.
+ * Plain text, never a link (spec §10). The build's archive stubs print the same code.
+ */
+export function receiptCode(picksHash) {
+  if (typeof picksHash !== 'string' || !HASH_RE.test(picksHash)) throw new TypeError('receiptCode: picks_hash must be "sha256:" + 64 hex');
+  return picksHash.slice('sha256:'.length, 'sha256:'.length + 12);
+}
 
 function count(v, what) {
   if (!Number.isInteger(v) || v < 0) throw new TypeError(`renderDay: ${what} must be a non-negative integer, got ${JSON.stringify(v)}`);
@@ -298,14 +306,13 @@ function dayNav(prevDay, nextDay) {
  * Former isToday / isTomorrow options are ignored.
  * @param {string|null} [o.prevDay] 'YYYY-MM-DD' → link to /day/<d>/
  * @param {string|null} [o.nextDay] 'YYYY-MM-DD' → link to /day/<d>/
- * @param {string} o.repo           'owner/name' of the public receipts repository
+ * The receipt line is plain text — frozen stamp, grades stamp, 12-hex receipt code — with no link.
  * @returns {string} HTML fragment
  */
-export function renderDay(day, { prevDay = null, nextDay = null, repo } = {}) {
+export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   if (day === null || typeof day !== 'object') throw new TypeError('renderDay: day must be an object');
   if (!isDate(day.lagos_day)) throw new TypeError('renderDay: day.lagos_day must be YYYY-MM-DD');
   if (!Array.isArray(day.fixtures)) throw new TypeError(`renderDay: ${day.lagos_day} has no fixtures array (a compacted day has no card)`);
-  if (typeof repo !== 'string' || !REPO_RE.test(repo)) throw new TypeError(`renderDay: repo must be "owner/name", got ${JSON.stringify(repo)}`);
   if (typeof day.picks_hash !== 'string' || !HASH_RE.test(day.picks_hash)) throw new TypeError('renderDay: picks_hash must be "sha256:" + 64 hex');
   const prev = optDate(prevDay, 'prevDay');
   const next = optDate(nextDay, 'nextDay');
@@ -329,8 +336,7 @@ export function renderDay(day, { prevDay = null, nextDay = null, repo } = {}) {
     + (k > 0 ? ` (${k} withdrawn)` : '');
   // = stale.js relLabel(d, <not today or tomorrow>, 'ring'), asserted by tests/relabel.test.js.
   const ringLabel = `Picks published for ${longDate}, settled so far`;
-  const receiptUrl = `https://github.com/${repo}/commits/main/days/${d}.json`;
-  const short = day.picks_hash.slice(0, 'sha256:'.length + 12);
+  const code = receiptCode(day.picks_hash);
 
   const head = '<header class="day-head">'
     + '<div class="day-head__title">'
@@ -342,7 +348,7 @@ export function renderDay(day, { prevDay = null, nextDay = null, repo } = {}) {
     + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures), relDay: d })
     + '<p class="day-head__note">The ring counts this card’s own published picks. The graded record, every settled pick over time, is on <a href="/our-record/">Our Record</a>.</p>'
     + `<p class="day-receipt mono">Picks frozen ${escHtml(frozen)} · grades as of ${escHtml(gradedAt)} · receipt `
-    + `<a class="day-receipt__link" href="${escAttr(receiptUrl)}" rel="noopener">${escHtml(short)}</a></p>`
+    + `<span class="mono">${escHtml(code)}</span></p>`
     + '</header>';
 
   const body = n === 0

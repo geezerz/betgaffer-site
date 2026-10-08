@@ -80,7 +80,6 @@ function header(path) {
 
 function footer(config, op, year) {
   const legal = LEGAL.map(([href, label]) => `<li><a href="${escAttr(href)}">${escHtml(label)}</a></li>`).join('');
-  const repoUrl = `https://github.com/${config.repo}`;
   const ident = [
     `© ${escHtml(year)} ${escHtml(op.legal_name)}`,
     rcNumber(op) ? `RC ${escHtml(rcNumber(op))}` : '', // the config may already carry the "RC" prefix
@@ -91,6 +90,7 @@ function footer(config, op, year) {
 <div class="bg-foot__brand">
 <p class="bg-wordmark bg-foot__mark" aria-hidden="true">Bet<em>Gaffer</em></p>
 <p class="bg-foot__statement">${escHtml(NOT_A_BOOKMAKER)}</p>
+<p class="bg-foot__receipts">Every pick is frozen before kickoff and carries a receipt code.</p>
 <p class="bg-foot__age"><span class="bg-age">18+</span><span>For adults aged 18 and over.</span></p>
 </div>
 <nav class="bg-foot__col" aria-label="Legal">
@@ -100,11 +100,6 @@ function footer(config, op, year) {
 <div class="bg-foot__col">
 <h2 class="t-lbl t-lbl--quiet">Contact</h2>
 <p><a href="mailto:${escAttr(op.contact_email)}">${escHtml(op.contact_email)}</a></p>
-</div>
-<div class="bg-foot__col">
-<h2 class="t-lbl t-lbl--quiet">Receipts</h2>
-<p>Every published card is a commit in a public repository.</p>
-<p><a href="${escAttr(repoUrl)}" rel="noopener">${escHtml(`github.com/${config.repo}`)}</a></p>
 </div>
 <p class="bg-foot__legal mono">${ident}</p>
 </div>
@@ -148,7 +143,8 @@ export function page({
   });
   if (typeof noindex !== 'boolean') throw new TypeError('page: noindex must be a boolean');
   // Throws naming every missing operator field (plan S8), then every malformed contact_email,
-  // privacy_email, repo or origin: all of them land in href attributes below.
+  // privacy_email, repo or origin. The emails and origin land in href attributes below; repo is
+  // validated but never rendered (spec §10: no page links or names the repository).
   const op = requireOperator(config);
   const y = year === undefined ? Number(lagosToday().slice(0, 4)) : year;
   if (!Number.isInteger(y)) throw new TypeError('page: year must be an integer');

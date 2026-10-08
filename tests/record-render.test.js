@@ -14,7 +14,7 @@ const RAW = JSON.parse(readFileSync(join(ART, 'index.json'), 'utf8'));
 const INDEX = validateIndex(RAW);
 const REC = INDEX.record;
 const DAYS = new Set(INDEX.days.map((d) => d.day)); // 2026-10-07, 2026-10-08
-const OPTS = { today: '2026-10-07', days: DAYS, repo: 'geezerz/betgaffer-site' };
+const OPTS = { today: '2026-10-07', days: DAYS };
 const clone = (o) => structuredClone(o);
 
 /** The record after a mutation, re-validated so every test input is one the build could pass. */
@@ -430,20 +430,30 @@ test('months: none yet renders an explicit empty state, not an empty table', () 
 // Footnotes, empty record, copy rules, escaping
 // ---------------------------------------------------------------------------------------------
 
-test('footnotes I3: repository commitment dated from the oldest listed day; ledger caveat; repo link', () => {
+test('footnotes (spec §10): the frozen-card commitment dated from the oldest listed day; no repository, no link', () => {
   const html = renderRecord(REC, OPTS);
   const t = text(html);
   assert.match(t, /Figures as of 7 Oct 2026, 06:05 WAT\./);
-  assert.match(t, /From Wed 7 Oct 2026, each day's card is committed to a public repository before its matches kick off — each row carries its freeze time, and a fixture first seen less than 10 minutes before kickoff carries no pick\. The figures above come from the accuracy ledger and include days before the repository began\./);
+  const foot = /<ul class="rec-foot[^"]*"[^>]*>[\s\S]*?<\/ul>/.exec(html)[0];
+  assert.ok(foot.includes("<li>From Wed 7 Oct 2026, each day&#39;s card is frozen before its matches kick off.</li>"), foot);
+  assert.doesNotMatch(foot, /<a\b|href=/, 'the footnotes link nowhere');
+  assert.doesNotMatch(t, /github|reposit|committed|open source/i);
+  assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
   // The old sentence claimed every pick in the record was committed: false for pre-repository days.
   assert.doesNotMatch(t, /Every pick is committed|before its day begins/);
-  assert.ok(html.includes('href="https://github.com/geezerz/betgaffer-site"'));
   // The oldest day comes from opts.days by value, not by its order.
-  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From Wed 30 Sep 2026, each day's card/);
-  // An empty archive drops the "From <date>" clause and still reads as a sentence.
+  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From Wed 30 Sep 2026, each day's card is frozen before its matches kick off\./);
+  // With no day listed there is no date to state: the commitment line is omitted, not left dateless.
   const none = text(renderRecord(REC, { ...OPTS, days: [] }));
-  assert.match(none, /Each day's card is committed to a public repository before its matches kick off/);
+  assert.doesNotMatch(none, /frozen before its matches kick off/);
   assert.doesNotMatch(none, /From \w{3} \d/);
+  assert.match(none, /Figures as of 7 Oct 2026, 06:05 WAT\./, 'the other footnotes stay');
+});
+
+test('footnotes: no item at all renders no empty list', () => {
+  const r = rec((x) => { x.months = []; x.as_of = null; });
+  assert.ok(!/<ul class="rec-foot/.test(renderRecord(r, { ...OPTS, days: [] })));
+  assert.match(renderRecord(r, OPTS), /<ul class="rec-foot[^"]*"[^>]*>\n<li>From Wed 7 Oct 2026/);
 });
 
 test('intro I3: picks are "made before kickoff", not "published before kickoff"', () => {
@@ -460,7 +470,7 @@ test('minor 5: "Record begins" is derived from the oldest month', () => {
 });
 
 test('I4: opts.days is required (a forgotten archive list must not silently unlink every day)', () => {
-  assert.throws(() => renderRecord(REC, { today: '2026-10-07', repo: 'geezerz/betgaffer-site' }), TypeError);
+  assert.throws(() => renderRecord(REC, { today: '2026-10-07' }), TypeError);
   assert.throws(() => renderRecord(null, { today: '2026-10-07' }), TypeError);
 });
 
@@ -484,13 +494,13 @@ test('copy rules: no banned words, no "win rate", nothing ROI-shaped', () => {
   }
 });
 
-test('escaping: hostile scope, status and repo values never reach the HTML raw', () => {
+test('escaping: hostile scope and status values never reach the HTML raw; a repo option is never read', () => {
   const hostile = '<img src=x onerror=alert(1)>"\'&';
   const r = rec((x) => { x.scope = hostile; x.last_6[1].status = hostile; });
   const html = renderRecord(r, OPTS);
   assert.ok(!html.includes('<img'));
   assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;&quot;&#39;&amp;'));
-  assert.throws(() => renderRecord(REC, { ...OPTS, repo: 'x"><script>' }), TypeError);
+  assert.equal(renderRecord(REC, { ...OPTS, repo: 'x"><script>' }), renderRecord(REC, OPTS));
   assert.throws(() => renderRecord(REC, { ...OPTS, today: '2026-13-01' }), TypeError);
 });
 

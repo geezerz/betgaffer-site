@@ -1,8 +1,8 @@
 // Archive day loader (plan S4, S5, S6). Browser module on the /day/<d>/ stubs of older days.
 //
 // The stub's static HTML already shows the day's summary (date, count, ring, receipt) and, without
-// JavaScript, a link to the file's history. With JavaScript this module:
-//   1. reads #day-root[data-src][data-day][data-hash][data-repo][data-prev][data-next];
+// JavaScript, a note asking for it. With JavaScript this module:
+//   1. reads #day-root[data-src][data-day][data-hash][data-prev][data-next];
 //   2. fetches the same-site day file;
 //   3. checks its shape and recomputes its picks_hash (WebCrypto + the shared hash.js). The file's
 //      own hash, the recomputed hash and the index's hash the build verified (data-hash) must all
@@ -12,7 +12,7 @@
 // The fetch bypasses the HTTP cache's freshness (cache: 'no-cache' revalidates), so a regraded
 // file is never shown stale beside a fresh summary. No WebCrypto (an insecure context, an old
 // browser) is a render failure: the receipt was not checked, so it must not be called failed.
-// Any failure keeps the summary and adds an error box with the repository-history link. Compacted
+// Any failure keeps the summary and adds an error box saying what went wrong (no link). Compacted
 // days have no data-src: their summary is all there is, and this module does nothing.
 //
 // Imports resolve to /assets/js/lib/ (the build copies the isomorphic modules there).
@@ -24,12 +24,11 @@ import { relabel } from './stale.js';
 
 const SRC_RE = /^\/days\/(\d{4}-\d{2}-\d{2})\.json$/;
 const HASH_RE = /^sha256:[0-9a-f]{64}$/;
-const REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 
 export const MESSAGES = Object.freeze({
-  fetch: "Couldn't load this day. The raw file is in the repository history:",
-  receipt: 'This card failed its receipt check, so it is not shown. The published file is in the repository history:',
-  render: "This card couldn't be displayed. The raw file is in the repository history:",
+  fetch: "We couldn't load this day's card. Please try again later.",
+  receipt: 'This card failed its receipt check, so it is not shown.',
+  render: "This card couldn't be displayed.",
   loading: 'Loading this day’s fixtures…',
 });
 
@@ -67,11 +66,10 @@ export function readStub(el) {
   const m = SRC_RE.exec(d.src ?? '');
   if (!m || m[1] !== d.day || !isDate(d.day)) throw new TypeError('day.js: data-src must be /days/<data-day>.json');
   if (!HASH_RE.test(d.hash ?? '')) throw new TypeError('day.js: data-hash must be sha256:<64 hex>');
-  if (!REPO_RE.test(d.repo ?? '')) throw new TypeError('day.js: data-repo must be owner/name');
   const prev = optDate(d.prev);
   const next = optDate(d.next);
   if ((prev !== null && !isDate(prev)) || (next !== null && !isDate(next))) throw new TypeError('day.js: data-prev/data-next must be dates');
-  return { src: d.src, day: d.day, hash: d.hash, repo: d.repo, prev, next };
+  return { src: d.src, day: d.day, hash: d.hash, prev, next };
 }
 
 /** The minimal shape renderDay and the hash need; a wrong-day, compacted or newer file is refused. */
@@ -89,7 +87,7 @@ function checkShape(file, day) {
  * Fetch, verify and render one archived day. Resolves to the card's HTML (escaped by renderDay);
  * rejects with a DayLoadError.
  */
-export async function loadDay({ src, day, hash, repo, prev = null, next = null, fetchImpl = globalThis.fetch, sha256hex = webSha256hex }) {
+export async function loadDay({ src, day, hash, prev = null, next = null, fetchImpl = globalThis.fetch, sha256hex = webSha256hex }) {
   let file;
   try {
     const res = await fetchImpl(src, { credentials: 'same-origin', cache: 'no-cache', headers: { Accept: 'application/json' } });
@@ -114,25 +112,19 @@ export async function loadDay({ src, day, hash, repo, prev = null, next = null, 
     throw new DayLoadError('receipt', `${src}: picks_hash mismatch (recomputed ${recomputed}, file ${file.picks_hash}, index ${hash})`);
   }
   try {
-    return renderDay(file, { prevDay: prev, nextDay: next, repo });
+    return renderDay(file, { prevDay: prev, nextDay: next });
   } catch (e) {
     throw new DayLoadError('render', `${src}: ${e.message}`);
   }
 }
 
-function errorBox(doc, kind, stub) {
+function errorBox(doc, kind) {
   const box = doc.createElement('div');
   box.className = 'bg-empty day-error';
   box.setAttribute('role', 'alert');
   const p = doc.createElement('p');
   p.textContent = MESSAGES[kind] ?? MESSAGES.render;
-  const a = doc.createElement('a');
-  a.href = `https://github.com/${stub.repo}/commits/main/days/${stub.day}.json`;
-  a.rel = 'noopener';
-  a.textContent = `days/${stub.day}.json`;
-  const q = doc.createElement('p');
-  q.append(a);
-  box.append(p, q);
+  box.append(p);
   return box;
 }
 
@@ -146,7 +138,7 @@ export async function init({
   try {
     stub = readStub(root);
   } catch {
-    return; // a malformed stub keeps its static summary and noscript link
+    return; // a malformed stub keeps its static summary and noscript note
   }
   const status = doc.createElement('p');
   status.className = 'day-load';
@@ -159,7 +151,7 @@ export async function init({
     relabel(root, nowMs);
   } catch (e) {
     status.remove();
-    root.append(errorBox(doc, e instanceof DayLoadError ? e.kind : 'render', stub));
+    root.append(errorBox(doc, e instanceof DayLoadError ? e.kind : 'render'));
   } finally {
     root.removeAttribute('aria-busy');
   }

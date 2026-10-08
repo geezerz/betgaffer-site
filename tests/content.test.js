@@ -420,11 +420,19 @@ test('terms: not advice, no guarantee, estimates, 18+, not a bookmaker, FCCPA, L
     'reminder',
     'suspend',
     'This site provides no booking codes',
-    'LICENSE-CONTENT.md',
-    'with attribution',
+    'You may quote our published cards and record if you name Bet Gaffer and link to betgaffer.com.',
   ]) assert.ok(t.includes(s), `terms says: ${s}`);
   assert.match(html, /<a href="https:\/\/www\.gamblersanonymous\.org"[^>]*>/);
-  assert.match(html, /href="https:\/\/github\.com\/geezerz\/betgaffer-site\/blob\/main\/LICENSE-CONTENT\.md"/);
+  // Spec §10: no licence link, no repository, no open-source sentence (the repository's own LICENSE
+  // still governs the code); the quoting permission names betgaffer.com, not "this site".
+  for (const gone of ['LICENSE-CONTENT', 'public repository', 'open source', 'with attribution', 'a link to this site']) {
+    assert.ok(!t.includes(gone), `terms no longer says: ${gone}`);
+  }
+  assert.doesNotMatch(html, /github|LICENSE-CONTENT/i);
+  // Every link left on the page is a mailto, a same-site path or Gamblers Anonymous.
+  for (const [, href] of html.matchAll(/<a\b[^>]*\bhref="([^"]*)"/g)) {
+    assert.match(href, /^(?:mailto:|\/(?!\/)|#|https:\/\/www\.gamblersanonymous\.org$)/, href);
+  }
 });
 
 test('terms: ownership and liability wording (review I9, M4)', () => {
@@ -582,12 +590,25 @@ test('features: what it does now and the three launch features in charter wordin
     'every fixture of the day in the competitions we cover',
     'estimates',
     'graded',
-    'public repository',
     'Ask Gaffer', 'explains the reasoning',
     'Lab', 'assemble and stress-test multi-leg slips', 'which legs to drop',
     'Steam Alerts', 'real odds-movement alerts',
     'Not on this site yet',
   ]) assert.ok(t.includes(s), `features says: ${s}`);
+});
+
+test('features (spec §10): no repository card, no GitHub link or mention', () => {
+  const html = renderPage('features');
+  const t = visibleText(html);
+  assert.doesNotMatch(t, /Receipts you can check|reposit|commit\b/i);
+  assert.doesNotMatch(html, /github/i);
+  assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
+  // The page no longer reads cfg.repo: another valid repo renders the identical page (features and terms).
+  for (const name of ['features', 'terms']) {
+    const other = { ...cfg(), repo: 'some-org/other.site' };
+    assert.notEqual(other.repo, cfg().repo);
+    assert.equal(renderPage(name, other), renderPage(name), name);
+  }
 });
 
 test('features: sells time and friction only — no accuracy/outcome claim, no unlaunched surfaces', () => {

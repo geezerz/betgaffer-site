@@ -23,7 +23,7 @@ import { parseArgs } from 'node:util';
 import { requireOperator } from './config.js';
 import { loadSite } from './lib/data.js';
 import { escAttr, escHtml } from './lib/esc.js';
-import { renderDay } from './lib/fixtures.js';
+import { receiptCode, renderDay } from './lib/fixtures.js';
 import { page } from './lib/layout.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
@@ -118,7 +118,7 @@ function tomorrowLine(tomorrow) {
   return `<p class="home-next"><span data-rel-day="${escAttr(tomorrow)}" data-rel="next">${escHtml(`The card for ${fmtDayLong(tomorrow)} is published:`)}</span> <a href="/day/${escAttr(tomorrow)}/">${escHtml(fmtDayLong(tomorrow))}</a></p>`;
 }
 
-function homeBody({ index, choice, days, listedAsc, repo, neighbours }) {
+function homeBody({ index, choice, days, listedAsc, neighbours }) {
   if (!index) {
     return `${pageHead('')}
 <div class="bg-empty home-empty">
@@ -142,17 +142,15 @@ ${strip}`;
     ? `<div class="home-notice" role="note"><p>${escHtml(`No card was published for ${fmtDayLong(today)}.`)} ${escHtml(`This is the most recent card, for ${fmtDayLong(home)}.`)}</p></div>\n`
     : '';
   const { prev, next } = neighbours(home);
-  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next, repo });
+  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next });
   return `${notice}${tomorrowLine(tomorrow)}
 ${strip}
 ${card}`;
 }
 
-function stubBody(entry, { repo, prev, next }) {
+function stubBody(entry, { prev, next }) {
   const d = entry.day;
   const long = fmtDayLong(d);
-  const history = `https://github.com/${repo}/commits/main/days/${d}.json`;
-  const historyLink = `<a href="${escAttr(history)}" rel="noopener">${escHtml(`days/${d}.json`)}</a>`;
   const head = '<header class="day-head">'
     + '<div class="day-head__title">'
     + `<p class="t-lbl day-head__rel" data-rel-day="${escAttr(d)}" data-rel="eyebrow" hidden></p>`
@@ -162,16 +160,16 @@ function stubBody(entry, { repo, prev, next }) {
     + '</div>'
     + ring(entry.accuracy, { dayLabel: `Picks published for ${long}, settled so far`, date: d, relDay: d })
     + '<p class="day-head__note">The ring counts this card’s own published picks. The graded record, every settled pick over time, is on <a href="/our-record/">Our Record</a>.</p>'
-    + `<p class="day-receipt mono">receipt <a class="day-receipt__link" href="${escAttr(history)}" rel="noopener">${escHtml(entry.picks_hash.slice(0, 'sha256:'.length + 12))}</a></p>`
+    + `<p class="day-receipt mono">receipt <span class="mono">${escHtml(receiptCode(entry.picks_hash))}</span></p>`
     + '</header>';
   if (entry.compacted) {
     return `<div id="day-root" class="day-root" data-day="${escAttr(d)}"><div class="day day--stub">${head}`
-      + `<p class="day-stub__note">This day's full card is in the repository history: ${historyLink}</p></div></div>`;
+      + `<p class="day-stub__note">This day's full card is no longer kept on the site.</p></div></div>`;
   }
   return `<div id="day-root" class="day-root" data-day="${escAttr(d)}" data-src="/days/${escAttr(d)}.json" `
-    + `data-hash="${escAttr(entry.picks_hash)}" data-repo="${escAttr(repo)}" data-prev="${escAttr(prev ?? '')}" data-next="${escAttr(next ?? '')}">`
+    + `data-hash="${escAttr(entry.picks_hash)}" data-prev="${escAttr(prev ?? '')}" data-next="${escAttr(next ?? '')}">`
     + `<div class="day day--stub">${head}`
-    + `<noscript><p class="day-stub__note">This day's fixtures load with JavaScript. The raw file is in the repository history: ${historyLink}</p></noscript>`
+    + `<noscript><p class="day-stub__note">Turn on JavaScript to load this day's card.</p></noscript>`
     + '</div></div>';
 }
 
@@ -378,7 +376,6 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const i = listedAsc.indexOf(d);
     return { prev: i > 0 ? listedAsc[i - 1] : null, next: i >= 0 && i < listedAsc.length - 1 ? listedAsc[i + 1] : null };
   };
-  const repo = config.repo;
   const year = Number(lagosToday(now).slice(0, 4));
   const today = index ? index.today : lagosToday(now);
   const staleAfterHours = Number.isFinite(config.stale_after_hours) && config.stale_after_hours > 0 ? config.stale_after_hours : 6;
@@ -395,7 +392,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     title: 'Football predictions',
     description: 'The day’s football in the competitions Bet Gaffer covers: at most one recommended pick per fixture, '
       + 'with its probability, graded in public after full time.',
-    body: homeBody({ index, choice, days, listedAsc, repo, neighbours }),
+    body: homeBody({ index, choice, days, listedAsc, neighbours }),
     scripts: [SCRIPT.stale],
     mainData: {
       generatedAt: index ? index.generated_at : null,
@@ -411,8 +408,8 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const { prev, next } = neighbours(d);
     const full = d === choice.home || d === choice.tomorrow;
     const body = full
-      ? renderDay(days.get(d), { prevDay: prev, nextDay: next, repo })
-      : stubBody(entry, { repo, prev, next });
+      ? renderDay(days.get(d), { prevDay: prev, nextDay: next })
+      : stubBody(entry, { prev, next });
     const isStubWithFetch = !full && !entry.compacted;
     add({
       path: `/day/${d}/`,
@@ -430,7 +427,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     path: '/our-record/',
     title: 'Our Record',
     description: 'Every graded Bet Gaffer card pick: each figure with its count, its period and its status.',
-    body: renderRecord(index ? index.record : null, { today, days: listedAsc, repo }),
+    body: renderRecord(index ? index.record : null, { today, days: listedAsc }),
     scripts: [SCRIPT.stale], // relabels the in-progress day; the late-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
   });

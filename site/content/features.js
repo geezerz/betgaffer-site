@@ -13,8 +13,7 @@
 //   cfg.pricing.show_prices (S9) swaps the "prices later" sentence for the tier table.
 //   waitlistHtml (Task 7's waitlistForm()) is trusted HTML, placed verbatim under "Founding waitlist".
 
-import { REPO_RE } from '../config.js';
-import { escAttr, escHtml } from '../lib/esc.js';
+import { escHtml } from '../lib/esc.js';
 import { fmtDayLong, isDate } from '../lib/time.js';
 import { POSITIONING, identityCard, lastUpdated, operatorOf } from './common.js';
 
@@ -92,11 +91,7 @@ export function render(cfg, { waitlistHtml } = {}) {
   if (waitlistHtml !== undefined && typeof waitlistHtml !== 'string') {
     throw new TypeError('features: opts.waitlistHtml must be an HTML string');
   }
-  if (typeof cfg.repo !== 'string' || !REPO_RE.test(cfg.repo)) {
-    throw new TypeError(`features: cfg.repo must be "owner/name", got ${JSON.stringify(cfg.repo)}`);
-  }
   const pricing = cfg.pricing && typeof cfg.pricing === 'object' ? cfg.pricing : {};
-  const repoUrl = `https://github.com/${cfg.repo}`;
 
   const now = [
     card('01', 'One pick per fixture',
@@ -107,8 +102,6 @@ export function render(cfg, { waitlistHtml } = {}) {
       '<p>Every probability is an estimate, and some picks will lose. They stay on the page at the same size as the rest.</p>'),
     card('04', 'A public, graded record',
       '<p>Every pick is graded against the real result once the match is settled. <a href="/our-record/">Our Record</a> shows each figure with its sample size and the period it covers.</p>'),
-    card('05', 'Receipts you can check',
-      `<p>Every published card is a commit in a <a href="${escAttr(repoUrl)}" rel="noopener">public repository</a>. Each pick carries the time it was frozen, so you can check when it was published against kickoff.</p>`),
   ].join('\n');
 
   const soon = [

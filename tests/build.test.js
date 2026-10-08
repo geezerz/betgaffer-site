@@ -589,7 +589,7 @@ describe('archive: every listed day gets a page; older days are stubs', () => {
   });
   after(() => ws.cleanup());
 
-  test('a full older day is a stub: summary ring, receipt, #day-root with its source, hash and neighbours, noscript history link', async () => {
+  test('a full older day is a stub: summary ring, plain receipt code, #day-root with its source, hash and neighbours, noscript note', async () => {
     const html = await read(ws, 'day/2026-10-06/index.html');
     const doc = parse(html);
     const root = find(doc, (n) => n.attrs.id === 'day-root');
@@ -597,27 +597,34 @@ describe('archive: every listed day gets a page; older days are stubs', () => {
     assert.equal(root.attrs['data-src'], '/days/2026-10-06.json');
     assert.equal(root.attrs['data-day'], '2026-10-06');
     assert.match(root.attrs['data-hash'], /^sha256:[0-9a-f]{64}$/);
-    assert.equal(root.attrs['data-repo'], 'geezerz/betgaffer-site');
+    assert.equal('data-repo' in root.attrs, false, 'the stub no longer names the repository');
     assert.equal(root.attrs['data-prev'], '2026-10-05');
     assert.equal(root.attrs['data-next'], '2026-10-07');
     const ring = find(root, (n) => n.attrs['data-figure'] === 'ring');
     assert.match(textOf(ring), /2 of 3 landed/);
+    const receipt = find(root, (n) => /\bday-receipt\b/.test(n.attrs.class ?? ''));
+    assert.equal(textOf(receipt).replace(/\s+/g, ' ').trim(), `receipt ${root.attrs['data-hash'].slice(7, 19)}`);
+    assert.equal(find(receipt, (n) => n.tag === 'a'), null, 'the receipt code is plain text');
     const ns = find(doc, (n) => n.tag === 'noscript');
     assert.ok(ns);
-    assert.ok(find(ns, (n) => n.tag === 'a' && n.attrs.href === 'https://github.com/geezerz/betgaffer-site/commits/main/days/2026-10-06.json'));
+    assert.equal(textOf(ns).trim(), "Turn on JavaScript to load this day's card.");
+    assert.equal(find(ns, (n) => n.tag === 'a'), null, 'the noscript note links nowhere');
     assert.ok(find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/day.js'));
     // A stub carries no fixture rows: they come from the fetched file.
     assert.equal(findAll(doc, (n) => n.attrs.class === 'fx').length, 0);
     assert.ok(html.length < 20000, `stub is small (${html.length} bytes)`);
   });
 
-  test('a compacted day is a summary only, with the repository-history link and no fetch', async () => {
+  test('a compacted day is a summary only, saying its full card is no longer kept, with no link and no fetch', async () => {
     const doc = parse(await read(ws, 'day/2026-10-05/index.html'));
     const root = find(doc, (n) => n.attrs.id === 'day-root');
     assert.ok(root);
     assert.equal(root.attrs['data-src'], undefined, 'nothing to fetch');
-    assert.ok(find(doc, (n) => n.tag === 'a' && n.attrs.href === 'https://github.com/geezerz/betgaffer-site/commits/main/days/2026-10-05.json'));
-    assert.match(textOf(root), /full card is in the repository history/);
+    const note = find(root, (n) => /\bday-stub__note\b/.test(n.attrs.class ?? ''));
+    assert.equal(textOf(note).trim(), "This day's full card is no longer kept on the site.");
+    // The only link left in the stub is the ring note's Our Record link.
+    assert.deepEqual(findAll(root, (n) => n.tag === 'a').map((a) => a.attrs.href), ['/our-record/']);
+    assert.match(textOf(root), /receipt a{12}/);
     assert.match(textOf(root), /30 of 36 landed/);
     assert.equal(find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/day.js'), null);
   });
@@ -649,7 +656,7 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
   after(() => ws.cleanup());
 
   const respond = (body, status = 200) => async () => ({ ok: status >= 200 && status < 300, status, json: async () => (typeof body === 'string' ? JSON.parse(body) : body) });
-  const stub = (o = {}) => ({ src: '/days/2026-10-06.json', day: '2026-10-06', hash: edge.picks_hash, repo: 'geezerz/betgaffer-site', prev: '2026-10-05', next: '2026-10-07', ...o });
+  const stub = (o = {}) => ({ src: '/days/2026-10-06.json', day: '2026-10-06', hash: edge.picks_hash, prev: '2026-10-05', next: '2026-10-07', ...o });
 
   test('the WebCrypto digest matches node:crypto', async () => {
     assert.equal(await dayjs.webSha256hex('Bet Gaffer ★'), nodeSha256('Bet Gaffer ★'));
@@ -708,19 +715,21 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
 
   test('readStub accepts only a same-site day path and a well-formed stub', () => {
     const el = (ds) => ({ dataset: ds });
-    const ok = { src: '/days/2026-10-06.json', day: '2026-10-06', hash: edge.picks_hash, repo: 'geezerz/betgaffer-site', prev: '2026-10-05', next: '' };
-    assert.equal(dayjs.readStub(el(ok)).src, '/days/2026-10-06.json');
-    assert.equal(dayjs.readStub(el(ok)).next, null);
+    const ok = { src: '/days/2026-10-06.json', day: '2026-10-06', hash: edge.picks_hash, prev: '2026-10-05', next: '' };
+    assert.deepEqual(dayjs.readStub(el(ok)), { src: '/days/2026-10-06.json', day: '2026-10-06', hash: edge.picks_hash, prev: '2026-10-05', next: null });
     for (const src of ['https://evil.example/days/2026-10-06.json', '//evil.example/x.json', '/days/2026-10-07.json', '/days/../index.json']) {
       assert.throws(() => dayjs.readStub(el({ ...ok, src })), src);
     }
-    assert.throws(() => dayjs.readStub(el({ ...ok, repo: 'a/b?c' })));
     assert.throws(() => dayjs.readStub(el({ ...ok, hash: 'sha256:xyz' })));
+    // A stub built before spec §10 still carries data-repo; it is ignored, never required or read.
+    assert.deepEqual(dayjs.readStub(el({ ...ok, repo: 'a/b?c' })), dayjs.readStub(el(ok)));
   });
 
-  test('the user-facing messages are the plan\'s', () => {
-    assert.match(dayjs.MESSAGES.receipt, /^This card failed its receipt check/);
-    assert.match(dayjs.MESSAGES.fetch, /^Couldn't load this day\. The raw file is in the repository history:/);
+  test('the user-facing messages are the spec\'s, and none points to a repository', () => {
+    assert.equal(dayjs.MESSAGES.fetch, "We couldn't load this day's card. Please try again later.");
+    assert.equal(dayjs.MESSAGES.receipt, 'This card failed its receipt check, so it is not shown.');
+    assert.equal(dayjs.MESSAGES.render, "This card couldn't be displayed.");
+    for (const m of Object.values(dayjs.MESSAGES)) assert.doesNotMatch(m, /reposit|history|github|raw file/i, m);
   });
 });
 

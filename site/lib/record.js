@@ -14,12 +14,10 @@
 
 import { escHtml, escAttr } from './esc.js';
 import { isDate, isIsoZ, fmtDayLong, fmtStamp } from './time.js';
-import siteConfig from '../config.js';
 
 const Z95 = 1.959964;
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
   'September', 'October', 'November', 'December'];
-const REPO_RE = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
 
 /** Ledger status -> page word and chip modifier. Unknown statuses render escaped, never dropped. */
 const STATUS = {
@@ -349,22 +347,22 @@ function intro() {
 </header>`;
 }
 
-function footnotes(rec, repo, listed) {
-  const url = `https://github.com/${repo}`;
+function footnotes(rec, listed) {
   // months[] is newest first, but take the minimum by value rather than trust the order.
   const oldestMonth = rec.months.reduce((m, g) => (m === null || g.period < m ? g.period : m), null);
   const begins = oldestMonth === null
     ? ''
     : `<li>Record begins ${escHtml(monthName(oldestMonth))} — earlier months were not predicted before kickoff and are not published.</li>\n`;
   const asOf = rec.as_of === null ? '' : `<li>Figures as of ${escHtml(fmtStamp(rec.as_of))}.</li>\n`;
-  // The repository holds only the listed days; the ledger figures reach further back.
+  // The commitment is dated from the oldest listed day (the ledger figures reach further back);
+  // with no day listed there is no date to state, so the line is omitted (spec §10).
   const oldestDay = [...listed].sort()[0];
-  const commit = oldestDay === undefined
-    ? 'Each day\'s card is committed'
-    : `From ${fmtDayLong(oldestDay)}, each day's card is committed`;
-  return `<ul class="rec-foot t-s" role="list">
-${begins}${asOf}<li>${escHtml(commit)} to a public repository before its matches kick off — each row carries its freeze time, and a fixture first seen less than 10 minutes before kickoff carries no pick. The figures above come from the accuracy ledger and include days before the repository began. <a href="${escAttr(url)}">${escHtml(`github.com/${repo}`)}</a></li>
-</ul>`;
+  const frozen = oldestDay === undefined
+    ? ''
+    : `<li>${escHtml(`From ${fmtDayLong(oldestDay)}, each day's card is frozen before its matches kick off.`)}</li>\n`;
+  const items = `${begins}${asOf}${frozen}`;
+  return items === '' ? '' : `<ul class="rec-foot t-s" role="list">
+${items}</ul>`;
 }
 
 /** opts.days -> Set of listed dates. Required: a forgotten list would silently unlink every day. */
@@ -386,14 +384,10 @@ function toSet(days) {
  * @param {object} opts
  * @param {string} opts.today   the index's Lagos 'YYYY-MM-DD' today (labels the strip's in-progress day)
  * @param {Set<string>|Map|string[]} opts.days  REQUIRED: dates listed in index.days ([] when none) —
- *   strip days link to /day/<d>/ only when listed; the oldest dates the repository footnote
- * @param {string} [opts.repo]  'owner/name' of the public receipts repo (default config.repo)
+ *   strip days link to /day/<d>/ only when listed; the oldest dates the frozen-card footnote
  */
-export function renderRecord(record, { today, days, repo = siteConfig.repo } = {}) {
+export function renderRecord(record, { today, days } = {}) {
   if (!isDate(today)) throw new TypeError(`renderRecord: today must be a real YYYY-MM-DD date, got ${String(today)}`);
-  if (typeof repo !== 'string' || !REPO_RE.test(repo)) {
-    throw new TypeError(`renderRecord: repo must be "owner/name", got ${JSON.stringify(repo)}`);
-  }
   const listed = toSet(days);
 
   if (record === null) {
@@ -420,5 +414,5 @@ ${headline(record)}
 </div>
 ${strip(record, { today, listed })}
 ${months(record)}
-${footnotes(record, repo, listed)}`;
+${footnotes(record, listed)}`;
 }

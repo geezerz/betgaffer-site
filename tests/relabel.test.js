@@ -221,7 +221,7 @@ describe('day.js init on built stubs (fake DOM)', () => {
     assert.equal(doc.querySelector('[data-rel="eyebrow"]').textContent, 'Today');
   });
 
-  test('a tampered file keeps the summary and shows the receipt failure with the history link', async () => {
+  test('a tampered file keeps the summary and shows the receipt failure, with no link', async () => {
     const doc = fakeDocument(await page('day/2026-10-06/index.html'));
     const bad = structuredClone(edge);
     bad.fixtures.find((f) => f.pick).pick.label = 'edited';
@@ -230,8 +230,8 @@ describe('day.js init on built stubs (fake DOM)', () => {
     const box = root.querySelector('.day-error');
     assert.ok(box);
     assert.equal(box.getAttribute('role'), 'alert');
-    assert.match(box.textContent, /^This card failed its receipt check/);
-    assert.equal(box.querySelector('a').getAttribute('href'), 'https://github.com/geezerz/betgaffer-site/commits/main/days/2026-10-06.json');
+    assert.equal(box.textContent, 'This card failed its receipt check, so it is not shown.');
+    assert.equal(box.querySelector('a'), null, 'the error box links nowhere');
     assert.ok(root.querySelector('[data-figure="ring"]'), 'the verified summary stays');
     assert.equal(root.querySelectorAll('li').filter((l) => l.hasAttribute('data-fx')).length, 0, 'no unverified row is shown');
     assert.equal(root.querySelector('.day-load'), null, 'the loading line is gone');
@@ -240,11 +240,12 @@ describe('day.js init on built stubs (fake DOM)', () => {
   test('a fetch failure shows the load message; no WebCrypto shows the render message', async () => {
     const a = fakeDocument(await page('day/2026-10-06/index.html'));
     await dayjs.init({ doc: a, fetchImpl: respond(null, 404), nowMs: FAR });
-    assert.match(a.querySelector('.day-error').textContent, /^Couldn't load this day/);
+    assert.equal(a.querySelector('.day-error').textContent, "We couldn't load this day's card. Please try again later.");
+    assert.equal(a.querySelector('.day-error').querySelector('a'), null, 'the load failure links nowhere');
     const b = fakeDocument(await page('day/2026-10-06/index.html'));
     await dayjs.init({ doc: b, fetchImpl: respond(edge), sha256hex: (t) => dayjs.webSha256hex(t, null), nowMs: FAR });
-    assert.match(b.querySelector('.day-error').textContent, /^This card couldn't be displayed/);
-    assert.doesNotMatch(b.querySelector('.day-error').textContent, /receipt check/);
+    assert.equal(b.querySelector('.day-error').textContent, "This card couldn't be displayed.");
+    assert.equal(b.querySelector('.day-error').querySelector('a'), null, 'the render failure links nowhere');
   });
 
   test('a compacted day and a page without a stub do nothing', async () => {

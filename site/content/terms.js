@@ -4,8 +4,7 @@
 // described as working (4 of 4 booking adapters are stubs). Responsible play is folded in here as a
 // short section (spec §9: not a separate document).
 
-import { REPO_RE } from '../config.js';
-import { escAttr, escHtml } from '../lib/esc.js';
+import { escHtml } from '../lib/esc.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
 export const LAST_UPDATED = '2026-10-07';
@@ -21,9 +20,8 @@ const GA = '<a href="https://www.gamblersanonymous.org" rel="noopener">Gamblers 
 const FCCPA = 'Federal Competition and Consumer Protection Act 2018';
 const COPY = String.fromCharCode(0xa9);
 
-function sections(op, repo) {
+function sections(op) {
   const email = mailto(op.contact_email);
-  const licence = `https://github.com/${repo}/blob/main/LICENSE-CONTENT.md`;
   return [
     {
       id: 'who-we-are',
@@ -71,14 +69,13 @@ function sections(op, repo) {
 <li>try to break, probe or overload the site or the waitlist;</li>
 <li>submit someone else's email address to the waitlist.</li>
 </ul>
-<p>You may quote the published cards and the record with attribution to Bet Gaffer and a link to this site.</p>`,
+<p>You may quote our published cards and record if you name Bet Gaffer and link to betgaffer.com.</p>`,
       launch: `<p>The same rules, and also: no sharing or reselling access to your account, no more than one account per person, and no attempt to get around a plan's limits.</p>`,
     },
     {
       id: 'intellectual-property',
       title: 'Intellectual property',
-      now: `<p>Our probabilities, picks, record and the site's text are ${COPY} ${escHtml(op.legal_name)}. Fixture details, team and competition names, and bookmaker prices belong to their owners.</p>
-<p>The terms for the public repository are stated in <a href="${escAttr(licence)}" rel="noopener">LICENSE-CONTENT.md</a>: the site code is open source, and the published cards and copy may be quoted with attribution.</p>`,
+      now: `<p>Our probabilities, picks, record and the site's text are ${COPY} ${escHtml(op.legal_name)}. Fixture details, team and competition names, and bookmaker prices belong to their owners.</p>`,
       launch: `<p>The same, and content behind a paid plan is licensed to you for your own personal use, not for resale or redistribution.</p>`,
     },
     {
@@ -146,18 +143,14 @@ function sections(op, repo) {
 }
 
 /** Section titles in order (build tests check each appears in the static HTML). */
-export const SECTION_TITLES = Object.freeze(sections({ contact_email: 'x@x.x', legal_name: 'x', address: 'x' }, 'x/y').map((s) => s.title));
+export const SECTION_TITLES = Object.freeze(sections({ contact_email: 'x@x.x', legal_name: 'x', address: 'x' }).map((s) => s.title));
 
 /**
- * @param {object} cfg  site config; cfg.operator must carry legal_name, address, contact_email (S8);
- *                      cfg.repo ('owner/name') locates LICENSE-CONTENT.md
+ * @param {object} cfg  site config; cfg.operator must carry legal_name, address, contact_email (S8)
  * @returns {string} body fragment for /terms/
  */
 export function render(cfg) {
   const op = operatorOf(cfg);
-  if (typeof cfg.repo !== 'string' || !REPO_RE.test(cfg.repo)) {
-    throw new TypeError(`terms: cfg.repo must be "owner/name", got ${JSON.stringify(cfg.repo)}`);
-  }
   return legalDoc({
     op,
     title: 'Terms of use',
@@ -166,6 +159,6 @@ export function render(cfg) {
     email: op.contact_email,
     contactHeading: 'Questions about these terms',
     contactNote: 'We reply to every message about these terms.',
-    sections: sections(op, cfg.repo),
+    sections: sections(op),
   });
 }
