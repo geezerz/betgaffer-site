@@ -379,8 +379,9 @@ function dayNav(prevDay, nextDay) {
 }
 
 /**
- * The day card: header + ring + receipt, the toolbar slot, `beforeList`, the day bar, ONE list of
- * every row by kickoff, "How this card was built", day links (spec §5).
+ * The day card: header + ring + receipt, the toolbar slot, the day bar, ONE list of every row by
+ * kickoff, "How this card was built", day links (spec §5). The founding card is not part of it: it
+ * sits under the site header on every page (layout.page()).
  *
  * @param {object} day  a validated FULL day file (a compacted day has no card and throws)
  * @param {object} o
@@ -390,13 +391,10 @@ function dayNav(prevDay, nextDay) {
  * Former isToday / isTomorrow options are ignored.
  * @param {string|null} [o.prevDay] 'YYYY-MM-DD' → link to /day/<d>/
  * @param {string|null} [o.nextDay] 'YYYY-MM-DD' → link to /day/<d>/
- * @param {string} [o.beforeList] TRUSTED HTML placed after the toolbar slot, before the day bar
- *   (before the empty state on a day with no fixtures). Not escaped: callers pass their own markup.
  * The receipt line is plain text — frozen stamp, grades stamp, 12-hex receipt code — with no link.
  * @returns {string} HTML fragment
  */
-export function renderDay(day, { prevDay = null, nextDay = null, beforeList = '' } = {}) {
-  if (typeof beforeList !== 'string') throw new TypeError('renderDay: beforeList must be a string of HTML');
+export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   if (day === null || typeof day !== 'object') throw new TypeError('renderDay: day must be an object');
   if (!isDate(day.lagos_day)) throw new TypeError('renderDay: day.lagos_day must be YYYY-MM-DD');
   if (!Array.isArray(day.fixtures)) throw new TypeError(`renderDay: ${day.lagos_day} has no fixtures array (a compacted day has no card)`);
@@ -439,11 +437,10 @@ export function renderDay(day, { prevDay = null, nextDay = null, beforeList = ''
     + `<span class="mono">${escHtml(code)}</span></p>`
     + '</header>';
 
-  // Nothing to search or count on an empty day: no toolbar slot, day bar or list; the caller's
-  // beforeList (the build's founding card) keeps its place above the empty state.
+  // Nothing to search or count on an empty day: no toolbar slot, day bar or list.
   const body = n === 0
-    ? `${beforeList}<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
-    : DAY_TOOLS + beforeList + dayBar(d, active.length)
+    ? `<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
+    : DAY_TOOLS + dayBar(d, active.length)
       + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule)).join('')}</ol>`;
 
   return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day, rule)}${dayNav(prev, next)}</div>`;

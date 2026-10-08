@@ -500,20 +500,11 @@ test('toolbar slot: empty, hidden, after the header and before the day bar and l
   assert.ok(html.indexOf('<p class="day-bar">') < html.indexOf('<ol class="fx-list"'), 'day bar before the list');
 });
 
-test('beforeList: trusted HTML placed between the toolbar slot and the day bar; must be a string', () => {
+test('the day card has no beforeList slot: the founding card lives under the header (layout.page()), so the option is gone', () => {
   const MARK = '<section class="probe">before the list</section>';
-  const html = renderDay(EDGE, opts({ beforeList: MARK, prevDay: '2026-10-05', nextDay: '2026-10-07' }));
-  const at = html.indexOf(MARK);
-  assert.ok(at > html.indexOf(TOOLS), 'after the toolbar slot');
-  assert.ok(at < html.indexOf('<p class="day-bar">'), 'before the day bar');
-  assert.equal(html.split(MARK).length - 1, 1, 'once');
-  assert.equal(html.replace(MARK, ''), EDGE_HTML, 'nothing else changes');
-  assert.equal(renderDay(EDGE, opts({ beforeList: '' })), renderDay(EDGE, opts()), 'empty string = absent');
-  for (const bad of [null, 1, {}, ['x'], true]) {
-    assert.throws(() => renderDay(EDGE, opts({ beforeList: bad })), TypeError, JSON.stringify(bad));
-  }
+  assert.equal(renderDay(EDGE, opts({ beforeList: MARK, prevDay: '2026-10-05', nextDay: '2026-10-07' })), EDGE_HTML, 'an old caller\'s beforeList is ignored, never rendered');
+  assert.doesNotMatch(readFileSync(new URL('../site/lib/fixtures.js', import.meta.url), 'utf8'), /beforeList/);
 });
-
 test('day bar: date tagged for relabelling, non-withdrawn count, "by kickoff"', () => {
   assert.ok(EDGE_HTML.includes('<p class="day-bar"><span data-rel-day="2026-10-06" data-rel="daybar">Tue 6 Oct 2026</span> · 23 fixtures · by kickoff</p>'));
   const one = structuredClone(EDGE);
@@ -596,13 +587,8 @@ test('zero fixtures: header, empty ring and an explicit empty state, no groups',
   assert.match(t, /No results yet/);
   // Nothing to search or count: no toolbar slot, day bar or list.
   assert.ok(!/data-day-tools|day-bar|data-rel="daybar"|<ol\b|<ul\b/.test(html));
-  // beforeList (the build's founding card) is still placed, after the header, before the empty state.
-  const MARK = '<section class="probe">before the list</section>';
-  const withCard = renderDay(day, opts({ beforeList: MARK }));
-  const at = withCard.indexOf(MARK);
-  assert.ok(at > withCard.indexOf('</header>') && at < withCard.indexOf('<div class="bg-empty day-empty">'), 'between header and empty state');
-  assert.equal(withCard.replace(MARK, ''), html);
-  assert.throws(() => renderDay(day, opts({ beforeList: 5 })), TypeError);
+  // The empty state follows the header directly.
+  assert.ok(html.indexOf('</header><div class="bg-empty day-empty">') > 0, 'header, then the empty state');
 });
 
 test('rejects what it cannot render honestly', () => {
