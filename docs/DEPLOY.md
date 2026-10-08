@@ -13,17 +13,25 @@ Commands are written for Git Bash (or any POSIX shell) with Node.js 22.
 
 ## 1. DNS: move betgaffer.com to Cloudflare
 
-The domain is registered with **INWX GmbH** (per RDAP). Its current nameservers, `nsc.go54.com` and
-`nsd.go54.com`, do not answer, so the domain resolves nowhere today.
+The registrar is **INWX GmbH** (per RDAP), sold through a reseller: the domain is managed in the
+**Go54** (formerly WhoGoHost) client area unless you hold your own INWX account. The current
+nameservers, `nsc.go54.com` and `nsd.go54.com`, serve Go54's default hosting records (`A` for the
+apex, `www` and `mail`, an `MX` and an SPF `TXT`). None of them is wanted.
 
-- [ ] Cloudflare dashboard → **Add a domain** → `betgaffer.com` → **Free** plan.
-- [ ] Skip importing records (there are none worth keeping).
+- [ ] Cloudflare dashboard → Domains → **Onboard a domain** → `betgaffer.com` → **Free** plan.
+- [ ] Review DNS records: **delete every imported record**. Pages (section 4) and Email Routing
+      (section 8) create the right ones; a leftover apex/`www` `A` record blocks the custom domain,
+      and a leftover `MX` blocks Email Routing.
 - [ ] Note the two nameservers Cloudflare assigns (`<name>.ns.cloudflare.com`).
-- [ ] At INWX: domain → **Nameservers** → replace `nsc.go54.com` / `nsd.go54.com` with the two
-      Cloudflare nameservers. Remove any DNSSEC DS record at INWX first (re-enable DNSSEC later
-      from Cloudflare → DNS → Settings, and add the DS record it gives you at INWX).
-- [ ] Wait until Cloudflare shows the zone as **Active** (minutes to a day). Check with
-      `nslookup -type=ns betgaffer.com 1.1.1.1`.
+- [ ] DNSSEC must be off before the switch: `nslookup -type=DS betgaffer.com 1.1.1.1` returns no DS
+      record (it is unsigned today). If one appears, remove it at the registrar first (INWX: menu
+      **DNSSEC**). Re-enable DNSSEC later from Cloudflare → DNS → Settings and add its DS record at
+      the registrar.
+- [ ] Change the nameservers to the two Cloudflare ones. Go54: **Domains → My Domains → ⋮ → Manage
+      Nameservers → Change Nameservers**. Own INWX account: **Domain list → action menu → External
+      name servers → Nameserver → External Nameservers** → Save (INWX: 3–48 hours).
+- [ ] Wait until Cloudflare shows the zone as **Active** (minutes to a day; a Free zone still
+      Pending after 28 days is deleted). Check with `nslookup -type=ns betgaffer.com 1.1.1.1`.
 
 ## 2. Fill in the operator's identity
 
@@ -34,9 +42,9 @@ The legal pages name the operator, so **the build refuses to run** until these a
 |---|---|---|
 | `legal_name` | yes | The person or company that runs Bet Gaffer |
 | `address` | yes | A postal address; it is published on the legal pages |
-| `contact_email` | yes | Plain address, e.g. `hello@betgaffer.com` (set up in section 8) |
+| `contact_email` | yes | Plain address: `contact@betgaffer.com` (set up in section 8) |
 | `rc_number` | no | CAC registration number, if any |
-| `privacy_email` | no | Defaults to `contact_email`; e.g. `privacy@betgaffer.com` |
+| `privacy_email` | no | Leave `null`: it defaults to `contact_email`, so one address serves both |
 | `mailbox_provider` | no | Who hosts the inbox mail is forwarded to, e.g. `Google (Gmail)`; named in the privacy policy |
 
 - [ ] Fill the fields, run the tests and a local build, then commit and push:
@@ -54,15 +62,17 @@ build failed: site/config.js: operator identity incomplete; set operator.legal_n
 
 These values are public the moment they are pushed: this repository is public.
 
-**Prices.** `pricing.tiers` in `site/config.js` is empty and `pricing.show_prices` is `false`, so
-the features page states the pricing model without figures. To publish prices, fill `tiers`
-(`{ name, monthly }`, monthly in whole naira) and set `show_prices: true` in the same commit. The
-build refuses `show_prices: true` while `tiers` is empty.
+**Prices.** `pricing.tiers` in `site/config.js` holds the published plans (`{ name, monthly }`,
+monthly in whole naira) and `pricing.show_prices` is `true`. To withdraw the figures, set
+`show_prices: false`; the features page then states the pricing model without them. The build
+refuses `show_prices: true` while `tiers` is empty.
 
 ## 3. Create the Pages project
 
-- [ ] Workers & Pages → **Create** → **Pages** → **Connect to Git** → authorise GitHub for
-      `geezerz/betgaffer-site` only.
+- [ ] Workers & Pages → **Create application** → **Pages** tab → **Import an existing Git
+      repository** (older wording: Connect to Git). The screen opens on Workers; do not create a
+      Worker. Install the **Cloudflare Workers and Pages** GitHub app with **Only select
+      repositories** → `geezerz/betgaffer-site`.
 - [ ] Production branch: `main`.
 - [ ] Framework preset: **None**. Build command: `npm run build`. Build output directory: `dist`.
       Root directory: `/` (leave empty).
@@ -70,26 +80,35 @@ build refuses `show_prices: true` while `tiers` is empty.
       build variable `NODE_VERSION` = `22`.
 - [ ] Save and deploy. The first build must succeed (section 2 done). The site is now on
       `https://<project>.pages.dev`.
-- [ ] **Preview deployments OFF:** Settings → Builds → **Branch control** → preview branches:
-      **None** (production branch only). Pushes to other branches must never get a public URL.
-- [ ] **Build-failure notifications ON:** Notifications → Add → **Pages** → project updates →
-      event **Deployment failed** → your email. A build that refuses bad data otherwise leaves the
-      site silently stale.
+- [ ] **Preview deployments OFF:** Settings → Build → **Branch control** (Cloudflare's docs: Builds &
+      deployments → Configure Production deployments) → keep **Enable automatic production branch
+      deployments** ticked → Preview branch: **None**. Pushes to other branches must never get a
+      public URL.
+- [ ] **Build-failure notifications ON:** Alerts (older: Notifications) → **Create an Alert** →
+      **Pages: Project updates** → this project, environment Production, event **Deployment
+      failed** → your email. A build that refuses bad data otherwise leaves the site silently stale.
+- [ ] **Fail open:** Settings → Runtime → **Fail open / closed** → Fail open, so the pages stay up
+      if the Free plan's daily Functions allowance is ever exhausted (only the waitlist stops).
 
 ## 4. Custom domain
 
-- [ ] Pages project → **Custom domains** → add `betgaffer.com`. Cloudflare creates the DNS record.
-- [ ] `www`: DNS → add a **proxied** record `www` (CNAME to `betgaffer.com`), then Rules →
-      **Redirect Rules** → template **Redirect from WWW to root** (301, keep the path and query).
-      The waitlist only answers on the apex, so `www` must redirect, not serve.
+- [ ] Pages project → **Custom domains** → **Set up a domain** → `betgaffer.com`, then again for
+      `www.betgaffer.com`. Cloudflare creates both DNS records; never add a `CNAME` to `pages.dev`
+      by hand (it fails with 522).
+- [ ] Rules → **Overview** → **Create rule** → **Redirect Rule** → Wildcard pattern, Request URL
+      `http*://www.betgaffer.com/*` → Target URL `https://betgaffer.com/${2}`, **301**, **Preserve
+      query string** on (or the template **Redirect from WWW to root**, which matches `https://www.*`
+      only). The waitlist only answers on the apex, so `www` must redirect, not serve.
+- [ ] SSL/TLS → Edge Certificates: **Always Use HTTPS** on, **Minimum TLS Version** 1.2. Leave
+      Cloudflare's HSTS setting off (the site sends its own header) and never enable preload.
 
 ## 5. Waitlist storage and settings
 
-- [ ] Storage & Databases → **KV** → create namespace `betgaffer-waitlist`.
+- [ ] Storage & databases → **Workers KV** → **Create instance** → `betgaffer-waitlist`.
 - [ ] Pages project → Settings → **Bindings** (older dashboards: Settings → Functions → KV
       namespace bindings) → **Production** → KV namespace: variable name `WAITLIST`, namespace
       `betgaffer-waitlist`. Do not bind it in Preview.
-- [ ] Settings → **Variables and Secrets** → **Production**:
+- [ ] Settings → **Variables and Secrets** → **Production** → **Add**:
   - [ ] `WAITLIST_HOST` = `betgaffer.com` (plain text). Any other host, including
         `<project>.pages.dev`, gets 503 from the waitlist — those hosts bypass the WAF rule.
   - [ ] `WAITLIST_SECRET` = 32 or more random characters, type **Secret** (encrypted). Generate one:
@@ -98,8 +117,8 @@ build refuses `show_prices: true` while `tiers` is empty.
 node -e "console.log(require('crypto').randomBytes(36).toString('base64url'))"
 ```
 
-- [ ] Bindings and variables apply to **new** deployments only: Deployments → latest → **Retry
-      deployment** (or push a commit).
+- [ ] Bindings and variables apply to **new** deployments only: Deployments → latest production →
+      **⋯** → **Retry deployment** (or push a commit).
 
 Without the binding, the secret (or a secret under 32 characters) or `WAITLIST_HOST`, the waitlist
 answers "temporarily unavailable" (503). It never pretends to succeed.
@@ -109,37 +128,53 @@ answers "temporarily unavailable" (503). It never pretends to succeed.
 These keep the privacy policy true ("this site sets no cookies") and keep the contact address
 readable without JavaScript.
 
-- [ ] **WAF rate-limiting rule** (Security → WAF → Rate limiting rules; the Free plan allows one):
+- [ ] **WAF rate-limiting rule** (Security → **Security rules** → Create rule → **Rate limiting
+      rules**; older dashboards: Security → WAF → Rate limiting rules; the Free plan allows one):
   - match: URI Path equals `/api/waitlist` (also Method equals `POST` where your plan offers the
-    Method field — the Free plan matches on path only, which is fine: a page view costs one GET);
+    Method field — the Free plan matches on Path and Verified Bot only, which is fine: a page view
+    costs one GET);
   - counting: per IP, **10 requests per 10 seconds**;
-  - action: **Block**, for **1 minute** where your plan allows it (the Free plan's only timeout is
-    10 seconds).
+  - action: **Block**, for **1 minute** where your plan allows it (the Free plan's only period and
+    timeout are 10 seconds).
 
   This is the primary limit. The Function's own limit (20 attempts per hour per IP, kept in
   Cloudflare's cache) is only a per-data-centre backstop.
-- [ ] **Security Level**: lowest (**Essentially Off**), if your dashboard still offers the setting,
-      and any WAF rule action **Block — never Challenge**. A challenge sets the `cf_clearance` cookie.
-- [ ] **Email Address Obfuscation: OFF** (Scrape Shield). It rewrites the contact address into a
+- [ ] **Under Attack Mode: OFF** (zone Overview → Quick Actions; off by default). The old Security
+      Level values such as "Essentially Off" no longer exist; Security Level now only toggles Under
+      Attack Mode. Any WAF rule action is **Block — never Challenge**: a challenge sets the
+      `cf_clearance` cookie.
+- [ ] **Email Address Obfuscation: OFF** (Security → **Settings**, filter Client-side abuse; older
+      dashboards: Scrape Shield). It is **on by default**. It rewrites the contact address into a
       script-only link, hiding it from readers and reviewers without JavaScript.
-- [ ] **Rocket Loader: OFF** (Speed → Optimization). It rewrites script tags into inline loaders,
-      which the CSP blocks.
-- [ ] **Bot Fight Mode: OFF** (Security → Bots). It sets a `__cf_bm` cookie.
-- [ ] **Logs that retain IPs: OFF** for the Pages project — no persistent Workers Logs /
-      observability and no Logpush job. Real-time tail logs are fine (nothing is kept).
+- [ ] **Rocket Loader: OFF** (Speed → **Settings** → Content Optimization). It rewrites script tags
+      into inline loaders, which the CSP blocks.
+- [ ] **Bot Fight Mode: OFF** (Security → **Settings**, filter Bot traffic). It sets a `__cf_bm`
+      cookie, and while it is on, JavaScript Detections (a `cf_clearance` cookie and an injected
+      script) is forced on too.
+- [ ] **Logs that retain IPs: none** for the Pages project — no Logpush job (Workers Paid only), and
+      no persistent Workers Logs / observability if the project offers it. The Functions real-time
+      log (Deployments → View details → Functions) is fine: Cloudflare does not store it.
 
 ## 7. Analytics
 
-- [ ] Pages project → **Metrics** → **Web Analytics** → Enable. It is cookieless, and the CSP
-      allows exactly its beacon (`static.cloudflareinsights.com` / `cloudflareinsights.com`).
+- [ ] Pages project → **Metrics** → **Web Analytics** → Enable. Cloudflare injects the beacon on
+      the **next deployment** (Retry deployment, or wait for the next publish). It is cookieless, and
+      the CSP allows exactly its beacon (`static.cloudflareinsights.com` / `cloudflareinsights.com`).
+      Do not also enable zone-level automatic Web Analytics for the domain (double counting).
 
 ## 8. Email
 
-- [ ] Email → **Email Routing** → enable (Cloudflare adds the MX and SPF records).
-- [ ] Destination address: the operator's inbox → verify it from the email Cloudflare sends.
-- [ ] Routes: `hello@betgaffer.com` → operator inbox; `privacy@betgaffer.com` → operator inbox.
-      Leave catch-all off.
-- [ ] Send a test message to each address before the legal pages go live.
+- [ ] Compute → Email Service → **Email Routing** (older dashboards: the domain → Email → Email
+      Routing) → **Onboard Domain** → `betgaffer.com`. Cloudflare adds 3 MX records, an SPF TXT and a
+      DKIM TXT. Any other MX record must be deleted first.
+- [ ] **Destination Addresses**: the operator's inbox → verify it from the email Cloudflare sends
+      (a rule pointing at an unverified address stays disabled).
+- [ ] **Routing Rules** → Create routing rule: `contact@betgaffer.com` → **Send to an email** →
+      operator inbox. That is the only address: `privacy_email` defaults to `contact_email`. Leave
+      catch-all off.
+- [ ] Send a test message to contact@ from a different account before the legal pages go live.
+- [ ] Email Routing only receives. Replies go out from the operator's inbox unless a separate SMTP
+      sending service is set up for the domain (then merge its `include:` into the one SPF record).
 
 ## 9. Google Search Console (for Google sign-in / OAuth verification)
 
@@ -181,7 +216,7 @@ for p in / /our-record/ /features/ /privacy/ /terms/ /refunds/ \
   printf '%s %s\n' "$(curl -s -o /dev/null -w '%{http_code}' "$H$p")" "$p"
 done                                                     # all 200 (index.json: 404 before the first publish)
 curl -s -o /dev/null -w '%{http_code}\n' "$H/no-such-page/"    # 404, not the home page
-curl -s "$H/privacy/" | grep -c 'hello@betgaffer.com'          # > 0: the address is plain HTML
+curl -s "$H/privacy/" | grep -c 'contact@betgaffer.com'        # > 0: the address is plain HTML
 curl -s "$H/privacy/" | grep -c 'email-protection'             # 0: obfuscation is off
 curl -sI "$H/" | grep -i '^content-security-policy'            # present
 curl -sI "$H/" | grep -ci '^set-cookie'                        # 0
@@ -190,7 +225,7 @@ curl -s "$H/api/waitlist"                                      # 200 {"places_le
 curl -s -o /dev/null -w '%{http_code}\n' https://<project>.pages.dev/api/waitlist   # 503
 ```
 
-- [ ] Every line matches its comment (use your own contact address in the grep).
+- [ ] Every line matches its comment.
 - [ ] Join the waitlist once from a phone with your own address, find it in the KV browser
       (section 12), then delete it. That rehearses the data-subject runbook.
 - [ ] Open the home page with JavaScript disabled: fixtures, picks and the contact address are
@@ -207,7 +242,7 @@ missing, an unknown schema) is refused **on purpose**. Fix the data at its sourc
 never edit `days/` or `index.json` by hand. `node site/verify.js` in a fresh clone shows which day
 fails.
 
-**Data-subject requests** (privacy@ / hello@). Reply within **30 days**; you may ask the person to
+**Data-subject requests** (they arrive at contact@betgaffer.com). Reply within **30 days**; you may ask the person to
 confirm from the address concerned. Each address is stored under one key, `e:` + the SHA-256 of
 the address fully lower-cased:
 
@@ -215,7 +250,7 @@ the address fully lower-cased:
 node -e "console.log('e:'+require('crypto').createHash('sha256').update(process.argv[1].trim().toLowerCase()).digest('hex'))" "Someone@Example.com"
 ```
 
-Then Storage & Databases → KV → `betgaffer-waitlist` → **KV pairs** → search the key.
+Then Storage & databases → **Workers KV** → `betgaffer-waitlist` → **KV Pairs** → find the key.
 
 | Request | Action |
 |---|---|
