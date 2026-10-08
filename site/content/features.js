@@ -135,7 +135,7 @@ function tierTable(tiers) {
 <thead><tr><th scope="col">Plan</th><th scope="col" class="num">Monthly</th></tr></thead>
 <tbody>${rows}</tbody>
 </table>
-<p class="t-s">Monthly, in naira, VAT-inclusive. Paid plans differ by the competitions they cover. Nothing is charged on this site.</p>`;
+<p class="t-s">Monthly, in naira, VAT-inclusive. Paid plans differ by the competitions and tools they include.</p>`;
 }
 
 /**

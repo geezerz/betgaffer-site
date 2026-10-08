@@ -587,8 +587,9 @@ describe('features (Plan A Task 6, spec §8)', () => {
     assert.equal(findAll(ol, (n) => n.tag === 'article' && cls(n, 'ct-feature')).length, 17);
   });
 
-  test('every feature states the problem, then what we do — verbatim from spec §8', () => {
-    const arts = articles(render());
+  // The verbatim check, shared with the premise test below so the premise exercises the real loop.
+  const assertVerbatim = (html) => {
+    const arts = articles(html);
     assert.equal(arts.length, SPEC.length, 'premise: every spec row is rendered (an empty loop proves nothing)');
     for (const [i, a] of arts.entries()) {
       const [name, problem, answer] = SPEC[i];
@@ -599,6 +600,10 @@ describe('features (Plan A Task 6, spec §8)', () => {
       if (answer !== null) assert.equal(textOf(w), `What we do: ${answer}`, name);
       assert.ok(textOf(a).indexOf('The problem:') < textOf(a).indexOf('What we do:'), `${name}: problem before answer`);
     }
+  };
+
+  test('every feature states the problem, then what we do — verbatim from spec §8', () => {
+    assertVerbatim(render());
   });
 
   test('16 "At launch" tags and one "Coming soon" (Ask Gaffer)', () => {
@@ -657,7 +662,10 @@ describe('features (Plan A Task 6, spec §8)', () => {
     assert.match(shipped, /<table class="bg-table ct-tiers">/);
     assert.match(shipped, /<th scope="row">Elite<\/th><td class="num" data-label="Monthly">₦5,000<\/td>/);
     assert.ok(visibleText(shipped).includes(PRICING_INTENT));
-    assert.match(shipped, /Paid plans differ by the competitions they cover\./);
+    const st = visibleText(shipped);
+    assert.ok(st.includes('Monthly, in naira, VAT-inclusive. Paid plans differ by the competitions and tools they include.'), st);
+    assert.ok(!st.includes('Nothing is charged on this site.'), 'PRICING_INTENT already says nothing is sold; no repeat');
+    assert.equal(st.split('Nothing is sold on this site.').length, 2, 'the "nothing is sold" sentence appears exactly once');
   });
 
   test('pricing: no figures when show_prices is off (S9)', () => {
@@ -734,9 +742,12 @@ describe('features (Plan A Task 6, spec §8)', () => {
     const swapped = html.replace(arts[0], '@@SWAP@@').replace(arts[1], arts[0]).replace('@@SWAP@@', arts[1]);
     const names = articles(swapped).map((a) => textOf(find(a, (n) => n.tag === 'h3')));
     assert.notDeepEqual(names, SPEC.map(([n]) => n));
-    // A reworded problem line no longer equals the spec text.
-    const reworded = html.replace('Research means opening five tabs.', 'Research takes ages.');
-    const p = partOf(articles(reworded)[6], 'ct-feature__problem');
-    assert.notEqual(textOf(p), `The problem: ${SPEC[6][1]}`);
+    // The real verbatim loop passes the page as rendered and throws on a reworded problem or answer.
+    assertVerbatim(html);
+    for (const [from, to] of [['Research means opening five tabs.', 'Research takes ages.'],
+      ['Head-to-head, standings, stats, lineups and commentary in one place.', 'Everything in one place.']]) {
+      assert.ok(html.includes(from), `premise: the page carries ${from}`);
+      assert.throws(() => assertVerbatim(html.replace(from, to)), assert.AssertionError, from);
+    }
   });
 });
