@@ -5,11 +5,16 @@
 // analytics are Cloudflare Web Analytics (cookieless) and Bot Fight Mode is off (docs/DEPLOY.md), so
 // the site sets no cookies; data-subject requests are handled by hand by the operator (DEPLOY.md
 // runbook). No DPO, no SCCs, no self-service tool is claimed, because none exists.
+// Teaser v2 (spec §9, §13): the waitlist purpose is the founding invite, its claim window and matching
+// the address to the account opened with it (the waitlist consent line says the same); at launch a phone
+// number is verified to claim a founding place and used for the founding-members WhatsApp community,
+// which WhatsApp (Meta) runs under its own terms (not our processor).
 
 import { escHtml } from '../lib/esc.js';
+import { WAITLIST_PLACES, CLAIM_DAYS } from '../lib/founding.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
-export const LAST_UPDATED = '2026-10-07';
+export const LAST_UPDATED = '2026-10-08';
 
 export const META = Object.freeze({
   path: '/privacy/',
@@ -44,6 +49,7 @@ function sections(op) {
 <ul>
 <li><strong>Account details</strong>: your email address and a display name.</li>
 <li><strong>Google sign-in</strong>, if you choose it: your name, email address and profile picture. We get no access to any other Google data: not your email, files or contacts. We use it only to create your account and sign you in. We do not share it, and we delete it when you close your account.</li>
+<li><strong>A phone number</strong>, which you'll verify to claim a founding place and which we'll use if you join the founding-members WhatsApp community.</li>
 <li><strong>Payment data</strong>, processed by Paystack. Your card details never reach us; we receive a payment reference and whether the payment succeeded.</li>
 <li><strong>Your Credits balance and history</strong>, and the plan you are on.</li>
 <li><strong>Your notification preferences.</strong></li>
@@ -63,7 +69,7 @@ function sections(op) {
       id: 'why-and-lawful-basis',
       title: 'Why we use it, and our lawful basis',
       now: `<ul>
-<li><strong>Your waitlist address</strong> is used only to tell you when your invite is ready. Lawful basis: your <strong>consent</strong>, given when you submit the form. You can withdraw it at any time.</li>
+<li><strong>Your waitlist address</strong> is used only to send your invite and to match it to the account you open with it. If you are among the first ${WAITLIST_PLACES} people to join, your invite offers you a founding place, which you claim by starting a paid subscription in the ${CLAIM_DAYS} days after the invite. Lawful basis: your <strong>consent</strong>, given when you submit the form. You can withdraw it at any time.</li>
 <li><strong>Security and abuse prevention.</strong> To stop automated abuse of the waitlist, the form counts sign-up attempts from each IP address (for IPv6, each /56 network) using a keyed one-way hash of that address, held only in Cloudflare's short-term cache for up to an hour, never stored with your email address. Lawful basis: our <strong>legitimate interest</strong> in keeping the site and the waitlist working.</li>
 <li><strong>Emails you send us</strong> are used to answer you. Lawful basis: legitimate interest.</li>
 </ul>
@@ -73,7 +79,7 @@ function sections(op) {
 <li><strong>Contract</strong>: to provide your account, your plan and the features you use.</li>
 <li><strong>Legal obligation</strong>: to keep the payment and tax records the law requires.</li>
 <li><strong>Legitimate interest</strong>: security, fraud prevention and improving the service.</li>
-<li><strong>Consent</strong>: marketing messages and optional notifications, which you can switch off at any time.</li>
+<li><strong>Consent</strong>: marketing messages, optional notifications and joining the founding-members WhatsApp community, which you can switch off at any time.</li>
 </ul>
 <p>We will still not sell personal data.</p>`,
     },
@@ -90,7 +96,8 @@ function sections(op) {
 <li><strong>Payments</strong>: Paystack.</li>
 <li><strong>Sign-in</strong>: Google, if you choose Google sign-in.</li>
 <li><strong>Email delivery</strong>: named here before launch.</li>
-</ul>`,
+</ul>
+<p>If you choose to join the founding-members WhatsApp community, WhatsApp (Meta) handles your phone number under its own terms and privacy policy, and other members of the community may see it.</p>`,
     },
     {
       id: 'transfers-outside-nigeria',
@@ -149,7 +156,7 @@ function sections(op) {
     {
       id: 'changes',
       title: 'Changes to this policy',
-      now: `<p>When this policy changes, we update this page and its "Last updated" date. If we ever want to use waitlist addresses for anything other than your invite, we will ask for your consent first.</p>`,
+      now: `<p>When this policy changes, we update this page and its "Last updated" date. If we ever want to use waitlist addresses for anything other than sending your invite and matching it to your account, we will ask for your consent first.</p>`,
       launch: SAME,
     },
   ];

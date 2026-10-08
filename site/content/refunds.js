@@ -2,11 +2,13 @@
 //
 // Accurate TODAY: nothing is sold on this site. The launch column states the intended policy
 // (plan Task 5): cancel any time, 7-day cooling-off for first-time subscribers with limited use
-// (limits published with the prices), billing errors, refunds via Paystack.
+// (limits published with the prices, subscription payment only), billing errors, refunds via Paystack.
+// Teaser v2 (spec §9, F11): Credits and top-ups are never refundable, except a charge made in error or
+// where the law requires a refund.
 
 import { legalDoc, operatorOf, mailto } from './common.js';
 
-export const LAST_UPDATED = '2026-10-07';
+export const LAST_UPDATED = '2026-10-08';
 
 export const META = Object.freeze({
   path: '/refunds/',
@@ -37,7 +39,7 @@ function sections(op) {
       id: 'cooling-off',
       title: 'The 7-day cooling-off refund',
       now: `<p>Does not apply: nothing is sold.</p>`,
-      launch: `<p>A 7-day cooling-off refund for first-time subscribers. If it is your first paid subscription and you have made only limited use of paid features, we will refund that first payment in full if you ask within 7 days of making it. The exact limits on use will be published with the prices.</p>`,
+      launch: `<p>A 7-day cooling-off refund for first-time subscribers. If it is your first paid subscription and you have made only limited use of paid features, we will refund that first payment in full if you ask within 7 days of making it. The exact limits on use will be published with the prices. This covers the subscription payment only, not Credit top-ups.</p>`,
     },
     {
       id: 'billing-errors',
@@ -49,7 +51,7 @@ function sections(op) {
       id: 'credits',
       title: 'Credits',
       now: `<p>No Credits exist.</p>`,
-      launch: `<p>Unused Credits bought in the last 7 days are refundable on request; Credits you have used are not, except where the law requires.</p>`,
+      launch: `<p>Credits, including top-ups and any unused balance, are not refundable and have no cash value. The only exceptions are a charge we made in error, or where the law requires a refund.</p>`,
     },
     {
       id: 'how-refunds-are-paid',
@@ -88,7 +90,8 @@ export function render(cfg) {
     updated: LAST_UPDATED,
     email: op.contact_email,
     contactHeading: 'Questions about this policy',
-    contactNote: 'We reply to every message about refunds.',
+    // Spec §9: invite the message without promising a reply time.
+    contactNote: 'Write to us about refunds.',
     sections: sections(op),
   });
 }

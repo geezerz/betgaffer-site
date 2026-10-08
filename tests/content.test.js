@@ -1,5 +1,5 @@
 // Task 5: features page, legal documents (privacy, terms, refunds) and the banned-phrase module.
-import { test } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import siteConfig from '../site/config.js';
 import { BANNED, ALLOW, findBanned } from '../site/lib/claims.js';
@@ -9,6 +9,7 @@ import * as terms from '../site/content/terms.js';
 import * as refunds from '../site/content/refunds.js';
 import { lastUpdated } from '../site/content/common.js';
 import { percentagesOutsideOffers } from './html-scan.js';
+import * as F from '../site/lib/founding.js';
 
 // A filled test operator. Every value carries HTML metacharacters so escaping is proven, and the
 // privacy address differs from the contact address so the right one is proven on each page.
@@ -292,10 +293,12 @@ for (const name of Object.keys(LEGAL)) {
     const email = name === 'privacy' ? OP.privacy_email : OP.contact_email;
     const at = t.lastIndexOf(heading);
     assert.ok(t.indexOf(email, at) > at, 'the contact block names the address');
+    // Spec §9: Terms and Refunds invite a message without promising a reply; Privacy keeps its 30 days.
     const reply = { privacy: 'We reply to every request about your data within 30 days.',
-      terms: 'We reply to every message about these terms.',
-      refunds: 'We reply to every message about refunds.' }[name];
+      terms: 'Write to us about these terms.',
+      refunds: 'Write to us about refunds.' }[name];
     assert.ok(t.indexOf(reply, at) > at, `contact block says: ${reply}`);
+    assert.doesNotMatch(t, /We reply to every message/, 'spec §9: no blanket reply promise');
     assert.doesNotMatch(t, /reads and answers every message|We read every message|answers every message/, 'review M5');
   });
 }
@@ -486,7 +489,175 @@ test('refunds: a Credits section in both columns (review M1)', () => {
   const now = visibleText(sec.slice(sec.indexOf('ct-col--now'), sec.indexOf('ct-col--launch')));
   const launch = visibleText(sec.slice(sec.indexOf('ct-col--launch')));
   assert.ok(now.includes('No Credits exist.'), now);
-  assert.ok(launch.includes('Unused Credits bought in the last 7 days are refundable on request; Credits you have used are not, except where the law requires.'), launch);
+  // Spec §9 (F11): Credits and top-ups are never refundable.
+  assert.ok(launch.includes('Credits, including top-ups and any unused balance, are not refundable and have no cash value. '
+    + 'The only exceptions are a charge we made in error, or where the law requires a refund.'), launch);
+  assert.doesNotMatch(visibleText(html), /are refundable on request|bought in the last 7 days/, 'the old refundable-Credits sentence is gone');
+});
+
+// =============================================================================================
+// Policy pages, Plan A Task 7 (spec §4, §9): founding programme terms, Credits never refundable,
+// honest contact lines, privacy updates. Task 6 owns the features cases below.
+// =============================================================================================
+
+describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
+  const section = (html, id) => {
+    const at = html.indexOf(`<section class="ct-sec" id="${id}"`);
+    assert.ok(at > -1, `section #${id}`);
+    const end = html.indexOf('</section>', at);
+    assert.ok(end > at, `section #${id} is closed`);
+    return html.slice(at, end + '</section>'.length);
+  };
+  // The two columns' visible text, sliced at tag boundaries so no attribute text leaks in.
+  const cols = (sec) => {
+    const nowAt = sec.indexOf('>', sec.indexOf('class="ct-col ct-col--now"')) + 1;
+    const launchTag = sec.lastIndexOf('<div', sec.indexOf('class="ct-col ct-col--launch"'));
+    const launchAt = sec.indexOf('>', launchTag) + 1;
+    assert.ok(nowAt > 0 && launchTag > nowAt, 'premise: both columns found');
+    return { now: visibleText(sec.slice(nowAt, launchTag)), launch: visibleText(sec.slice(launchAt)) };
+  };
+  const n = (v) => v.toLocaleString('en-US');
+
+  test('the three policy pages are dated 8 October 2026', () => {
+    for (const mod of [terms, refunds, privacy]) assert.equal(mod.LAST_UPDATED, '2026-10-08');
+  });
+
+  test('terms: a "Founding Member Programme" section, id="founding", right after subscriptions, in the contents', () => {
+    const html = renderPage('terms');
+    const ids = [...html.matchAll(/<section class="ct-sec" id="([a-z0-9-]+)"/g)].map((m) => m[1]);
+    assert.equal(ids[ids.indexOf('subscriptions') + 1], 'founding', `order: ${ids.join(', ')}`);
+    assert.ok(terms.SECTION_TITLES.includes('Founding Member Programme'));
+    assert.match(section(html, 'founding'), /<h2 class="ct-sec__h" id="founding-h">.*Founding Member Programme<\/h2>/);
+    assert.ok(html.includes('href="#founding"'), 'contents link');
+  });
+
+  test('terms #founding: the Now column is the spec §4 text', () => {
+    const { now } = cols(section(renderPage('terms'), 'founding'));
+    assert.equal(now, `Now (this site) Joining the founding waitlist reserves one of ${F.WAITLIST_PLACES} waitlist places for the first `
+      + `${F.WAITLIST_PLACES} people to join. It costs nothing and creates no account. Founding status itself starts only when you `
+      + 'start a paid subscription after launch.');
+  });
+
+  test('terms #founding: every programme number, read from site/lib/founding.js', () => {
+    const sec = section(renderPage('terms'), 'founding');
+    const { launch } = cols(sec);
+    for (const s of [
+      `${n(F.TOTAL_PLACES)} founding places`, `${n(F.WAITLIST_PLACES)} waitlist places`, `${n(F.LAUNCH_PLACES)} launch places`,
+      `within ${F.CLAIM_DAYS} days of the invite`, `${F.GRACE_DAYS} days' grace`, `at least ${F.EARLY_ACCESS_HOURS} hours`,
+      `within ${F.SUPPORT_REPLY_HOURS} hours`, `${F.DISCOUNT_PCT}% off`, `${F.TOPUP_BONUS_PCT}% extra`, 'Double Credits',
+      'double the plan', 'counts twice',
+    ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
+    assert.equal(F.TOTAL_PLACES, F.WAITLIST_PLACES + F.LAUNCH_PLACES, 'premise: 500 + 500 = 1,000');
+    // Every percentage is an offer figure, and only the two offer numbers appear.
+    assert.deepEqual(percentagesOutsideOffers(sec), []);
+    const pcts = [...visibleText(sec).matchAll(/\d+%/g)].map((m) => m[0]);
+    assert.ok(pcts.length >= 2, 'premise: the section prints its percentages');
+    assert.deepEqual([...new Set(pcts)].sort(), [`${F.TOPUP_BONUS_PCT}%`, `${F.DISCOUNT_PCT}%`].sort());
+    assert.ok((sec.match(/<span data-figure="offer">/g) || []).length >= 2);
+  });
+
+  test('terms #founding: the programme rules (§1-§3) in plain sentences', () => {
+    const { launch } = cols(section(renderPage('terms'), 'founding'));
+    for (const s of [
+      `The total is always ${n(F.TOTAL_PLACES)}.`,
+      'first come, first served by the date of their first paid subscription',
+      'subscribing before the invite arrives also claims it',
+      `People who join after the first ${n(F.WAITLIST_PLACES)} stay on the waitlist and are invited too, with a head start on one of the launch places.`,
+      'Free trials and the free account never count.',
+      'refunded (including the 7-day cooling-off refund) or charged back does not count, and any place it earned is released',
+      'matched to the account opened with the same address (letter case is ignored)',
+      'aliases such as +tags or Gmail dots, hold one place',
+      'not transferable',
+      'no cash value',
+      'It does not combine with other percentage discounts: if one applies, you get whichever saves you more.',
+      'We will not reduce your founding benefits while you hold the status.',
+      'founding members get an equal or better replacement, with 30 days\' notice',
+      'It also ends if you close your account, or if we close it for a breach of these terms or fraud',
+      `you have ${F.GRACE_DAYS} days' grace from the end of that period`,
+      'Turning off auto-renewal is not a lapse while your paid period runs.',
+      'ranked highest by how early they first paid, how consistently they have subscribed and how much they have spent',
+      'Fixes, security updates and changes the law requires go to everyone at once.',
+    ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
+  });
+
+  test('terms #founding: one release rule, the claiming payment, notice from founding.js, verified phone (Task 7 review)', () => {
+    const { launch } = cols(section(renderPage('terms'), 'founding'));
+    for (const s of [
+      // I1: unclaimed waitlist places and later releases follow two separate, non-contradicting rules.
+      'Waitlist places not claimed in time go to the earliest-paying subscriber without a place: first come, first served by the date of their first paid subscription.',
+      'A place released later passes as set out under "When it ends".',
+      // 5
+      'Founding status starts with the first paid subscription that claims a place: a successful payment for a paid plan.',
+      // 6
+      `founding members get an equal or better replacement, with ${F.NOTICE_DAYS} days' notice.`,
+      // 8 (operator decision): claiming a founding place requires a verified phone number.
+      'claiming a place requires a verified phone number',
+      // 9
+      'Top-ups get their own extra Credits, not double.',
+    ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
+    for (const gone of ['and any place released later, go to', 'a verified phone number is checked', 'never double',
+      'Founding status starts with your first paid subscription']) {
+      assert.ok(!launch.includes(gone), `no longer says: ${gone}`);
+    }
+    // The release sentence points at a section part that exists.
+    assert.ok(launch.includes('When it ends.'), 'the "When it ends" part exists');
+  });
+
+  test('terms: no "100%" anywhere, double Credits worded "double", programme §5 omitted', () => {
+    const t = visibleText(renderPage('terms'));
+    assert.doesNotMatch(t, /100\s*%|100 per ?cent/i);
+    assert.doesNotMatch(t, /countdown|launch date/i);
+    assert.deepEqual(findBanned(t), []);
+  });
+
+  test('terms: Credits are not refundable; a Lab Credit return is not a refund', () => {
+    const { launch } = cols(section(renderPage('terms'), 'credits'));
+    assert.ok(launch.includes('Credits and top-ups are not refundable. Credits returned when a Lab slip you marked as played '
+      + 'loses are a Credit return, not a refund.'), launch);
+  });
+
+  test('refunds: the cooling-off refund covers the subscription payment only', () => {
+    const { launch } = cols(section(renderPage('refunds'), 'cooling-off'));
+    assert.ok(launch.includes('we will refund that first payment in full if you ask within 7 days of making it.'), 'kept');
+    assert.ok(launch.includes('This covers the subscription payment only, not Credit top-ups.'), launch);
+  });
+
+  test('privacy: the waitlist address is used only for the invite, its 30-day claim and matching the account', () => {
+    const { now } = cols(section(renderPage('privacy'), 'why-and-lawful-basis'));
+    for (const s of [
+      'Your waitlist address is used only to send your invite and to match it to the account you open with it.',
+      `If you are among the first ${F.WAITLIST_PLACES} people to join, your invite offers you a founding place, which you claim by starting a paid subscription in the ${F.CLAIM_DAYS} days after the invite.`,
+    ]) assert.ok(now.includes(s), `privacy says: ${s}`);
+    const t = visibleText(renderPage('privacy'));
+    assert.doesNotMatch(t, /used only to tell you when your invite is ready/, 'old purpose gone');
+    // Review minor 7: the purpose is stated once, not restated.
+    assert.doesNotMatch(t, /At launch we use your address only/, 'no restatement of the purpose');
+  });
+
+  test('privacy: the launch column adds the phone number verified to claim a founding place (operator decision)', () => {
+    const { now, launch } = cols(section(renderPage('privacy'), 'what-we-collect'));
+    assert.ok(launch.includes("A phone number, which you'll verify to claim a founding place and which we'll use if you join the founding-members WhatsApp community."), launch);
+    assert.ok(now.includes('no phone number'), 'today: still no phone number');
+  });
+
+  test('privacy: WhatsApp is not listed as our processor; its own handling of your number is disclosed (Task 7 review I2)', () => {
+    const html = renderPage('privacy');
+    const sec = section(html, 'who-we-share-it-with');
+    const { launch } = cols(sec);
+    const processors = sec.slice(sec.indexOf('<ul>'), sec.indexOf('</ul>'));
+    assert.ok(processors.includes('Paystack'), 'premise: this is the processors list');
+    assert.doesNotMatch(processors, /WhatsApp/, 'WhatsApp is not a processor');
+    assert.ok(sec.indexOf('WhatsApp') > sec.indexOf('</ul>'), 'the WhatsApp line follows the list');
+    assert.ok(launch.includes('If you choose to join the founding-members WhatsApp community, WhatsApp (Meta) handles your phone number '
+      + 'under its own terms and privacy policy, and other members of the community may see it.'), launch);
+    const basis = cols(section(html, 'why-and-lawful-basis')).launch;
+    assert.ok(basis.includes('Consent: marketing messages, optional notifications and joining the founding-members WhatsApp community'), basis);
+  });
+
+  test('privacy: consent is asked before any other use of waitlist addresses', () => {
+    const t = visibleText(renderPage('privacy'));
+    assert.ok(t.includes('If we ever want to use waitlist addresses for anything other than sending your invite and matching it to your account, we will ask for your consent first.'));
+  });
 });
 
 // =============================================================================================

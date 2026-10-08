@@ -15,6 +15,8 @@ test('founding numbers match the programme rules (founding-member-programme.md ย
   assert.equal(F.VOTE_WEIGHT, 2);
   assert.equal(F.EARLY_ACCESS_HOURS, 72);
   assert.equal(F.SUPPORT_REPLY_HOURS, 12);
+  // Programme ยง2 "No downgrades": an equal or better replacement, with 30 days' notice.
+  assert.equal(F.NOTICE_DAYS, 30);
 });
 
 test('the waitlist cap in config is the founding waitlist cap', () => {

@@ -11,6 +11,8 @@ export const TOPUP_BONUS_PCT = 20;
 export const VOTE_WEIGHT = 2;
 export const EARLY_ACCESS_HOURS = 72;
 export const SUPPORT_REPLY_HOURS = 12;
+/** Notice before an equal-or-better replacement of a founding benefit (programme §2, "No downgrades"). */
+export const NOTICE_DAYS = 30;
 
 /** Public benefit cards (spec §3.4), in programme order B1-B6. */
 export const BENEFITS = Object.freeze([
