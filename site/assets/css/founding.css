@@ -48,6 +48,17 @@
 .bg-banner__x:hover{ color:var(--ink); background:var(--surface-3); }
 .bg-banner__x[hidden]{ display:none; }
 
-/* ── Founding nav item ────────────────────────────────────────────────────── */
+/* ── Founding nav item ──────────────────────────────────────────────────────
+   Inactive: green text plus a small accent dot, and NOT the current tab's
+   underline or tint, so it never reads as the page you are on. The dot is
+   CSS-generated (empty content), so screen readers do not read it. On
+   /waitlist/ the tab takes base.css's shared current styling, with no dot.
+   ─────────────────────────────────────────────────────────────────────────── */
 .bg-topbar__nav a.bg-topbar__founding{ color:var(--accent); }
+.bg-topbar__nav a.bg-topbar__founding::before{
+  content:''; flex:none;
+  width:6px; height:6px; margin-right:6px;
+  border-radius:50%; background:var(--accent);
+}
+.bg-topbar__nav a.bg-topbar__founding[aria-current]::before{ content:none; }
 .bg-topbar__nav a.bg-topbar__founding:hover{ color:var(--accent-hi); }

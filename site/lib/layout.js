@@ -97,10 +97,19 @@ function banner() {
 </aside>`;
 }
 
+/**
+ * Is this nav item the current page? An exact match, or — for a `section` item whose href ends in
+ * '/' — any page under it ('/waitlist/' lights '/waitlist/thanks/', never '/waitlisted/'). Only
+ * section items match by prefix: '/' (Predictions) would otherwise be current on every page.
+ */
+export function navCurrent({ href, section }, path) {
+  return path === href || (section === true && href.endsWith('/') && path.startsWith(href));
+}
+
 function header(path) {
-  const items = NAV.map(({ href, label, cls, section }) => {
-    const isCurrent = href === path || (section === true && path.startsWith(href));
-    const current = isCurrent ? ' aria-current="page"' : '';
+  const items = NAV.map((item) => {
+    const { href, label, cls } = item;
+    const current = navCurrent(item, path) ? ' aria-current="page"' : '';
     const klass = cls ? ` class="${escAttr(cls)}"` : '';
     return `<li><a href="${escAttr(href)}"${klass}${current}>${escHtml(label)}</a></li>`;
   }).join('');

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { page, NAV, OG_FOUNDING } from '../site/lib/layout.js';
+import { page, NAV, OG_FOUNDING, navCurrent } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
 import { TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT } from '../site/lib/founding.js';
 import { parse, find, findAll, textOf, claimViolations } from './html-scan.js';
@@ -476,6 +476,56 @@ test('below 600px the nav is four equal tabs (one per NAV item)', () => {
   const s = readFileSync(join(ASSETS, 'css', 'base.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
   assert.equal(NAV.length, 4);
   assert.match(s, /\.bg-topbar__navul\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\);?\}/);
+});
+
+test('below 360px the tab labels shrink so "PREDICTIONS" stays one word; overflow-wrap stays as a last resort', () => {
+  const s = readFileSync(join(ASSETS, 'css', 'base.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
+  const fourTabs = s.indexOf('.bg-topbar__navul{display:grid;grid-template-columns:repeat(4');
+  const narrow = s.indexOf('@media(max-width:359.98px){.bg-topbar__nava{font-size:10px;letter-spacing:.02em;}}');
+  assert.ok(fourTabs > -1, 'premise: the four-tab rule');
+  assert.ok(narrow > fourTabs, 'the <360px rule follows the four-tab rule (same specificity: later wins)');
+  const tab = /\.bg-topbar__nava\{([^}]*)\}/.exec(s.slice(fourTabs))[1];
+  assert.match(tab, /overflow-wrap:anywhere/);
+  assert.match(tab, /font-size:11px/, 'premise: 11px from 360px up');
+});
+
+test('the inactive Founding tab is green with an accent dot, never the current tab\'s background or underline', () => {
+  const s = readFileSync(join(ASSETS, 'css', 'founding.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
+  const rules = [...s.matchAll(/([^{}]+)\{([^}]*)\}/g)].map((m) => [m[1], m[2]]);
+  const founding = rules.filter(([sel]) => sel.includes('.bg-topbar__founding'));
+  assert.ok(founding.length > 0, 'premise: founding rules parsed');
+  for (const [sel, body] of founding) {
+    if (sel.includes('[aria-current]') || sel.includes(':hover')) continue;
+    assert.doesNotMatch(body, /border-bottom|background:var\(--accent-quiet\)/, `${sel}: no current-tab styling`);
+  }
+  const base = founding.find(([sel]) => sel === '.bg-topbar__nava.bg-topbar__founding');
+  assert.ok(base, 'the founding tab rule');
+  assert.match(base[1], /color:var\(--accent\)/);
+  const dot = founding.find(([sel]) => sel === '.bg-topbar__nava.bg-topbar__founding::before');
+  assert.ok(dot, 'a ::before dot (CSS-generated: not read as text)');
+  assert.match(dot[1], /content:''/);
+  assert.match(dot[1], /background:var\(--accent\)/);
+  assert.match(dot[1], /border-radius:50%/);
+  // The real current tab keeps the shared current styling: no dot, nothing overriding base.css.
+  const cur = founding.find(([sel]) => sel === '.bg-topbar__nava.bg-topbar__founding[aria-current]::before');
+  assert.ok(cur && /content:none/.test(cur[1]), 'no dot on the current Founding tab');
+  assert.ok(!founding.some(([sel, body]) => sel.endsWith('[aria-current]') && /border|background/.test(body)),
+    'no founding override of the current-tab underline or background');
+});
+
+test('navCurrent: exact match, or a section item (href ending in "/") over every page under it', () => {
+  const founding = NAV.find((n) => n.label === 'Founding');
+  assert.equal(navCurrent(founding, '/waitlist/'), true);
+  assert.equal(navCurrent(founding, '/waitlist/thanks/'), true);
+  assert.equal(navCurrent(founding, '/waitlisted/'), false);
+  // A section href without its trailing slash would light /waitlisted/: it never counts as a section.
+  assert.equal(navCurrent({ href: '/waitlist', section: true }, '/waitlisted/'), false);
+  assert.equal(navCurrent({ href: '/waitlist', section: true }, '/waitlist'), true, 'exact match still holds');
+  // Predictions ('/') is not a section: it must not be current on every page.
+  const home = NAV.find((n) => n.href === '/');
+  assert.equal(navCurrent(home, '/'), true);
+  assert.equal(navCurrent(home, '/privacy/'), false);
+  for (const n of NAV) if (n.section) assert.ok(n.href.endsWith('/'), `${n.href} ends in /`);
 });
 
 test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, legal links, © and contact', () => {

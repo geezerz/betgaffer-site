@@ -208,13 +208,16 @@ a.bg-wordmark:hover{ color:#fff; }
 .bg-topbar__nav ul{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
 .bg-topbar__nav a{
   display:flex; align-items:center; justify-content:center; text-align:center;
-  min-height:var(--tap); padding:6px 2px;   /* four tabs: "PREDICTIONS" fits a 90px tab at 360px */
+  min-height:var(--tap); padding:6px 2px;   /* four tabs: at 11px "PREDICTIONS" (~78px) fits a 90px tab from 360px up */
   color:var(--muted); text-decoration:none;
   font-family:var(--font-mono); font-size:11px; font-weight:600; line-height:1.2;
   letter-spacing:.04em; text-transform:uppercase; overflow-wrap:anywhere;
   border-bottom:2px solid transparent;
   transition:color .14s ease, background .14s ease, border-color .14s ease;
 }
+/* Below 360px a tab is under 90px: shrink the label so "PREDICTIONS" (~68px at 10px) stays one word.
+   overflow-wrap:anywhere above stays as the last resort for anything narrower still. */
+@media (max-width:359.98px){ .bg-topbar__nav a{ font-size:10px; letter-spacing:.02em; } }
 .bg-topbar__nav a:hover{ color:var(--ink); background:var(--surface-2); }
 .bg-topbar__nav a[aria-current]{ color:var(--accent); border-bottom-color:var(--accent); }
 .bg-topbar__nav a:focus-visible{ outline-offset:-3px; }
