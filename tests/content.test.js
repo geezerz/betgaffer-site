@@ -232,7 +232,8 @@ for (const name of Object.keys(PAGES)) {
   });
 
   test(`${name}: refuses to render without an operator identity (S8)`, () => {
-    assert.throws(() => renderPage(name, { ...siteConfig }), /legal_name/);
+    const blanked = { ...siteConfig, operator: { ...siteConfig.operator, legal_name: null, address: null, contact_email: null } };
+    assert.throws(() => renderPage(name, blanked), /legal_name/);
   });
 }
 
@@ -393,7 +394,7 @@ test('terms: not advice, no guarantee, estimates, 18+, not a bookmaker, FCCPA, L
     'We take no bets',
     'Federal Competition and Consumer Protection Act 2018',
     'Federal Republic of Nigeria',
-    'courts of Lagos State',
+    'courts of the Federal Capital Territory, Abuja',
     'Responsible play',
     'Never stake what you cannot afford to lose',
     'Take a break when it stops being fun',
@@ -472,8 +473,8 @@ const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will 
   + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
 const PRICES_LATER = 'Prices will be published here before any payment is taken.';
 
-test('features: pricing intent without figures by default (S9)', () => {
-  const html = renderPage('features');
+test('features: pricing intent without figures when show_prices is off (S9)', () => {
+  const html = renderPage('features', cfg({ pricing: { show_prices: false } }));
   const t = visibleText(html);
   assert.ok(t.includes(PRICING_INTENT), 'pricing intent');
   assert.ok(t.includes(PRICES_LATER), 'prices later');
@@ -493,6 +494,21 @@ test('features: show_prices renders the tier table instead of the last sentence'
   assert.match(t, /VAT-inclusive/);
 });
 
+test('features: the tier table says what separates the plans', () => {
+  const html = renderPage('features', cfg({ pricing: { show_prices: true } }));
+  assert.match(html, /Paid plans differ by the competitions they cover\./);
+});
+
+test('shipped config: operator identity and published prices', async () => {
+  const { default: shipped } = await import('../site/config.js');
+  assert.equal(shipped.operator.legal_name, 'BETGAFFER LTD');
+  assert.equal(shipped.operator.rc_number, '9885410');
+  assert.equal(shipped.operator.contact_email, 'contact@betgaffer.com');
+  assert.equal(shipped.pricing.show_prices, true);
+  assert.deepEqual(shipped.pricing.tiers.map((t) => [t.name, t.monthly]),
+    [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 10000]]);
+});
+
 test('features: tiers come from config and are validated', () => {
   const html = renderPage('features', cfg({ pricing: { show_prices: true, tiers: [{ name: 'A<b>', monthly: 1234567 }] } }));
   assert.ok(html.includes('A&lt;b&gt;') && html.includes('₦1,234,567'));
@@ -505,11 +521,10 @@ test('features: tiers come from config and are validated', () => {
   }
 });
 
-test('features: the shipped config carries no prices, and flipping show_prices alone refuses to render', () => {
-  assert.deepEqual(siteConfig.pricing.tiers, []);
-  const shipped = { ...siteConfig, operator: { ...siteConfig.operator, ...OP } };
-  assert.doesNotMatch(renderPage('features', shipped), /₦|ct-tiers/);
-  assert.throws(() => renderPage('features', { ...shipped, pricing: { ...siteConfig.pricing, show_prices: true } }), /pricing\.tiers/);
+test('features: show_prices with no tiers refuses to render; the shipped config renders its tier table', () => {
+  assert.match(renderPage('features', siteConfig), /<table class="bg-table ct-tiers">[\s\S]*Elite/);
+  assert.throws(() => renderPage('features', { ...siteConfig, pricing: { ...siteConfig.pricing, show_prices: true, tiers: [] } }), /pricing\.tiers/);
+  assert.doesNotMatch(renderPage('features', { ...siteConfig, pricing: { ...siteConfig.pricing, show_prices: false } }), /₦|ct-tiers/);
 });
 
 test('features: the waitlist HTML is placed verbatim under a "Founding waitlist" heading', () => {

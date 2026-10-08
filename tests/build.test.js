@@ -396,8 +396,9 @@ describe('a refused build leaves dist exactly as it was', () => {
     await untouched();
   });
 
-  test('the real site/config.js (operator not yet supplied) -> throws naming legal_name, address and contact_email', async () => {
-    await assert.rejects(build({ root: ws.root, out: ws.out, config: realConfig, now: NOW, warn: quiet }),
+  test('the real site/config.js with its operator identity blanked -> throws naming legal_name, address and contact_email', async () => {
+    const blanked = { ...realConfig, operator: { ...realConfig.operator, legal_name: null, address: null, contact_email: null } };
+    await assert.rejects(build({ root: ws.root, out: ws.out, config: blanked, now: NOW, warn: quiet }),
       (e) => ['legal_name', 'address', 'contact_email'].every((k) => e.message.includes(k)));
     await untouched();
   });

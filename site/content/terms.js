@@ -133,7 +133,7 @@ function sections(op, repo) {
     {
       id: 'law',
       title: 'Governing law',
-      now: `<p>These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of Lagos State have jurisdiction. This does not affect any right you have to complain to a regulator or to bring a claim under the ${FCCPA}.</p>`,
+      now: `<p>These terms are governed by the laws of the Federal Republic of Nigeria, and the courts of the Federal Capital Territory, Abuja have jurisdiction. This does not affect any right you have to complain to a regulator or to bring a claim under the ${FCCPA}.</p>`,
       launch: SAME,
     },
     {

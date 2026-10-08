@@ -10,11 +10,11 @@ const config = {
   brand: 'Bet Gaffer',
   descriptor: 'football match intelligence',
   operator: {
-    legal_name: null,
+    legal_name: 'BETGAFFER LTD',
     trading_name: 'Bet Gaffer',
-    address: null,
-    rc_number: null,
-    contact_email: null,
+    address: '1 Bouar Close, off Bangui Street, Wuse 2, Abuja',
+    rc_number: '9885410',
+    contact_email: 'contact@betgaffer.com',
     privacy_email: null, // defaults to contact_email
     // Optional: who hosts the operator's mailbox that Cloudflare Email Routing forwards to (e.g.
     // 'Google (Gmail)'). Named in the privacy policy; null reads "an email provider". Not required.
@@ -22,12 +22,17 @@ const config = {
   },
   founding_places: 500,
   pricing: {
-    show_prices: false,
+    show_prices: true,
     currency: 'NGN',
     // Filled in ({ name, monthly } with monthly in whole naira) when the operator decides to publish
     // prices, in the same commit that sets show_prices: true. requireOperator() refuses
     // show_prices: true while this is empty.
-    tiers: [],
+    tiers: [
+      { name: 'Free account', monthly: 0 },
+      { name: 'Starter', monthly: 1500 },
+      { name: 'Pro', monthly: 3000 },
+      { name: 'Elite', monthly: 10000 },
+    ],
   },
   stale_after_hours: 6,
 };

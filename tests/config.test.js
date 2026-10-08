@@ -11,10 +11,8 @@ test('config carries the plan constants', () => {
   assert.equal(config.descriptor, 'football match intelligence');
   assert.equal(config.founding_places, 500);
   assert.equal(config.stale_after_hours, 6);
-  assert.equal(config.pricing.show_prices, false);
   assert.equal(config.pricing.currency, 'NGN');
-  // No price figures live in the public repository until the operator decides to publish them.
-  assert.deepEqual(config.pricing.tiers, []);
+  // The published identity and prices are asserted in content.test.js ("shipped config").
   assert.equal(config.operator.trading_name, 'Bet Gaffer');
 });
 
