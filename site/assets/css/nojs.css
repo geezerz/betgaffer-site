@@ -1,0 +1,32 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — no JavaScript (spec §16.3).
+   Linked from <head> inside <noscript>, AFTER site.css, so it loads only when
+   scripting is off and wins on equal selectors. Never concatenated into
+   site.css (build.mjs ships it as its own file): with JS on it would undo the
+   ☰ menu.
+
+   Below 600px it restores today's header: no ☰, the nav back in flow as a
+   full-width row of four equal tabs under the wordmark. Every nav property
+   base.css's small-screen menu block changes is set back here to the tab
+   row's value (a test pins each pair), then the <360px label shrink, which
+   must come last (same specificity: the later rule wins).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width:599.98px){
+  html{ scroll-padding-top:calc(var(--bar-h) + 52px); } /* two rows: the bar and the tabs */
+
+  .bg-burger{ display:none; }
+  .bg-topbar__panel{ display:contents; }
+  .bg-topbar__legal{ display:none; }
+
+  .bg-topbar__nav{ margin-inline:calc(var(--gutter) * -1); border-top:1px solid var(--line); }
+  .bg-topbar__nav ul{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .bg-topbar__nav a{
+    justify-content:center; text-align:center;
+    min-height:var(--tap); padding:6px 2px;
+    font-size:11px; letter-spacing:.04em;
+    border-bottom:2px solid transparent; border-left:0;
+  }
+  .bg-topbar__nav a[aria-current]{ border-left-color:transparent; }
+}
+@media (max-width:359.98px){ .bg-topbar__nav a{ font-size:10px; letter-spacing:.02em; } }

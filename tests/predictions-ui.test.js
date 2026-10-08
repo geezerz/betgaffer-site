@@ -50,11 +50,21 @@ function pageOf(day = EDGE) {
     + `<main id="main">${renderDay(day, { beforeList: foundingCard() })}</main></body></html>`;
 }
 
+/** Injected timers on a fake clock: run() fires everything; advance(ms) fires only what is due. */
 function timers() {
-  const t = { pending: new Map(), seq: 0, cleared: 0 };
-  t.setTimer = (fn, ms) => { t.seq += 1; t.pending.set(t.seq, { fn, ms }); return t.seq; };
+  const t = { pending: new Map(), seq: 0, cleared: 0, now: 0 };
+  t.setTimer = (fn, ms) => { t.seq += 1; t.pending.set(t.seq, { fn, ms, at: t.now + ms }); return t.seq; };
   t.clearTimer = (id) => { if (t.pending.delete(id)) t.cleared += 1; };
   t.run = () => { const all = [...t.pending.values()]; t.pending.clear(); for (const x of all) x.fn(); };
+  t.advance = (ms) => {
+    t.now += ms;
+    for (const [id, x] of [...t.pending]) {
+      if (x.at <= t.now) {
+        t.pending.delete(id);
+        x.fn();
+      }
+    }
+  };
   return t;
 }
 
@@ -166,19 +176,52 @@ describe('the toolbar', () => {
 
 // ------------------------------------------------------------------ search
 
+const waitLine = (s) => s.tools.querySelector('.tools-wait');
+const waiting = (s) => waitLine(s).hasAttribute('data-run');
+
 describe('search', () => {
-  test('filters ~150 ms after the last keystroke, not before; each keystroke restarts the wait', () => {
+  test('waits SEARCH_DELAY_MS (2 s) after the last keystroke: nothing at 1,999 ms, applied at 2,000 ms', () => {
+    assert.equal(pred.SEARCH_DELAY_MS, 2000, 'spec §16.1: two seconds');
+    const s = setup();
+    type(s, 'zeta');
+    s.t.advance(1999);
+    assert.equal(visible(s.doc).length, EDGE.fixtures.length, 'nothing at 1,999 ms');
+    s.t.advance(1);
+    assert.equal(visible(s.doc).length, 3, 'applied at 2,000 ms');
+    assert.equal(s.t.pending.size, 0);
+  });
+
+  test('each keystroke restarts the wait (the earlier timer is cancelled)', () => {
     const s = setup();
     type(s, 'al');
-    assert.equal(visible(s.doc).length, EDGE.fixtures.length, 'not before the debounce');
     assert.equal(s.t.pending.size, 1);
-    assert.equal([...s.t.pending.values()][0].ms, 150);
+    assert.equal([...s.t.pending.values()][0].ms, 2000);
+    s.t.advance(1500);
     type(s, 'alpha');
     assert.equal(s.t.cleared, 1, 'the earlier wait is cancelled');
     assert.equal(s.t.pending.size, 1);
-    s.t.run();
+    s.t.advance(1999);
+    assert.equal(visible(s.doc).length, EDGE.fixtures.length, '3,499 ms after the first key, 1,999 after the last: nothing yet');
+    s.t.advance(1);
     assert.deepEqual(sorted(visible(s.doc)), fxOf((f) => f.comp === 'Alpha League'));
     assert.equal(tool(s, 'clear').hidden, false, '× shows while the field has text');
+  });
+
+  test('the progress line: aria-hidden, runs while waiting, restarts on each keystroke, resets when applied', () => {
+    const s = setup();
+    const line = waitLine(s);
+    assert.ok(line, 'a .tools-wait line');
+    assert.equal(line.localName, 'span');
+    assert.equal(line.getAttribute('aria-hidden'), 'true');
+    assert.ok(s.tools.querySelector('.bg-search').contains(line), 'under the field, inside the search pill');
+    assert.equal(waiting(s), false, 'idle: not running');
+    type(s, 'ze');
+    assert.equal(waiting(s), true, 'running while the search waits');
+    const first = line.getAttribute('data-run');
+    type(s, 'zet');
+    assert.notEqual(line.getAttribute('data-run'), first, 'a new keystroke restarts the animation (the other keyframes)');
+    s.t.advance(2000);
+    assert.equal(waiting(s), false, 'applied: the line resets');
   });
 
   test('Esc in the field clears it immediately; clearing by hand shows everything immediately', () => {
@@ -201,6 +244,17 @@ describe('search', () => {
     assert.equal(s.t.pending.size, 0);
   });
 
+  test('Esc during the wait cancels the pending search and resets the progress line', () => {
+    const s = setup();
+    const input = type(s, 'zeta');
+    assert.equal(waiting(s), true, 'premise: waiting');
+    fire(input, 'keydown', { key: 'Escape' });
+    assert.equal(s.t.pending.size, 0, 'the pending timer is cancelled');
+    assert.equal(waiting(s), false, 'the line resets');
+    s.t.advance(5000);
+    assert.equal(visible(s.doc).length, EDGE.fixtures.length, 'nothing applies later');
+  });
+
   test('the × button clears and returns focus to the field', () => {
     const s = setup();
     const input = type(s, 'zeta');
@@ -211,12 +265,32 @@ describe('search', () => {
     assert.equal(s.doc.activeElement, input);
   });
 
-  test('Enter applies at once', () => {
+  test('clearing during the wait (× or an emptied field) applies at once and cancels the pending search', () => {
+    for (const how of ['x', 'empty']) {
+      const s = setup();
+      const input = type(s, 'zeta');
+      s.t.advance(1000);
+      if (how === 'x') fire(tool(s, 'clear'), 'click');
+      else type(s, '');
+      assert.equal(input.value, '');
+      assert.equal(s.t.pending.size, 0, `${how}: the pending timer is cancelled`);
+      assert.equal(waiting(s), false, `${how}: the line resets`);
+      s.t.advance(5000);
+      assert.equal(visible(s.doc).length, EDGE.fixtures.length, `${how}: the cancelled search never applies`);
+    }
+  });
+
+  test('Enter applies at once, cancels the pending timer and resets the progress line', () => {
     const s = setup();
     const input = type(s, 'zeta');
-    fire(input, 'keydown', { key: 'Enter' });
-    assert.equal(visible(s.doc).length, 3);
+    assert.equal(waiting(s), true, 'premise: waiting');
+    s.t.advance(10);
+    const ev = fire(input, 'keydown', { key: 'Enter' });
+    assert.equal(ev.defaultPrevented, true);
+    assert.equal(visible(s.doc).length, 3, 'no 2-second wait');
     assert.equal(s.t.pending.size, 0);
+    assert.equal(s.t.cleared, 1, 'the pending timer was cancelled, not left to fire again');
+    assert.equal(waiting(s), false);
   });
 
   test('multi-word, accent and punctuation matches, end to end over the rendered names', () => {
@@ -393,6 +467,8 @@ describe('the Leagues dialog', () => {
     const box = dialog(s).querySelector('input[type="search"]');
     box.value = 'quotes';
     fire(box, 'input');
+    assert.equal(s.t.pending.size, 0, 'the Leagues search is instant: no timer (spec §16.1 is the main search only)');
+    assert.equal(dialog(s).querySelector('.tools-wait'), null, 'and no progress line');
     const shown = options(s).filter((c) => !c.parentNode.parentNode.hidden).map(optName);
     assert.deepEqual(shown, ['"Quotes" & Ampersand Cup']);
     box.value = 'nothing here';
@@ -665,6 +741,54 @@ describe('source and stylesheet', () => {
     const day = readFileSync(join(REPO_ROOT, 'site/assets/js/day.js'), 'utf8');
     assert.match(day, /from '\.\/predictions\.js'/);
     assert.match(day, /typeof HTMLDialogElement !== 'undefined'/);
+  });
+
+  const stripCss = (f) => readFileSync(join(REPO_ROOT, 'site/assets/css', f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  /** Every declaration block whose selector list contains `sel` exactly (at any nesting). */
+  const blocksFor = (css, sel) => [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter((m) => m[1].split(',').map((x) => x.trim()).includes(sel)).map((m) => m[2]);
+  const px = (v) => {
+    const m = /^(?:max\(\s*(\d+(?:\.\d+)?)px\s*,[^)]*\)|(\d+(?:\.\d+)?)px)$/.exec(v.trim());
+    return m ? Number(m[1] ?? m[2]) : NaN;
+  };
+
+  test('16 px or more on every text input (iOS does not zoom on focus): search, Leagues search, waitlist email', () => {
+    const cases = [['predictions.css', '.bg-search__input'], ['predictions.css', '.bg-pick__search input'], ['waitlist.css', '.bg-wl__input']];
+    for (const [file, sel] of cases) {
+      const sizes = blocksFor(stripCss(file), sel).flatMap((b) => [...b.matchAll(/(?:^|;)\s*font-size:\s*([^;]+)/g)].map((m) => m[1]));
+      assert.ok(sizes.length > 0, `${sel}: a font-size is set`);
+      for (const v of sizes) assert.ok(px(v) >= 16, `${sel}: font-size ${v} is at least 16px`);
+    }
+    // Premise: the parser reads a sub-16 size as a failure.
+    assert.ok(!(px('15px') >= 16) && px('max(16px, 1em)') === 16 && px('16px') === 16);
+  });
+
+  test('the progress line: transform-only, as long as SEARCH_DELAY_MS, restartable, still under reduced motion', () => {
+    const css = stripCss('predictions.css');
+    const base = blocksFor(css, '.tools-wait').join(';');
+    assert.match(base, /position:\s*absolute/);
+    assert.match(base, /transform:\s*scaleX\(0\)/, 'idle: drawn at zero width');
+    assert.match(base, /transform-origin:\s*left/);
+    assert.match(base, /pointer-events:\s*none/);
+    const runs = ['a', 'b'].map((k) => blocksFor(css, `.tools-wait[data-run="${k}"]`).join(';'));
+    const names = runs.map((r) => {
+      const m = /animation:\s*([\w-]+)\s+(\d+)ms\s+linear\s+forwards/.exec(r);
+      assert.ok(m, `a run rule: ${r}`);
+      assert.equal(Number(m[2]), pred.SEARCH_DELAY_MS, 'the line lasts exactly the wait');
+      return m[1];
+    });
+    assert.notEqual(names[0], names[1], 'two keyframe names: switching restarts the animation');
+    for (const n of names) {
+      const kf = new RegExp(`@keyframes\\s+${n}\\s*\\{((?:[^{}]*\\{[^}]*\\})*)\\s*\\}`).exec(css);
+      assert.ok(kf, `@keyframes ${n}`);
+      const props = [...kf[1].matchAll(/([\w-]+)\s*:/g)].map((m) => m[1]);
+      assert.ok(props.length >= 2, `premise: ${n} parsed`);
+      assert.deepEqual([...new Set(props)], ['transform'], `${n}: transform only (composited, no layout)`);
+    }
+    const reduced = /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([^@]*?\}\s*)\}/.exec(css);
+    assert.ok(reduced, 'a reduced-motion block');
+    assert.match(reduced[1], /\.tools-wait\[data-run\]\s*\{[^}]*animation:\s*none/, 'reduced motion: no animation');
+    assert.match(reduced[1], /\.tools-wait\[data-run\]\s*\{[^}]*transform:\s*scaleX\(1\)/, 'a still line shows the wait');
   });
 
   test('predictions.css: brand tokens only, [hidden] wins over every display it sets, 44px targets, scoped scroll padding', () => {

@@ -607,6 +607,77 @@ describe('balloon.js: position', () => {
   });
 });
 
+// Spec §16.7: CSS hides the day header's static ring from the first paint whenever scripting is on;
+// balloon.js puts html.ring-static on in every path where the floating ring is NOT shown.
+describe('balloon.js: html.ring-static (no flash of the old ring)', () => {
+  const RS = 'ring-static';
+  const hasRS = (doc) => doc.documentElement.classList.contains(RS);
+
+  test('the floating ring shows: no ring-static (the static ring stays hidden)', () => {
+    for (const width of [1280, 390]) {
+      const s = setup({ width });
+      assert.equal(s.el.hidden, false, `premise: shown at ${width}`);
+      assert.equal(hasRS(s.doc), false, `${width}`);
+      assert.equal(s.has(), true);
+    }
+  });
+
+  test('phone with nothing graded: ring-static on; desktop width shows the floating ring and drops it; back again', () => {
+    const s = setup({ width: 390, html: pageOf({ today: acc(0, 0) }) });
+    assert.equal(hasRS(s.doc), true, 'the static "No results yet" ring shows');
+    s.resize(1280);
+    assert.equal(s.el.hidden, false);
+    assert.equal(hasRS(s.doc), false, 'removed when the floating ring shows');
+    s.resize(390);
+    assert.equal(hasRS(s.doc), true);
+  });
+
+  test('invalid data: ring-static on (and nothing else rendered)', () => {
+    for (const html of [pageOf({ today: { ...A24, graded: 30 } }), pageOf({ date: 'yesterday' }), pageOf({ today: null, yesterday: null })]) {
+      const s = setup({ html });
+      assert.equal(s.api, null, 'premise: fail closed');
+      assert.equal(hasRS(s.doc), true, html);
+      assert.equal(s.has(), false);
+    }
+  });
+
+  test('no room below the bar: ring-static on; room again: off', () => {
+    const s = setup({ width: 600, height: 140 });
+    assert.equal(s.el.hidden, true, 'premise: no room');
+    assert.equal(hasRS(s.doc), true);
+    s.resize(600, 700);
+    assert.equal(hasRS(s.doc), false);
+  });
+
+  test('an unmeasurable viewport (place() throws): ring-static on', () => {
+    const doc = fakeDocument(pageOf());
+    doc.querySelector('.bg-topbar').getBoundingClientRect = () => { throw new Error('detached'); };
+    const win = { innerWidth: 1280, innerHeight: 800, addEventListener() {} };
+    const api = balloon.init({ doc, win, storage: memStorage(), raf: () => 1, cancelRaf: () => {}, now: () => NOW, setTimer: () => 1, ResizeObserver: undefined });
+    assert.ok(api, 'premise: the ring was built');
+    assert.equal(api.el.hidden, true);
+    assert.equal(hasRS(doc), true);
+  });
+
+  test('init failure: boot() puts ring-static on; a successful init leaves it to init', () => {
+    const doc = fakeDocument(pageOf());
+    let calls = 0;
+    balloon.boot({ doc, initFn: () => { calls++; throw new Error('boom'); } });
+    assert.equal(calls, 1);
+    assert.equal(hasRS(doc), true, 'a throwing init shows the static ring');
+    const ok = fakeDocument(pageOf());
+    balloon.boot({ doc: ok, initFn: () => ({}) });
+    assert.equal(hasRS(ok), false, 'boot adds nothing on success');
+  });
+
+  test('a second init on a page that already has the ring changes nothing', () => {
+    const s = setup();
+    assert.equal(hasRS(s.doc), false, 'premise');
+    assert.equal(balloon.init({ doc: s.doc, win: s.win, storage: memStorage(), setTimer: () => 1, raf: () => 1 }), null);
+    assert.equal(hasRS(s.doc), false, 'the shown ring keeps the static one hidden');
+  });
+});
+
 describe('balloon.js: drag', () => {
   function dragSetup(o = {}) {
     const s = setup(o);
@@ -807,10 +878,42 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.doesNotMatch(CSS, /\.bg-page/, 'no <main> padding: nothing sits at the bottom any more');
   });
 
-  test('balloon.css: the floating ring replaces the day header\'s static ring only while it is shown', () => {
-    assert.match(CSS, /html\.has-balloon\s+\.day-head\s+\.ring\s*\{\s*display:\s*none;?\s*\}/);
-    // The only rule that hides .ring is scoped to html.has-balloon (no-JS and a hidden ring keep it).
+  test('balloon.css: with scripting on, the static ring is hidden from the first paint; html.ring-static shows it again (spec §16.7)', () => {
+    assert.match(CSS, /@media\s*\(scripting:\s*enabled\)\s*\{\s*\.day-head\s+\.ring\s*\{\s*display:\s*none;?\s*\}\s*\}/);
+    // ring-static gives the ring back its own display (fixtures.css .ring), at a higher specificity.
+    const fx = readFileSync(join(REPO_ROOT, 'site/assets/css/fixtures.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const ringDisplay = /(?:^|\})\s*\.ring\s*\{[^}]*?display:\s*([a-z-]+)/.exec(fx)?.[1];
+    assert.ok(ringDisplay && ringDisplay !== 'none', `premise: .ring's display (${ringDisplay})`);
+    const shows = /(?:^|\})\s*html\.ring-static\s+\.day-head\s+\.ring\s*\{\s*display:\s*([a-z-]+);?\s*\}/.exec(CSS);
+    assert.ok(shows, 'html.ring-static .day-head .ring rule, at the top level (not inside any @media)');
+    assert.equal(shows[1], ringDisplay);
+    // Only two rules hide .ring: the scripting one (no-JS readers keep the static ring) and, for a
+    // browser without the scripting media feature, the old has-balloon swap (spec: "keep the current
+    // behaviour"). Neither ever applies without JS.
     const hides = [...CSS.matchAll(/([^{}]+)\{[^{}]*display:\s*none[^{}]*\}/g)].map((m) => m[1].trim()).filter((sel) => /\.ring\b/.test(sel));
-    assert.deepEqual(hides, ['html.has-balloon .day-head .ring']);
+    assert.deepEqual(hides, ['.day-head .ring', 'html.has-balloon .day-head .ring']);
+    assert.match(CSS, /\}\s*html\.has-balloon\s+\.day-head\s+\.ring\s*\{\s*display:\s*none;?\s*\}/, 'has-balloon hide at the top level');
+  });
+
+  test('balloon.js: has-balloon and ring-static are never on together (equal specificity: order must not matter)', () => {
+    const cases = [
+      { width: 1280 }, { width: 390 }, { width: 390, html: pageOf({ today: acc(0, 0) }) }, { width: 600, height: 140 },
+      { html: pageOf({ today: null, yesterday: null }) },
+    ];
+    for (const o of cases) {
+      const s = setup(o);
+      const cls = s.doc.documentElement.classList;
+      for (const w of [o.width ?? 1280, 390, 1280]) {
+        s.resize(w, o.height);
+        assert.ok(cls.contains('has-balloon') !== cls.contains('ring-static'), `${JSON.stringify(o)} at ${w}: exactly one`);
+      }
+    }
+  });
+
+  test('balloon.js: ring-static is set in every no-ring path (show(false), the early fail-closed returns, boot\'s catch)', () => {
+    const src = strip(JS);
+    assert.match(src, /classList\.toggle\(\s*'ring-static',\s*!on\s*\)/, 'show(on) mirrors it');
+    assert.match(src, /export function boot\(/);
+    assert.match(src, /boot\(\s*\)/, 'the module start goes through boot()');
   });
 });

@@ -63,7 +63,8 @@ test('page() returns a complete HTML document with the required head', () => {
   assert.match(html, /<meta property="og:title" content="Our Record — Bet Gaffer">/);
   assert.match(html, /<meta property="og:description" content="The graded record of every published pick.">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/betgaffer.com\/our-record\/">/);
-  const sheets = html.match(/<link rel="stylesheet"[^>]*>/g) || [];
+  // Outside <noscript>: exactly one stylesheet. The no-JS sheet (spec §16.3) is inside <noscript>.
+  const sheets = html.replace(/<noscript>[\s\S]*?<\/noscript>/g, '').match(/<link rel="stylesheet"[^>]*>/g) || [];
   assert.deepEqual(sheets, ['<link rel="stylesheet" href="/assets/css/site.css">'], 'exactly one stylesheet');
   assert.match(html, /<\/html>\s*$/);
 });
@@ -159,10 +160,11 @@ test('premise: the CSP check fails on inline script, <style>, style= and handler
   }
 });
 
-test('no inline script, no <style>, no style= anywhere (no scripts)', () => {
+test('no inline script, no <style>, no style= anywhere (no page scripts)', () => {
   const html = base({ banner: false });
   assertCspClean(html);
-  assert.doesNotMatch(html, /<script/i, 'no scripts unless asked for (and no banner)');
+  // The small-screen menu's script loads on every page (spec §16.3); nothing else unless asked for.
+  assert.deepEqual(moduleScripts(html), ['/assets/js/nav.js'], 'only nav.js unless asked for (and no banner)');
   assertCspClean(base()); // with the banner too
 });
 
@@ -171,7 +173,7 @@ test('scripts render as external module scripts only', () => {
   assertCspClean(html);
   assert.match(html, /<script type="module" src="\/assets\/js\/stale.js"><\/script>/);
   assert.match(html, /<script type="module" src="\/assets\/js\/day.js"><\/script>/);
-  assert.equal((html.match(/<script\b/g) || []).length, 2);
+  assert.equal((html.match(/<script\b/g) || []).length, 3, 'nav.js + the two asked for');
 });
 
 test('script sources must be same-origin root-relative paths', () => {
@@ -340,20 +342,20 @@ test('the close button is hidden in the static HTML (no JS: the banner shows and
   assert.equal(textOf(b), '×');
 });
 
-test('banner: true loads /assets/js/banner.js as the FIRST module script, once', () => {
-  assert.deepEqual(moduleScripts(base()), ['/assets/js/banner.js']);
+test('banner: true loads /assets/js/banner.js as the FIRST module script, once; nav.js second', () => {
+  assert.deepEqual(moduleScripts(base()), ['/assets/js/banner.js', '/assets/js/nav.js']);
   assert.deepEqual(moduleScripts(base({ scripts: ['/assets/js/stale.js', '/assets/js/day.js'] })),
-    ['/assets/js/banner.js', '/assets/js/stale.js', '/assets/js/day.js']);
-  // A caller that lists banner.js itself still gets it once, first.
-  assert.deepEqual(moduleScripts(base({ scripts: ['/assets/js/stale.js', '/assets/js/banner.js'] })),
-    ['/assets/js/banner.js', '/assets/js/stale.js']);
+    ['/assets/js/banner.js', '/assets/js/nav.js', '/assets/js/stale.js', '/assets/js/day.js']);
+  // A caller that lists banner.js or nav.js itself still gets each once, in the pinned order.
+  assert.deepEqual(moduleScripts(base({ scripts: ['/assets/js/stale.js', '/assets/js/banner.js', '/assets/js/nav.js'] })),
+    ['/assets/js/banner.js', '/assets/js/nav.js', '/assets/js/stale.js']);
 });
 
-test('banner: false renders neither the banner nor banner.js', () => {
+test('banner: false renders neither the banner nor banner.js; nav.js is still first', () => {
   const html = base({ banner: false, scripts: ['/assets/js/waitlist.js'] });
   assert.equal(bannerOf(html), null);
   assert.doesNotMatch(html, /data-banner|bg-banner|banner\.js/);
-  assert.deepEqual(moduleScripts(html), ['/assets/js/waitlist.js']);
+  assert.deepEqual(moduleScripts(html), ['/assets/js/nav.js', '/assets/js/waitlist.js']);
   assert.throws(() => base({ banner: 'no' }), /banner/);
   assert.throws(() => base({ banner: null }), /banner/);
 });
@@ -487,6 +489,153 @@ test('below 360px the tab labels shrink so "PREDICTIONS" stays one word; overflo
   const tab = /\.bg-topbar__nava\{([^}]*)\}/.exec(s.slice(fourTabs))[1];
   assert.match(tab, /overflow-wrap:anywhere/);
   assert.match(tab, /font-size:11px/, 'premise: 11px from 360px up');
+});
+
+// ---------------------------------------------------------------------------------------------
+// The small-screen menu (spec §16.3, plan C amendment "Hamburger")
+// ---------------------------------------------------------------------------------------------
+
+/** Rules of a stylesheet as { media, sels, decls }; one level of @media is unwrapped (media has no spaces). */
+function cssRules(file) {
+  const src = readFileSync(join(ASSETS, 'css', file), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const out = [];
+  const add = (media, selText, body) => out.push({
+    media,
+    sels: selText.split(',').map((x) => x.trim().replace(/\s+/g, ' ')),
+    decls: [...body.matchAll(/([\w-]+)\s*:\s*([^;]+)/g)].map((m) => [m[1], m[2].trim()]),
+  });
+  for (const m of src.matchAll(/@media([^{]+)\{((?:[^{}]*\{[^{}]*\})*)\s*\}|@keyframes[^{]*\{(?:[^{}]*\{[^{}]*\})*\s*\}|@font-face\s*\{[^}]*\}|([^{}@]+)\{([^{}]*)\}/g)) {
+    if (m[1] !== undefined) {
+      for (const r of m[2].matchAll(/([^{}]+)\{([^{}]*)\}/g)) add(m[1].replace(/\s+/g, ''), r[1], r[2]);
+    } else if (m[3] !== undefined) {
+      add(null, m[3], m[4]);
+    }
+  }
+  return out;
+}
+const NARROW = '(max-width:599.98px)';
+/** The value `prop` gets for `sel` in `media` (the last declaration wins), or undefined. */
+function valueOf(rules, sel, prop, media = null) {
+  let v;
+  for (const r of rules) if (r.media === media && r.sels.includes(sel)) for (const [p, x] of r.decls) if (p === prop) v = x;
+  return v;
+}
+
+test('menu markup: a ☰ button controls #bg-nav-panel; the panel holds the four nav links and a SEPARATE legal list', () => {
+  const doc = parse(base());
+  const bar = find(doc, (n) => n.tag === 'header' && n.attrs.class === 'bg-topbar');
+  const inner = find(bar, (n) => n.attrs.class === 'bg-topbar__in');
+  const kids = inner.children.filter((c) => c.tag !== undefined);
+  assert.deepEqual(kids.map((k) => k.attrs.class), ['bg-wordmark', 'bg-burger', 'bg-topbar__panel'], 'wordmark, ☰, panel');
+  const btn = kids[1];
+  assert.equal(btn.tag, 'button');
+  assert.equal(btn.attrs.type, 'button');
+  assert.equal(btn.attrs['aria-expanded'], 'false');
+  assert.equal(btn.attrs['aria-controls'], 'bg-nav-panel');
+  assert.equal(btn.attrs.hidden, undefined, 'shown by the CSS below 600 px (the default layout, no JS class needed)');
+  assert.equal(textOf(find(btn, (n) => n.attrs.class === 'vh')), 'Menu', 'an accessible name');
+  const icon = find(btn, (n) => n.attrs.class === 'bg-burger__bars');
+  assert.ok(icon && icon.attrs['aria-hidden'] === 'true', 'the drawn ☰ is decorative');
+  const panel = kids[2];
+  assert.equal(panel.attrs.id, 'bg-nav-panel');
+  assert.equal(panel.attrs['data-open'], undefined, 'closed in the static HTML');
+  const nav = find(panel, (n) => n.tag === 'nav');
+  assert.equal(nav.attrs.class, 'bg-topbar__nav');
+  assert.equal(nav.attrs['aria-label'], 'Primary');
+  const navLinks = findAll(nav, (n) => n.tag === 'a');
+  assert.deepEqual(navLinks.map((a) => [a.attrs.href, textOf(a)]), NAV.map((n) => [n.href, n.label]), 'exactly the four nav links');
+  const legal = find(panel, (n) => n.tag === 'ul' && n.attrs.class === 'bg-topbar__legal');
+  assert.ok(legal, 'a legal list in the panel');
+  assert.equal(find(nav, (n) => n === legal), null, 'not inside the 4-column nav grid');
+  assert.equal(legal.attrs['aria-label'], 'Legal');
+  assert.deepEqual(findAll(legal, (n) => n.tag === 'a').map((a) => [a.attrs.href, textOf(a)]),
+    [['/privacy/', 'Privacy'], ['/terms/', 'Terms'], ['/refunds/', 'Refunds']]);
+  assertCspClean(base());
+});
+
+test('no JS: <noscript> in <head> links /assets/css/nojs.css, after site.css (same selectors: the later sheet wins)', () => {
+  const html = base({ banner: false });
+  const head = html.slice(0, html.indexOf('</head>'));
+  assert.match(head, /<noscript><link rel="stylesheet" href="\/assets\/css\/nojs\.css"><\/noscript>/);
+  assert.ok(head.indexOf('nojs.css') > head.indexOf('/assets/css/site.css'), 'after site.css');
+  assert.equal((html.match(/nojs\.css/g) || []).length, 1);
+  assert.ok(existsSync(join(ASSETS, 'css', 'nojs.css')), 'the sheet exists');
+});
+
+test('base.css: the ☰ layout is the DEFAULT below 600 px; at 600 px and wider the burger is hidden and the inline nav unchanged', () => {
+  const r = cssRules('base.css');
+  assert.equal(valueOf(r, '.bg-burger', 'display'), 'none', 'hidden outside the small-screen block');
+  assert.equal(valueOf(r, '.bg-burger[hidden]', 'display'), 'none');
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'display'), 'contents', 'wide: the panel is no box, the nav is inline as before');
+  assert.equal(valueOf(r, '.bg-topbar__legal', 'display'), 'none', 'wide: the footer carries the legal links');
+  assert.equal(valueOf(r, '.bg-burger[hidden]', 'display', NARROW), undefined, 'premise: [hidden] lives once, top level');
+  // Below 600: wordmark + ☰, the nav in a closed panel.
+  assert.equal(valueOf(r, '.bg-burger', 'display', NARROW), 'inline-flex');
+  assert.equal(valueOf(r, '.bg-burger', 'min-width', NARROW), 'var(--tap)');
+  assert.equal(valueOf(r, '.bg-burger', 'min-height', NARROW), 'var(--tap)');
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'display', NARROW), 'none', 'closed by default');
+  assert.equal(valueOf(r, '.bg-topbar__panel[data-open]', 'display', NARROW), 'block');
+  assert.equal(valueOf(r, '.bg-topbar__legal', 'display', NARROW), 'flex');
+  // The panel never changes the topbar's height (ResizeObserver consumers measure it): out of flow.
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'position', NARROW), 'fixed');
+  assert.match(valueOf(r, '.bg-topbar__panel', 'top', NARROW), /^calc\(var\(--bar-h\) \+ 1px\)$/, 'just below the single-row bar');
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'left', NARROW), '0');
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'right', NARROW), '0');
+  assert.equal(valueOf(r, '.bg-topbar__panel', 'overflow-y', NARROW), 'auto', 'a short landscape screen scrolls the panel');
+  for (const rule of r.filter((x) => x.sels.includes('.bg-topbar__panel[data-open]'))) {
+    assert.deepEqual(rule.decls.map(([p]) => p), ['display'], 'opening only shows the panel: nothing that could re-flow the bar');
+  }
+  // Only the small-screen block shows the burger: no other width does.
+  for (const rule of r) {
+    if (!rule.sels.includes('.bg-burger')) continue;
+    for (const [p, v] of rule.decls) if (p === 'display' && v !== 'none') assert.equal(rule.media, NARROW, `.bg-burger display:${v} in ${rule.media}`);
+  }
+  // The 600 px block (the inline nav) is untouched by the menu.
+  const wide = r.filter((x) => x.media === '(min-width:600px)');
+  assert.ok(wide.length >= 3, 'premise: the 600 px rules parsed');
+  for (const rule of wide) for (const s of rule.sels) assert.doesNotMatch(s, /burger|panel|legal/, s);
+});
+
+test('nojs.css: below 600 px it restores today\'s tab row exactly (every property the menu block changes), and hides the burger', () => {
+  const b = cssRules('base.css');
+  const n = cssRules('nojs.css');
+  assert.ok(n.length > 0, 'premise: nojs.css parsed');
+  for (const rule of n) assert.ok([NARROW, '(max-width:359.98px)'].includes(rule.media), `every nojs rule is small-screen only: ${rule.sels} in ${rule.media}`);
+  assert.equal(valueOf(n, '.bg-burger', 'display', NARROW), 'none');
+  assert.equal(valueOf(n, '.bg-topbar__panel', 'display', NARROW), 'contents', 'the nav is a flex item again: it wraps to its own row');
+  assert.equal(valueOf(n, '.bg-topbar__legal', 'display', NARROW), 'none');
+  let checked = 0;
+  for (const rule of b.filter((x) => x.media === NARROW)) {
+    for (const sel of rule.sels) {
+      if (/burger|panel|legal/.test(sel)) continue; // the menu's own elements: handled above
+      for (const [prop] of rule.decls) {
+        checked++;
+        const restored = valueOf(n, sel, prop, NARROW);
+        assert.ok(restored !== undefined, `nojs.css restores ${sel} { ${prop} }`);
+        const today = valueOf(b, sel, prop);
+        if (today !== undefined) assert.equal(restored, today, `${sel} { ${prop} } back to the tab row's value`);
+      }
+    }
+  }
+  assert.ok(checked >= 8, `premise: the menu block restyles the nav (${checked} declarations checked)`);
+  // The <360 px label shrink follows the restore (same specificity: the later rule wins).
+  assert.equal(valueOf(n, '.bg-topbar__nav a', 'font-size', '(max-width:359.98px)'), '10px');
+  const src = readFileSync(join(ASSETS, 'css', 'nojs.css'), 'utf8');
+  assert.ok(src.lastIndexOf('max-width:359.98px') > src.indexOf('max-width:599.98px'), 'the <360 px rule comes last');
+  // The two-row header's anchor offset comes back with the tab row.
+  assert.equal(valueOf(n, 'html', 'scroll-padding-top', NARROW), 'calc(var(--bar-h) + 52px)');
+});
+
+test('single-row header below 600 px: base.css and predictions.css fallbacks are the one-row values', () => {
+  const b = cssRules('base.css');
+  assert.equal(valueOf(b, 'html', 'scroll-padding-top'), 'calc(var(--bar-h) + 12px)', 'one row at every width');
+  assert.ok(!b.some((x) => x.media !== null && x.sels.includes('html') && x.decls.some(([p]) => p === 'scroll-padding-top')),
+    'no wider two-row offset below 640 px any more');
+  const p = cssRules('predictions.css');
+  assert.equal(valueOf(p, 'html.has-day-tools', 'scroll-padding-top'), 'calc(var(--bg-sticky-top, 57px) + var(--bg-tools-h, 112px) + 12px)');
+  assert.equal(valueOf(p, '.day-tools', 'top'), 'var(--bg-sticky-top, 57px)');
+  const src = readFileSync(join(ASSETS, 'css', 'predictions.css'), 'utf8');
+  assert.doesNotMatch(src, /97px/, 'no two-row fallback left');
 });
 
 test('the inactive Founding tab is green with an accent dot, never the current tab\'s background or underline', () => {

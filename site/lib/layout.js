@@ -23,6 +23,10 @@ export const NAV = Object.freeze([
 
 /** The founding banner's own script: the FIRST module script on every page that carries the banner. */
 export const BANNER_SCRIPT = '/assets/js/banner.js';
+/** The small-screen menu's script (spec §16.3): on EVERY page, right after banner.js (or first). */
+export const NAV_SCRIPT = '/assets/js/nav.js';
+/** Restores today's tab row below 600 px when scripting is off; linked inside <noscript>, never in site.css. */
+export const NOJS_CSS = '/assets/css/nojs.css';
 
 /** The founding Open Graph image (1200x630, generated once and committed) and its alt text. */
 export const OG_FOUNDING = '/assets/img/og-founding.png';
@@ -106,6 +110,13 @@ export function navCurrent({ href, section }, path) {
   return path === href || (section === true && href.endsWith('/') && path.startsWith(href));
 }
 
+/**
+ * The topbar (spec §2, §16.3). Below 600 px the CSS default is the wordmark and a ☰ button; the
+ * panel (#bg-nav-panel: the four nav links, then the legal links in their own list) opens below the
+ * bar. nav.js only opens and closes it. Without JS, nojs.css (in <noscript>) restores the tab row.
+ * From 600 px the panel is display:contents, so the nav sits inline exactly as before, and the
+ * button and the legal list are not displayed.
+ */
 function header(path) {
   const items = NAV.map((item) => {
     const { href, label, cls } = item;
@@ -113,11 +124,16 @@ function header(path) {
     const klass = cls ? ` class="${escAttr(cls)}"` : '';
     return `<li><a href="${escAttr(href)}"${klass}${current}>${escHtml(label)}</a></li>`;
   }).join('');
+  const legal = LEGAL.map(([href, label]) => `<li><a href="${escAttr(href)}">${escHtml(label)}</a></li>`).join('');
   return `<a class="bg-skip" href="#main">Skip to content</a>
 <header class="bg-topbar">
 <div class="bg-topbar__in">
 <a class="bg-wordmark" href="/" aria-label="Bet Gaffer — home">Bet<em>Gaffer</em></a>
+<button class="bg-burger" type="button" aria-expanded="false" aria-controls="bg-nav-panel"><span class="bg-burger__bars" aria-hidden="true"></span><span class="vh">Menu</span></button>
+<div class="bg-topbar__panel" id="bg-nav-panel">
 <nav class="bg-topbar__nav" aria-label="Primary"><ul role="list">${items}</ul></nav>
+<ul class="bg-topbar__legal" role="list" aria-label="Legal">${legal}</ul>
+</div>
 </div>
 </header>`;
 }
@@ -210,8 +226,10 @@ export function page({
 
   const fullTitle = `${title} — ${config.brand || 'Bet Gaffer'}`;
   const url = config.origin + (canonicalPath ?? path);
-  // banner.js first, so a dismissed banner is removed before any other module runs (spec §2).
-  const allScripts = withBanner ? [BANNER_SCRIPT, ...scripts.filter((s) => s !== BANNER_SCRIPT)] : scripts;
+  // banner.js first, so a dismissed banner is removed before any other module runs (spec §2); then
+  // nav.js on every page (spec §16.3); then the page's own scripts. Each at most once.
+  const own = scripts.filter((s) => s !== BANNER_SCRIPT && s !== NAV_SCRIPT);
+  const allScripts = [...(withBanner ? [BANNER_SCRIPT] : []), NAV_SCRIPT, ...own];
   const scriptTags = allScripts.map((s) => `<script type="module" src="${escAttr(s)}"></script>`).join('\n');
   const ogImageTags = ogImage === undefined ? '' : `<meta property="og:image" content="${escAttr(config.origin + ogImage)}">
 <meta property="og:image:width" content="${OG_WIDTH}">
@@ -235,6 +253,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
+<noscript><link rel="stylesheet" href="${escAttr(NOJS_CSS)}"></noscript>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">
 <meta property="og:title" content="${escAttr(fullTitle)}">

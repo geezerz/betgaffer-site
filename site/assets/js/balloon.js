@@ -17,8 +17,11 @@
 // Until the visitor drags it, the ring starts top right (operator, 2026-10-08): right from the CSS
 // (12px / 24px in, plus the right safe area), top = just below the header — or below the founding
 // banner while it is on screen, so its close button stays tappable — written through CSSOM.
-// While the ring is shown, <html> carries has-balloon and the CSS hides the day header's static
-// ring (the same figure); without JS, or with the ring hidden, the static ring stays.
+// No flash of the old ring (spec §16.7): with scripting on, balloon.css hides the day header's static
+// ring from the first paint. Whenever this module decides NOT to show the floating ring (nothing
+// graded on a phone, invalid figures, no room below the bar, an unmeasurable viewport, init failing)
+// it puts html.ring-static on, which shows the static ring again; showing the floating ring takes it
+// off. While the ring is shown <html> also carries has-balloon. Without JS the static ring stays.
 //
 // The figures are validated first and anything invalid draws nothing (fail closed). Everything is
 // built with DOM calls and textContent; the arc is the --pct custom property set through CSSOM
@@ -79,6 +82,16 @@ function span(doc, cls, text) {
   return e;
 }
 
+/** Show the day header's static ring again: the floating ring is not shown (spec §16.7). */
+function staticRing(doc) {
+  try {
+    const html = doc && doc.documentElement;
+    if (html) html.classList.add('ring-static');
+  } catch {
+    // Nothing more to do: the static ring stays hidden only in a browser that cannot run this.
+  }
+}
+
 /** The ring's inner content for one model and size. */
 function content(doc, m, compact) {
   const inner = span(doc, 'bg-balloon__inner', null);
@@ -127,11 +140,18 @@ export function init({
   setTimer = (fn, ms) => setTimeout(fn, ms),
   ResizeObserver: RO = globalThis.ResizeObserver,
 } = {}) {
-  if (!doc || !win || !doc.body || !doc.documentElement) return null;
+  if (!doc || !win || !doc.body || !doc.documentElement) {
+    staticRing(doc);
+    return null;
+  }
+  // A ring already on the page (a second init) keeps its own state.
+  if (doc.querySelector('.bg-balloon')) return null;
   const main = doc.querySelector('main');
-  if (!main || doc.querySelector('.bg-balloon')) return null;
-  const figures = readFigures((name) => main.getAttribute(`data-${name}`));
-  if (!figures) return null;
+  const figures = main ? readFigures((name) => main.getAttribute(`data-${name}`)) : null;
+  if (!figures) {
+    staticRing(doc); // fail closed: no floating ring, so the static one shows
+    return null;
+  }
 
   const html = doc.documentElement;
   const el = doc.createElement('a');
@@ -172,6 +192,7 @@ export function init({
   function show(on) {
     if (el.hidden === on) el.hidden = !on;
     html.classList.toggle('has-balloon', on);
+    html.classList.toggle('ring-static', !on);
   }
 
   /** The bottom of the sticky header (px from the viewport top). */
@@ -422,14 +443,21 @@ export function init({
   };
 }
 
+/**
+ * Start the ring; if init throws, the floating ring is not shown, so the day header's static ring
+ * (hidden by the CSS while scripting is on) is shown again.
+ */
+export function boot({ doc = globalThis.document, initFn = init } = {}) {
+  try {
+    return initFn();
+  } catch {
+    staticRing(doc);
+    return null;
+  }
+}
+
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {
-  const start = () => {
-    try {
-      init();
-    } catch {
-      // The day header's static ring still carries the figure.
-    }
-  };
+  const start = () => { boot(); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
   else start();
 }

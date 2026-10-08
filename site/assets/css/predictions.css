@@ -14,16 +14,19 @@
    The header is sticky, the banner is not; the toolbar sticks under the header.
    predictions.js measures both heights (ResizeObserver) into --bg-sticky-top and
    --bg-tools-h on <html>; the values below are the fallbacks per breakpoint.
+   The header is one row at every width (below 600px the nav is in the ☰ panel,
+   spec §16.3): 57px up to 1024px. Without JS this toolbar is never shown, so the
+   no-JS two-row header (nojs.css) needs no value here.
    Scoped to html.has-day-tools (set by the same script): other pages keep base.css's. */
 html.has-day-tools{
-  scroll-padding-top:calc(var(--bg-sticky-top, 97px) + var(--bg-tools-h, 112px) + 12px);
+  scroll-padding-top:calc(var(--bg-sticky-top, 57px) + var(--bg-tools-h, 112px) + 12px);
 }
 @media (min-width:600px){
   html.has-day-tools{ scroll-padding-top:calc(var(--bg-sticky-top, 57px) + var(--bg-tools-h, 60px) + 12px); }
 }
 
 .day-tools{
-  position:sticky; top:var(--bg-sticky-top, 97px); z-index:40;
+  position:sticky; top:var(--bg-sticky-top, 57px); z-index:40;
   display:flex; flex-direction:column;
   /* Bleed into the gutter so rows sliding underneath never show at the sides. */
   margin-inline:calc(var(--gutter) * -1); padding:8px var(--gutter);
@@ -32,7 +35,6 @@ html.has-day-tools{
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
 }
-@media (min-width:600px){ .day-tools{ top:var(--bg-sticky-top, 57px); } }
 @media (min-width:1024px){ .day-tools{ top:var(--bg-sticky-top, 65px); } }
 .day-tools[hidden]{ display:none; }
 
@@ -77,7 +79,7 @@ html.has-day-tools{
 .bg-search__input{
   flex:1 1 auto; min-width:0; height:100%; padding:0 6px 0 0; margin:0;
   background:none; border:0; outline:none; border-radius:0;
-  color:var(--ink); font:inherit; font-size:15px; /* ≥ 15px: iOS does not zoom the page on focus */
+  color:var(--ink); font:inherit; font-size:16px; /* ≥ 16px: iOS does not zoom the page on focus */
   -webkit-appearance:none; appearance:none;
 }
 .bg-search__input::placeholder{ color:var(--muted-2); opacity:1; }
@@ -94,6 +96,23 @@ html.has-day-tools{
 .bg-search__x[hidden]{ display:none; }
 .bg-search__x:hover{ color:var(--ink); }
 .bg-search__x:focus-visible{ outline-offset:-4px; }
+
+/* The search waits SEARCH_DELAY_MS (2000ms, predictions.js) after the last keystroke; this line
+   along the pill's bottom edge fills over the same time. Transform only (composited, no layout).
+   predictions.js alternates data-run a / b per keystroke: the changed animation-name restarts it.
+   Reduced motion: no animation, a still line says the search is waiting. */
+.tools-wait{
+  position:absolute; left:18px; right:18px; bottom:-1px; height:2px;
+  border-radius:2px; background:var(--accent); pointer-events:none;
+  transform:scaleX(0); transform-origin:left center;
+}
+.tools-wait[data-run="a"]{ animation:bg-wait-a 2000ms linear forwards; }
+.tools-wait[data-run="b"]{ animation:bg-wait-b 2000ms linear forwards; }
+@keyframes bg-wait-a{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+@keyframes bg-wait-b{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+@media (prefers-reduced-motion:reduce){
+  .tools-wait[data-run]{ animation:none; transform:scaleX(1); opacity:.55; }
+}
 
 /* ── 3. PILL TOOLS (Leagues, Jump to now) ────────────────────────────────────── */
 .bg-tool{
@@ -202,7 +221,7 @@ html.has-day-tools{
 .bg-pick__search:focus-within{ border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-quiet); }
 .bg-pick__search input{
   flex:1; min-width:0; height:100%; padding:0; margin:0;
-  background:none; border:0; outline:none; color:var(--ink); font:inherit; font-size:15px;
+  background:none; border:0; outline:none; color:var(--ink); font:inherit; font-size:16px; /* no iOS zoom */
   -webkit-appearance:none; appearance:none;
 }
 .bg-pick__search input::placeholder{ color:var(--muted-2); opacity:1; }

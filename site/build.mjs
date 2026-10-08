@@ -40,6 +40,8 @@ export const REPO_ROOT = resolve(SITE, '..');
 
 /** site.css = these files, in this order. */
 export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+/** Linked from <noscript> by layout.js (NOJS_CSS); copied as its own file, never concatenated. */
+const NOJS_CSS_FILE = 'nojs.css';
 /** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring). */
 export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js']);
 /** Same-site browser entry modules. */
@@ -505,6 +507,8 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     for (const f of await filesIn(join(assets, sub))) copies.push([join(assets, sub, f), `assets/${sub}/${f}`]);
   }
   for (const f of ISOMORPHIC_LIB) copies.push([join(SITE, 'lib', f), `assets/js/lib/${f}`]);
+  // The no-JS stylesheet (spec §16.3) ships on its own; it is never part of site.css.
+  copies.push([join(assets, 'css', NOJS_CSS_FILE), `assets/css/${NOJS_CSS_FILE}`]);
   const css = (await Promise.all(CSS_ORDER.map(async (f) => `/* site/assets/css/${f} */\n${await readFile(join(assets, 'css', f), 'utf8')}`))).join('\n');
 
   // 7–8. Write <out>.tmp, then swap.

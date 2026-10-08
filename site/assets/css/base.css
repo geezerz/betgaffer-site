@@ -76,10 +76,11 @@ html{
   -webkit-text-size-adjust:100%;
   text-size-adjust:100%;
   background:var(--bg);
-  /* Anchor jumps (the skip link, #main) land below the sticky bar, not under it. */
-  scroll-padding-top:calc(var(--bar-h) + 52px);
+  /* Anchor jumps (the skip link, #main) land below the sticky bar, not under it. The bar is one
+     row at every width (below 600px the nav is in the ☰ panel); nojs.css restores the two-row
+     offset with the tab row. */
+  scroll-padding-top:calc(var(--bar-h) + 12px);
 }
-@media (min-width:640px){ html{ scroll-padding-top:calc(var(--bar-h) + 12px); } }
 
 body{
   margin:0;
@@ -177,9 +178,16 @@ ul[role="list"],ol[role="list"]{ list-style:none; margin:0; padding:0; }
 
 /* ── 6. TOPBAR ─────────────────────────────────────────────────────────────────
    Sticky glass bar. backdrop-filter makes it a containing block for fixed
-   descendants, so nothing position:fixed may live inside it.
-   Below 600px the nav drops to its own full-width row of four equal tabs:
-   it wraps, it never scrolls sideways, and it needs no JS and no hamburger.
+   descendants: a fixed child is placed against the bar, not the viewport.
+   The bar is the first box in the page and sticks at top:0, so its top edge
+   IS the viewport's top edge; the ☰ panel below (position:fixed, top/left/
+   right from that edge, no bottom) lands in the same place either way.
+   Below 600px (spec §16.3) the DEFAULT is the wordmark and a ☰ button; the
+   nav and the legal links sit in a closed panel under the bar (nav.js opens
+   it). Without JS, nojs.css (in <noscript>) restores the rules below: the
+   nav drops to its own full-width row of four equal tabs that wraps and
+   never scrolls sideways. From 600px the panel is display:contents, so the
+   nav is inline as before, and the button and the legal list are not shown.
    ─────────────────────────────────────────────────────────────────────────── */
 .bg-topbar{
   position:sticky; top:0; z-index:50;
@@ -233,6 +241,72 @@ a.bg-wordmark:hover{ color:#fff; }
   .bg-topbar__nav a[aria-current]{ background:var(--accent-quiet); }
 }
 @media (min-width:1024px){ .bg-topbar__in{ min-height:var(--bar-h-lg); } }
+
+/* The ☰ menu's own parts: not shown from 600px (nor without JS, nojs.css). */
+.bg-burger{ display:none; }
+.bg-burger[hidden]{ display:none; }
+.bg-topbar__panel{ display:contents; }
+.bg-topbar__legal{ display:none; }
+
+/* Below 600px: wordmark + ☰ (the default; nav.js only toggles [data-open]). Every nav property set
+   here is restored by nojs.css (a test pins the pairs). */
+@media (max-width:599.98px){
+  .bg-burger{
+    display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto;
+    min-width:var(--tap); min-height:var(--tap); margin-right:-10px; padding:0;
+    background:none; border:0; border-radius:var(--r-1); cursor:pointer; color:var(--ink);
+  }
+  .bg-burger:hover{ background:var(--surface-2); }
+  .bg-burger:focus-visible{ outline-offset:-3px; }
+  /* Three bars drawn in CSS (no icon file, no inline SVG); open, they turn into a cross. */
+  .bg-burger__bars,
+  .bg-burger__bars::before,
+  .bg-burger__bars::after{
+    display:block; width:20px; height:2px; border-radius:1px; background:currentColor;
+    transition:transform .16s ease, opacity .16s ease;
+  }
+  .bg-burger__bars{ position:relative; }
+  .bg-burger__bars::before,
+  .bg-burger__bars::after{ content:''; position:absolute; left:0; }
+  .bg-burger__bars::before{ transform:translateY(-6px); }
+  .bg-burger__bars::after{ transform:translateY(6px); }
+  .bg-burger[aria-expanded="true"] .bg-burger__bars{ background:transparent; }
+  .bg-burger[aria-expanded="true"] .bg-burger__bars::before{ background:currentColor; transform:rotate(45deg); }
+  .bg-burger[aria-expanded="true"] .bg-burger__bars::after{ background:currentColor; transform:rotate(-45deg); }
+
+  /* Out of flow: opening the panel never changes the bar's height. */
+  .bg-topbar__panel{
+    display:none; position:fixed; z-index:1;
+    top:calc(var(--bar-h) + 1px); left:0; right:0;
+    max-height:calc(100vh - var(--bar-h) - 1px);
+    max-height:calc(100dvh - var(--bar-h) - 1px);
+    overflow-y:auto; overscroll-behavior:contain;
+    padding:6px 0 calc(14px + env(safe-area-inset-bottom, 0px));
+    background:var(--surface); border-bottom:1px solid var(--line-2);
+    box-shadow:0 22px 40px -22px rgba(0,0,0,.9);
+  }
+  .bg-topbar__panel[data-open]{ display:block; }
+
+  .bg-topbar__nav{ margin-inline:0; border-top:0; }
+  .bg-topbar__nav ul{ grid-template-columns:minmax(0,1fr); }
+  .bg-topbar__nav a{
+    justify-content:flex-start; text-align:left;
+    min-height:48px; padding:0 var(--gutter);
+    font-size:12.5px; letter-spacing:.08em;
+    border-bottom:0; border-left:3px solid transparent;
+  }
+  .bg-topbar__nav a[aria-current]{ border-left-color:var(--accent); }
+
+  .bg-topbar__legal{
+    display:flex; flex-wrap:wrap; column-gap:4px;
+    margin:8px var(--gutter) 0; padding:6px 0 0; border-top:1px solid var(--line);
+  }
+  .bg-topbar__legal a{
+    display:inline-flex; align-items:center; min-height:var(--tap); padding:0 10px 0 0;
+    color:var(--muted); font-size:13.5px; text-decoration:none;
+  }
+  .bg-topbar__legal a:hover{ color:var(--ink); text-decoration:underline; }
+}
 
 /* ── 7. STALENESS BANNER ───────────────────────────────────────────────────────
    Empty and hidden in the static HTML; stale.js fills it with textContent and

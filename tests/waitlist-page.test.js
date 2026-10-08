@@ -136,9 +136,9 @@ describe('/waitlist/ and the founding card in the built site', () => {
     }
   });
 
-  test('loads waitlist.js as its only module script; no banner, no banner.js', () => {
+  test('loads the menu script (every page, spec §16.3) then waitlist.js, nothing else; no banner, no banner.js', () => {
     const scripts = findAll(doc, (n) => n.tag === 'script').map((s) => [s.attrs.type, s.attrs.src]);
-    assert.deepEqual(scripts, [['module', '/assets/js/waitlist.js']]);
+    assert.deepEqual(scripts, [['module', '/assets/js/nav.js'], ['module', '/assets/js/waitlist.js']]);
     assert.equal(find(doc, (n) => n.attrs['data-banner'] !== undefined), null);
     assert.deepEqual(cspViolations(page), []);
   });

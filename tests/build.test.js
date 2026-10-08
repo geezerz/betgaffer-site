@@ -67,7 +67,7 @@ describe('build of the fixture artifact', () => {
     for (const f of ['favicon.svg', 'mark.svg', 'apple-touch-icon.png']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/img', f)), await readFile(join(REPO_ROOT, 'site/assets/img', f)), f);
     }
-    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js']) {
+    for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js', 'banner.js', 'nav.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
     assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
@@ -183,6 +183,41 @@ describe('build of the fixture artifact', () => {
     }
     assert.equal(without, 5, 'premise: /waitlist/ and its four result pages were scanned');
     assert.equal(withOne, PAGE_ROUTES.length - 5, 'premise: every other page was scanned');
+  });
+
+  test('every page loads nav.js once (the ☰ menu, spec §16.3): banner.js first where the banner is, then nav.js, then page scripts', async () => {
+    let pages = 0;
+    let waitlistPages = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const doc = parse(html);
+      const srcs = findAll(doc, (n) => n.tag === 'script').map((s) => s.attrs.src);
+      const hasBanner = find(doc, (n) => n.attrs['data-banner'] !== undefined) !== null;
+      const head = hasBanner ? ['/assets/js/banner.js', '/assets/js/nav.js'] : ['/assets/js/nav.js'];
+      assert.deepEqual(srcs.slice(0, head.length), head, `${rel}: ${srcs.join(', ')}`);
+      assert.equal(srcs.filter((s) => s === '/assets/js/nav.js').length, 1, `${rel}: once`);
+      assert.equal(srcs.filter((s) => s === '/assets/js/banner.js').length, hasBanner ? 1 : 0, rel);
+      // The menu markup and the no-JS restore ride along on every page.
+      assert.ok(find(doc, (n) => n.tag === 'button' && n.attrs.class === 'bg-burger' && n.attrs['aria-controls'] === 'bg-nav-panel'), `${rel}: ☰`);
+      assert.ok(find(doc, (n) => n.attrs.id === 'bg-nav-panel'), `${rel}: panel`);
+      assert.match(html, /<noscript><link rel="stylesheet" href="\/assets\/css\/nojs\.css"><\/noscript>/, rel);
+      if (rel.startsWith('waitlist/')) {
+        assert.equal(srcs[0], '/assets/js/nav.js', `${rel}: no banner, nav.js first`);
+        waitlistPages++;
+      }
+      pages++;
+    }
+    assert.equal(pages, PAGE_ROUTES.length, 'premise: every page scanned');
+    assert.equal(waitlistPages, 5, 'premise: /waitlist/ and its four result pages included');
+  });
+
+  test('nojs.css ships as its own file, byte for byte, and is never part of site.css', async () => {
+    const src = await readFile(join(REPO_ROOT, 'site/assets/css/nojs.css'));
+    assert.deepEqual(await readFile(join(ws.out, 'assets/css/nojs.css')), src);
+    assert.ok(!CSS_ORDER.includes('nojs.css'), 'not concatenated: with JS on it would undo the menu');
+    const site = await read(ws, 'assets/css/site.css');
+    assert.ok(!site.includes(src.toString('utf8').trim()), 'its rules are not in site.css');
+    assert.doesNotMatch(site, /site\/assets\/css\/nojs\.css/);
+    assert.deepEqual((await readdir(join(ws.out, 'assets/css'))).sort(), ['nojs.css', 'site.css'], 'nothing else is shipped as CSS');
   });
 
   test('Our Record\'s description names no status (spec §7: the record prints none)', async () => {
@@ -647,7 +682,8 @@ describe('archive: every listed day gets a page; older days are stubs', () => {
     const receipt = find(root, (n) => /\bday-receipt\b/.test(n.attrs.class ?? ''));
     assert.equal(textOf(receipt).replace(/\s+/g, ' ').trim(), `receipt ${root.attrs['data-hash'].slice(7, 19)}`);
     assert.equal(find(receipt, (n) => n.tag === 'a'), null, 'the receipt code is plain text');
-    const ns = find(doc, (n) => n.tag === 'noscript');
+    // The card's own note, in <main> (the <head> also carries the no-JS stylesheet's <noscript>).
+    const ns = find(mainOf(html), (n) => n.tag === 'noscript');
     assert.ok(ns);
     assert.equal(textOf(ns).trim(), "Turn on JavaScript to load this day's card.");
     assert.equal(find(ns, (n) => n.tag === 'a'), null, 'the noscript note links nowhere');
@@ -738,6 +774,22 @@ describe('the floating ring: its figures on <main> and its script', () => {
     assert.equal(withRing, 5, 'premise: / and the four day pages (full, stub and compacted)');
   });
 
+  test('spec §16.7: every page whose day header has (or day.js will render) a static ring loads balloon.js', async () => {
+    // With scripting on, balloon.css hides `.day-head .ring` from the first paint and only balloon.js
+    // shows it again (html.ring-static). A page with that ring and without balloon.js would lose it.
+    let pages = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const doc = parse(html);
+      const heads = findAll(doc, (n) => /\bday-head\b/.test(n.attrs.class ?? ''));
+      const staticRing = heads.some((h) => find(h, (n) => /\bring\b/.test(n.attrs.class ?? '')) !== null);
+      const dayJs = find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/day.js') !== null;
+      if (!staticRing && !dayJs) continue;
+      pages++;
+      assert.ok(find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/balloon.js'), `${rel}: balloon.js`);
+    }
+    assert.equal(pages, 5, 'premise: / and the four day pages carry a day-header ring');
+  });
+
   test('a gap: when the day before is not listed there is no yesterday, even though an earlier day is', async () => {
     const gap = await workspace();
     try {
@@ -757,11 +809,12 @@ describe('the floating ring: its figures on <main> and its script', () => {
     }
   });
 
-  test('no JS: the built pages never carry has-balloon, so the day header keeps its static ring', async () => {
+  test('no JS: the built pages never carry has-balloon or ring-static, so the day header keeps its static ring', async () => {
+    // Without scripting the `(scripting: enabled)` hide never applies (spec §16.7): the ring shows as before.
     for (const rel of ['index.html', 'day/2026-10-06/index.html', 'day/2026-10-07/index.html']) {
       const doc = parse(await read(ws, rel));
       const html = find(doc, (n) => n.tag === 'html');
-      assert.doesNotMatch(html.attrs.class ?? '', /has-balloon/, rel);
+      assert.doesNotMatch(html.attrs.class ?? '', /has-balloon|ring-static/, rel);
       const head = find(doc, (n) => /\bday-head\b/.test(n.attrs.class ?? ''));
       assert.ok(head && find(head, (n) => n.attrs['data-figure'] === 'ring'), `${rel}: the static ring is in the day header`);
     }

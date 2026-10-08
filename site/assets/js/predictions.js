@@ -17,7 +17,12 @@ import { matcher, rowWords, words } from './lib/search.js';
 import { lagosToday } from './lib/time.js';
 
 export const STORAGE_KEY = 'bg.leagues';
-export const DEBOUNCE_MS = 150;
+/**
+ * The main search applies this long after the last keystroke (spec §16.1). Enter, the × button, Esc
+ * and an emptied field apply at once. The Leagues dialog's own search is instant. The progress
+ * line's CSS animation (predictions.css, .tools-wait) lasts the same 2000ms.
+ */
+export const SEARCH_DELAY_MS = 2000;
 export const MAX_STORED = 500;
 export const MAX_NAME = 120;
 
@@ -193,7 +198,10 @@ export function init(root = document, {
   const label = el(doc, 'label', { class: 'vh', for: 'bg-q' }, TEXT.search);
   const glass = el(doc, 'span', { class: 'bg-search__glass', 'aria-hidden': 'true' });
   const clear = el(doc, 'button', { type: 'button', class: 'bg-search__x', 'aria-label': TEXT.clear, 'data-tool': 'clear', hidden: true }, '×');
-  search.append(label, glass, input, clear);
+  // The wait, drawn: a thin line along the field's bottom edge that fills over SEARCH_DELAY_MS.
+  // Decorative (the result line announces the outcome), so hidden from assistive technology.
+  const wait = el(doc, 'span', { class: 'tools-wait', 'aria-hidden': 'true' });
+  search.append(label, glass, input, clear, wait);
   main.append(search);
 
   let leaguesBtn = null;
@@ -357,6 +365,17 @@ export function init(root = document, {
     meta.classList.toggle('is-on', status.textContent !== '' || !showAll.hidden || !jump.hidden);
   }
 
+  // The progress line runs while a search waits. Each keystroke switches between two identical
+  // keyframe sets (data-run a / b): a changed animation-name restarts it, with no forced reflow.
+  let waitRun = 'b';
+  function waitStart() {
+    waitRun = waitRun === 'a' ? 'b' : 'a';
+    wait.setAttribute('data-run', waitRun);
+  }
+  function waitReset() {
+    if (wait.hasAttribute('data-run')) wait.removeAttribute('data-run');
+  }
+
   function setQuery(v, { immediate = false } = {}) {
     setHidden(clear, v === '');
     if (state.timer !== null) {
@@ -365,13 +384,18 @@ export function init(root = document, {
     }
     const run = () => {
       state.timer = null;
+      waitReset();
       state.query = words(v).join(' ');
       state.match = matcher(v);
       apply();
     };
     // Clearing shows everything at once; typing waits for a pause.
-    if (immediate || words(v).length === 0) run();
-    else state.timer = setTimer(run, DEBOUNCE_MS);
+    if (immediate || words(v).length === 0) {
+      run();
+    } else {
+      waitStart();
+      state.timer = setTimer(run, SEARCH_DELAY_MS);
+    }
   }
 
   function clearSearch() {

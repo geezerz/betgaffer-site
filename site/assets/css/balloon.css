@@ -136,7 +136,18 @@
 .bg-balloon[data-size="compact"][data-long] .bg-balloon__frac,
 .bg-balloon[data-size="compact"][data-long] .bg-balloon__pct--frac{ font-size:8px; letter-spacing:-.05em; }
 
-/* The floating ring carries the day's figure; the header's static copy steps aside while it shows. */
+/* No flash of the old ring (spec §16.7). With scripting on, the header's static copy is hidden from
+   the first paint, so it never shows before the floating ring replaces it. balloon.js adds
+   html.ring-static whenever it does NOT show the floating ring (nothing graded on a phone, invalid
+   figures, no room, a failure), which gives the static ring back its display (fixtures.css .ring).
+   Without JS the media query never matches and the static ring shows as before. A browser without
+   the scripting media feature (Safari before 17) skips the query and keeps the current behaviour:
+   the has-balloon rule hides the static copy while the floating ring shows. balloon.js never sets
+   has-balloon and ring-static together. */
+@media (scripting: enabled){
+  .day-head .ring{ display:none; }
+}
+html.ring-static .day-head .ring{ display:flex; }
 html.has-balloon .day-head .ring{ display:none; }
 
 @media (prefers-reduced-motion:reduce){
