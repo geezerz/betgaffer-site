@@ -815,7 +815,10 @@ test('scores: the 90-minute result beside each team on finished rows only (FT / 
   for (const f of scored) {
     const rw = row(R2_HTML, f.fx);
     const home = f.home.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
-    assert.ok(rw.includes(`<span class="fx__teams fx__teams--scored"><span class="fx__team">${home}</span><span class="fx__score mono">${f.score.home}</span>`), `fx ${f.fx} home`);
+    assert.ok(rw.includes(`<span class="fx__teams fx__teams--scored"><span class="fx__team">${home}</span><span class="vh">: </span><span class="fx__score mono">${f.score.home}</span>`), `fx ${f.fx} home`);
+    // a screen reader hears "Team: 2 v Other: 3", never a name ending in a digit run into its score
+    const away = f.away.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
+    assert.ok(rw.includes(`<span class="fx__team">${away}</span><span class="vh">: </span><span class="fx__score mono">${f.score.away}</span>`), `fx ${f.fx} away`);
     // the two digits are the score and nothing else (the extra lines are their own elements)
     assert.deepEqual(scoreSpans(rw), [String(f.score.home), String(f.score.away)], `fx ${f.fx}`);
     const want = f.status === 'PEN' ? [`a.e.t. ${f.score.aet_home}–${f.score.aet_away}`, 'pens 4–3']

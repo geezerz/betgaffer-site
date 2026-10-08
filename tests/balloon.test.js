@@ -910,6 +910,24 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(CSS, /\}\s*html\.has-balloon\s+\.day-head\s+\.ring\s*\{\s*display:\s*none;?\s*\}/, 'has-balloon hide at the top level');
   });
 
+  test('balloon.css: below DESKTOP_MIN a day with nothing graded keeps the static ring from the first paint (no late ring-static shift)', () => {
+    // Premise: below DESKTOP_MIN, nothing graded → no floating ring (ring-static); from it → the floating ring.
+    const rs = (s) => s.doc.documentElement.classList.contains('ring-static');
+    const phone = setup({ width: DESKTOP_MIN - 1, html: pageOf({ today: acc(0, 0) }) });
+    assert.equal(rs(phone), true, 'premise: the static ring is what shows below DESKTOP_MIN');
+    const desk = setup({ width: DESKTOP_MIN, html: pageOf({ today: acc(0, 0) }) });
+    assert.equal(desk.el.hidden, false, 'premise: from DESKTOP_MIN the floating ring shows even with nothing graded');
+    // So the CSS decides it before any script runs, over exactly that width range.
+    const m = new RegExp(String.raw`@media\s*\(scripting:\s*enabled\)\s*and\s*\(max-width:\s*${DESKTOP_MIN - 1}\.98px\)\s*\{\s*main\[data-ring-graded="0"\]\s+\.day-head\s+\.ring\s*\{\s*display:\s*([a-z-]+);?\s*\}\s*\}`).exec(CSS);
+    assert.ok(m, 'the graded=0 rule, inside (scripting: enabled) and (max-width: DESKTOP_MIN - .02px)');
+    const fx = readFileSync(join(REPO_ROOT, 'site/assets/css/fixtures.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    assert.equal(m[1], /(?:^|\})\s*\.ring\s*\{[^}]*?display:\s*([a-z-]+)/.exec(fx)?.[1], "the ring's own display");
+    // Equal-or-higher specificity than the scripting hide (0,2,0) — main[attr] .day-head .ring is (0,3,1) —
+    // and later in the sheet, so it wins either way.
+    const hide = /@media\s*\(scripting:\s*enabled\)\s*\{\s*\.day-head\s+\.ring\s*\{\s*display:\s*none/.exec(CSS);
+    assert.ok(hide && m.index > hide.index, 'after the hide');
+  });
+
   test('balloon.js: has-balloon and ring-static are never on together (equal specificity: order must not matter)', () => {
     const cases = [
       { width: 1280 }, { width: 390 }, { width: 390, html: pageOf({ today: acc(0, 0) }) }, { width: 600, height: 140 },

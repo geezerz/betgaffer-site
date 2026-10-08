@@ -219,9 +219,9 @@ function teams(f) {
   const line = (label, pair) => (pair === null ? ''
     : `<small class="fx__xtra mono">${label} ${escHtml(pair[0])}–${escHtml(pair[1])}</small>`);
   return '<span class="fx__teams fx__teams--scored">'
-    + `<span class="fx__team">${escHtml(f.home)}</span><span class="fx__score mono">${escHtml(sc.home)}</span>`
+    + `<span class="fx__team">${escHtml(f.home)}</span><span class="vh">: </span><span class="fx__score mono">${escHtml(sc.home)}</span>`
     + '<span class="vh"> v </span>'
-    + `<span class="fx__team">${escHtml(f.away)}</span><span class="fx__score mono">${escHtml(sc.away)}</span>`
+    + `<span class="fx__team">${escHtml(f.away)}</span><span class="vh">: </span><span class="fx__score mono">${escHtml(sc.away)}</span>`
     + line('a.e.t.', sc.aet) + line('pens', sc.pens)
     + '</span>';
 }

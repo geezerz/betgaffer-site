@@ -149,6 +149,12 @@
 }
 html.ring-static .day-head .ring{ display:flex; }
 html.has-balloon .day-head .ring{ display:none; }
+/* Below the large ring's width (balloon-model DESKTOP_MIN, 1024px) a day with nothing graded never
+   shows the floating ring, and the build knows that count: keep the static ring from the first paint
+   instead of hiding it and letting ring-static bring it back late (a ~125px shift on phones). */
+@media (scripting: enabled) and (max-width:1023.98px){
+  main[data-ring-graded="0"] .day-head .ring{ display:flex; }
+}
 
 /* Phones: room for the small ring's start spot (spec §16.7). Below 600px the 64px ring starts top
    right, 12px in, just below the founding card or the header — over the right end of the first lines
