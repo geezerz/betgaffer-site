@@ -36,8 +36,8 @@ const INTERNAL = String.fromCharCode(70, 111, 114, 101, 99, 97, 120, 116);
 
 const PAGES = { features, privacy, terms, refunds };
 const LEGAL = { privacy, terms, refunds };
-const WAITLIST = '<form method="post" action="/api/waitlist" class="wl-probe"><button>Join the waitlist</button></form>';
-const renderPage = (name, c = cfg(), opts = {}) => PAGES[name].render(c, name === 'features' ? { waitlistHtml: WAITLIST, ...opts } : opts);
+// Every content page renders from the config alone (the waitlist form lives on /waitlist/, Plan A Task 4).
+const renderPage = (name, c = cfg()) => PAGES[name].render(c);
 
 // Visible text of an HTML fragment: tags removed, the escapes esc.js emits decoded, whitespace collapsed.
 function visibleText(html) {
@@ -193,6 +193,8 @@ for (const name of Object.keys(PAGES)) {
     assert.ok(typeof META.title === 'string' && META.title.length > 0);
     assert.ok(typeof META.description === 'string' && META.description.length > 20);
     assert.deepEqual(findBanned(`${META.title} ${META.description}`), []);
+    // These four pages carry no percentage in their meta tags at all. /waitlist/'s description states
+    // the offer ("30% off") and is checked in tests/waitlist-page.test.js: offer percentages only.
     assert.doesNotMatch(META.description, /%/);
   });
 
@@ -885,11 +887,11 @@ describe('features (Plan A Task 6, spec §8)', () => {
     assert.ok(html.indexOf('ct-ladder') > -1 && html.indexOf('ct-ladder') < at('ct-pricing') && at('ct-pricing') < at('ct-founding'));
   });
 
-  test('the embedded waitlist form is gone; an extra waitlistHtml option is ignored', () => {
+  test('the embedded waitlist form is gone (the form lives on /waitlist/)', () => {
     const plain = features.render(cfg());
-    assert.equal(features.render(cfg(), { waitlistHtml: WAITLIST }), plain, 'build.mjs may still pass it until Task 4');
-    assert.equal(features.render(cfg(), { waitlistHtml: 42 }), plain, 'no error on an odd value either');
-    assert.ok(!plain.includes(WAITLIST) && !/Founding waitlist<\/h2>/.test(plain));
+    assert.doesNotMatch(plain, /<form\b|data-waitlist|action="\/api\/waitlist"/);
+    assert.ok(!/Founding waitlist<\/h2>/.test(plain));
+    assert.equal(features.render.length, 1, 'render(cfg): no options argument left over from the embedded form');
   });
 
   test('no repository card, no GitHub link or mention (spec §10)', () => {

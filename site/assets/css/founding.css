@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Bet Gaffer — founding programme (Plan A Task 3, spec §2): the sitewide
-   banner under the header and the green Founding nav item.
+   Bet Gaffer — founding programme (Plan A Tasks 3–4, spec §2–§3): the sitewide
+   banner under the header, the green Founding nav item, the /waitlist/ page
+   and the founding card on the predictions pages.
    Concatenated after waitlist.css into /assets/css/site.css; base.css tokens only.
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -62,3 +63,148 @@
 }
 .bg-topbar__nav a.bg-topbar__founding[aria-current]::before{ content:none; }
 .bg-topbar__nav a.bg-topbar__founding:hover{ color:var(--accent-hi); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   The founding page /waitlist/ (Plan A Task 4, spec §3).
+   One loud thing: the two place counters, set large in mono like a scoreboard.
+   Everything else is quiet — benefits are an open list on hairlines, not a
+   wall of identical boxes; the steps are a true sequence, so they are numbered.
+   Left aligned throughout; text measures stay under ~70 characters.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.bg-fd{ display:flex; flex-direction:column; gap:40px; padding-block:4px 8px; }
+@media (min-width:1024px){ .bg-fd{ gap:56px; } }
+
+/* ── Hero ── */
+.bg-fd__hero{ display:flex; flex-direction:column; gap:14px; max-width:46rem; }
+.bg-fd__title{ max-width:16ch; }
+.bg-fd__lede{ margin:0; max-width:60ch; font-size:17px; line-height:1.6; color:var(--ink-2); }
+@media (min-width:640px){ .bg-fd__lede{ font-size:18.5px; } }
+
+/* ── Counters: the scoreboard ──
+   Two tiles side by side from 480px; stacked below so "377 of 500 left" never
+   squeezes. The waitlist tile carries the accent; the launch tile stays neutral. */
+.bg-fd__counts{
+  display:grid; grid-template-columns:minmax(0,1fr); gap:12px;
+  max-width:46rem;
+}
+@media (min-width:480px){ .bg-fd__counts{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.bg-fd__tile{
+  display:flex; flex-direction:column; gap:8px;
+  padding:18px 18px 20px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
+}
+.bg-fd__tile--waitlist{ border-color:var(--line-2); border-top:3px solid var(--accent); }
+.bg-fd__count{
+  margin:0;
+  font-size:clamp(24px,6.4vw,32px); font-weight:700; line-height:1.1; letter-spacing:-.02em;
+  color:var(--ink);
+}
+.bg-fd__tile--waitlist .bg-fd__count{ color:var(--accent); }
+.bg-fd__tile-note{ margin:0; font-size:14px; line-height:1.5; color:var(--muted); }
+
+/* ── The form ── */
+.bg-fd__join{ display:flex; flex-direction:column; gap:12px; max-width:46rem; }
+.bg-fd__join .bg-wl{ max-width:none; }
+.bg-fd__full{
+  margin:0; max-width:60ch;
+  padding:12px 14px; border-radius:var(--r-1);
+  background:var(--surface-2); border-left:3px solid var(--hold);
+  font-size:14.5px; line-height:1.55; color:var(--ink);
+}
+.bg-fd__full[hidden]{ display:none; }
+
+/* ── Sections ── */
+.bg-fd__sec{ display:flex; flex-direction:column; gap:18px; }
+.bg-fd__sec > .t-d2{ max-width:30ch; }
+
+/* ── Benefits: an open list on hairlines; 1 column, 2 from 640px, 3 from 1024px ── */
+.bg-fd__benefits{
+  display:grid; grid-template-columns:minmax(0,1fr); column-gap:32px;
+  border-top:1px solid var(--line);
+}
+@media (min-width:640px){ .bg-fd__benefits{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:1024px){ .bg-fd__benefits{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+.bg-fd__benefit{
+  display:flex; flex-direction:column; gap:6px;
+  padding-block:18px 20px;
+  border-bottom:1px solid var(--line);
+}
+.bg-fd__benefit-h{
+  margin:0;
+  font-size:17px; font-weight:700; line-height:1.3; letter-spacing:-.01em; color:var(--ink);
+}
+.bg-fd__benefit-h::before{
+  content:''; display:block;
+  width:20px; height:2px; margin-bottom:12px;
+  background:var(--accent);
+}
+.bg-fd__benefit-t{ margin:0; max-width:60ch; font-size:15px; line-height:1.6; color:var(--ink-2); }
+
+/* ── How it works: a real sequence, so numbered (CSS counter; the <ol> is the semantics) ── */
+.bg-fd__steps{ counter-reset:fd-step; display:grid; grid-template-columns:minmax(0,1fr); gap:20px; }
+@media (min-width:768px){ .bg-fd__steps{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; } }
+.bg-fd__step{
+  counter-increment:fd-step;
+  display:grid; grid-template-columns:36px minmax(0,1fr); column-gap:14px; row-gap:4px;
+  align-content:start;
+}
+.bg-fd__step::before{
+  content:counter(fd-step);
+  grid-row:1 / span 2;
+  display:flex; align-items:center; justify-content:center;
+  width:36px; height:36px; border-radius:50%;
+  border:1px solid var(--accent); color:var(--accent);
+  font-family:var(--font-mono); font-size:14px; font-weight:700;
+}
+@media (min-width:768px){
+  .bg-fd__step{ grid-template-columns:minmax(0,1fr); row-gap:10px; padding-top:18px; border-top:1px solid var(--line); }
+  .bg-fd__step::before{ grid-row:auto; }
+}
+.bg-fd__step-h{ margin:0; padding-top:6px; font-size:17px; font-weight:700; line-height:1.3; color:var(--ink); }
+@media (min-width:768px){ .bg-fd__step-h{ padding-top:0; } }
+.bg-fd__step-t{ margin:0; max-width:60ch; font-size:15px; line-height:1.6; color:var(--ink-2); }
+
+/* ── Questions: native <details>, so keyboard and screen readers work without JS ── */
+.bg-fd__faq{ max-width:46rem; border-top:1px solid var(--line); }
+.bg-fd__q{ border-bottom:1px solid var(--line); }
+.bg-fd__q-s{
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  min-height:var(--tap); padding-block:14px;
+  list-style:none;
+  font-size:16px; font-weight:600; line-height:1.4; color:var(--ink);
+}
+.bg-fd__q-s::-webkit-details-marker{ display:none; }
+.bg-fd__q-s::after{
+  content:'+'; flex:none;
+  display:inline-flex; align-items:center; justify-content:center;
+  width:28px; height:28px; border:1px solid var(--line-2); border-radius:50%;
+  font-family:var(--font-mono); font-size:16px; font-weight:500; color:var(--muted);
+  transition:color .14s ease, border-color .14s ease;
+}
+.bg-fd__q[open] > .bg-fd__q-s::after{ content:'−'; color:var(--accent); border-color:var(--accent); }
+.bg-fd__q-s:hover{ color:var(--accent-hi); }
+.bg-fd__q-s:focus-visible{ outline-offset:-2px; border-radius:var(--r-1); }
+.bg-fd__q-a{ margin:0; padding:0 44px 18px 0; max-width:62ch; font-size:15px; line-height:1.6; color:var(--ink-2); }
+
+/* ── The rules link ── */
+.bg-fd__rules{ margin:0; }
+.bg-fd__rules a{ display:inline-flex; align-items:center; min-height:var(--tap); font-weight:600; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   The founding card on / and on full day pages (spec §2): compact, full width,
+   directly above the day card. Text then button in a row from 768px.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.bg-fd-card{
+  display:flex; flex-direction:column; gap:14px;
+  margin-block:14px 18px;
+  padding:16px 16px 18px;
+  background:var(--surface); border:1px solid var(--line-2); border-radius:var(--r-2);
+}
+.bg-fd-card__body{ display:flex; flex-direction:column; gap:4px; }
+.bg-fd-card__title{ margin:0; font-size:17px; font-weight:700; line-height:1.3; letter-spacing:-.01em; color:var(--ink); }
+.bg-fd-card__sum{ margin:0; font-size:14px; line-height:1.55; color:var(--ink-2); }
+.bg-fd-card__cta{ width:100%; }
+@media (min-width:768px){
+  .bg-fd-card{ flex-direction:row; align-items:center; justify-content:space-between; gap:24px; padding:16px 20px; }
+  .bg-fd-card__cta{ width:auto; flex:none; }
+}

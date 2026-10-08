@@ -134,7 +134,7 @@ describe('premise: the scanner reports each injected violation', () => {
   after(() => ws.cleanup());
 
   const SAMPLE = ['index.html', 'our-record/index.html', 'features/index.html', 'privacy/index.html', 'terms/index.html',
-    'refunds/index.html', 'waitlist/thanks/index.html', '404.html', 'day/2026-10-08/index.html'];
+    'refunds/index.html', 'waitlist/index.html', 'waitlist/thanks/index.html', '404.html', 'day/2026-10-08/index.html'];
 
   test('a bare <p>83%</p> on any page is reported', () => {
     for (const rel of SAMPLE) {

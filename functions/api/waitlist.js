@@ -31,7 +31,7 @@
 //
 // Privacy: this file never logs an email address or an IP.
 
-const CAP = 500;                  // = site/config.js founding_places (asserted by tests/waitlist.test.js)
+const CAP = 500;                  // = site/config.js waitlist_places = founding.js WAITLIST_PLACES (asserted by tests/waitlist.test.js)
 const MAX_BODY = 2048;
 const RATE_LIMIT = 20;            // attempts per bucket per window (loose: carrier NAT puts many behind one IP)
 const RATE_WINDOW_S = 3600;
@@ -44,7 +44,9 @@ const JOIN_FLOOR_MS = 1000;
 const PLACES_FAIL_S = 60;         // a failed list is answered 503 from cache for this long
 
 const MESSAGES = Object.freeze({
-  ok: "You're on the list. We'll email you when your invite is ready.",
+  // Must equal THANKS_MESSAGE in site/lib/waitlist-form.js (this file cannot import site code;
+  // tests/waitlist.test.js asserts equality). One text for every success: it never reveals position.
+  ok: "You're on the founding waitlist. We'll email your invite when it's ready — if you're among the first 500, you'll have 30 days from that email to claim your place.",
   adult: 'Please confirm you are 18 or over.',
   email: 'Please enter a valid email address.',
   unreadable: 'That request could not be read. Please try again.',

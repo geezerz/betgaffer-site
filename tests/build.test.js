@@ -32,7 +32,7 @@ const exists = async (p) => { try { await access(p); return true; } catch { retu
 
 const PAGE_ROUTES = [
   'index.html', 'our-record/index.html', 'features/index.html', 'privacy/index.html', 'terms/index.html',
-  'refunds/index.html', 'waitlist/thanks/index.html', 'waitlist/invalid/index.html',
+  'refunds/index.html', 'waitlist/index.html', 'waitlist/thanks/index.html', 'waitlist/invalid/index.html',
   'waitlist/slow-down/index.html', 'waitlist/unavailable/index.html', '404.html',
   'day/2026-10-07/index.html', 'day/2026-10-08/index.html',
 ];
@@ -53,7 +53,7 @@ describe('build of the fixture artifact', () => {
     for (const r of PAGE_ROUTES) assert.ok(await exists(join(ws.out, r)), `${r} exists`);
     assert.deepEqual([...result.routes].sort(), [
       '/', '/404.html', '/day/2026-10-07/', '/day/2026-10-08/', '/features/', '/our-record/', '/privacy/',
-      '/refunds/', '/terms/', '/waitlist/invalid/', '/waitlist/slow-down/', '/waitlist/thanks/', '/waitlist/unavailable/',
+      '/refunds/', '/terms/', '/waitlist/', '/waitlist/invalid/', '/waitlist/slow-down/', '/waitlist/thanks/', '/waitlist/unavailable/',
     ]);
   });
 
@@ -149,7 +149,33 @@ describe('build of the fixture artifact', () => {
       assert.equal(hasScript, hasForm, rel);
       if (hasForm) withForm++;
     }
-    assert.ok(withForm >= 2, 'premise: /features/ and /waitlist/invalid/ carry the form');
+    assert.equal(withForm, 2, 'premise: /waitlist/ and /waitlist/invalid/ carry the form, and nothing else does');
+  });
+
+  test('the founding banner: none on /waitlist/ or its result pages, exactly one on every other page', async () => {
+    let without = 0;
+    let withOne = 0;
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const doc = parse(html);
+      const banners = findAll(doc, (n) => n.attrs['data-banner'] !== undefined).length;
+      const bannerJs = find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/banner.js') !== null;
+      if (rel.startsWith('waitlist/')) { // /waitlist/ itself and its four result pages
+        assert.equal(banners, 0, `${rel}: no banner`);
+        assert.equal(bannerJs, false, `${rel}: no banner.js`);
+        without++;
+      } else {
+        assert.equal(banners, 1, `${rel}: exactly one banner`);
+        assert.equal(bannerJs, true, `${rel}: banner.js`);
+        withOne++;
+      }
+    }
+    assert.equal(without, 5, 'premise: /waitlist/ and its four result pages were scanned');
+    assert.equal(withOne, PAGE_ROUTES.length - 5, 'premise: every other page was scanned');
+  });
+
+  test('Our Record\'s description names no status (spec §7: the record prints none)', async () => {
+    const meta = find(parse(await read(ws, 'our-record/index.html')), (n) => n.tag === 'meta' && n.attrs.name === 'description');
+    assert.equal(meta.attrs.content, 'Every graded Bet Gaffer card pick: each figure with its count and its period.');
   });
 
   test('every page links the apple-touch-icon and prints the RC number once', async () => {

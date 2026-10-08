@@ -24,7 +24,7 @@ import { requireOperator } from './config.js';
 import { loadSite } from './lib/data.js';
 import { escAttr, escHtml } from './lib/esc.js';
 import { receiptCode, renderDay } from './lib/fixtures.js';
-import { page } from './lib/layout.js';
+import { OG_FOUNDING, page } from './lib/layout.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
 import { fmtDayLong, lagosToday } from './lib/time.js';
@@ -33,6 +33,7 @@ import * as features from './content/features.js';
 import * as privacy from './content/privacy.js';
 import * as terms from './content/terms.js';
 import * as refunds from './content/refunds.js';
+import * as waitlist from './content/waitlist.js';
 
 const SITE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(SITE, '..');
@@ -143,8 +144,10 @@ ${strip}`;
     : '';
   const { prev, next } = neighbours(home);
   const card = renderDay(days.get(home), { prevDay: prev, nextDay: next });
+  // The founding card (spec §2) sits immediately before the day card (Plan B moves it under the toolbar).
   return `${notice}${tomorrowLine(tomorrow)}
 ${strip}
+${waitlist.foundingCard()}
 ${card}`;
 }
 
@@ -407,8 +410,9 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const d = entry.day;
     const { prev, next } = neighbours(d);
     const full = d === choice.home || d === choice.tomorrow;
+    // A full card carries the founding card immediately before it, as on the home page (spec §2).
     const body = full
-      ? renderDay(days.get(d), { prevDay: prev, nextDay: next })
+      ? `${waitlist.foundingCard()}\n${renderDay(days.get(d), { prevDay: prev, nextDay: next })}`
       : stubBody(entry, { prev, next });
     const isStubWithFetch = !full && !entry.compacted;
     add({
@@ -426,20 +430,29 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   add({
     path: '/our-record/',
     title: 'Our Record',
-    description: 'Every graded Bet Gaffer card pick: each figure with its count, its period and its status.',
+    description: 'Every graded Bet Gaffer card pick: each figure with its count and its period.',
     body: renderRecord(index ? index.record : null, { today, days: listedAsc }),
-    scripts: [SCRIPT.stale], // relabels the in-progress day; the late-data banner
+    scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the late-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
   });
 
   const breadth = choice.home ? breadthOf(days.get(choice.home), choice.home) : undefined;
-  add({ ...features.META, body: features.render({ ...config, breadth }, { waitlistHtml: waitlistForm() }), scripts: [SCRIPT.waitlist] });
+  add({ ...features.META, body: features.render({ ...config, breadth }) });
   for (const mod of [privacy, terms, refunds]) add({ ...mod.META, body: mod.render(config) });
 
+  // The founding page (spec §3): no banner (it IS the founding page), the founding OG image, and a
+  // form without its own places line — the counter tile above it is the page's one counter.
+  add({
+    ...waitlist.META,
+    body: waitlist.render(config, { waitlistHtml: waitlistForm({ places: false }) }),
+    scripts: [SCRIPT.waitlist],
+    banner: false,
+    ogImage: OG_FOUNDING,
+  });
   for (const kind of WAITLIST_RESULT_KINDS) {
     const meta = waitlistResultMeta(kind);
     const body = waitlistResultPage(kind);
-    add({ ...meta, body, scripts: /data-waitlist[\s>]/.test(body) ? [SCRIPT.waitlist] : [] });
+    add({ ...meta, body, banner: false, scripts: /data-waitlist[\s>]/.test(body) ? [SCRIPT.waitlist] : [] });
   }
 
   add({ path: '/404.html', title: 'Page not found', description: 'There is no page at this address.', body: notFoundBody(), noindex: true });

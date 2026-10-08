@@ -20,7 +20,7 @@ const config = {
     // 'Google (Gmail)'). Named in the privacy policy; null reads "an email provider". Not required.
     mailbox_provider: null,
   },
-  founding_places: 500,
+  waitlist_places: 500, // = site/lib/founding.js WAITLIST_PLACES (asserted by tests/founding.test.js)
   pricing: {
     show_prices: true,
     currency: 'NGN',

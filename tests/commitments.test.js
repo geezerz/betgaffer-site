@@ -19,11 +19,10 @@ import { BENEFITS, CLAIM_DAYS, EARLY_ACCESS_HOURS, SUPPORT_REPLY_HOURS } from '.
 /** Every route the guard covers (spec §9). */
 export const GUARDED_ROUTES = Object.freeze(['/privacy/', '/terms/', '/refunds/', '/waitlist/', '/features/']);
 /**
- * Routes another Plan A task builds (Task 4: /waitlist/). Until that task is merged the route is not in
- * this tree, and its scan is skipped with that reason; Task 8 empties this set after the merge so a
- * missing route fails instead of skipping.
+ * Guarded routes that are not built yet (their scan is skipped with that reason). Empty: Task 4 built
+ * /waitlist/, so every guarded route must exist and a missing one fails instead of skipping.
  */
-export const PENDING_ROUTES = new Set(['/waitlist/']);
+export const PENDING_ROUTES = new Set();
 
 const fileOf = (out, route) => join(out, ...route.split('/').filter(Boolean), 'index.html');
 const exists = (p) => access(p).then(() => true, () => false);
@@ -108,7 +107,7 @@ describe('commitments guard over the built policy pages (spec §9)', () => {
 
   for (const [name, frag] of Object.entries(PLANTS)) {
     test(`premise: a planted ${name} sentence is reported on every built policy page`, () => {
-      for (const route of ['/privacy/', '/terms/', '/refunds/', '/features/']) {
+      for (const route of GUARDED_ROUTES) {
         const v = commitmentViolations(plant(scan[route].html, frag));
         const want = normalise(frag.replace(/<[^>]+>/g, ''));
         if (name === 'credits') {

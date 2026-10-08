@@ -7,8 +7,7 @@
 // slip names, and the in-product name "Daily Slips" (the public name is "Ready-made slips").
 //
 // Interface:
-//   render(cfg[, opts])  opts is accepted and ignored: build.mjs still passes { waitlistHtml } until
-//                        Plan A Task 4 moves the form to /waitlist/; this page carries no form.
+//   render(cfg)  this page carries no form: it links to /waitlist/, where the founding waitlist form is.
 //   cfg.breadth = { markets, competitions, fixtures, day } from the home day file, or absent. Only
 //     `markets` is printed (feature #5, "up to N per match"); the whole shape is still validated so a
 //     malformed day file fails the build instead of printing nonsense. Absent or an empty day: no number.

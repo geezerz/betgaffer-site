@@ -9,7 +9,7 @@ test('config carries the plan constants', () => {
   assert.equal(config.repo, 'geezerz/betgaffer-site');
   assert.equal(config.brand, 'Bet Gaffer');
   assert.equal(config.descriptor, 'football match intelligence');
-  assert.equal(config.founding_places, 500);
+  assert.equal(config.waitlist_places, 500);
   assert.equal(config.stale_after_hours, 6);
   assert.equal(config.pricing.currency, 'NGN');
   // The published identity and prices are asserted in content.test.js ("shipped config").

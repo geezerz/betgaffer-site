@@ -30,7 +30,7 @@ export function testConfig(over = {}) {
       privacy_email: 'privacy@example.com',
       mailbox_provider: null,
     },
-    founding_places: 500,
+    waitlist_places: 500,
     pricing: { show_prices: false, currency: 'NGN', tiers: [] },
     stale_after_hours: 6,
     ...over,

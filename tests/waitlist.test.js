@@ -13,9 +13,10 @@ import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { onRequestPost, onRequestGet } from '../functions/api/waitlist.js';
 import {
-  waitlistForm, waitlistResultPage, waitlistResultMeta, WAITLIST_RESULT_KINDS, CONSENT_TEXT, FOUNDING_CAP,
+  waitlistForm, waitlistResultPage, waitlistResultMeta, WAITLIST_RESULT_KINDS, CONSENT_TEXT, WAITLIST_CAP, THANKS_MESSAGE,
 } from '../site/lib/waitlist-form.js';
-import { placesText, messageFor } from '../site/assets/js/waitlist.js';
+import { placesText, messageFor, placesUpdater } from '../site/assets/js/waitlist.js';
+import { WAITLIST_PLACES } from '../site/lib/founding.js';
 import { escHtml } from '../site/lib/esc.js';
 import siteConfig from '../site/config.js';
 
@@ -27,7 +28,8 @@ const SECRET = 'k'.repeat(48);
 const IP = '203.0.113.77';
 const FLOOR_MS = 1000;
 const HOST = 'betgaffer.com';
-const SUCCESS = { ok: true, message: "You're on the list. We'll email you when your invite is ready." };
+// The spec §3 thanks copy: one message for a new and an existing address (enumeration-safe).
+const SUCCESS = { ok: true, message: THANKS_MESSAGE };
 const MSG = {
   adult: 'Please confirm you are 18 or over.',
   email: 'Please enter a valid email address.',
@@ -817,11 +819,29 @@ test('GET: a failed list is remembered for 60 s — 503 without re-listing, then
   assert.equal(kv.count('list'), 2);
 });
 
-test('the founding cap has one value everywhere: config, the form, the Function', async () => {
-  assert.equal(FOUNDING_CAP, siteConfig.founding_places);
+test('the waitlist cap has one value everywhere: founding.js, config, the form, the Function', async () => {
+  assert.equal(WAITLIST_CAP, WAITLIST_PLACES);
+  assert.equal(siteConfig.waitlist_places, WAITLIST_PLACES);
+  assert.equal(siteConfig.founding_places, undefined, 'the old key is gone (renamed waitlist_places)');
   const res = await get(env());
-  assert.equal((await res.json()).cap, FOUNDING_CAP);
-  assert.match(waitlistForm(), new RegExp(`>${FOUNDING_CAP} founding places<`));
+  assert.equal((await res.json()).cap, WAITLIST_CAP);
+  assert.match(waitlistForm(), new RegExp(`>${WAITLIST_CAP} waitlist places<`));
+  const src = readFileSync(new URL('../functions/api/waitlist.js', import.meta.url), 'utf8');
+  assert.match(src, /^const CAP = 500;\s+\/\/ = site\/config\.js waitlist_places = founding\.js WAITLIST_PLACES/m, 'the Function names its source');
+});
+
+test('the thanks copy is ONE message: the Function\'s MESSAGES.ok, THANKS_MESSAGE and the script\'s fallback', async () => {
+  assert.equal(THANKS_MESSAGE, "You're on the founding waitlist. We'll email your invite when it's ready — if you're among "
+    + "the first 500, you'll have 30 days from that email to claim your place.");
+  // The Function's success response (it cannot import site code, so this is the only link).
+  const res = await post(env());
+  assert.equal(res.status, 200);
+  assert.equal((await res.json()).message, THANKS_MESSAGE);
+  // The browser module's fallback when a 2xx carries no usable message.
+  assert.equal(messageFor(200, null), THANKS_MESSAGE);
+  assert.equal(messageFor(204, { message: '' }), THANKS_MESSAGE);
+  // And the no-JS thanks page.
+  assert.ok(waitlistResultPage('thanks').includes(escHtml(THANKS_MESSAGE)));
 });
 
 test('the Function is self-contained for workerd: no node: imports, no require', () => {
@@ -860,16 +880,27 @@ test('waitlistForm(): a no-JS POST form with email, required 18+ box, honeypot, 
   const hpId = /\bid="([^"]+)"/.exec(hp)[1];
   assert.match(html, new RegExp(`<div class="vh"[^>]*>\\s*<label for="${hpId}">Leave this empty</label>\\s*${hp.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*</div>`));
 
-  assert.equal(CONSENT_TEXT, "We'll use this address only to tell you when your invite is ready. It is stored by Cloudflare "
-    + 'in the United States, where data protection law may protect it less than Nigerian law does.');
+  // Plan A amendments, "Task 4 additions": the invite AND the account match are the purposes.
+  assert.equal(CONSENT_TEXT, "We'll use this address only to send your invite and to match it to the account you open "
+    + 'with it. It is stored by Cloudflare in the United States, where data protection law may protect it less than '
+    + 'Nigerian law does.');
   // NDPA s.43 informed consent: the transfer risk is stated next to the field, followed by the policy link
   assert.match(html, /<p class="bg-wl__consent">[^<]*Nigerian law does\. <a href="\/privacy\/">[^<]+<\/a>\.?<\/p>/);
   assert.ok(html.includes(escHtml(CONSENT_TEXT)));
   assert.match(html, /<a href="\/privacy\/">[^<]+<\/a>/);
-  assert.match(html, /<button\b[^>]*type="submit"[^>]*class="bg-btn bg-btn--primary"[^>]*>Join the waitlist<\/button>/);
+  assert.match(html, /<button\b[^>]*type="submit"[^>]*class="bg-btn bg-btn--primary"[^>]*>Join the founding waitlist<\/button>/);
   assert.match(html, /role="status"/);
   assert.match(html, /aria-live="polite"/);
-  assert.match(html, /<p\b[^>]*data-waitlist-places[^>]*>500 founding places<\/p>/);
+  // The form's own places line asks the script for the long wording (the line has no tile label).
+  assert.match(html, /<p class="bg-wl__places mono" data-waitlist-places="long">500 waitlist places<\/p>/);
+});
+
+test('waitlistForm({ places: false }) drops the places line (on /waitlist/ the tile is the one counter)', () => {
+  const html = waitlistForm({ places: false });
+  assert.doesNotMatch(html, /data-waitlist-places|bg-wl__places/);
+  assert.equal(html, waitlistForm().replace(/<p class="bg-wl__places[^\n]*\n/, ''), 'nothing else changes');
+  assert.match(waitlistForm({ places: true }), /data-waitlist-places/);
+  for (const bad of [0, 'no', null]) assert.throws(() => waitlistForm({ places: bad }), TypeError, String(bad));
 });
 
 test('waitlistForm(): CSP-clean, no date or countdown, banned-word clean', () => {
@@ -935,15 +966,35 @@ test('waitlist.css: every class the form uses is styled; the live region is neve
 
 // ─── the browser module ─────────────────────────────────────────────────────────────────────────
 
-test('placesText: "n of 500 founding places left", the at-capacity line, null for nonsense', () => {
-  assert.equal(placesText({ places_left: 377, cap: 500 }), '377 of 500 founding places left');
-  assert.equal(placesText({ places_left: 1, cap: 500 }), '1 of 500 founding places left');
-  assert.equal(placesText({ places_left: 500, cap: 500 }), '500 of 500 founding places left');
-  assert.equal(placesText({ places_left: 0, cap: 500 }), 'The 500 founding places are taken — you can still join the waitlist.');
+test('placesText: the tile reads "n of 500 left" / "All 500 taken"; the form line names the waitlist; null for nonsense', () => {
+  assert.equal(placesText({ places_left: 377, cap: 500 }), '377 of 500 left');
+  assert.equal(placesText({ places_left: 1, cap: 500 }), '1 of 500 left');
+  assert.equal(placesText({ places_left: 500, cap: 500 }), '500 of 500 left');
+  assert.equal(placesText({ places_left: 0, cap: 500 }), 'All 500 taken');
+  assert.equal(placesText({ places_left: 377, cap: 500 }, { long: true }), '377 of 500 waitlist places left');
+  assert.equal(placesText({ places_left: 0, cap: 500 }, { long: true }), 'All 500 waitlist places are taken');
   for (const bad of [null, {}, { places_left: -1, cap: 500 }, { places_left: 501, cap: 500 }, { places_left: 2.5, cap: 500 },
     { places_left: '3', cap: 500 }, { places_left: 3, cap: 0 }, { places_left: 3 }, 'x']) {
     assert.equal(placesText(bad), null, JSON.stringify(bad));
+    assert.equal(placesText(bad, { long: true }), null, JSON.stringify(bad));
   }
+});
+
+test('placesUpdater: fills every counter, shows the "taken" line at 0, and never rises again after 0', () => {
+  const el = (attrs = {}) => ({ attrs, hidden: true, textContent: '', getAttribute(n) { return Object.hasOwn(this.attrs, n) ? this.attrs[n] : null; } });
+  const tile = el({ 'data-waitlist-places': '' });
+  const line = el({ 'data-waitlist-places': 'long' });
+  const full = el({ 'data-waitlist-full': '' });
+  const doc = { querySelectorAll: (s) => ({ '[data-waitlist-places]': [tile, line], '[data-waitlist-full]': [full] })[s] ?? [] };
+  const update = placesUpdater(doc);
+  update({ places_left: 3, cap: 500 });
+  assert.deepEqual([tile.textContent, line.textContent, full.hidden], ['3 of 500 left', '3 of 500 waitlist places left', true]);
+  update({ places_left: 0, cap: 500 });
+  assert.deepEqual([tile.textContent, line.textContent, full.hidden], ['All 500 taken', 'All 500 waitlist places are taken', false]);
+  update({ places_left: 12, cap: 500 }); // a stale cache answer after "full": ignored
+  assert.deepEqual([tile.textContent, full.hidden], ['All 500 taken', false]);
+  update(null);
+  assert.equal(tile.textContent, 'All 500 taken');
 });
 
 test('messageFor: the server message when it is a sane string, else a status fallback', () => {

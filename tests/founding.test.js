@@ -20,7 +20,7 @@ test('founding numbers match the programme rules (founding-member-programme.md Â
 });
 
 test('the waitlist cap in config is the founding waitlist cap', () => {
-  assert.equal(config.founding_places, F.WAITLIST_PLACES);
+  assert.equal(config.waitlist_places, F.WAITLIST_PLACES);
 });
 
 test('benefits: six, in programme order, each with a title and one sentence', () => {
