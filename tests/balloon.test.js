@@ -16,6 +16,7 @@ import {
 } from '../site/lib/balloon-model.js';
 import { fakeDocument, fire, serialize, FakeResizeObserver } from './fake-dom.js';
 import { claimViolations } from './html-scan.js';
+import { foundingCard } from '../site/content/waitlist.js';
 import { REPO_ROOT, testConfig, workspace, copyArtifact } from './site-fixtures.js';
 
 const TODAY = '2026-10-07';
@@ -288,7 +289,7 @@ function pageOf({ today = A24, yesterday = Y18, date = TODAY, ydate = '2026-10-0
   const data = pairs.filter(([, v]) => v !== null && v !== undefined).map(([k, v]) => ` data-${k}="${v}"`).join('');
   return '<!doctype html><html lang="en-NG"><head><title>t</title></head><body>'
     + '<header class="bg-topbar"><a href="/">Bet Gaffer</a></header>'
-    + (banner ? '<aside class="bg-banner" data-banner><p>Founding</p><button type="button" data-banner-close>x</button></aside>' : '')
+    + (banner ? foundingCard(0) : '') // the real founding card: balloon.js finds it by [data-banner] / [data-banner-close]
     + `<main id="main"${data}><div class="day"><div class="day-tools" data-day-tools></div><p>card</p></div></main></body></html>`;
 }
 

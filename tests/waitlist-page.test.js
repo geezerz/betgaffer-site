@@ -20,7 +20,9 @@ import {
   parse, find, findAll, textOf, visibleText, claimViolations, percentagesOutsideOffers, cspViolations,
 } from './html-scan.js';
 import { fakeDocument } from './fake-dom.js';
-import { REPO_ROOT, workspace, copyArtifact, testConfig } from './site-fixtures.js';
+import { REPO_ROOT, workspace, copyArtifact, testConfig, htmlFiles } from './site-fixtures.js';
+import { findBanned } from '../site/lib/claims.js';
+import { commitmentSentences, commitmentViolations } from '../site/lib/commitments.js';
 
 const NOW = Date.parse('2026-10-07T22:30:00Z');
 
@@ -43,8 +45,6 @@ const QUESTIONS = [
 ];
 const META_DESCRIPTION = '1,000 founding places. 30% off every subscription payment while you subscribe, double Credits, first look at new features and priority support.';
 const THANKS = "You're on the founding waitlist. We'll email your invite when it's ready — if you're among the first 500, you'll have 30 days from that email to claim your place.";
-const CARD_TITLE = 'Be one of 1,000 founding members';
-const SUMMARY = '30% off every subscription payment · double Credits · first look at new features · priority support';
 
 const RESULT_KINDS = ['thanks', 'invalid', 'slow-down', 'unavailable'];
 
@@ -81,24 +81,71 @@ describe('site/content/waitlist.js', () => {
     assert.doesNotThrow(() => waitlist.render(testConfig(), { waitlistHtml: waitlistForm({ places: false }) }));
   });
 
-  test('foundingCard(): spec §2 card — title, the four-item summary in an offer figure, the button to /waitlist/', () => {
-    const html = waitlist.foundingCard();
-    const doc = parse(html);
-    const sec = find(doc, (n) => n.tag === 'section' && has(n, 'bg-fd-card'));
-    assert.ok(sec, '<section class="bg-fd-card">');
-    assert.ok(textOf(sec).startsWith(CARD_TITLE), textOf(sec));
-    const offer = findAll(sec, (n) => n.attrs['data-figure'] === 'offer');
-    assert.equal(offer.length, 1);
-    assert.equal(textOf(offer[0]), SUMMARY);
-    const a = findAll(sec, (n) => n.tag === 'a');
-    assert.equal(a.length, 1);
-    assert.equal(a[0].attrs.href, '/waitlist/');
-    assert.equal(textOf(a[0]), 'See the founding benefits');
-    assert.ok(has(a[0], 'bg-btn') && has(a[0], 'bg-btn--primary'));
-    assert.deepEqual(percentagesOutsideOffers(html), []);
-    // No heading: on the home page the card comes before the day's <h1>.
-    assert.equal(findAll(sec, (n) => /^h[1-6]$/.test(n.tag)).length, 0, 'no heading before the page h1');
-    assert.ok(sec.attrs['aria-labelledby'], 'the region is named');
+  test('foundingCard(i): all ten variants render the stand-out card (spec §16.5)', () => {
+    assert.equal(F.VARIANTS.length, 10, 'premise: ten variants');
+    for (const [i, v] of F.VARIANTS.entries()) {
+      const html = waitlist.foundingCard(i);
+      const doc = parse(html);
+      const slots = findAll(doc, (n) => n.attrs['data-banner'] !== undefined);
+      assert.equal(slots.length, 1, `variant ${i}: one [data-banner]`);
+      const [slot] = slots;
+      assert.equal(slot.tag, 'aside', `variant ${i}`);
+      assert.ok(has(slot, 'bg-wrap') && has(slot, 'bg-fd-slot'), `variant ${i}: in the page column`);
+      assert.equal(slot.attrs['aria-label'], 'Founding members');
+      assert.equal(slot.attrs['data-variant'], String(i));
+      const cards = findAll(slot, (n) => has(n, 'bg-fd-card'));
+      assert.equal(cards.length, 1, `variant ${i}: one card`);
+      const head = find(slot, (n) => n.attrs['data-fd-heading'] !== undefined);
+      const line = find(slot, (n) => n.attrs['data-fd-line'] !== undefined);
+      assert.ok(head && has(head, 'bg-fd-card__title') && head.tag === 'p', `variant ${i}: the heading (a <p>: no heading before the page h1)`);
+      assert.ok(line && has(line, 'bg-fd-card__line') && line.tag === 'p', `variant ${i}: the line`);
+      assert.equal(textOf(head), v.heading.map((x) => x.t).join(''), `variant ${i} heading`);
+      assert.equal(textOf(line), v.line.map((x) => x.t).join(''), `variant ${i} line`);
+      // Highlights: strong.fd-hl, one per hl segment, in order.
+      const strongs = findAll(slot, (n) => n.tag === 'strong');
+      assert.deepEqual(strongs.map((n) => [n.attrs.class, textOf(n)]),
+        [...v.heading, ...v.line].filter((x) => x.hl).map((x) => ['fd-hl', x.t]), `variant ${i} highlights`);
+      // Offer figures: exactly the % segments.
+      assert.deepEqual(findAll(slot, (n) => n.attrs['data-figure'] === 'offer').map(textOf),
+        [...v.heading, ...v.line].filter((x) => x.offer).map((x) => x.t), `variant ${i} offers`);
+      assert.deepEqual(percentagesOutsideOffers(html), [], `variant ${i}`);
+      // The button and the close control.
+      const a = findAll(slot, (n) => n.tag === 'a');
+      assert.deepEqual(a.map((n) => [n.attrs.href, textOf(n)]), [['/waitlist/', 'See the founding benefits']]);
+      assert.ok(has(a[0], 'bg-btn') && has(a[0], 'bg-btn--primary') && has(a[0], 'bg-fd-card__cta'));
+      const x = findAll(slot, (n) => n.tag === 'button');
+      assert.equal(x.length, 1);
+      assert.equal(x[0].attrs.type, 'button');
+      assert.ok(x[0].attrs['data-banner-close'] !== undefined, 'data-banner-close');
+      assert.ok(x[0].attrs.hidden !== undefined, 'hidden until banner.js runs');
+      assert.equal(x[0].attrs['aria-label'], 'Hide the founding card');
+      assert.equal(findAll(slot, (n) => /^h[1-6]$/.test(n.tag)).length, 0, 'no heading element');
+      assert.match(html, /^<aside\b/, 'a single top-level element');
+      assert.ok(html.trimEnd().endsWith('</aside>'));
+      assert.doesNotMatch(html, /\sstyle=|<script|<style/i, 'CSP');
+    }
+  });
+
+  test('foundingCard(i): every variant passes the claim scan, the banned list and the commitments guard', () => {
+    const wrap = (h) => `<!doctype html><html lang="en-NG"><head><title>t</title></head><body>${h}</body></html>`;
+    for (let i = 0; i < F.VARIANTS.length; i++) {
+      const html = waitlist.foundingCard(i);
+      assert.deepEqual(claimViolations(wrap(html)), [], `variant ${i}`);
+      assert.deepEqual(findBanned(html), [], `variant ${i}`);
+      assert.deepEqual(commitmentSentences(html), [], `variant ${i}: no time commitment`);
+      assert.deepEqual(commitmentViolations(html), { unapproved: [], refundable: [] }, `variant ${i}`);
+    }
+    // Premise: each scan fires on a card.
+    const card = waitlist.foundingCard(0);
+    assert.ok(claimViolations(wrap(card.replace(' data-figure="offer"', ''))).some((m) => /30%/.test(m)), 'a % outside its offer figure');
+    assert.deepEqual(findBanned(card.replace('priority support', 'a sure bet')), ['sure bet']);
+    assert.equal(commitmentSentences(card.replace('priority support', 'support within 12 hours')).length, 1);
+  });
+
+  test('foundingCard(i): anything but an index into VARIANTS throws', () => {
+    for (const bad of [undefined, null, -1, 10, 1.5, '3', NaN]) {
+      assert.throws(() => waitlist.foundingCard(bad), RangeError, String(bad));
+    }
   });
 });
 
@@ -300,39 +347,49 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.doesNotMatch(html, /waitlist\.js/);
   });
 
-  test('home and full day pages: the founding card sits inside the day card, under the toolbar slot, above the day bar and the first row', async () => {
+  test('every page but /waitlist/*: one founding card directly under the header, outside <main>, its variant chosen by path', async () => {
+    const files = await htmlFiles(ws.out);
+    const variants = new Set();
+    let withCard = 0;
+    for (const { rel, html } of files) {
+      const d = parse(html);
+      const cards = findAll(d, (n) => has(n, 'bg-fd-card'));
+      if (rel.startsWith('waitlist/')) {
+        assert.equal(cards.length, 0, `${rel}: no card on the founding page or its result pages`);
+        continue;
+      }
+      assert.equal(cards.length, 1, `${rel}: exactly one card`);
+      const slot = find(d, (n) => n.attrs['data-banner'] !== undefined);
+      assert.ok(slot && slot.children.includes(cards[0]), `${rel}: the card is the [data-banner] slot's`);
+      assert.equal(find(find(d, (n) => n.tag === 'main'), (n) => has(n, 'bg-fd-card')), null, `${rel}: not inside <main>`);
+      assert.match(html, /<\/header>\n<aside class="bg-wrap bg-fd-slot"/, `${rel}: directly after the header`);
+      assert.ok(html.indexOf('bg-fd-slot') < html.indexOf('<main'), `${rel}: before <main>`);
+      const path = rel === 'index.html' ? '/' : rel.endsWith('/index.html') ? `/${rel.slice(0, -'index.html'.length)}` : `/${rel}`;
+      const i = F.variantFor(path);
+      assert.equal(slot.attrs['data-variant'], String(i), `${rel} (${path})`);
+      assert.equal(textOf(find(slot, (n) => n.attrs['data-fd-heading'] !== undefined)), F.VARIANTS[i].heading.map((x) => x.t).join(''), rel);
+      assert.deepEqual(claimViolations(html), [], rel);
+      // The slim banner and the in-list card are gone.
+      assert.doesNotMatch(html, /bg-banner|See the benefits →/, `${rel}: no slim banner`);
+      variants.add(i);
+      withCard++;
+    }
+    assert.equal(withCard, files.length - 5, 'premise: every page outside /waitlist/* was scanned');
+    assert.ok(variants.size >= 5, `no-JS readers see different copy on different pages: ${variants.size} variants`);
+  });
+
+  test('home and full day pages: the card is not repeated inside the day card (one card, under the header)', async () => {
     for (const rel of ['index.html', 'day/2026-10-07/index.html', 'day/2026-10-08/index.html']) {
       const html = await read(rel);
-      const doc = parse(html);
-      const cards = findAll(doc, (n) => n.tag === 'section' && has(n, 'bg-fd-card'));
-      assert.equal(cards.length, 1, `${rel}: one founding card`);
-      // Spec §5: toolbar slot → founding card → day bar → list, all children of the one day card.
-      const day = find(doc, (n) => n.tag === 'div' && has(n, 'day') && n.attrs['data-day'] !== undefined);
-      assert.ok(day, `${rel}: the day card`);
-      const kids = day.children.filter((c) => c.tag !== undefined);
-      const at = (fn) => kids.findIndex(fn);
-      const iTools = at((n) => n.attrs['data-day-tools'] !== undefined);
-      const iCard = at((n) => n === cards[0]);
-      const iBar = at((n) => has(n, 'day-bar'));
-      const iList = at((n) => n.attrs['data-fx-list'] !== undefined);
-      assert.ok(iTools >= 0, `${rel}: the toolbar slot`);
-      assert.equal(iCard, iTools + 1, `${rel}: the card directly after the toolbar slot`);
-      assert.equal(iBar, iCard + 1, `${rel}: the day bar directly after the card`);
-      assert.ok(iList > iBar, `${rel}: the list after the day bar`);
-      const card = html.indexOf('<section class="bg-fd-card"');
-      const row = html.search(/<li\b[^>]*\bdata-fx=/);
-      assert.ok(row > 0, `${rel}: premise, the page has fixture rows`);
-      assert.ok(card < row, `${rel}: card before the first row`);
-      assert.ok(card > html.indexOf('<h1'), `${rel}: below the day header (the card is not a heading: the h1 stays first)`);
-      assert.equal(findAll(cards[0], (n) => /^h[1-6]$/.test(n.tag ?? '')).length, 0, `${rel}: no heading inside the card`);
-      const text = visibleText(html);
-      assert.ok(text.includes(CARD_TITLE) && text.includes(SUMMARY) && text.includes('See the founding benefits'), rel);
-      assert.deepEqual(claimViolations(html), [], rel);
-    }
-    for (const rel of ['our-record/index.html', 'features/index.html', 'waitlist/index.html']) {
-      assert.doesNotMatch(await read(rel), /class="bg-fd-card"/, `${rel}: no home card`);
+      const d = parse(html);
+      const day = find(d, (n) => n.tag === 'div' && has(n, 'day') && n.attrs['data-day'] !== undefined);
+      assert.ok(day, `${rel}: premise, the day card`);
+      assert.equal(find(day, (n) => has(n, 'bg-fd-card')), null, `${rel}: no card in the list`);
+      assert.equal((html.match(/class="bg-fd-card"/g) ?? []).length, 1, rel);
+      assert.ok(html.indexOf('class="bg-fd-card"') < html.indexOf('<h1'), `${rel}: above the day header`);
     }
   });
+
 
   test('waitlist.js finds the counter and the "places taken" line at DOCUMENT level (both sit outside the form)', async () => {
     const run = async (data) => {
@@ -349,12 +406,13 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.equal(placesText({ places_left: 0, cap: 500 }), 'All 500 taken');
   });
 
-  test('founding.css styles every class the waitlist page and the home card use', async () => {
+  test('founding.css styles every class the waitlist page and the founding card use', async () => {
     const css = readFileSync(join(REPO_ROOT, 'site/assets/css/founding.css'), 'utf8');
     const waitlistCss = readFileSync(join(REPO_ROOT, 'site/assets/css/waitlist.css'), 'utf8');
     const main = (html) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
-    const home = main(await read('index.html'));
-    const cardHtml = home.slice(home.indexOf('<section class="bg-fd-card"'), home.indexOf('</section>', home.indexOf('<section class="bg-fd-card"')));
+    const home = await read('index.html');
+    const cardHtml = home.slice(home.indexOf('<aside class="bg-wrap bg-fd-slot"'), home.indexOf('</aside>', home.indexOf('<aside class="bg-wrap bg-fd-slot"')));
+    assert.match(cardHtml, /bg-fd-card__cta/, 'premise: the card markup was found');
     const classes = new Set([...`${main(page)}${cardHtml}`.matchAll(/\bclass="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/)));
     const fromBase = new Set(['bg-wrap', 'bg-page', 'vh', 'bg-btn', 'bg-btn--primary', 'bg-btn--ghost', 't-lbl', 't-lbl--quiet', 't-s', 't-b', 't-h', 't-d1', 't-d2', 'mono', 'stale']);
     let checked = 0;

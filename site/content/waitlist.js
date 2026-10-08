@@ -1,4 +1,4 @@
-// The founding page /waitlist/ and the home founding card (spec §2, §3 as amended in §14; Plan A
+// The founding page /waitlist/ and the sitewide founding card (spec §2, §3 as amended in §14, §16.5; Plan A
 // Task 4). BUILD ONLY.
 //
 // Every number comes from site/lib/founding.js, the benefit cards from its BENEFITS, so the page and
@@ -11,12 +11,12 @@
 //   META                          route metadata for the build (path, title, description)
 //   render(cfg, { waitlistHtml }) the <main> fragment; waitlistHtml is waitlistForm({ places: false })
 //                                 (the counter tile above the form is the page's one counter)
-//   foundingCard()                the spec §2 card the build puts before the day card on / and on full
-//                                 day pages
+//   foundingCard(variantIndex)    the spec §16.5 founding card (one of VARIANTS) that layout.page()
+//                                 puts under the header on every page except /waitlist/*
 
 import { escHtml } from '../lib/esc.js';
 import {
-  BENEFITS, CLAIM_DAYS, DISCOUNT_PCT, GRACE_DAYS, LAUNCH_PLACES, SUMMARY, TOTAL_PLACES, WAITLIST_PLACES,
+  BENEFITS, CLAIM_DAYS, DISCOUNT_PCT, GRACE_DAYS, LAUNCH_PLACES, TOTAL_PLACES, VARIANTS, WAITLIST_PLACES,
 } from '../lib/founding.js';
 
 /** 1000 -> '1,000' (deterministic: never the host locale). */
@@ -143,13 +143,34 @@ ${QUESTIONS.map(question).join('\n')}
 </article>`;
 }
 
-/** The founding card for / and full day pages (spec §2). No heading: it comes before the day's <h1>. */
-export function foundingCard() {
-  return `<section class="bg-fd-card" aria-labelledby="fd-card-t">
+/** One copy segment as HTML: a key word is strong.fd-hl; a segment printing a % sits in an offer figure. */
+function segmentHtml({ t, hl, offer }) {
+  const fig = offer ? ' data-figure="offer"' : '';
+  if (hl) return `<strong class="fd-hl"${fig}>${escHtml(t)}</strong>`;
+  return offer ? `<span${fig}>${escHtml(t)}</span>` : escHtml(t);
+}
+
+/**
+ * The founding card (spec §16.5): one per page, directly under the header, on every page except
+ * /waitlist/* (layout.page() places it). `variantIndex` picks the copy from VARIANTS; banner.js swaps
+ * in another variant per page view (the same nodes, built with DOM APIs) and shows the close button,
+ * which ships hidden: without JS the card shows and cannot be closed. data-banner / data-banner-close
+ * are the hooks banner.js and balloon.js find it by. No heading element: on most pages it comes
+ * before the page's <h1>.
+ */
+export function foundingCard(variantIndex) {
+  if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= VARIANTS.length) {
+    throw new RangeError(`foundingCard: variantIndex must be an integer 0-${VARIANTS.length - 1}, got ${String(variantIndex)}`);
+  }
+  const v = VARIANTS[variantIndex];
+  return `<aside class="bg-wrap bg-fd-slot" aria-label="Founding members" data-banner data-variant="${variantIndex}">
+<div class="bg-fd-card">
 <div class="bg-fd-card__body">
-<p class="bg-fd-card__title" id="fd-card-t">${escHtml(`Be one of ${fmtInt(TOTAL_PLACES)} founding members`)}</p>
-<p class="bg-fd-card__sum" data-figure="offer">${escHtml(SUMMARY)}</p>
+<p class="bg-fd-card__title" data-fd-heading>${v.heading.map(segmentHtml).join('')}</p>
+<p class="bg-fd-card__line" data-fd-line>${v.line.map(segmentHtml).join('')}</p>
 </div>
 <a class="bg-btn bg-btn--primary bg-fd-card__cta" href="/waitlist/">See the founding benefits</a>
-</section>`;
+<button type="button" class="bg-fd-card__x" data-banner-close aria-label="Hide the founding card" hidden>×</button>
+</div>
+</aside>`;
 }

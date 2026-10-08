@@ -1,14 +1,24 @@
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { page, NAV, OG_FOUNDING, navCurrent } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
-import { TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT } from '../site/lib/founding.js';
+import { VARIANTS, variantFor } from '../site/lib/founding.js';
+import { foundingCard } from '../site/content/waitlist.js';
 import { parse, find, findAll, textOf, claimViolations } from './html-scan.js';
-import { fakeDocument } from './fake-dom.js';
-import { init as bannerInit, STORAGE_KEY as BANNER_KEY } from '../site/assets/js/banner.js';
+import { fakeDocument, serialize } from './fake-dom.js';
+import { build } from '../site/build.mjs';
+import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
+
+// banner.js imports ./lib/founding.js, which resolves only in a build (the build ships site/lib's
+// isomorphic modules to /assets/js/lib/): import the browser module from a real one.
+const BUILT = await workspace();
+after(() => BUILT.cleanup());
+await copyArtifact(BUILT.root);
+await build({ root: BUILT.root, out: BUILT.out, config: testConfig(), now: Date.parse('2026-10-07T12:00:00Z'), warn: () => {} });
+const { init: bannerInit, STORAGE_KEY: BANNER_KEY, VARIANT_KEY } = await import(pathToFileURL(join(BUILT.out, 'assets/js/banner.js')).href);
 
 // The private platform's name, built from char codes so the literal never appears in this repo.
 const INTERNAL = String.fromCharCode(70, 111, 114, 101, 99, 97, 120, 116);
@@ -289,54 +299,60 @@ test('two mainData keys that map to the same data-* name throw instead of emitti
 });
 
 // ---------------------------------------------------------------------------------------------
-// Founding banner (spec §2, Plan A Task 3)
+// The founding card under the header (spec §16.5, Plan C C3; replaces the Plan A slim banner)
 // ---------------------------------------------------------------------------------------------
 
-const BANNER_TEXT = 'Founding members: 1,000 places — 500 on the waitlist, 500 at launch · '
-  + '30% off every subscription payment while you subscribe · See the benefits →';
-const bannerOf = (html) => find(parse(html), (n) => n.tag === 'aside' && n.attrs['data-banner'] !== undefined);
+const slotOf = (html) => find(parse(html), (n) => n.attrs?.['data-banner'] !== undefined);
 const moduleScripts = (html) => findAll(parse(html), (n) => n.tag === 'script').map((s) => s.attrs.src);
+const segText = (segs) => segs.map((s) => s.t).join('');
 
-test('premise: the banner copy is the programme numbers (founding.js) with a thousands separator', () => {
-  assert.deepEqual([TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT], [1000, 500, 500, 30]);
-});
-
-test('the banner is on by default: the spec §2 line, directly after the header, linking /waitlist/', () => {
+test('the card is on by default: directly after the header, before <main>, once; the slim banner is gone', () => {
   const html = base();
-  const aside = bannerOf(html);
-  assert.ok(aside, 'a [data-banner] aside');
-  assert.equal(aside.attrs.class, 'bg-banner');
-  assert.equal(aside.attrs['aria-label'], 'Founding members');
-  const p = find(aside, (n) => n.tag === 'p');
-  assert.equal(textOf(p).replace(/\s+/g, ' ').trim(), BANNER_TEXT);
-  assert.equal(textOf(find(p, (n) => n.tag === 'strong')), 'Founding members:');
-  const links = findAll(aside, (n) => n.tag === 'a');
-  assert.deepEqual(links.map((a) => [a.attrs.href, textOf(a)]), [['/waitlist/', 'See the benefits →']]);
-  // Placement: </header> then the banner, before <main>.
-  assert.match(html, /<\/header>\n<aside class="bg-banner" aria-label="Founding members" data-banner>/);
-  assert.ok(html.indexOf('data-banner>') < html.indexOf('<main'), 'before <main>');
-  assert.equal((html.match(/data-banner>/g) || []).length, 1, 'one banner');
+  const slot = slotOf(html);
+  assert.ok(slot, 'a [data-banner] slot');
+  assert.equal(slot.tag, 'aside');
+  assert.equal(slot.attrs.class, 'bg-wrap bg-fd-slot');
+  assert.equal(slot.attrs['aria-label'], 'Founding members');
+  assert.match(html, /<\/header>\n<aside class="bg-wrap bg-fd-slot" aria-label="Founding members" data-banner data-variant="\d">/);
+  assert.ok(html.indexOf('data-banner') < html.indexOf('<main'), 'before <main>');
+  assert.equal((html.match(/\bdata-banner\b(?!-)/g) || []).length, 1, 'one card');
+  assert.equal((html.match(/class="bg-fd-card"/g) || []).length, 1, 'one card');
+  assert.doesNotMatch(html, /bg-banner|See the benefits →|Hide the founding banner/, 'no slim-banner markup');
+  // The CTA: the green primary button to the founding page.
+  const links = findAll(slot, (n) => n.tag === 'a');
+  assert.deepEqual(links.map((a) => [a.attrs.href, textOf(a)]), [['/waitlist/', 'See the founding benefits']]);
 });
 
-test('the banner offer percentage sits inside a data-figure="offer" element, and the claim scan passes', () => {
-  const aside = bannerOf(base());
-  const offer = find(aside, (n) => n.attrs?.['data-figure'] === 'offer');
-  assert.ok(offer, 'an offer figure');
-  assert.equal(textOf(offer), '30% off every subscription payment while you subscribe');
-  assert.deepEqual(claimViolations(base({ path: '/' })), []);
-  // Premise: the same scan reports the percentage once it leaves its figure.
-  const bare = base({ path: '/' }).replace('<span data-figure="offer">', '<span>');
-  assert.ok(claimViolations(bare).some((m) => /30%/.test(m)), 'a bare 30% is reported');
+test('the static variant is the page path\'s (variantFor), so no-JS readers see different copy on different pages', () => {
+  const seen = new Set();
+  for (const path of ['/', '/our-record/', '/features/', '/privacy/', '/terms/', '/refunds/', '/404.html', '/day/2026-10-07/', '/day/2026-10-08/']) {
+    const slot = slotOf(base({ path }));
+    const i = variantFor(path);
+    assert.equal(slot.attrs['data-variant'], String(i), path);
+    assert.equal(textOf(find(slot, (n) => n.attrs['data-fd-heading'] !== undefined)), segText(VARIANTS[i].heading), path);
+    assert.equal(textOf(find(slot, (n) => n.attrs['data-fd-line'] !== undefined)), segText(VARIANTS[i].line), path);
+    seen.add(i);
+  }
+  assert.ok(seen.size >= 5, `${seen.size} distinct variants`);
 });
 
-test('the close button is hidden in the static HTML (no JS: the banner shows and cannot be closed)', () => {
-  const aside = bannerOf(base());
-  const buttons = findAll(aside, (n) => n.tag === 'button');
+test('the card passes the claim scan on a page; a % outside its offer figure is reported', () => {
+  for (const path of ['/', '/our-record/', '/features/']) assert.deepEqual(claimViolations(base({ path })), [], path);
+  // Premise: find a page whose variant prints a percentage, then strip its offer figure.
+  const path = ['/', '/our-record/', '/features/', '/privacy/', '/terms/', '/refunds/', '/404.html']
+    .find((p) => VARIANTS[variantFor(p)].line.some((s) => s.offer) || VARIANTS[variantFor(p)].heading.some((s) => s.offer));
+  assert.ok(path, 'premise: some page carries an offer variant');
+  const bare = base({ path }).replaceAll(' data-figure="offer"', '');
+  assert.ok(claimViolations(bare).some((m) => /\d+%/.test(m)), 'a bare offer % is reported');
+});
+
+test('the close button is hidden in the static HTML (no JS: the card shows and cannot be closed)', () => {
+  const buttons = findAll(slotOf(base()), (n) => n.tag === 'button');
   assert.equal(buttons.length, 1);
   const [b] = buttons;
   assert.equal(b.attrs.type, 'button');
-  assert.equal(b.attrs.class, 'bg-banner__x');
-  assert.equal(b.attrs['aria-label'], 'Hide the founding banner');
+  assert.equal(b.attrs.class, 'bg-fd-card__x');
+  assert.equal(b.attrs['aria-label'], 'Hide the founding card');
   assert.ok(b.attrs['data-banner-close'] !== undefined, 'data-banner-close');
   assert.ok(b.attrs.hidden !== undefined, 'hidden');
   assert.equal(textOf(b), '×');
@@ -351,13 +367,22 @@ test('banner: true loads /assets/js/banner.js as the FIRST module script, once; 
     ['/assets/js/banner.js', '/assets/js/nav.js', '/assets/js/stale.js']);
 });
 
-test('banner: false renders neither the banner nor banner.js; nav.js is still first', () => {
+test('banner: false renders neither the card nor banner.js; nav.js is still first', () => {
   const html = base({ banner: false, scripts: ['/assets/js/waitlist.js'] });
-  assert.equal(bannerOf(html), null);
-  assert.doesNotMatch(html, /data-banner|bg-banner|banner\.js/);
+  assert.equal(slotOf(html), null);
+  assert.doesNotMatch(html, /data-banner|bg-fd-card|bg-fd-slot|banner\.js/);
   assert.deepEqual(moduleScripts(html), ['/assets/js/nav.js', '/assets/js/waitlist.js']);
   assert.throws(() => base({ banner: 'no' }), /banner/);
   assert.throws(() => base({ banner: null }), /banner/);
+});
+
+test('balloon.js and banner.js selectors still find the card: [data-banner] is the slot, [data-banner-close] inside it', () => {
+  const doc = fakeDocument(base());
+  const slot = doc.querySelector('[data-banner]');
+  assert.ok(slot && slot.classList.contains('bg-fd-slot'));
+  const close = doc.querySelector('[data-banner-close]');
+  assert.ok(close && slot.contains(close));
+  assert.ok(slot.querySelector('[data-fd-heading]') && slot.querySelector('[data-fd-line]'));
 });
 
 // banner.js in a fake DOM built from a real page.
@@ -370,12 +395,24 @@ function fakeStorage(init = {}, { throwOnGet = false, throwOnSet = false } = {})
   };
 }
 const liveBanner = (doc) => doc.querySelector('[data-banner]');
+/** The card's copy as the DOM holds it: [tag, class, data-figure, text] per child of heading and line. */
+function shape(el) {
+  return el.childNodes.map((c) => (c.nodeType === 3 ? ['#text', null, null, c.data]
+    : [c.localName, c.getAttribute('class'), c.getAttribute('data-figure'), c.textContent]));
+}
+const staticShape = (i) => {
+  const d = fakeDocument(`<!doctype html><html><head><title>t</title></head><body>${foundingCard(i)}</body></html>`);
+  return [shape(d.querySelector('[data-fd-heading]')), shape(d.querySelector('[data-fd-line]'))];
+};
+const liveShape = (doc) => [shape(doc.querySelector('[data-fd-heading]')), shape(doc.querySelector('[data-fd-line]'))];
+/** A random() that returns each of xs in turn. */
+const seq = (...xs) => { let k = 0; return () => xs[k++ % xs.length]; };
 
-test('banner.js: shows the close button; a click remembers the choice and removes the banner', () => {
+test('banner.js: shows the close button; a click remembers the choice and removes the card', () => {
   assert.equal(BANNER_KEY, 'bg.founding.banner');
   const doc = fakeDocument(base());
   const storage = fakeStorage();
-  bannerInit({ doc, storage });
+  bannerInit({ doc, storage, random: () => 0.5 });
   const btn = doc.querySelector('[data-banner-close]');
   assert.ok(liveBanner(doc), 'still there before the click');
   assert.equal(btn.hidden, false, 'the close button is shown once JS runs');
@@ -385,34 +422,111 @@ test('banner.js: shows the close button; a click remembers the choice and remove
   assert.equal(storage.m.get('bg.founding.banner'), 'hidden');
 });
 
-test('banner.js: a remembered dismissal removes the banner on load; other values do not', () => {
+test('banner.js: a remembered dismissal removes the card on load (and rotates nothing); other values do not', () => {
   const doc = fakeDocument(base());
-  bannerInit({ doc, storage: fakeStorage({ 'bg.founding.banner': 'hidden' }) });
+  const storage = fakeStorage({ 'bg.founding.banner': 'hidden' });
+  bannerInit({ doc, storage, random: () => 0.5 });
   assert.equal(liveBanner(doc), null);
+  assert.equal(storage.m.has('bg.founding.v'), false, 'a dismissed card records no variant');
   for (const v of ['shown', '', 'HIDDEN']) {
     const d = fakeDocument(base());
-    bannerInit({ doc: d, storage: fakeStorage({ 'bg.founding.banner': v }) });
-    assert.ok(liveBanner(d), `value ${JSON.stringify(v)} keeps the banner`);
+    bannerInit({ doc: d, storage: fakeStorage({ 'bg.founding.banner': v }), random: () => 0.5 });
+    assert.ok(liveBanner(d), `value ${JSON.stringify(v)} keeps the card`);
   }
 });
 
-test('banner.js: blocked storage never breaks the page — the banner shows and still closes for this view', () => {
+test('banner.js: picks a variant, swaps the copy in with DOM nodes identical to the build\'s, and records it', () => {
+  assert.equal(VARIANT_KEY, 'bg.founding.v');
+  for (let want = 0; want < VARIANTS.length; want++) {
+    const doc = fakeDocument(base());
+    const storage = fakeStorage();
+    // No last variant stored: random() picks from all ten.
+    bannerInit({ doc, storage, random: () => (want + 0.5) / VARIANTS.length });
+    assert.equal(storage.m.get('bg.founding.v'), String(want));
+    assert.equal(liveBanner(doc).getAttribute('data-variant'), String(want));
+    assert.deepEqual(liveShape(doc), staticShape(want), `variant ${want}: same nodes as the static HTML`);
+    // Highlights are strong.fd-hl; offers sit in data-figure="offer".
+    const strongs = doc.querySelectorAll('strong');
+    assert.deepEqual(strongs.map((s) => [s.getAttribute('class'), s.textContent]),
+      [...VARIANTS[want].heading, ...VARIANTS[want].line].filter((s) => s.hl).map((s) => ['fd-hl', s.t]));
+    // The swapped page still passes the claim scan.
+    assert.deepEqual(claimViolations(`<!doctype html><html><head><title>t</title></head>${serialize(doc.body)}</html>`), [], `variant ${want}`);
+  }
+});
+
+test('banner.js: never shows the previous page view\'s variant, whatever random() returns', () => {
+  const edges = [0, 1e-9, 0.1, 0.5, 0.8999, 0.9, 0.99999999, 1, -0.1, NaN, Infinity];
+  for (let last = 0; last < VARIANTS.length; last++) {
+    const shown = new Set();
+    for (const r of edges) {
+      const doc = fakeDocument(base());
+      const storage = fakeStorage({ 'bg.founding.v': String(last) });
+      bannerInit({ doc, storage, random: () => r });
+      const now = Number(storage.m.get('bg.founding.v'));
+      assert.ok(Number.isInteger(now) && now >= 0 && now < VARIANTS.length, `last ${last}, r ${r}: ${now}`);
+      assert.notEqual(now, last, `last ${last}, r ${r}`);
+      assert.equal(liveBanner(doc).getAttribute('data-variant'), String(now));
+      shown.add(now);
+    }
+    assert.ok(shown.size >= 3, `last ${last}: the choice still varies (${[...shown]})`);
+  }
+  // A run of page views: never the same variant twice in a row.
+  const storage = fakeStorage();
+  const rnd = seq(0.05, 0.05, 0.31, 0.31, 0.99, 0.99, 0.5, 0.5, 0, 0);
+  let prev = null;
+  for (let view = 0; view < 40; view++) {
+    const doc = fakeDocument(base({ path: view % 2 ? '/our-record/' : '/' }));
+    bannerInit({ doc, storage, random: rnd });
+    const now = storage.m.get('bg.founding.v');
+    assert.notEqual(now, prev, `view ${view}`);
+    prev = now;
+  }
+});
+
+test('banner.js: a stored value that is not a variant index is ignored (any variant may follow)', () => {
+  for (const v of ['x', '10', '-1', '3.5', ' 3', '03', '', '1e0']) {
+    const doc = fakeDocument(base());
+    const storage = fakeStorage({ 'bg.founding.v': v });
+    assert.doesNotThrow(() => bannerInit({ doc, storage, random: () => 0 }), v);
+    assert.equal(storage.m.get('bg.founding.v'), '0', `${JSON.stringify(v)}: random 0 -> variant 0 (nothing excluded)`);
+  }
+});
+
+test('banner.js: blocked storage never breaks the page — the card still rotates, shows and closes for this view', () => {
   for (const storage of [null, fakeStorage({}, { throwOnGet: true, throwOnSet: true })]) {
     const doc = fakeDocument(base());
-    assert.doesNotThrow(() => bannerInit({ doc, storage }));
+    assert.doesNotThrow(() => bannerInit({ doc, storage, random: () => 0.35 }));
+    assert.equal(liveBanner(doc).getAttribute('data-variant'), '3');
+    assert.deepEqual(liveShape(doc), staticShape(3));
     const btn = doc.querySelector('[data-banner-close]');
     assert.equal(btn.hidden, false);
     assert.doesNotThrow(() => btn.listeners.click[0]());
     assert.equal(liveBanner(doc), null);
   }
-  // A page without the banner: nothing to do, nothing thrown.
-  assert.doesNotThrow(() => bannerInit({ doc: fakeDocument(base({ banner: false })), storage: fakeStorage() }));
+  // A page without the card: nothing to do, nothing thrown.
+  assert.doesNotThrow(() => bannerInit({ doc: fakeDocument(base({ banner: false })), storage: fakeStorage(), random: () => 0.5 }));
 });
 
-test('banner.js never fetches and imports nothing (the counter is read on /waitlist/ only)', () => {
+test('banner.js: a card without its copy slots keeps its static copy and still closes', () => {
+  const html = base().replace(' data-fd-line', '');
+  const doc = fakeDocument(html);
+  const storage = fakeStorage({ 'bg.founding.v': '2' });
+  const before = textOf(slotOf(html));
+  assert.doesNotThrow(() => bannerInit({ doc, storage, random: () => 0.5 }));
+  assert.equal(liveBanner(doc).textContent.replace(/\s+/g, ' ').trim(), before.replace(/\s+/g, ' ').trim(), 'unchanged');
+  assert.equal(storage.m.get('bg.founding.v'), '2', 'nothing shown, nothing recorded');
+  assert.equal(doc.querySelector('[data-banner-close]').hidden, false);
+});
+
+test('banner.js swaps text with DOM APIs only: no innerHTML, no style, no fetch; imports only ./lib/founding.js', () => {
   const src = readFileSync(join(ASSETS, 'js', 'banner.js'), 'utf8');
-  assert.doesNotMatch(src, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|EventSource|WebSocket/);
-  assert.doesNotMatch(src, /^\s*import\b|\bimport\s*\(/m);
+  const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+  assert.doesNotMatch(code, /innerHTML|outerHTML|insertAdjacentHTML|document\.write|\.style\b|cssText|setAttribute\(\s*['"]style/);
+  assert.doesNotMatch(code, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|EventSource|WebSocket|\bimport\s*\(/);
+  const imports = [...code.matchAll(/^\s*import\b[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
+  assert.deepEqual(imports, ['./lib/founding.js']);
+  assert.match(code, /createElement\(/);
+  assert.match(code, /textContent/);
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -460,18 +574,127 @@ test('og-founding.png ships as a real 1200x630 PNG under 200 KB', () => {
 // founding.css + the four-tab mobile nav
 // ---------------------------------------------------------------------------------------------
 
-test('founding.css: banner on surface-2 with an accent rule, a 44px close target that [hidden] hides, green Founding item', () => {
-  const s = readFileSync(join(ASSETS, 'css', 'founding.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
-  const rule = (sel) => (new RegExp(`(?:^|\\})${sel.replace(/[.[\]-]/g, (c) => `\\${c}`)}\\{([^}]*)\\}`).exec(s) ?? [])[1] ?? '';
-  assert.match(rule('.bg-banner'), /background:var\(--surface-2\)/);
-  assert.match(rule('.bg-banner'), /border-left:\d+pxsolidvar\(--accent\)/);
-  assert.match(rule('.bg-banner__x'), /min-width:(44px|var\(--tap\))/);
-  assert.match(rule('.bg-banner__x'), /min-height:(44px|var\(--tap\))/);
-  assert.match(rule('.bg-banner__x[hidden]'), /display:none/);
-  assert.match(rule('.bg-banner__inp'), /min-width:0/, 'the line can shrink and wrap');
-  assert.match(rule('.bg-banner__inp'), /overflow-wrap:anywhere/, 'a long word never forces a sideways scroll');
+/** founding.css without comments or whitespace; rule(sel, scope) = the declarations of `sel` at the top level of scope. */
+const FOUNDING_CSS = () => readFileSync(join(ASSETS, 'css', 'founding.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
+const cssRule = (scope, sel) => {
+  // Only rules at the top level of scope: blank out nested @media blocks first.
+  let flat = '';
+  let depth = 0;
+  for (let i = 0; i < scope.length; i++) {
+    if (scope.startsWith('@media', i) && depth === 0) {
+      let d = 0;
+      for (let j = scope.indexOf('{', i); j < scope.length; j++) {
+        if (scope[j] === '{') d++;
+        else if (scope[j] === '}' && --d === 0) { flat += '}'; i = j; break; }
+      }
+      continue;
+    }
+    if (scope[i] === '{') depth++;
+    if (scope[i] === '}') depth--;
+    flat += scope[i];
+  }
+  const head = `${sel}{`;
+  for (let at = flat.indexOf(head); at >= 0; at = flat.indexOf(head, at + 1)) {
+    if (at === 0 || flat[at - 1] === '}') return flat.slice(at + head.length, flat.indexOf('}', at));
+  }
+  return '';
+};
+/** The body of `@media (min-width:Npx){…}` (whitespace stripped), or ''. */
+const cssMedia = (s, px) => {
+  const head = `@media(min-width:${px}px){`;
+  const at = s.indexOf(head);
+  if (at < 0) return '';
+  let d = 0;
+  for (let j = at + head.length - 1; j < s.length; j++) {
+    if (s[j] === '{') d++;
+    else if (s[j] === '}' && --d === 0) return s.slice(at + head.length, j);
+  }
+  return '';
+};
+const px = (decls, prop) => {
+  const decl = decls.split(';').find((d) => d.startsWith(`${prop}:`));
+  const m = decl ? /^[a-z-]+:(\d+(?:\.\d+)?)px$/.exec(decl) : null;
+  return m ? Number(m[1]) : null;
+};
+
+test('founding.css: the stand-out card — green border, accent gradient, 44px close that [hidden] hides; no slim-banner rules', () => {
+  const s = FOUNDING_CSS();
+  const card = cssRule(s, '.bg-fd-card');
+  assert.match(card, /border:1pxsolidvar\(--accent\)/, 'green border');
+  assert.match(card, /background:linear-gradient\([^;]*var\(--accent-quiet\)/, 'accent-tinted gradient');
+  assert.match(card, /position:relative/, 'the close button is placed against the card');
+  assert.match(cssRule(s, '.fd-hl'), /color:var\(--accent\)/, 'highlights in the accent colour');
+  assert.match(cssRule(s, '.fd-hl'), /font-weight:(700|800|bold)/, 'highlights bold');
+  assert.match(cssRule(s, '.bg-fd-card__x'), /min-width:(44px|var\(--tap\))/);
+  assert.match(cssRule(s, '.bg-fd-card__x'), /min-height:(44px|var\(--tap\))/);
+  assert.match(cssRule(s, '.bg-fd-card__x[hidden]'), /display:none/);
+  assert.match(card, /overflow-wrap:anywhere/, 'a long word never forces a sideways scroll at 320px');
+  assert.match(cssRule(s, '.bg-fd-card__body'), /min-width:0/, 'the copy can shrink beside the button');
+  assert.match(cssRule(s, '.bg-fd-card__cta'), /width:100%/, 'the button spans the card on a phone');
+  assert.doesNotMatch(s, /\.bg-banner/, 'the slim banner rules are gone');
   assert.match(s, /\.bg-topbar__nava\.bg-topbar__founding\{[^}]*color:var\(--accent\)/);
   assert.doesNotMatch(s, /var\(--gold\)/, 'gold stays reserved for the recommended pick');
+});
+
+test('founding.css: the card reserves the longest variant\'s height at every breakpoint, so a variant swap shifts nothing', () => {
+  const s = FOUNDING_CSS();
+  // The min-height rules: the base (narrowest phones) and one per breakpoint, shrinking as the card widens.
+  const steps = [[0, s], [360, cssMedia(s, 360)], [480, cssMedia(s, 480)], [640, cssMedia(s, 640)], [1024, cssMedia(s, 1024)]];
+  const mins = steps.map(([w, scope]) => {
+    const v = px(cssRule(scope, '.bg-fd-card'), 'min-height');
+    assert.ok(v !== null, `a .bg-fd-card min-height for ${w ? `>= ${w}px` : 'the base'}`);
+    return v;
+  });
+  for (let i = 1; i < mins.length; i++) assert.ok(mins[i] <= mins[i - 1], `min-height never grows with width: ${mins}`);
+
+  // The model the reservations come from (founding.css header comment). The type sizes it assumes are pinned here.
+  const base = cssRule(s, '.bg-fd-card__title');
+  assert.equal(px(base, 'font-size'), 22);
+  assert.match(base, /line-height:1\.2(;|$)/);
+  assert.equal(px(cssRule(s, '.bg-fd-card__line'), 'font-size'), 15);
+  assert.match(cssRule(s, '.bg-fd-card__line'), /line-height:1\.5(;|$)/);
+  assert.equal(px(cssRule(s, '.bg-fd-card__body'), 'gap'), 6);
+  assert.equal(px(cssRule(s, '.bg-fd-card'), 'gap'), 16);
+  assert.match(cssRule(s, '.bg-fd-card'), /padding:18px16px16px/);
+  assert.match(cssRule(s, '.bg-fd-card__title::before'), /float:right;width:32px/, 'the first-line spacer beside the close button');
+  const wide = cssMedia(s, 1024);
+  assert.equal(px(cssRule(wide, '.bg-fd-card__title'), 'font-size'), 26);
+  assert.equal(px(cssRule(wide, '.bg-fd-card__line'), 'font-size'), 16);
+  assert.match(cssRule(wide, '.bg-fd-card'), /flex-direction:row/);
+  assert.match(cssRule(wide, '.bg-fd-card'), /padding:20px64px20px24px/);
+  assert.match(cssRule(wide, '.bg-fd-card__title::before'), /content:none/);
+
+  // Greedy word wrap at conservative Inter widths (heading .62em, line .58em per character).
+  const wrap = (text, cap, first = cap) => {
+    let lines = 1;
+    let len = 0;
+    let c = first;
+    for (const w of text.split(' ')) {
+      const next = len === 0 ? w.length : len + 1 + w.length;
+      if (next > c && len > 0) { lines++; len = w.length; c = cap; } else len = next;
+    }
+    return lines;
+  };
+  const text = (segs) => segs.map((x) => x.t).join('');
+  const need = (contentW, column, hPx, lPx, spacer) => Math.max(...VARIANTS.map((v) => {
+    const h = wrap(text(v.heading), Math.floor(contentW / (hPx * 0.62)), Math.floor((contentW - spacer) / (hPx * 0.62)));
+    const l = wrap(text(v.line), Math.floor(contentW / (lPx * 0.58)));
+    const copy = h * hPx * 1.2 + 6 + l * lPx * 1.5;
+    return column ? 36 + copy + 16 + 44 : 42 + Math.max(copy, 44);
+  }));
+  // Content width at the narrowest viewport of each range: viewport − 2 gutters − 2px border − side padding.
+  const BUTTON = 248; // "SEE THE FOUNDING BENEFITS": 25 × (12.5px × .6 + .06em) + 40px padding + 2px border
+  const want = [
+    need(320 - 32 - 2 - 32, true, 22, 15, 32),
+    need(360 - 32 - 2 - 32, true, 22, 15, 32),
+    need(480 - 32 - 2 - 32, true, 22, 15, 32),
+    need(640 - 48 - 2 - 32, true, 22, 15, 32),
+    need(1024 - 48 - 2 - 88 - 24 - BUTTON, false, 26, 16, 0),
+  ];
+  want.forEach((h, i) => {
+    assert.ok(mins[i] >= h, `breakpoint ${steps[i][0]}px: min-height ${mins[i]}px holds the longest variant (${h.toFixed(1)}px)`);
+    assert.ok(mins[i] <= h + 16, `breakpoint ${steps[i][0]}px: min-height ${mins[i]}px is not far over the longest variant (${h.toFixed(1)}px)`);
+  });
 });
 
 test('below 600px the nav is four equal tabs (one per NAV item)', () => {

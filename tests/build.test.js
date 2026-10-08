@@ -70,7 +70,7 @@ describe('build of the fixture artifact', () => {
     for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js', 'banner.js', 'nav.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
-    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
+    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'founding.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
     for (const f of ISOMORPHIC_LIB) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js/lib', f)), await readFile(join(REPO_ROOT, 'site/lib', f)), f);
     }
@@ -164,13 +164,16 @@ describe('build of the fixture artifact', () => {
     assert.equal(withSlot, 3, 'premise: / and the two full day pages carry the slot');
   });
 
-  test('the founding banner: none on /waitlist/ or its result pages, exactly one on every other page', async () => {
+  test('the founding card (spec §16.5): none on /waitlist/ or its result pages, exactly one on every other page; no slim banner', async () => {
     let without = 0;
     let withOne = 0;
     for (const { rel, html } of await htmlFiles(ws.out)) {
       const doc = parse(html);
       const banners = findAll(doc, (n) => n.attrs['data-banner'] !== undefined).length;
       const bannerJs = find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/banner.js') !== null;
+      const cards = findAll(doc, (n) => (n.attrs.class ?? '').split(/s+/).includes('bg-fd-card')).length;
+      assert.equal(cards, banners, `${rel}: every [data-banner] is the founding card, and the card is nowhere else`);
+      assert.doesNotMatch(html, /bg-banner/, `${rel}: the slim banner is gone`);
       if (rel.startsWith('waitlist/')) { // /waitlist/ itself and its four result pages
         assert.equal(banners, 0, `${rel}: no banner`);
         assert.equal(bannerJs, false, `${rel}: no banner.js`);

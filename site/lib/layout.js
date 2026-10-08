@@ -1,4 +1,4 @@
-// Page shell: <head>, header + nav, the founding banner, <main>, footer. BUILD ONLY (never shipped to the browser).
+// Page shell: <head>, header + nav, the founding card, <main>, footer. BUILD ONLY (never shipped to the browser).
 //
 // CSP contract (plan S4, Task 2): the shell emits no inline <script> body, no <style> element and no
 // style= attribute. Scripts are external module scripts on same-origin root-relative paths only.
@@ -8,7 +8,8 @@ import { escHtml, escAttr } from './esc.js';
 import { lagosToday } from './time.js';
 import { requireOperator } from '../config.js';
 import { rcNumber } from '../content/common.js';
-import { TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT } from './founding.js';
+import { TOTAL_PLACES, variantFor } from './founding.js';
+import { foundingCard } from '../content/waitlist.js';
 
 /**
  * Primary navigation, in display order. `section: true` makes every page under the item's path
@@ -21,7 +22,7 @@ export const NAV = Object.freeze([
   Object.freeze({ href: '/waitlist/', label: 'Founding', cls: 'bg-topbar__founding', section: true }),
 ]);
 
-/** The founding banner's own script: the FIRST module script on every page that carries the banner. */
+/** The founding card's script (dismiss + variant rotation): the FIRST module script on every page with the card. */
 export const BANNER_SCRIPT = '/assets/js/banner.js';
 /** The small-screen menu's script (spec §16.3): on EVERY page, right after banner.js (or first). */
 export const NAV_SCRIPT = '/assets/js/nav.js';
@@ -86,20 +87,6 @@ function dataAttrs(mainData) {
 
 /** 1000 -> '1,000' (deterministic: never the host locale). */
 function thousands(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); } // hoisted: OG_ALT uses it
-
-/**
- * The sitewide founding banner (spec §2). The numbers come from founding.js; the offer percentage
- * sits in a data-figure="offer" element (the claim guard allows it nowhere else). The close button
- * is hidden until banner.js runs: without JS the banner shows and cannot be closed.
- */
-function banner() {
-  return `<aside class="bg-banner" aria-label="Founding members" data-banner>
-<div class="bg-wrap bg-banner__in">
-<p><strong>Founding members:</strong> ${escHtml(thousands(TOTAL_PLACES))} places — ${escHtml(thousands(WAITLIST_PLACES))} on the waitlist, ${escHtml(thousands(LAUNCH_PLACES))} at launch · <span data-figure="offer">${escHtml(DISCOUNT_PCT)}% off every subscription payment while you subscribe</span> · <a href="/waitlist/">See the benefits →</a></p>
-<button type="button" class="bg-banner__x" data-banner-close aria-label="Hide the founding banner" hidden>×</button>
-</div>
-</aside>`;
-}
 
 /**
  * Is this nav item the current page? An exact match, or — for a `section` item whose href ends in
@@ -182,9 +169,10 @@ function footer(op, year) {
  * @param {object} o.config       site config, REQUIRED (the build passes site/config.js explicitly);
  *                                operator identity, repo and origin are validated by requireOperator
  * @param {number} [o.year]       copyright year (default: the current Lagos year)
- * @param {boolean} [o.banner]    the founding banner under the header (default true; false on
- *                                /waitlist/ and its result pages, spec §2); true also loads
- *                                banner.js as the first module script
+ * @param {boolean} [o.banner]    the founding card under the header (spec §16.5; default true; false
+ *                                on /waitlist/ and its result pages). Its static copy is
+ *                                VARIANTS[variantFor(path)], so different pages carry different
+ *                                copy without JS; true also loads banner.js as the first module script
  * @param {string} [o.ogImage]    site path of a 1200x630 PNG/JPEG -> og:image (absolute, from
  *                                config.origin) + og:image:width/height/alt
  * @param {string} [o.ogImageAlt] og:image:alt; defaults to the known alt of OG_FOUNDING, required
@@ -226,7 +214,7 @@ export function page({
 
   const fullTitle = `${title} — ${config.brand || 'Bet Gaffer'}`;
   const url = config.origin + (canonicalPath ?? path);
-  // banner.js first, so a dismissed banner is removed before any other module runs (spec §2); then
+  // banner.js first, so a dismissed card is removed before any other module runs (spec §2); then
   // nav.js on every page (spec §16.3); then the page's own scripts. Each at most once.
   const own = scripts.filter((s) => s !== BANNER_SCRIPT && s !== NAV_SCRIPT);
   const allScripts = [...(withBanner ? [BANNER_SCRIPT] : []), NAV_SCRIPT, ...own];
@@ -261,7 +249,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 ${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${scriptTags ? `${scriptTags}\n` : ''}</head>
 <body>
 ${header(path)}
-${withBanner ? `${banner()}\n` : ''}<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>
+${withBanner ? `${foundingCard(variantFor(path))}\n` : ''}<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>
 <div class="stale" role="status" hidden></div>
 ${body}
 </main>

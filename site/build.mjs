@@ -42,8 +42,8 @@ export const REPO_ROOT = resolve(SITE, '..');
 export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
 /** Linked from <noscript> by layout.js (NOJS_CSS); copied as its own file, never concatenated. */
 const NOJS_CSS_FILE = 'nojs.css';
-/** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring). */
-export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js']);
+/** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring, founding card). */
+export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js', 'founding.js']);
 /** Same-site browser entry modules. */
 const SCRIPT = Object.freeze({
   stale: '/assets/js/stale.js', day: '/assets/js/day.js', waitlist: '/assets/js/waitlist.js', predictions: '/assets/js/predictions.js',
@@ -170,8 +170,8 @@ ${strip}`;
     ? `<div class="home-notice" role="note"><p>${escHtml(`No card was published for ${fmtDayLong(today)}.`)} ${escHtml(`This is the most recent card, for ${fmtDayLong(home)}.`)}</p></div>\n`
     : '';
   const { prev, next } = neighbours(home);
-  // The founding card (spec §2, §5) sits inside the day card, between the toolbar and the list.
-  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next, beforeList: waitlist.foundingCard() });
+  // The founding card is under the header (layout.page(), spec §16.5), not repeated in the day card.
+  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next });
   return `${notice}${tomorrowLine(tomorrow)}
 ${strip}
 ${card}`;
@@ -438,9 +438,9 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const d = entry.day;
     const { prev, next } = neighbours(d);
     const full = d === choice.home || d === choice.tomorrow;
-    // A full card carries the founding card under its toolbar, as on the home page (spec §2, §5).
+    // The founding card is under the header (layout.page(), spec §16.5), not repeated in the day card.
     const body = full
-      ? renderDay(days.get(d), { prevDay: prev, nextDay: next, beforeList: waitlist.foundingCard() })
+      ? renderDay(days.get(d), { prevDay: prev, nextDay: next })
       : stubBody(entry, { prev, next });
     const isStubWithFetch = !full && !entry.compacted;
     add({
@@ -474,7 +474,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   add({ ...features.META, body: features.render({ ...config, breadth }) });
   for (const mod of [privacy, terms, refunds]) add({ ...mod.META, body: mod.render(config) });
 
-  // The founding page (spec §3): no banner (it IS the founding page), the founding OG image, and a
+  // The founding page (spec §3): no founding card (it IS the founding page), the founding OG image, and a
   // form without its own places line — the counter tile above it is the page's one counter.
   add({
     ...waitlist.META,

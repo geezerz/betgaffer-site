@@ -47,7 +47,7 @@ const byFx = (d, fx) => d.fixtures.find((f) => f.fx === fx);
 function pageOf(day = EDGE) {
   return '<!doctype html><html lang="en-NG"><head><title>t</title></head><body>'
     + '<header class="bg-topbar"><a href="/">Bet Gaffer</a></header>'
-    + `<main id="main">${renderDay(day, { beforeList: foundingCard() })}</main></body></html>`;
+    + `${foundingCard(0)}<main id="main">${renderDay(day)}</main></body></html>`;
 }
 
 /** Injected timers on a fake clock: run() fires everything; advance(ms) fires only what is due. */
@@ -406,15 +406,12 @@ describe('result line and empty state', () => {
     assert.equal(hiddenOutside.length, baseline, 'nothing else was hidden');
   });
 
-  test('the founding card sits between the toolbar slot and the day bar', () => {
+  test('the founding card sits under the header, outside the day card (spec §16.5)', () => {
     const s = setup();
-    const day = s.q('.day');
-    const kids = day.children;
-    const at = (pred2) => kids.findIndex(pred2);
-    const iTools = at((e) => e.hasAttribute('data-day-tools'));
-    const iCard = at((e) => e.getAttribute('class') === 'bg-fd-card');
-    const iBar = at((e) => e.getAttribute('class') === 'day-bar');
-    assert.ok(iTools >= 0 && iTools < iCard && iCard < iBar, `${iTools} < ${iCard} < ${iBar}`);
+    const card = s.q('.bg-fd-card');
+    assert.ok(card, 'premise: the card is on the page');
+    assert.equal(s.q('.day').contains(card), false, 'not in the day card');
+    assert.equal(s.doc.querySelector('main').contains(card), false, 'not in <main>');
   });
 });
 
