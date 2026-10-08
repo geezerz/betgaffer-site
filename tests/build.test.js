@@ -757,6 +757,16 @@ describe('the floating ring: its figures on <main> and its script', () => {
     }
   });
 
+  test('no JS: the built pages never carry has-balloon, so the day header keeps its static ring', async () => {
+    for (const rel of ['index.html', 'day/2026-10-06/index.html', 'day/2026-10-07/index.html']) {
+      const doc = parse(await read(ws, rel));
+      const html = find(doc, (n) => n.tag === 'html');
+      assert.doesNotMatch(html.attrs.class ?? '', /has-balloon/, rel);
+      const head = find(doc, (n) => /\bday-head\b/.test(n.attrs.class ?? ''));
+      assert.ok(head && find(head, (n) => n.attrs['data-figure'] === 'ring'), `${rel}: the static ring is in the day header`);
+    }
+  });
+
   test('no index.json: no figures and no ring script', async () => {
     const empty = await workspace();
     try {

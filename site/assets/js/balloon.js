@@ -12,12 +12,13 @@
 //     restored with Number.isFinite checks and RE-CLAMPED to the current viewport on load, resize,
 //     orientation change and when the sticky header or the card changes size — a spot saved on a
 //     larger screen would otherwise restore off-screen with no way to drag it back;
-//   - never above the sticky header + toolbar; where the viewport has no room below them, hidden.
-// Until the visitor drags it, the CSS default anchor is in charge (bottom right above the safe area
-// at both sizes; top right sat on the day header's own ring) and no coordinate is written — except
-// where that corner would cover a visible toolbar control (a phone's first screen, before the
-// toolbar sticks): then defaultSpot() picks the bottom-left or the spot just above the controls,
-// re-checked on scroll. A dodge is never stored.
+//   - never above the floor: the sticky header, or the sticky toolbar while it is stuck under it
+//     (re-checked on scroll); where the viewport has no room below the floor, hidden.
+// Until the visitor drags it, the ring starts top right (operator, 2026-10-08): right from the CSS
+// (12px / 24px in, plus the right safe area), top = just below the header — or below the founding
+// banner while it is on screen, so its close button stays tappable — written through CSSOM.
+// While the ring is shown, <html> carries has-balloon and the CSS hides the day header's static
+// ring (the same figure); without JS, or with the ring hidden, the static ring stays.
 //
 // The figures are validated first and anything invalid draws nothing (fail closed). Everything is
 // built with DOM calls and textContent; the arc is the --pct custom property set through CSSOM
@@ -26,7 +27,7 @@
 // Imports resolve to /assets/js/lib/ (the build copies the isomorphic modules there).
 
 import {
-  EDGE, GAP, NOMINAL, PAD, clamp, defaultSpot, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
+  NOMINAL, PAD, clamp, defaultTop, floorTop, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
 } from './lib/balloon-model.js';
 
 /** Pointer travel (px) that turns a press into a drag: a steady-handed click still moves a pixel or two. */
@@ -173,27 +174,24 @@ export function init({
     html.classList.toggle('has-balloon', on);
   }
 
-  /** The floor: the bottom of the sticky header, plus the sticky toolbar when it is shown. */
+  /** The bottom of the sticky header (px from the viewport top). */
   function barBottom() {
     const bar = doc.querySelector('.bg-topbar');
     const b = bar ? Math.round(bar.getBoundingClientRect().bottom) : 0;
     return Number.isFinite(b) ? Math.max(0, b) : 0;
   }
+  /** The floor: under the header, or under the toolbar while it is stuck there. */
   function minTop() {
     const tools = doc.querySelector('[data-day-tools]');
-    const toolsH = tools && !tools.hidden && Number.isFinite(tools.offsetHeight) ? tools.offsetHeight : 0;
-    return barBottom() + toolsH + GAP;
+    const r = tools && !tools.hidden ? tools.getBoundingClientRect() : null;
+    return floorTop(barBottom(), r && r.height > 0 ? { top: Math.round(r.top), bottom: Math.round(r.bottom) } : null);
   }
-
-  /** The visible toolbar's controls, as layout boxes (a control that is not displayed has a zero box). */
-  function controls() {
-    const tools = doc.querySelector('[data-day-tools]');
-    if (!tools || tools.hidden) return [];
-    const out = [];
-    for (const sel of ['input', 'button', 'a', 'select']) {
-      for (const c of Array.from(tools.querySelectorAll(sel))) out.push(c.getBoundingClientRect());
-    }
-    return out;
+  /** The founding banner's bottom while it is in the page and displayed, else null. */
+  function bannerBottom() {
+    const banner = doc.querySelector('[data-banner]');
+    if (!banner || banner.hidden) return null;
+    const r = banner.getBoundingClientRect();
+    return r.height > 0 && Number.isFinite(r.bottom) ? Math.round(r.bottom) : null;
   }
 
   function box() {
@@ -234,14 +232,13 @@ export function init({
         show(c.fits);
         return;
       }
-      const fits = clamp({ left: b.vw, top: b.vh }, b).fits;
-      if (fits) {
-        // Not dragged: the bottom-right CSS anchor, unless it would cover a toolbar control.
-        const spot = defaultSpot({ vw: b.vw, vh: b.vh, w: b.w, h: b.h, edge: EDGE[size], floor: barBottom() + GAP }, controls());
-        if (spot.kind === 'default') clearXY();
-        else setXY(Math.round(spot.left), Math.round(spot.top));
+      // Not dragged: right from the CSS anchor, top just below the header (or the banner).
+      const c = clamp({ left: b.vw, top: defaultTop({ barBottom: barBottom(), bannerBottom: bannerBottom(), floor: b.minTop }) }, b);
+      if (c.fits) {
+        for (const k of ['left', 'right', 'bottom']) el.style.removeProperty(k);
+        el.style.setProperty('top', `${Math.round(c.top)}px`);
       }
-      show(fits);
+      show(c.fits);
     } catch {
       show(false); // an unmeasurable viewport: nothing rather than a misplaced ring
     }
@@ -334,10 +331,12 @@ export function init({
     el.classList.remove('is-dragging');
     el.style.removeProperty('transform');
     suppressClick = moved;
-    if (!moved) return; // a click: the anchor and the stored position are untouched
-    pos = { left: Math.round(startLeft + dx), top: Math.round(startTop + dy) };
-    setXY(pos.left, pos.top);
-    writePos(storage, storageKey(size), pos);
+    if (moved) {
+      pos = { left: Math.round(startLeft + dx), top: Math.round(startTop + dy) };
+      setXY(pos.left, pos.top);
+      writePos(storage, storageKey(size), pos);
+    } // else a click: the anchor and the stored position are untouched
+    relayout(); // catch up with anything skipped while dragging (a resize, the sticky stack)
   }
   el.addEventListener('pointerup', end);
   el.addEventListener('pointercancel', end);
@@ -368,8 +367,9 @@ export function init({
   if (typeof win.addEventListener === 'function') {
     win.addEventListener('resize', relayout, { passive: true });
     win.addEventListener('orientationchange', relayout, { passive: true });
-    // The toolbar is not sticky until it reaches the header: a default spot is re-checked as it moves.
-    win.addEventListener('scroll', relayout, { passive: true });
+    // The toolbar sticks (raising the floor) and the banner scrolls away only as the page scrolls.
+    // A stored position is the visitor's: scrolling never moves it (resize still re-clamps it).
+    win.addEventListener('scroll', () => { if (pos === null) relayout(); }, { passive: true });
   }
   if (typeof RO === 'function') {
     try {
@@ -377,13 +377,25 @@ export function init({
       const bar = doc.querySelector('.bg-topbar');
       if (bar) ro.observe(bar);
       ro.observe(main);
+      const banner = doc.querySelector('[data-banner]');
+      if (banner) ro.observe(banner);
     } catch {
       // No observer: resize still re-clamps.
     }
   }
 
+  // Dismissing the banner (banner.js removes it on this click) frees the space under the header;
+  // the relayout runs on the next frame, after the removal.
+  const close = doc.querySelector('[data-banner-close]');
+  if (close) close.addEventListener('click', relayout);
+
   // ---- the day word ("Today") is the visitor's date: re-render at each Lagos midnight.
-  const midnight = () => setTimer(() => {
+  const midnight = (ms = msToLagosMidnight(now()) + 500) => setTimer(() => {
+    // Never rebuild the ring under a live pointer: try again a second later.
+    if (dragging) {
+      midnight(1000);
+      return;
+    }
     try {
       render();
       place();
@@ -391,7 +403,7 @@ export function init({
       show(false);
     }
     midnight();
-  }, msToLagosMidnight(now()) + 500);
+  }, ms);
   midnight();
 
   return {

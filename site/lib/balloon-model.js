@@ -23,20 +23,15 @@ export const POS_KEYS = Object.freeze({ desktop: 'bg.balloon.pos', compact: 'bg.
 export const NOMINAL = Object.freeze({ desktop: 124, compact: 64 });
 /** Distance kept from the viewport edges. */
 export const PAD = 10;
-/** Gap kept below the sticky header + toolbar, and around a toolbar control the default dodges. */
+/** Gap kept below the sticky header (or the stuck toolbar, or the founding banner). */
 export const GAP = 8;
-/**
- * The default anchor's distance from the right and bottom edges, per size (balloon.css says the
- * same, plus the bottom safe area). Bottom-right at both sizes: a top-right ring sat on the day
- * header's own ring.
- */
-export const EDGE = Object.freeze({ desktop: Object.freeze({ x: 24, y: 24 }), compact: Object.freeze({ x: 12, y: 16 }) });
 
 const DAY_MS = 86400000;
 const HOUR_MS = 3600000;
 const FIELDS = ['won', 'lost', 'pushes', 'graded', 'pct', 'date'];
 const COUNT_RE = /^(?:0|[1-9]\d{0,8})$/;
-const PCT_RE = /^\d{1,3}(?:\.\d{1,8})?$/;
+// Plain decimal notation only (no exponent, sign, NaN or Infinity); the range is checked after.
+const PCT_RE = /^\d{1,3}(?:\.\d+)?$/;
 
 const isCount = (v) => Number.isInteger(v) && v >= 0;
 
@@ -215,33 +210,32 @@ export function ringModel(today, { date, yesterday = null, compact = false, nowM
   };
 }
 
-const touches = (a, r) => r.width > 0 && r.height > 0
-  && a.left < r.left + r.width + GAP && r.left - GAP < a.left + a.w
-  && a.top < r.top + r.height + GAP && r.top - GAP < a.top + a.h;
+const finite = (v) => typeof v === 'number' && Number.isFinite(v);
 
 /**
- * Where the ring sits before the visitor drags it: the bottom-right corner (the CSS anchor,
- * kind 'default') unless that would cover a visible toolbar control (within GAP) — as on a phone's
- * first screen, where the toolbar is not stuck yet and its last row can sit at the bottom. Then the
- * bottom-left corner ('left'), else just above the topmost control ('above') when that stays below
- * `floor` (the header's bottom + GAP). With no such room the corner stays: never off-screen.
- * Zero-size rects (controls that are not displayed) never count.
+ * The floor no ring may sit above: GAP under the sticky header's bottom, or — while the sticky
+ * toolbar is stuck under the header (its top at the header's bottom) — GAP under the toolbar.
  *
- * @param {{vw:number, vh:number, w:number, h:number, edge:{x:number,y:number}, floor:number}} v
- * @param {{left:number, top:number, width:number, height:number}[]} controls
- * @returns {{left:number, top:number, kind:'default'|'left'|'above'}}
+ * @param {number} barBottom                 the header's bottom (px from the viewport top)
+ * @param {{top:number,bottom:number}|null} tools  the visible toolbar's box, or null
  */
-export function defaultSpot({ vw, vh, w, h, edge, floor }, controls) {
-  const top = vh - h - edge.y;
-  const right = { left: vw - w - edge.x, top, w, h };
-  const live = controls.filter((r) => r.width > 0 && r.height > 0);
-  const clear = (a) => !live.some((r) => touches(a, r));
-  if (clear(right)) return { left: right.left, top, kind: 'default' };
-  const left = { left: edge.x, top, w, h };
-  if (clear(left)) return { left: left.left, top, kind: 'left' };
-  const above = { left: right.left, top: Math.min(...live.map((r) => r.top)) - h - GAP, w, h };
-  if (above.top >= floor && clear(above)) return { left: above.left, top: above.top, kind: 'above' };
-  return { left: right.left, top, kind: 'default' };
+export function floorTop(barBottom, tools) {
+  const bar = finite(barBottom) ? Math.max(0, barBottom) : 0;
+  const stuck = tools !== null && typeof tools === 'object' && finite(tools.top) && finite(tools.bottom)
+    && tools.bottom > tools.top && tools.top <= bar + 1;
+  return (stuck ? tools.bottom : bar) + GAP;
+}
+
+/**
+ * The default top (operator, 2026-10-08): just below the header at every width — but below the
+ * founding banner while it is on screen, so its close button stays tappable — and never above floor.
+ *
+ * @param {{barBottom:number, bannerBottom:number|null, floor:number}} o
+ */
+export function defaultTop({ barBottom, bannerBottom = null, floor }) {
+  const bar = finite(barBottom) ? Math.max(0, barBottom) : 0;
+  const below = finite(bannerBottom) && bannerBottom > bar ? bannerBottom : bar;
+  return Math.max(below + GAP, finite(floor) ? floor : 0);
 }
 
 /**

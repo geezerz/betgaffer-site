@@ -6,10 +6,13 @@
    One design at every width. The arc is the won/graded split drawn as a
    conic-gradient and hollowed by an inset ::before; --pct is set through CSSOM
    by the script (never a style attribute). --bal-size drives every dimension.
-     data-size="desktop" (from 1024px): ~116-128px, today then yesterday, default
-       anchor bottom right;
-     data-size="compact" (below 1024px): 64px, today's figure and fraction only,
-       default anchor bottom right above the safe area.
+     data-size="desktop" (from 1024px): ~116-128px, today then yesterday;
+     data-size="compact" (below 1024px): 64px, today's figure and fraction only.
+   Both start top right just below the topbar (operator, 2026-10-08); balloon.js
+   writes the exact top (below the banner while it is on screen, below the
+   toolbar while it is stuck). While the ring is shown (html.has-balloon) the
+   day header's static ring is hidden: same figure, and the default spot is
+   over it on desktop. Without JS, or with the ring hidden, it stays.
    Perfect and empty days draw no arc (no figure is a full circle); an empty day
    has a dashed rim.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -18,8 +21,9 @@
   --bal-size:64px;
   --bal-thick:4px;
   position:fixed; z-index:45;
-  left:auto; top:auto; right:12px;
-  bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  left:auto; bottom:auto;
+  top:calc(var(--bar-h) + 8px);
+  right:calc(12px + env(safe-area-inset-right, 0px));
   width:var(--bal-size); height:var(--bal-size);
   display:flex; align-items:center; justify-content:center;
   border-radius:50%;
@@ -60,10 +64,8 @@
 .bg-balloon[data-size="desktop"]{
   --bal-size:clamp(116px, 10vw, 128px);
   --bal-thick:calc(var(--bal-size) * .052);
-  /* Bottom-right like the phone ring: top-right sat on the day header's own ring. balloon.js
-     moves it off any toolbar control it would cover (EDGE in balloon-model.js = these offsets). */
-  right:24px; top:auto;
-  bottom:calc(24px + env(safe-area-inset-bottom, 0px));
+  top:calc(var(--bar-h-lg) + 8px);
+  right:calc(24px + env(safe-area-inset-right, 0px));
   border-width:max(1px, calc(var(--bal-size) * .015));
 }
 
@@ -134,12 +136,8 @@
 .bg-balloon[data-size="compact"][data-long] .bg-balloon__frac,
 .bg-balloon[data-size="compact"][data-long] .bg-balloon__pct--frac{ font-size:8px; letter-spacing:-.05em; }
 
-/* The phone ring sits over the bottom of the page: keep the last row clear of it. */
-@media (max-width:1023.98px){
-  html.has-balloon .bg-page{
-    padding-bottom:calc(64px + 36px + env(safe-area-inset-bottom, 0px));
-  }
-}
+/* The floating ring carries the day's figure; the header's static copy steps aside while it shows. */
+html.has-balloon .day-head .ring{ display:none; }
 
 @media (prefers-reduced-motion:reduce){
   .bg-balloon{ transition:none; }

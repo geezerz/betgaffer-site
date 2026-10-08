@@ -145,8 +145,8 @@ export class FakeElement {
     const r = this._rect ?? {};
     const left = r.left ?? 0;
     const top = r.top ?? 0;
-    const width = r.width ?? 0;
-    const height = r.height ?? 0;
+    const width = r.width ?? (r.right !== undefined ? r.right - left : 0);
+    const height = r.height ?? (r.bottom !== undefined ? r.bottom - top : 0);
     return { left, top, width, height, right: r.right ?? left + width, bottom: r.bottom ?? top + height, x: left, y: top };
   }
   /** Pointer capture, recorded: the id last captured (null once released). */

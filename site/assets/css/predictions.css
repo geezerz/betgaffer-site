@@ -2,8 +2,8 @@
    Bet Gaffer — the predictions toolbar (spec §5): search, Leagues, the result
    line, "Jump to now", the empty state and the Leagues dialog.
    Markup: site/assets/js/predictions.js (built client-side into the hidden
-   [data-day-tools] slot fixtures.js renders). Colours, sizes: base.css. The look is the
-   UI tab's: compact pills on --surface-2, mono counts, quiet surfaces.
+   [data-day-tools] slot fixtures.js renders). Colours, sizes: base.css. The look:
+   compact pills on --surface-2, mono counts, quiet surfaces.
 
    Every element given a display here also gets an explicit [hidden] rule: an
    author display beats the UA's [hidden]{display:none}, and filtering must hide.
@@ -140,7 +140,7 @@ html.has-day-tools{
 .bg-linkbtn[hidden]{ display:none; }
 .bg-linkbtn:hover{ color:var(--accent-hi); }
 
-/* ── 5. EMPTY STATE (the UI tab's .bg-filter-empty) ──────────────────────────── */
+/* ── 5. EMPTY STATE ───────────────────────────────────────────────────────────── */
 .bg-filter-empty{
   display:flex; flex-direction:column; align-items:flex-start; gap:12px;
   padding:24px 20px; border:1px dashed var(--line-2); border-radius:var(--r-2);

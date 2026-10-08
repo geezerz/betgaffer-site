@@ -6,13 +6,13 @@
 
 import { test, describe, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { build } from '../site/build.mjs';
 import {
-  DESKTOP_MIN, EDGE, GAP, NOMINAL, PAD, POS_KEYS, clamp, defaultSpot, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
+  DESKTOP_MIN, GAP, NOMINAL, PAD, POS_KEYS, clamp, defaultTop, floorTop, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
 } from '../site/lib/balloon-model.js';
 import { fakeDocument, fire, serialize, FakeResizeObserver } from './fake-dom.js';
 import { claimViolations } from './html-scan.js';
@@ -174,6 +174,14 @@ describe('readFigures (fail closed on the <main> data)', () => {
     });
   });
 
+  test('an unrounded published pct (any finite number in [0, 100]) is accepted; the ring rounds it', () => {
+    const f = readFigures(attrs({ ...RING, 'ring-pct': '83.33333333333333' }));
+    assert.equal(f.today.pct, 83.33333333333333);
+    assert.equal(ringModel(f.today, { date: TODAY }).pctText, '83.33');
+    for (const ok of ['0', '100', '100.0', '0.5', '99.99999999999999']) assert.notEqual(readFigures(attrs({ ...RING, 'ring-pct': ok })), null, ok);
+    for (const bad of ['1e2', '8.3e1', 'Infinity', '100.01', '.5', '5.', '+5', '0x10', '1_0']) assert.equal(readFigures(attrs({ ...RING, 'ring-pct': bad })), null, bad);
+  });
+
   test('no yesterday attributes -> no yesterday; nothing graded today -> pct absent', () => {
     assert.equal(readFigures(attrs(RING)).yesterday, null);
     const none = { ...RING, 'ring-won': '0', 'ring-lost': '0', 'ring-graded': '0' };
@@ -242,27 +250,21 @@ describe('clamp, size class and storage keys', () => {
     assert.deepEqual(NOMINAL, { desktop: 124, compact: 64 });
   });
 
-  test('defaultSpot: bottom-right when clear; else bottom-left; else above the controls it would cover', () => {
-    const phone = { vw: 390, vh: 700, w: 64, h: 64, edge: EDGE.compact, floor: 72 };
-    const br = { left: 390 - 64 - 12, top: 700 - 64 - 16 };
-    assert.deepEqual(EDGE, { desktop: { x: 24, y: 24 }, compact: { x: 12, y: 16 } });
-    assert.deepEqual(defaultSpot(phone, []), { ...br, kind: 'default' });
-    // A control far away does not move it.
-    assert.equal(defaultSpot(phone, [{ left: 16, top: 200, width: 100, height: 44 }]).kind, 'default');
-    // "Jump to now" under the bottom-right corner: the bottom-left is clear.
-    const jump = { left: 250, top: 640, width: 120, height: 44 };
-    assert.deepEqual(defaultSpot(phone, [jump]), { left: 12, top: br.top, kind: 'left' });
-    // A full-width search field at the bottom blocks both corners: above it.
-    const field = { left: 16, top: 630, width: 358, height: 44 };
-    assert.deepEqual(defaultSpot(phone, [field, jump]), { left: br.left, top: 630 - 64 - GAP, kind: 'above' });
-    // No room above (a toolbar this tall reaches up under the header): the corner stays, never
-    // off-screen and never above the header.
-    assert.deepEqual(defaultSpot(phone, [{ left: 0, top: 120, width: 390, height: 560 }]), { ...br, kind: 'default' });
-    // Within GAP counts as touching.
-    assert.equal(defaultSpot(phone, [{ left: 0, top: br.top + 64 + GAP - 1, width: 390, height: 10 }]).kind, 'above');
-    assert.equal(defaultSpot(phone, [{ left: 0, top: br.top + 64 + GAP, width: 390, height: 10 }]).kind, 'default', 'GAP away is clear');
-    // Zero-size (not displayed) rects are ignored.
-    assert.equal(defaultSpot(phone, [{ left: 300, top: 630, width: 0, height: 0 }]).kind, 'default');
+  test('floorTop: GAP under the topbar, or under the toolbar while it is stuck there', () => {
+    assert.equal(GAP, 8);
+    assert.equal(floorTop(64, null), 72);
+    assert.equal(floorTop(64, { top: 300, bottom: 360 }), 72, 'in the flow: not stuck');
+    assert.equal(floorTop(64, { top: 64, bottom: 176 }), 184, 'stuck');
+    assert.equal(floorTop(64.4, { top: 65, bottom: 120 }), 128, 'stuck within a pixel of rounding');
+    assert.equal(floorTop(64, { top: 0, bottom: 0 }), 72, 'a zero box (not displayed) is not stuck');
+    assert.equal(floorTop(Number.NaN, null), 8);
+  });
+
+  test('defaultTop: below the topbar, below the banner while it is on screen, never above the floor', () => {
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: null, floor: 72 }), 72);
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 150, floor: 72 }), 158);
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 30, floor: 72 }), 72, 'a banner scrolled under the topbar');
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 150, floor: 184 }), 184, 'the stuck toolbar wins');
   });
 
   test('msToLagosMidnight', () => {
@@ -280,11 +282,12 @@ const YDAY_ATTRS = (a, date) => [
   ['yday-won', a.won], ['yday-lost', a.lost], ['yday-pushes', a.pushes], ['yday-graded', a.graded], ['yday-pct', a.pct], ['yday-date', date],
 ];
 
-function pageOf({ today = A24, yesterday = Y18, date = TODAY, ydate = '2026-10-06', extra = [] } = {}) {
+function pageOf({ today = A24, yesterday = Y18, date = TODAY, ydate = '2026-10-06', extra = [], banner = false } = {}) {
   const pairs = [...(today ? RING_ATTRS(today, date) : []), ...(yesterday ? YDAY_ATTRS(yesterday, ydate) : []), ...extra];
   const data = pairs.filter(([, v]) => v !== null && v !== undefined).map(([k, v]) => ` data-${k}="${v}"`).join('');
   return '<!doctype html><html lang="en-NG"><head><title>t</title></head><body>'
     + '<header class="bg-topbar"><a href="/">Bet Gaffer</a></header>'
+    + (banner ? '<aside class="bg-banner" data-banner><p>Founding</p><button type="button" data-banner-close>x</button></aside>' : '')
     + `<main id="main"${data}><div class="day"><div class="day-tools" data-day-tools></div><p>card</p></div></main></body></html>`;
 }
 
@@ -299,11 +302,16 @@ function memStorage(init = {}) {
   };
 }
 
-function setup({ width = 1280, height = 800, html = pageOf(), store = {}, storage, clock = NOW, RO = FakeResizeObserver } = {}) {
+function setup({
+  width = 1280, height = 800, html = pageOf(), store = {}, storage, clock = NOW, RO = FakeResizeObserver,
+  tools: toolsRect = { top: 300, bottom: 360 }, banner: bannerRect = null,
+} = {}) {
   const doc = fakeDocument(html);
   doc.querySelector('.bg-topbar')._rect = { top: 0, bottom: 64 };
   const tools = doc.querySelector('[data-day-tools]');
-  if (tools) tools.offsetHeight = 60;
+  if (tools) { tools.offsetHeight = 60; tools._rect = toolsRect; }
+  const bannerEl = doc.querySelector('[data-banner]');
+  if (bannerEl && bannerRect) bannerEl._rect = bannerRect;
   const win = {
     innerWidth: width, innerHeight: height, listeners: {},
     addEventListener(t, fn) { (this.listeners[t] ??= []).push(fn); },
@@ -325,6 +333,7 @@ function setup({ width = 1280, height = 800, html = pageOf(), store = {}, storag
   s.el = doc.querySelector('.bg-balloon');
   s.flush = () => { const all = frames.splice(0); for (const f of all) if (f) f(); };
   s.resize = (w, h = height) => { win.innerWidth = w; win.innerHeight = h; for (const f of win.listeners.resize ?? []) f({ type: 'resize' }); s.flush(); };
+  s.scroll = () => { for (const f of win.listeners.scroll ?? []) f({ type: 'scroll' }); s.flush(); };
   s.has = () => doc.documentElement.classList.contains('has-balloon');
   s.style = (k) => s.el.style.getPropertyValue(k);
   return s;
@@ -447,19 +456,56 @@ describe('balloon.js: rendering', () => {
     assert.match(s.el.getAttribute('aria-label'), /Tue 6 Oct 2026: 18 of 22/);
     assert.ok(s.el.textContent.includes('Wed 7 Oct'));
   });
+
+  test('midnight during a drag: nothing is rebuilt under the pointer; it retries a second later', () => {
+    const s = setup({ clock: Date.parse('2026-10-07T22:30:00Z') });
+    s.el._rect = { left: 1100, top: 150, width: 124, height: 124 };
+    const kids = s.el.childNodes[0];
+    fire(s.el, 'pointerdown', { button: 0, pointerId: 1, clientX: 1150, clientY: 200 });
+    s.clock.now = Date.parse('2026-10-07T23:00:01Z');
+    s.timers.at(-1).fn();
+    assert.equal(s.el.childNodes[0], kids, 'not re-rendered mid-drag');
+    assert.match(s.el.getAttribute('aria-label'), /^Today's/);
+    assert.equal(s.timers.at(-1).ms, 1000, 're-armed shortly');
+    fire(s.el, 'pointerup', { pointerId: 1, clientX: 1150, clientY: 200 });
+    s.timers.at(-1).fn();
+    assert.match(s.el.getAttribute('aria-label'), /^Picks published for Wed 7 Oct 2026: /);
+  });
 });
 
 describe('balloon.js: position', () => {
-  test('no stored position: the CSS default anchor (no inline coordinates)', () => {
-    const s = setup();
-    for (const k of ['left', 'top', 'right', 'bottom']) assert.equal(s.style(k), '', k);
-    assert.equal(s.api.custom, false);
+  test('no stored position: top right, just below the topbar (top set through CSSOM; right from the CSS)', () => {
+    for (const width of [1280, 390]) {
+      const s = setup({ width });
+      assert.equal(s.style('top'), `${64 + GAP}px`, `${width}: topbar bottom + 8`);
+      for (const k of ['left', 'right', 'bottom']) assert.equal(s.style(k), '', `${width} ${k}`);
+      assert.equal(s.el.getAttribute('style'), null);
+      assert.equal(s.api.custom, false);
+    }
   });
 
-  test('a stored desktop position is restored, re-clamped to the viewport and below the sticky stack', () => {
-    const s = setup({ store: { 'bg.balloon.pos': JSON.stringify({ left: 5000, top: 10 }) } });
+  test('the floor: the topbar, or the sticky toolbar while it is stuck under it (re-checked on scroll)', () => {
+    const s = setup({ tools: { top: 64, bottom: 176 } });
+    assert.equal(s.style('top'), `${176 + GAP}px`, 'stuck: below the toolbar');
+    s.doc.querySelector('[data-day-tools]')._rect = { top: 420, bottom: 532 };
+    s.scroll();
+    assert.equal(s.style('top'), `${64 + GAP}px`, 'scrolled back up: the toolbar is in the flow again');
+  });
+
+  test('scrolling does no work while a stored position is in use (resize still re-clamps it)', () => {
+    const s = setup({ store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 80 }) } });
+    assert.equal(s.style('top'), '80px');
+    s.doc.querySelector('[data-day-tools]')._rect = { top: 64, bottom: 176 };
+    for (const f of s.win.listeners.scroll ?? []) f({ type: 'scroll' });
+    assert.equal(s.frames.length, 0, 'no frame scheduled');
+    s.resize(1280, 800);
+    assert.equal(s.style('top'), `${176 + GAP}px`);
+  });
+
+  test('a stored desktop position is restored, re-clamped to the viewport and below the floor', () => {
+    const s = setup({ tools: { top: 64, bottom: 124 }, store: { 'bg.balloon.pos': JSON.stringify({ left: 5000, top: 10 }) } });
     assert.equal(s.style('left'), `${1280 - NOMINAL.desktop - PAD}px`);
-    assert.equal(s.style('top'), `${64 + 60 + 8}px`, 'minTop = header bottom + toolbar height + 8');
+    assert.equal(s.style('top'), `${124 + GAP}px`);
     assert.equal(s.style('right'), 'auto');
     assert.equal(s.style('bottom'), 'auto');
     assert.equal(s.api.custom, true);
@@ -468,8 +514,24 @@ describe('balloon.js: position', () => {
 
   test('a hidden toolbar does not count; without one the floor is the header', () => {
     const html = pageOf().replace('<div class="day-tools" data-day-tools></div>', '<div class="day-tools" data-day-tools hidden></div>');
-    const s = setup({ html, store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 0 }) } });
-    assert.equal(s.style('top'), `${64 + 8}px`);
+    const s = setup({ html, tools: { top: 64, bottom: 124 }, store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 0 }) } });
+    assert.equal(s.style('top'), `${64 + GAP}px`);
+  });
+
+  test('the founding banner on screen: the default sits just below it (its close button stays tappable); dismissed: below the topbar', () => {
+    const s = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: 64, bottom: 150 } });
+    assert.equal(s.style('top'), `${150 + GAP}px`);
+    const close = s.doc.querySelector('[data-banner-close]');
+    fire(close, 'click');
+    s.doc.querySelector('[data-banner]').remove(); // banner.js removes it on the same click
+    s.flush();
+    assert.equal(s.style('top'), `${64 + GAP}px`);
+    // Scrolled under the header: the banner's bottom above the topbar's no longer counts.
+    const t = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: -100, bottom: -14 } });
+    assert.equal(t.style('top'), `${64 + GAP}px`);
+    // A stored position is the visitor's: the banner does not move it.
+    const u = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: 64, bottom: 150 }, store: { 'bg.balloon.pos.sm': JSON.stringify({ left: 20, top: 90 }) } });
+    assert.equal(u.style('top'), '90px');
   });
 
   test('stored garbage is ignored: strings, non-finite, wrong shape, bad JSON, throwing storage', () => {
@@ -504,89 +566,23 @@ describe('balloon.js: position', () => {
     assert.deepEqual(s.storage.writes, []);
   });
 
-  test('re-clamped when the sticky header or the card resizes (ResizeObserver on the header and <main>)', () => {
-    const s = setup({ store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 140 }) } });
+  test('re-clamped when the sticky header, the banner or the card resizes (ResizeObserver)', () => {
+    const s = setup({ html: pageOf({ banner: true }), banner: { top: 64, bottom: 120 }, store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 80 }) } });
     const ro = FakeResizeObserver.last;
-    assert.ok(ro.targets.includes(s.doc.querySelector('.bg-topbar')));
-    assert.ok(ro.targets.includes(s.doc.querySelector('main')));
-    s.doc.querySelector('[data-day-tools]').offsetHeight = 112;
+    for (const sel of ['.bg-topbar', 'main', '[data-banner]']) assert.ok(ro.targets.includes(s.doc.querySelector(sel)), sel);
+    assert.equal(s.style('top'), '80px');
+    s.doc.querySelector('.bg-topbar')._rect = { top: 0, bottom: 97 };
     ro.trigger();
     s.flush();
-    assert.equal(s.style('top'), `${64 + 112 + 8}px`);
+    assert.equal(s.style('top'), `${97 + GAP}px`);
   });
 
-  test('no room below the sticky stack (tiny landscape phone): the ring is not shown', () => {
-    const s = setup({ width: 600, height: 180 });
+  test('no room below the topbar (tiny landscape phone): the ring is not shown', () => {
+    const s = setup({ width: 600, height: 140 });
     assert.equal(s.el.hidden, true);
     assert.equal(s.has(), false);
     s.resize(600, 700);
     assert.equal(s.el.hidden, false);
-  });
-});
-
-describe('balloon.js: the default spot stays clear of the toolbar', () => {
-  const TOOLS = '<div class="day-tools" data-day-tools>'
-    + '<input id="q" type="search"><button id="leagues" type="button">Leagues</button>'
-    + '<p role="status">Showing</p><a id="jump" href="#fx-1">Jump to now</a><button id="gone" type="button" hidden>x</button></div>';
-  const page = () => pageOf().replace('<div class="day-tools" data-day-tools></div>', TOOLS);
-  const scroll = (s) => { for (const f of s.win.listeners.scroll ?? []) f({ type: 'scroll' }); s.flush(); };
-  const at = (s, id, r) => { s.doc.getElementById(id)._rect = r; };
-
-  test('clear: the CSS anchor (bottom-right) is left alone', () => {
-    const s = setup({ width: 390, height: 700, html: page() });
-    at(s, 'q', { left: 16, top: 300, width: 250, height: 44 });
-    scroll(s);
-    for (const k of ['left', 'top', 'right', 'bottom']) assert.equal(s.style(k), '', k);
-  });
-
-  test('phone, first screen: "Jump to now" under the corner -> bottom-left; a full-width row -> above the toolbar', () => {
-    const s = setup({ width: 390, height: 700, html: page() });
-    at(s, 'q', { left: 16, top: 560, width: 250, height: 44 });
-    at(s, 'leagues', { left: 274, top: 560, width: 100, height: 44 });
-    at(s, 'jump', { left: 270, top: 640, width: 104, height: 44 });
-    scroll(s);
-    assert.equal(s.style('left'), `${EDGE.compact.x}px`, 'bottom-left is clear');
-    assert.equal(s.style('top'), `${700 - 64 - EDGE.compact.y}px`);
-    assert.equal(s.style('right'), 'auto');
-    at(s, 'q', { left: 16, top: 640, width: 250, height: 44 }); // now the left corner is covered too
-    scroll(s);
-    assert.equal(s.style('left'), `${390 - 64 - EDGE.compact.x}px`);
-    assert.equal(s.style('top'), `${560 - 64 - GAP}px`, 'above the topmost control');
-    // Scrolled: the toolbar sticks under the header, the corner is clear again -> back to the CSS anchor.
-    at(s, 'q', { left: 16, top: 64, width: 250, height: 44 });
-    at(s, 'leagues', { left: 274, top: 64, width: 100, height: 44 });
-    at(s, 'jump', { left: 270, top: 112, width: 104, height: 44 });
-    scroll(s);
-    for (const k of ['left', 'top', 'right', 'bottom']) assert.equal(s.style(k), '', k);
-    assert.deepEqual(s.storage.writes, [], 'a dodge is never stored');
-    assert.equal(s.api.custom, false);
-  });
-
-  test('desktop does the same (its corner is 24px in)', () => {
-    const s = setup({ width: 1280, height: 800, html: page() });
-    at(s, 'jump', { left: 1100, top: 700, width: 120, height: 44 });
-    scroll(s);
-    assert.equal(s.style('left'), `${EDGE.desktop.x}px`);
-    assert.equal(s.style('top'), `${800 - NOMINAL.desktop - EDGE.desktop.y}px`);
-  });
-
-  test('a hidden control (zero box) and a stored position are not dodged', () => {
-    const s = setup({ width: 390, height: 700, html: page() });
-    at(s, 'gone', { left: 0, top: 0, width: 0, height: 0 });
-    scroll(s);
-    assert.equal(s.style('left'), '');
-    const t = setup({ width: 390, height: 700, html: page(), store: { 'bg.balloon.pos.sm': JSON.stringify({ left: 300, top: 620 }) } });
-    at(t, 'jump', { left: 270, top: 640, width: 104, height: 44 });
-    scroll(t);
-    assert.equal(t.style('left'), '300px', 'the visitor put it there');
-    assert.equal(t.style('top'), '620px');
-  });
-
-  test('a hidden toolbar is not an obstacle', () => {
-    const s = setup({ width: 390, height: 700, html: page().replace('data-day-tools>', 'data-day-tools hidden>') });
-    at(s, 'jump', { left: 270, top: 640, width: 104, height: 44 });
-    scroll(s);
-    assert.equal(s.style('left'), '');
   });
 });
 
@@ -665,14 +661,25 @@ describe('balloon.js: drag', () => {
     assert.deepEqual(s.storage.writes, []);
   });
 
-  test('the drag is clamped: never above the sticky stack, never off-screen', () => {
-    const s = dragSetup();
+  test('the drag is clamped: never above the stuck toolbar, never off-screen', () => {
+    const s = dragSetup({ tools: { top: 64, bottom: 124 } });
     fire(s.el, 'pointerdown', { button: 0, pointerId: 5, clientX: 1150, clientY: 200 });
     fire(s.el, 'pointermove', { pointerId: 5, clientX: 3000, clientY: -500 });
     s.flush();
     fire(s.el, 'pointerup', { pointerId: 5, clientX: 3000, clientY: -500 });
     assert.equal(s.style('left'), `${1280 - 124 - PAD}px`);
     assert.equal(s.style('top'), `${64 + 60 + 8}px`);
+  });
+
+  test('a resize during the drag is caught up on release (the end of a drag re-runs the layout)', () => {
+    const s = dragSetup();
+    fire(s.el, 'pointerdown', { button: 0, pointerId: 10, clientX: 1150, clientY: 200 });
+    fire(s.el, 'pointermove', { pointerId: 10, clientX: 1150, clientY: 700 });
+    s.resize(1280, 500); // skipped: dragging
+    fire(s.el, 'pointerup', { pointerId: 10, clientX: 1150, clientY: 700 });
+    assert.equal(s.style('top'), '650px', 'committed against the box measured at pointerdown');
+    s.flush();
+    assert.equal(s.style('top'), `${500 - 124 - PAD}px`, 're-clamped to the smaller viewport');
   });
 
   test('pointercancel mid-drag commits where the ring was drawn', () => {
@@ -722,6 +729,18 @@ describe('balloon.js and balloon-model.js: source', () => {
   const JS = readFileSync(join(REPO_ROOT, 'site/assets/js/balloon.js'), 'utf8');
   const MODEL = readFileSync(join(REPO_ROOT, 'site/lib/balloon-model.js'), 'utf8');
 
+  test('no shipped stylesheet or script talks about the internal "UI tab" (public files)', () => {
+    let files = 0;
+    for (const dir of ['site/assets/css', 'site/assets/js', 'site/lib']) {
+      for (const f of readdirSync(join(REPO_ROOT, dir))) {
+        if (!/\.(css|js)$/.test(f)) continue;
+        files++;
+        assert.doesNotMatch(readFileSync(join(REPO_ROOT, dir, f), 'utf8'), /\bUI tab\b/i, `${dir}/${f}`);
+      }
+    }
+    assert.ok(files > 15, `premise: files scanned (${files})`);
+  });
+
   test('no innerHTML, fetch, style attribute, cssText or direct style property writes', () => {
     for (const [name, raw] of [['balloon.js', JS], ['balloon-model.js', MODEL]]) {
       const src = strip(raw);
@@ -737,30 +756,40 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.doesNotMatch(strip(JS), /data-auth/, 'no auth gating');
   });
 
-  test('balloon.css: brand tokens, user-drag off, touch-action none, [hidden] wins, reduced motion, padding only under html.has-balloon', () => {
-    const css = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-    assert.deepEqual(css.match(/#[0-9a-f]{3,8}\b/gi) ?? [], [], 'colours come from base.css tokens');
-    assert.match(css, /\.bg-balloon\[hidden\]\s*\{\s*display:\s*none/);
-    assert.match(css, /-webkit-user-drag:\s*none/);
-    assert.match(css, /touch-action:\s*none/);
-    assert.match(css, /conic-gradient\([^;{}]*var\(--pct/);
-    assert.match(css, /prefers-reduced-motion/);
-    assert.match(css, /safe-area-inset-bottom/);
-    assert.match(css, /64px/);
-    assert.match(css, /html\.has-balloon\s+\.bg-page/);
-    assert.doesNotMatch(css.replace(/html\.has-balloon\s+\.bg-page\s*\{[^}]*\}/g, ''), /\.bg-page/, '<main> padding only under html.has-balloon');
-    assert.doesNotMatch(css, /data-auth/);
+  const CSS = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const block = (sel) => {
+    const m = new RegExp(`(?:^|\\})\\s*${sel.replace(/[.[\]"=]/g, '\\$&')}\\s*\\{([^}]*)\\}`).exec(CSS);
+    return m ? m[1] : null;
+  };
+
+  test('balloon.css: brand tokens, user-drag off, touch-action none, [hidden] wins, reduced motion', () => {
+    assert.deepEqual(CSS.match(/#[0-9a-f]{3,8}\b/gi) ?? [], [], 'colours come from base.css tokens');
+    assert.match(CSS, /\.bg-balloon\[hidden\]\s*\{\s*display:\s*none/);
+    assert.match(CSS, /-webkit-user-drag:\s*none/);
+    assert.match(CSS, /touch-action:\s*none/);
+    assert.match(CSS, /conic-gradient\([^;{}]*var\(--pct/);
+    assert.match(CSS, /prefers-reduced-motion/);
+    assert.match(CSS, /64px/);
+    assert.doesNotMatch(CSS, /data-auth/);
   });
 
-  test('balloon.css: both sizes anchor bottom-right, at the corners defaultSpot assumes (EDGE)', () => {
-    const css = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-    const block = (sel) => { const m = new RegExp(`(?:^|\\})\\s*${sel.replace(/[.[\]"=]/g, '\\$&')}\\s*\\{([^}]*)\\}`).exec(css); return m ? m[1] : ''; };
+  test('balloon.css: top-right at every width (12px / 24px in, plus the right safe area), no bottom anchor', () => {
     const base = block('.bg-balloon');
     const desk = block('.bg-balloon[data-size="desktop"]');
-    assert.match(base, new RegExp(`right:\\s*${EDGE.compact.x}px`));
-    assert.match(base, new RegExp(`bottom:\\s*calc\\(${EDGE.compact.y}px \\+ env\\(safe-area-inset-bottom`));
-    assert.match(desk, new RegExp(`right:\\s*${EDGE.desktop.x}px`));
-    assert.match(desk, new RegExp(`bottom:\\s*calc\\(${EDGE.desktop.y}px \\+ env\\(safe-area-inset-bottom`));
-    assert.doesNotMatch(desk, /(^|[;\s])top:\s*calc/, 'no top anchor on desktop (it sat on the day header ring)');
+    assert.ok(base !== null && desk !== null, 'premise: both rules found');
+    assert.match(base, /right:\s*calc\(12px \+ env\(safe-area-inset-right/);
+    assert.match(base, /(^|[;\s])top:\s*calc\(var\(--bar-h\) \+ 8px\)/);
+    assert.match(base, /bottom:\s*auto/);
+    assert.match(desk, /right:\s*calc\(24px \+ env\(safe-area-inset-right/);
+    assert.match(desk, /(^|[;\s])top:\s*calc\(var\(--bar-h-lg\) \+ 8px\)/);
+    assert.doesNotMatch(CSS, /bottom:\s*calc/, 'no bottom anchor anywhere');
+    assert.doesNotMatch(CSS, /\.bg-page/, 'no <main> padding: nothing sits at the bottom any more');
+  });
+
+  test('balloon.css: the floating ring replaces the day header\'s static ring only while it is shown', () => {
+    assert.match(CSS, /html\.has-balloon\s+\.day-head\s+\.ring\s*\{\s*display:\s*none;?\s*\}/);
+    // The only rule that hides .ring is scoped to html.has-balloon (no-JS and a hidden ring keep it).
+    const hides = [...CSS.matchAll(/([^{}]+)\{[^{}]*display:\s*none[^{}]*\}/g)].map((m) => m[1].trim()).filter((sel) => /\.ring\b/.test(sel));
+    assert.deepEqual(hides, ['html.has-balloon .day-head .ring']);
   });
 });

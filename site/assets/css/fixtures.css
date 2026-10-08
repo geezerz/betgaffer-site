@@ -108,7 +108,7 @@
 /* .fx is display:grid, which beats the UA [hidden] rule: filtering must really hide. */
 .fx[hidden]{ display:none; }
 
-/* The competition, on its own small line (the UI tab's .bg-comp pattern). */
+/* The competition, on its own small line: small, muted, ellipsis. */
 .fx__comp{
   grid-column:1 / -1; grid-row:1; min-width:0; margin:0 0 -4px;
   font-size:11.5px; line-height:1.35; color:var(--muted);
