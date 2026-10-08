@@ -1,8 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Bet Gaffer — /our-record/ (site/lib/record.js).
+   Bet Gaffer — /our-record/ (site/lib/record.js), stated plainly (spec §7).
    The 30-day fraction is the one loud thing on the page; everything around it
    is quiet. Numbers are mono and tabular so columns of counts line up.
-   No inline styles: the meter's widths are SVG attributes, never style=.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .rec-intro{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; max-width:62ch; }
@@ -10,22 +9,18 @@
 
 .rec-muted{ color:var(--muted); }
 
-/* ── Headline: the fraction first, then the facts that make it checkable ── */
+/* ── Headline: the fraction, the sentence that reads it out, its period ── */
 .rec-head{
-  display:grid; grid-template-columns:minmax(0,1fr); gap:22px;
+  display:flex; flex-direction:column; gap:10px;
   padding:20px 16px 18px;
   background:var(--surface);
   border:1px solid var(--line); border-left:3px solid var(--accent);
   border-radius:var(--r-3);
 }
 @media (min-width:640px){ .rec-head{ padding:26px 26px 22px; } }
-@media (min-width:960px){
-  .rec-head{ grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); column-gap:40px; align-items:start; padding:32px 34px; }
-  .rec-head__h{ grid-column:1 / -1; }
-}
-.rec-head__h{ margin:0; font-size:14px; font-weight:600; letter-spacing:-.005em; color:var(--muted); }
+@media (min-width:960px){ .rec-head{ padding:32px 34px; } }
+.rec-head__h{ margin:0 0 4px; font-size:14px; font-weight:600; letter-spacing:-.005em; color:var(--muted); }
 
-.rec-head__main{ display:flex; flex-direction:column; gap:8px; }
 .rec-hero{
   margin:0; color:var(--ink);
   font-family:var(--font-mono); font-variant-numeric:tabular-nums;
@@ -39,27 +34,11 @@
   color:var(--muted);
 }
 .rec-hero--empty{ font-family:var(--font-display); font-size:clamp(22px,5vw,30px); letter-spacing:-.02em; }
-.rec-hero__cap{ margin:0; font-size:16px; color:var(--ink-2); max-width:44ch; }
+.rec-hero__cap{ margin:0; font-size:17px; line-height:1.5; color:var(--ink-2); max-width:48ch; }
+.rec-hero__cap strong{ color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+.rec-head__period{ margin:4px 0 0; padding-top:10px; border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); }
 
-.rec-pct{ display:flex; align-items:center; gap:14px; margin-top:10px; max-width:30rem; }
-.rec-pct__v{ flex:0 0 auto; font-size:20px; font-weight:600; color:var(--ink); }
-.rec-meter{ flex:1 1 auto; width:100%; height:6px; border-radius:var(--r-pill); overflow:hidden; }
-.rec-meter__track{ fill:var(--surface-3); }
-.rec-meter__fill{ fill:var(--accent-lo); }
-.rec-meter__ci{ fill:var(--accent-hi); }
-
-.rec-facts{ margin:0; display:grid; grid-template-columns:minmax(0,1fr); border-top:1px solid var(--line); }
-@media (min-width:960px){ .rec-facts{ border-top:0; border-left:1px solid var(--line); padding-left:28px; } }
-.rec-fact{ display:grid; grid-template-columns:minmax(0,1fr); gap:2px; padding:11px 0; border-bottom:1px solid var(--line); }
-.rec-fact:last-child{ border-bottom:0; padding-bottom:0; }
-@media (min-width:960px){ .rec-fact:first-child{ padding-top:0; } }
-@media (min-width:480px){ .rec-fact{ grid-template-columns:8.5rem minmax(0,1fr); gap:14px; } }
-.rec-fact dt{ font-size:13px; font-weight:600; color:var(--muted); }
-.rec-fact dd{ margin:0; font-size:14.5px; line-height:1.5; color:var(--ink-2); }
-.rec-fact dd .mono{ color:var(--ink); }
-
-.rec-scope{ display:flex; flex-direction:column; gap:6px; margin:16px 0 0; max-width:72ch; }
-.rec-scope p{ margin:0; }
+.rec-under{ margin:12px 0 0; max-width:72ch; color:var(--muted); }
 
 /* ── Sections ── */
 .rec-sec{ margin-top:40px; display:flex; flex-direction:column; gap:12px; }
@@ -82,19 +61,18 @@
 }
 .rec-day__link{ transition:border-color .14s ease, background .14s ease; }
 .rec-day__link:hover{ border-color:var(--line-2); background:var(--surface-2); color:inherit; }
-.rec-day--today .rec-day__link,.rec-day--today .rec-day__in{ border-color:var(--hold); }
 .rec-day p{ margin:0; }
 .rec-day__date{ font-size:12.5px; color:var(--muted); }
-.rec-day__frac{ font-size:19px; font-weight:700; line-height:1.2; color:var(--ink); letter-spacing:-.02em; }
-.rec-day__of{ font-family:var(--font-ui); font-size:12.5px; font-weight:500; color:var(--muted); letter-spacing:0; }
+.rec-day__frac{ font-size:12.5px; line-height:1.3; color:var(--muted); }
+.rec-day__frac .mono{ font-size:19px; font-weight:700; color:var(--ink); letter-spacing:-.02em; }
 .rec-day__pct{ font-size:13.5px; color:var(--ink-2); }
 .rec-day__none{ font-size:14px; color:var(--muted); padding-block:4px; }
-/* Two classes: outranks `.rec-day p{ margin:0 }` by specificity alone. */
-.rec-day .rec-day__state{ margin-top:auto; padding-top:6px; }
+/* "Today · so far": empty and hidden in the static HTML; stale.js fills it on the visitor's day. */
+.rec-day .rec-day__rel{ margin-top:auto; padding-top:6px; font-size:12px; font-weight:600; color:var(--hold); }
+.rec-day__rel[hidden]{ display:none; }
 
-/* ── Status chips: sentence case here, not the shouting caps of the base chip ── */
-.rec-chip{ text-transform:none; letter-spacing:.01em; font-size:11.5px; white-space:normal; }
-.rec-chip--confirmed{ color:var(--ink); border-color:var(--line-2); }
+/* ── The current month's chip: sentence case here, not the shouting caps of the base chip ── */
+.rec-chip{ text-transform:none; letter-spacing:.01em; font-size:11.5px; white-space:normal; margin-left:6px; vertical-align:1px; }
 
 /* ── Month table ── */
 .rec-months-card{ padding:4px 16px; }
@@ -102,8 +80,6 @@
 .rec-months th[scope="row"]{ font-family:var(--font-ui); font-size:14.5px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink); white-space:normal; }
 .rec-months tbody tr:last-child th,.rec-months tbody tr:last-child td{ border-bottom:0; }
 .rec-months td.num{ color:var(--ink); }
-.rec-month{ display:block; }
-.rec-note{ display:block; margin-top:3px; font-size:12.5px; font-weight:400; line-height:1.45; color:var(--muted); max-width:34ch; }
 @media (max-width:639.98px){
   .rec-months tbody tr:last-child{ border-bottom:0; }
   .rec-months th[scope="row"]{ padding-bottom:6px; }
@@ -114,6 +90,5 @@
   list-style:none; margin:36px 0 0; padding:18px 0 0; border-top:1px solid var(--line);
   display:flex; flex-direction:column; gap:8px; max-width:78ch;
 }
-.rec-foot a{ overflow-wrap:anywhere; }
 
 .rec-empty{ margin-top:8px; }

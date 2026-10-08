@@ -4,7 +4,10 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { validateIndex } from '../site/lib/data.js';
-import { renderRecord, wilson } from '../site/lib/record.js';
+import { renderRecord } from '../site/lib/record.js';
+import { fmtDayLong } from '../site/lib/time.js';
+
+// Our Record, stated plainly (Plan A Task 5, spec §7).
 
 // The private platform's name, built from char codes so the literal never appears in this repo.
 const INTERNAL = String.fromCharCode(70, 111, 114, 101, 99, 97, 120, 116);
@@ -31,6 +34,7 @@ function text(html) {
     .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ')
+    .replace(/ ([.,:])/g, '$1')
     .trim();
 }
 
@@ -57,285 +61,173 @@ function allWith(html, attr) {
   for (let el, from = 0; (el = elementWith(html, attr, from)); from = el.end) out.push(el.html);
   return out;
 }
+const count = (hay, needle) => hay.split(needle).length - 1;
+const stripRows = (html) => allWith(elementWith(html, 'class="rec-strip"').html, 'data-figure="record-row"');
+const monthRows = (html) => allWith(elementWith(html, 'class="bg-table rec-months"').html, 'data-figure="record-row"');
+const headOf = (html) => elementWith(html, 'data-claim="headline"').html;
+const PERFECT_30 = { won: 12, lost: 0, pushes: 0, graded: 12, pct: 100, finished_fixtures: 14, coverage: 0.8571 };
+const STATUS_WORDS = /in progress|provisional|confirmed|being recomputed|republish|\blive\b|not yet reported/i;
 
 // ---------------------------------------------------------------------------------------------
-// Wilson score interval
+// Intro and headline
 // ---------------------------------------------------------------------------------------------
 
-test('wilson() matches an independently written closed form on the real 30-day record', () => {
-  const z = 1.959964;
-  const n = 12154;
-  const x = 10268;
-  // The other textbook form: (2x + z^2 -/+ z*sqrt(z^2 + 4x(n-x)/n)) / (2(n + z^2)).
-  const root = z * Math.sqrt(z * z + (4 * x * (n - x)) / n);
-  const lo = (2 * x + z * z - root) / (2 * (n + z * z));
-  const hi = (2 * x + z * z + root) / (2 * (n + z * z));
-  const w = wilson(x, n);
-  assert.equal(w.low, Math.round(lo * 10000) / 100);
-  assert.equal(w.high, Math.round(hi * 10000) / 100);
-  assert.deepEqual(w, { low: 83.83, high: 85.12 }); // the plan's stated value
+test('intro: the spec §7 sentence, picks "made before kickoff"', () => {
+  const t = text(renderRecord(REC, OPTS));
+  assert.ok(t.includes("We recommend at most one pick per fixture, made before kickoff and graded after full time. Here's how they've done."), t.slice(0, 300));
+  assert.doesNotMatch(t, /published before kickoff/);
 });
 
-test('wilson() known edge values: 0 of 10 and 10 of 10', () => {
-  // x = 0: low is 0 and high is z^2 / (n + z^2) = 27.75% (the textbook zero-success bound).
-  assert.deepEqual(wilson(0, 10), { low: 0, high: 27.75 });
-  assert.deepEqual(wilson(10, 10), { low: 72.25, high: 100 });
-});
-
-test('wilson() returns null without a denominator and rejects impossible input', () => {
-  assert.equal(wilson(0, 0), null);
-  assert.throws(() => wilson(5, 4), RangeError);
-  assert.throws(() => wilson(-1, 4), RangeError);
-  assert.throws(() => wilson(1.5, 4), RangeError);
-  assert.throws(() => wilson('3', 4), RangeError);
-});
-
-// ---------------------------------------------------------------------------------------------
-// Headline triple
-// ---------------------------------------------------------------------------------------------
-
-test('headline: one data-claim="headline" block carries fraction, pct, band, coverage, period, status, CI', () => {
+test('headline: one block, "Last 30 days", the hero fraction and the exact sentence with 10,268 / 12,154 / 84.48%', () => {
   const html = renderRecord(REC, OPTS);
-  assert.equal(html.split('data-claim="headline"').length - 1, 1, 'exactly one headline block');
-  const head = elementWith(html, 'data-claim="headline"').html;
+  assert.equal(count(html, 'data-claim="headline"'), 1, 'exactly one headline block');
+  const head = headOf(html);
   const t = text(head);
+  assert.match(t, /^Last 30 days /);
+  assert.ok(t.includes('10,268 of 12,154'), t);
+  assert.ok(t.includes('Our recommended picks were right 10,268 times out of 12,154: 84.48%.'), t);
+  // The figures are emphasised as the spec shows them.
+  assert.ok(head.includes('<strong>10,268 times out of 12,154</strong>'), head);
+  assert.ok(head.includes('<strong>84.48%</strong>'), head);
+});
 
-  assert.match(t, /10,268 of 12,154/);
-  assert.match(t, /graded card picks landed/);
-  assert.match(t, /84\.48%/);
-
-  for (const part of ['band', 'coverage', 'period', 'ci', 'status']) {
-    assert.ok(head.includes(`data-claim-part="${part}"`), `headline lacks data-claim-part="${part}"`);
-  }
-  const band = text(elementWith(head, 'data-claim-part="band"').html);
-  // probability_range with an equal fallback floor: the floor is stated once.
-  assert.match(band, /model probability of at least 80%/);
-  assert.equal(band.split('80%').length - 1, 1, `floor stated once: ${band}`);
-  // The pick reader's odds check uses the latest captured price, or an
-  // estimate from the model probability when none was captured -- so every pick is checked.
-  assert.match(band, /Every pick's price must fall between 1\.10 and 1\.80: the latest captured market price, or, where none was captured, a price estimated from the model probability\./);
-  assert.doesNotMatch(band, /when one was captured/);
-  // I1: the window starts 2026-09-08, before the rule's effective date 2026-09-30.
-  assert.match(band, /The current rule applies from Wed 30 Sep 2026; earlier days in this window were picked under a previous rule\./);
-
-  const cov = text(elementWith(head, 'data-claim-part="coverage"').html);
-  assert.match(cov, /90\.7% of the period's 13,401 finished fixtures carried a graded pick/);
-
+test('headline: the period line reads "8 Sep – 7 Oct 2026" and is the only claim part', () => {
+  const head = headOf(renderRecord(REC, OPTS));
+  const parts = [...head.matchAll(/data-claim-part="([^"]*)"/g)].map((m) => m[1]);
+  assert.deepEqual(parts, ['period']);
   const period = elementWith(head, 'data-claim-part="period"').html;
   assert.match(period, /datetime="2026-09-08"/);
   assert.match(period, /datetime="2026-10-07"/);
-  assert.match(text(period), /8 Sep 2026/);
-  assert.match(text(period), /7 Oct 2026/);
-  assert.match(text(period), /30 days/);
-
-  const status = text(elementWith(head, 'data-claim-part="status"').html);
-  assert.match(status, /23 of 30 days provisional/);
-  assert.match(status, /7 of 30 days in progress/);
-
-  const ci = text(elementWith(head, 'data-claim-part="ci"').html);
-  assert.match(ci, /95% confidence interval 83\.83%–85\.12%/);
+  assert.equal(text(period), '8 Sep – 7 Oct 2026');
 });
 
-test('headline: the band is the probability floor alone when the odds filter is off', () => {
-  const r = rec((x) => { x.selection.odds_filter = false; x.selection.min_odds = null; x.selection.max_odds = null; });
-  const band = text(elementWith(renderRecord(r, OPTS), 'data-claim-part="band"').html);
-  assert.match(band, /model probability of at least 80%/);
-  assert.doesNotMatch(band, /price/);
-  assert.doesNotMatch(band, /1\.10|1\.80/);
+test('headline: a period across a year end states both years', () => {
+  const r = rec((x) => { x.last_30.period = '2026-12-20..2027-01-18'; });
+  assert.equal(text(elementWith(headOf(renderRecord(r, OPTS)), 'data-claim-part="period"').html), '20 Dec 2026 – 18 Jan 2027');
 });
 
-const bandOf = (r) => text(elementWith(renderRecord(r, OPTS), 'data-claim-part="band"').html);
-
-test('band I1: no previous-rule sentence when the whole window is under the current rule', () => {
-  const r = rec((x) => { x.selection.effective_since_date = '2026-09-08'; });
-  assert.doesNotMatch(bandOf(r), /previous rule/);
-});
-
-test('band C1: probability_range with a lower fallback floor states both floors', () => {
-  const r = rec((x) => { x.selection.fallback_min_probability = 0.7; });
-  // The fallback fires when no market passes ALL primary checks, not only the floor.
-  assert.match(bandOf(r), /at least 80%, or at least 70% for a fixture where no eligible market reaches 80%/);
-  assert.doesNotMatch(bandOf(r), /where no market reaches/);
-});
-
-test('band C1: hide states the card floor alone', () => {
-  const r = rec((x) => { x.selection.fallback = 'hide'; x.selection.fallback_min_probability = null; });
-  const band = bandOf(r);
-  assert.match(band, /Picks need a model probability of at least 80%\./);
-  assert.doesNotMatch(band, /where no market|most likely/);
-});
-
-for (const mode of ['best_allowlist', 'confidence_any']) {
-  test(`band C1: ${mode} claims no floor for the fallback picks`, () => {
-    const r = rec((x) => { x.selection.fallback = mode; x.selection.fallback_min_probability = null; });
-    const band = bandOf(r);
-    assert.match(band, /at least 80%; where no eligible market reaches 80%, the fixture's most likely eligible market is picked\./);
-    assert.doesNotMatch(band, /where no market reaches/);
-    // Never the bare all-picks claim "at least 80%." / "at least 80% and".
-    assert.doesNotMatch(band, /at least 80%(\.| and)/);
-    // The perfect-window caption obeys the same rule.
-    const p = rec((x) => {
-      x.selection.fallback = mode; x.selection.fallback_min_probability = null;
-      Object.assign(x.last_30, { won: 12, lost: 0, pushes: 0, graded: 12, pct: 100, finished_fixtures: 14, coverage: 0.8571 });
-    });
-    const main = text(elementWith(renderRecord(p, OPTS), 'class="rec-head__main"').html);
-    assert.match(main, /stated at/);
-    assert.match(main, /most likely eligible market where no eligible market reached 80%/);
-    assert.doesNotMatch(main, /at least 80%(\.|$)/);
-  });
-}
-
-test('strategy: any strategy other than edge_reliability throws (the stated rule would be false)', () => {
-  // Under strategy probability_range the reader ignores the card floor and the fallback mode.
-  assert.throws(() => renderRecord(rec((x) => { x.strategy = 'probability_range'; }), OPTS), /edge_reliability/);
-  assert.throws(() => renderRecord(rec((x) => { x.strategy = 'something_new'; }), OPTS), TypeError);
-  assert.doesNotThrow(() => renderRecord(REC, OPTS));
-  assert.doesNotThrow(() => renderRecord(null, OPTS));
-});
-
-test('band C1: an unknown fallback mode, or probability_range without its floor, throws', () => {
-  assert.throws(() => renderRecord(rec((x) => { x.selection.fallback = 'mystery'; }), OPTS), TypeError);
-  assert.throws(() => renderRecord(rec((x) => { x.selection.fallback_min_probability = null; }), OPTS), TypeError);
-});
-
-test('perfect caption under probability_range with a lower floor states the lower floor', () => {
-  const r = rec((x) => {
-    x.selection.fallback_min_probability = 0.7;
-    Object.assign(x.last_30, { won: 12, lost: 0, pushes: 0, graded: 12, pct: 100, finished_fixtures: 14, coverage: 0.8571 });
-  });
-  const main = text(elementWith(renderRecord(r, OPTS), 'class="rec-head__main"').html);
-  assert.match(main, /all landed so far/);
-  assert.match(main, /stated at a model probability of at least 70%/);
-});
-
-test('headline: null pct reads "No graded picks in this window yet" and never 0% / NaN', () => {
+test('headline: null pct reads "No picks settled in the last 30 days yet." and never 0% / NaN', () => {
   const r = rec((x) => {
     Object.assign(x.last_30, { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null, status_days: [] });
   });
-  const html = renderRecord(r, OPTS);
-  const head = elementWith(html, 'data-claim="headline"').html;
+  const head = headOf(renderRecord(r, OPTS));
   const t = text(head);
-  assert.match(t, /No graded picks in this window yet/);
-  assert.doesNotMatch(t, /\b0(\.0+)?%/);
-  assert.doesNotMatch(t, /NaN|undefined|null|0 of 0/);
-  for (const part of ['band', 'coverage', 'period', 'ci']) {
-    assert.ok(head.includes(`data-claim-part="${part}"`), `null path lacks ${part}`);
-  }
-  assert.doesNotMatch(text(elementWith(head, 'data-claim-part="ci"').html), /%–/);
+  assert.ok(t.includes('No picks settled in the last 30 days yet.'), t);
+  assert.doesNotMatch(t, /%|NaN|undefined|null|0 of 0|times out of/);
+  assert.ok(head.includes('data-claim-part="period"'), 'the period still shows');
 });
 
-test('headline: a perfect window never renders a bare 100% (fraction + "so far" + "stated at")', () => {
-  const r = rec((x) => Object.assign(x.last_30, { won: 12, lost: 0, pushes: 0, graded: 12, pct: 100, finished_fixtures: 14, coverage: 0.8571 }));
-  const head = elementWith(renderRecord(r, OPTS), 'data-claim="headline"').html;
-  const t = text(head);
-  assert.match(t, /12 of 12/);
-  assert.match(t, /so far/);
-  assert.match(t, /stated at/);
-  // The interval's upper bound is 100.00% here; it sits in a block that carries the fraction,
-  // "so far" and "stated at" (the charter's 100% rule). Nothing ELSE may print 100%.
-  const ci = elementWith(head, 'data-claim-part="ci"').html;
-  assert.match(text(ci), /100\.00%/);
-  assert.doesNotMatch(text(head.replace(ci, '')), /(^|[^\d.])100(\.0+)?%/, 'the headline pct is not printed as 100%');
+test('headline: a perfect window states its fraction and no percentage at all', () => {
+  const r = rec((x) => Object.assign(x.last_30, PERFECT_30));
+  const t = text(headOf(renderRecord(r, OPTS)));
+  assert.ok(t.includes('12 of 12'), t);
+  assert.ok(t.includes('Our recommended picks were right 12 times out of 12.'), t);
+  assert.doesNotMatch(t, /%/);
 });
 
-const covOf = (r) => text(elementWith(renderRecord(r, OPTS), 'data-claim-part="coverage"').html);
-
-test('coverage I2: "every one" only when graded equals finished fixtures', () => {
-  const r = rec((x) => Object.assign(x.last_30, { finished_fixtures: 12154, coverage: 1 }));
-  const cov = covOf(r);
-  assert.match(cov, /every one of the period's 12,154 finished fixtures/i);
-  assert.doesNotMatch(cov, /100(\.0+)?%/);
-  // A coverage field of 1 that the integers do not back is NOT "every one".
-  const lying = rec((x) => Object.assign(x.last_30, { finished_fixtures: 12160, coverage: 1 }));
-  assert.doesNotMatch(covOf(lying), /every/i);
-  assert.match(covOf(lying), /99\.9%/);
-});
-
-test('coverage I2: 24,999 of 25,000 is capped at 99.9%, never 100.0%', () => {
-  const r = rec((x) => Object.assign(x.last_30, { won: 21000, lost: 3999, graded: 24999, pct: 84.0, finished_fixtures: 25000, coverage: 0.99996 }));
-  const cov = covOf(r);
-  assert.match(cov, /99\.9% of the period's 25,000 finished fixtures/);
-  assert.doesNotMatch(cov, /100(\.0+)?%|every/i);
-});
-
-test('coverage I2: more graded picks than finished fixtures prints both counts, no "every", no %', () => {
-  const r = rec((x) => Object.assign(x.last_30, { finished_fixtures: 12000, coverage: 1.0128 }));
-  const cov = covOf(r);
-  assert.match(cov, /12,154 graded picks/);
-  assert.match(cov, /12,000 finished fixtures/);
-  assert.doesNotMatch(cov, /every|%/i);
-  const m = rec((x) => Object.assign(x.months[0], { finished_fixtures: 2000, coverage: 1.1695 }));
-  const row = allWith(elementWith(renderRecord(m, OPTS), 'class="bg-table rec-months"').html, 'data-figure="record-row"')[0];
-  assert.match(text(row), /2,339 graded, 2,000 finished/);
-  assert.doesNotMatch(text(row), /all|11\d\.\d%/);
-});
-
-test('minor 1: a non-perfect figure never displays 100.00%', () => {
+test('headline: a non-perfect window that rounds to 100 shows 99.99%, never 100.00%', () => {
   const r = rec((x) => {
     Object.assign(x.last_30, { won: 29999, lost: 1, graded: 30000, pct: 100, finished_fixtures: 30000, coverage: 1 });
     Object.assign(x.last_6[1], { won: 29999, lost: 1, graded: 30000, pct: 100, finished_fixtures: 30000, coverage: 1 });
     Object.assign(x.months[0], { won: 29999, lost: 1, graded: 30000, pct: 100, finished_fixtures: 30000, coverage: 1 });
   });
   const html = renderRecord(r, OPTS);
-  assert.doesNotMatch(text(html), /100\.00%/);
-  assert.match(text(elementWith(html, 'class="rec-head__main"').html), /99\.99%/);
-  assert.match(text(elementWith(html, 'data-claim-part="ci"').html), /–99\.99%/);
-  const strip = allWith(elementWith(html, 'class="rec-strip"').html, 'data-figure="record-row"');
-  assert.match(text(strip[1]), /29,999 of 30,000 99\.99%/);
-  const month = allWith(elementWith(html, 'class="bg-table rec-months"').html, 'data-figure="record-row"')[0];
-  assert.match(text(month), /99\.99%/);
+  assert.doesNotMatch(text(html), /100(\.0+)?%/);
+  assert.ok(text(headOf(html)).includes('right 29,999 times out of 30,000: 99.99%.'));
+  assert.match(text(stripRows(html)[1]), /29,999 of 30,000 right 99\.99%/);
+  assert.match(text(monthRows(html)[0]), /29,999 of 30,000 right 99\.99%/);
 });
 
-test('minor 3: status denominator is the days in the period; missing days read "not yet reported"', () => {
-  const r = rec((x) => { x.last_30.status_days = { provisional: 20, live: 6 }; });
-  const s = text(elementWith(renderRecord(r, OPTS), 'data-claim-part="status"').html);
-  assert.match(s, /20 of 30 days provisional/);
-  assert.match(s, /6 of 30 days in progress/);
-  assert.match(s, /4 not yet reported/);
-  const empty = rec((x) => { x.last_30.status_days = {}; });
-  assert.match(text(elementWith(renderRecord(empty, OPTS), 'data-claim-part="status"').html), /30 of 30 days not yet reported/);
-  assert.throws(() => renderRecord(rec((x) => { x.last_30.status_days = { provisional: 31 }; }), OPTS), TypeError);
+test('removed: no coverage, confidence, status, selection rule, uncertainty or price band in the visible text', () => {
+  // Every ledger status and selection mode the data contract still carries, so nothing is hidden by luck.
+  const variants = [
+    REC,
+    rec((x) => { x.selection.fallback_min_probability = 0.7; x.selection.effective_since_date = '2026-10-01'; }),
+    rec((x) => { x.selection.fallback = 'best_allowlist'; x.selection.fallback_min_probability = null; }),
+    rec((x) => { x.last_6[1].status = 'confirmed'; x.months[1].status = 'republish_pending'; x.months[2].status = 'confirmed'; }),
+    rec((x) => Object.assign(x.last_30, PERFECT_30)),
+  ];
+  for (const r of variants) {
+    const t = text(renderRecord(r, OPTS)).toLowerCase();
+    for (const w of ['coverage', 'confidence', 'provisional', 'selection rule', 'probability of at least', 'status',
+      'uncertainty', 'price between', 'finished fixtures', 'previous rule', 'stated at', 'landed', 'interval']) {
+      assert.ok(!t.includes(w), `"${w}" in the record's visible text`);
+    }
+  }
+});
+
+test('strategy: the page states no selection rule, so any strategy renders', () => {
+  const r = rec((x) => { x.strategy = 'probability_range'; });
+  const t = text(renderRecord(r, OPTS));
+  assert.ok(t.includes('Our recommended picks were right 10,268 times out of 12,154: 84.48%.'));
+  assert.doesNotMatch(t, /probability_range|edge_reliability/);
 });
 
 // ---------------------------------------------------------------------------------------------
-// Scope, pushes
+// Under the card: pushes and voids, once
 // ---------------------------------------------------------------------------------------------
 
-test('scope is rendered verbatim (escaped); the push count is stated separately (minor 6)', () => {
+test('under the card: one line for pushes and voids; the ledger scope string is not printed', () => {
   const html = renderRecord(REC, OPTS);
-  const scope = text(elementWith(html, 'class="rec-scope').html);
-  assert.ok(scope.includes(REC.scope));
-  assert.match(scope, /506 pushes in this window are not counted\./);
-  assert.doesNotMatch(scope, /both sides/);
-  const one = rec((x) => { x.last_30.pushes = 1; });
-  assert.match(text(renderRecord(one, OPTS)), /1 push in this window is not counted\./);
-  const none = rec((x) => { x.last_30.pushes = 0; });
-  assert.match(text(renderRecord(none, OPTS)), /No pushes in this window\./);
+  const t = text(html);
+  assert.equal(count(t, "Picks that ended level (a push) or void aren't counted."), 1);
+  assert.equal(count(t.toLowerCase(), 'level (a push) or void'), 1);
+  assert.ok(!t.includes(REC.scope), 'the ledger scope is internal wording');
+  assert.doesNotMatch(t, /pushes? in this window|ledger|excluded from the percentage/i);
+  // It sits right after the headline card.
+  const after = html.slice(elementWith(html, 'data-claim="headline"').end).trimStart();
+  assert.match(after, /^<p class="rec-under t-s">Picks that ended level \(a push\) or void aren&#39;t counted\.<\/p>/);
 });
 
 // ---------------------------------------------------------------------------------------------
-// 6-day strip
+// The last six days
 // ---------------------------------------------------------------------------------------------
 
-test('strip: six record-rows, today first and labelled, each with its fraction and period', () => {
-  const html = renderRecord(REC, OPTS);
-  const strip = elementWith(html, 'class="rec-strip"').html;
-  const rows = allWith(strip, 'data-figure="record-row"');
+test('strip: six record-rows, each "<full date> <won> of <graded> right <pct>%"', () => {
+  const rows = stripRows(renderRecord(REC, OPTS));
   assert.equal(rows.length, 6);
   REC.last_6.forEach((d, i) => {
-    const t = text(rows[i]);
     assert.ok(rows[i].includes(`data-period="${d.period}"`), `row ${i} period attribute`);
     assert.ok(rows[i].includes(`datetime="${d.period}"`), `row ${i} time element`);
-    const [y, m, dd] = d.period.split('-').map(Number);
-    const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1];
-    assert.ok(t.includes(`${dd} ${mon} ${y}`), `row ${i} visible date: ${t}`);
-    assert.ok(t.includes(`${d.won.toLocaleString('en-US')} of ${d.graded.toLocaleString('en-US')}`), `row ${i} fraction: ${t}`);
-    assert.ok(t.includes(`${d.pct.toFixed(2)}%`), `row ${i} pct: ${t}`);
+    const want = `${fmtDayLong(d.period)} ${d.won.toLocaleString('en-US')} of ${d.graded.toLocaleString('en-US')} right ${d.pct.toFixed(2)}%`;
+    assert.equal(text(rows[i]).replace(/ — open this day's card$/, ''), want);
   });
-  // Static text is true whenever it is read; stale.js says "Today (in progress)" on the visitor's day.
-  assert.match(rows[0], /<span class="bg-chip bg-chip--open rec-chip" data-rel-day="2026-10-07" data-rel="record">In progress<\/span>/);
-  assert.doesNotMatch(text(rows[0]), /today/i);
-  assert.doesNotMatch(rows[1], /data-rel="record"/);
+  assert.match(text(rows[0]), /^Wed 7 Oct 2026 8 of 9 right 88\.89%/);
+});
+
+test('strip: today is tagged for "Today · so far" (empty and hidden statically); no other day is tagged', () => {
+  const rows = stripRows(renderRecord(REC, OPTS));
+  assert.match(rows[0], /<p class="rec-day__rel" data-rel-day="2026-10-07" data-rel="record" hidden><\/p>/);
+  for (const row of rows.slice(1)) assert.doesNotMatch(row, /data-rel=/);
+  // The tag follows opts.today, not the first entry.
+  const later = stripRows(renderRecord(REC, { ...OPTS, today: '2026-10-08' }));
+  for (const row of later) assert.doesNotMatch(row, /data-rel=/);
+});
+
+test('strip: no status word on any day, whatever the ledger says', () => {
+  const r = rec((x) => {
+    x.last_6[0].status = 'live';
+    x.last_6[1].status = 'provisional';
+    x.last_6[2].status = 'confirmed';
+    x.last_6[3].status = 'republish_pending';
+    x.last_6[4].status = 'sealed_v2';
+  });
+  for (const row of stripRows(renderRecord(r, OPTS))) {
+    assert.doesNotMatch(text(row), STATUS_WORDS);
+    assert.doesNotMatch(text(row), /sealed/);
+    assert.doesNotMatch(row, /bg-chip/);
+  }
+});
+
+test('strip: an empty day reads "No picks settled"; a perfect day "5 of 5 right" with no percentage', () => {
+  const r = rec((x) => {
+    Object.assign(x.last_6[3], { won: 0, lost: 0, pushes: 0, graded: 0, finished_fixtures: 0, pct: null, coverage: null, status: null });
+    Object.assign(x.last_6[2], { won: 5, lost: 0, pushes: 0, graded: 5, finished_fixtures: 6, pct: 100, coverage: 0.8333 });
+  });
+  const rows = stripRows(renderRecord(r, OPTS));
+  assert.equal(text(rows[3]), `${fmtDayLong(REC.last_6[3].period)} No picks settled`);
+  assert.equal(text(rows[2]), `${fmtDayLong(REC.last_6[2].period)} 5 of 5 right`);
+  assert.doesNotMatch(text(rows[2]), /%/);
 });
 
 test('strip: links only days the archive lists', () => {
@@ -344,139 +236,110 @@ test('strip: links only days the archive lists', () => {
   for (const d of ['2026-10-06', '2026-10-05', '2026-10-04', '2026-10-03', '2026-10-02']) {
     assert.ok(!strip.includes(`/day/${d}/`), `${d} is not listed, so it must not link`);
   }
-  // An array of listed dates works the same as a Set.
   const strip2 = elementWith(renderRecord(REC, { ...OPTS, days: ['2026-10-06'] }), 'class="rec-strip"').html;
   assert.ok(strip2.includes('href="/day/2026-10-06/"'));
   assert.ok(!strip2.includes('href="/day/2026-10-07/"'));
-});
-
-test('strip: a null-status day reads "no graded picks"; a 100% day never shows a bare 100%', () => {
-  const r = rec((x) => {
-    Object.assign(x.last_6[3], { won: 0, lost: 0, pushes: 0, graded: 0, finished_fixtures: 0, pct: null, coverage: null, status: null });
-    Object.assign(x.last_6[2], { won: 5, lost: 0, pushes: 0, graded: 5, finished_fixtures: 6, pct: 100, coverage: 0.8333 });
-  });
-  const rows = allWith(elementWith(renderRecord(r, OPTS), 'class="rec-strip"').html, 'data-figure="record-row"');
-  const empty = text(rows[3]);
-  assert.match(empty, /no graded picks/i);
-  assert.doesNotMatch(empty, /%|0 of 0|NaN|null/);
-  const perfect = text(rows[2]);
-  assert.match(perfect, /5 of 5/);
-  assert.match(perfect, /all landed so far/);
-  assert.doesNotMatch(perfect, /100(\.0+)?%/);
 });
 
 // ---------------------------------------------------------------------------------------------
 // Month by month
 // ---------------------------------------------------------------------------------------------
 
-test('months: one record-row per month, newest first, with fraction, pct, coverage, status word', () => {
+test('months: one record-row per month, newest first, "<Month YYYY> <won> of <graded> right <pct>%"', () => {
   const html = renderRecord(REC, OPTS);
-  const table = elementWith(html, 'class="bg-table rec-months"').html;
-  const rows = allWith(table, 'data-figure="record-row"');
-  assert.equal(rows.length, 3);
-  const want = [
-    ['2026-10', /October 2026/, /2,004 of 2,339/, /85\.68%/, /90\.1%/, /In progress/],
-    ['2026-09', /September 2026/, /10,936 of 13,190/, /82\.91%/, /90\.1%/, /Provisional/],
-    ['2026-08', /August 2026/, /7,837 of 9,764/, /80\.26%/, /71\.2%/, /Provisional/],
-  ];
-  rows.forEach((row, i) => {
-    assert.ok(row.includes(`data-period="${want[i][0]}"`));
-    const t = text(row);
-    for (const re of want[i].slice(1)) assert.match(t, re, `month ${want[i][0]}: ${t}`);
-  });
+  const rows = monthRows(html);
+  assert.deepEqual(rows.map(text), [
+    'October 2026 In progress 2,004 of 2,339 right 85.68%',
+    'September 2026 10,936 of 13,190 right 82.91%',
+    'August 2026 7,837 of 9,764 right 80.26%',
+  ]);
+  REC.months.forEach((m, i) => assert.ok(rows[i].includes(`data-period="${m.period}"`)));
   // Stacks below 640px: every data cell names its column.
+  const table = elementWith(html, 'class="bg-table rec-months"').html;
   assert.equal((table.match(/<td\b/g) || []).length, (table.match(/<td\b[^>]*data-label="/g) || []).length);
 });
 
-test('months: effective-since footnote fires for 2026-09 (and 2026-08), not 2026-10 (minor 4)', () => {
-  const rows = allWith(elementWith(renderRecord(REC, OPTS), 'class="bg-table rec-months"').html, 'data-figure="record-row"');
-  const note = /Includes days before the current selection rule took effect on Wed 30 Sep 2026/;
-  assert.doesNotMatch(text(rows[0]), /current selection rule/);
-  assert.match(text(rows[1]), note);
-  assert.match(text(rows[2]), note);
-  // A month starting ON the effective date is under the current rule.
-  const r = rec((x) => { x.selection.effective_since_date = '2026-09-01'; });
-  const rows2 = allWith(elementWith(renderRecord(r, OPTS), 'class="bg-table rec-months"').html, 'data-figure="record-row"');
-  assert.doesNotMatch(text(rows2[1]), /current selection rule/);
-  assert.match(text(rows2[2]), /current selection rule/);
+test('"In progress" appears exactly once, on the current Lagos month, whatever the ledger status', () => {
+  const page = (r, today = OPTS.today) => renderRecord(r, { ...OPTS, today });
+  // Ledger: Oct live, Sep/Aug provisional.
+  const t = text(page(REC));
+  assert.equal(count(t, 'In progress'), 1);
+  assert.match(text(monthRows(page(REC))[0]), /In progress/);
+  // The ledger calls the current month confirmed and the past months live: the month decides.
+  const flipped = rec((x) => { x.months[0].status = 'confirmed'; x.months[1].status = 'live'; x.months[2].status = 'republish_pending'; });
+  const rows = monthRows(page(flipped));
+  assert.match(text(rows[0]), /In progress/);
+  for (const row of rows.slice(1)) assert.doesNotMatch(text(row), STATUS_WORDS);
+  assert.equal(count(text(page(flipped)), 'In progress'), 1);
+  // A month with no row of its own: no month is in progress.
+  assert.equal(count(text(page(REC, '2026-11-01')), 'In progress'), 0);
+  // The first of a month: that month (already listed) is the current one.
+  const sep = text(monthRows(page(REC, '2026-09-30'))[1]);
+  assert.match(sep, /^September 2026 In progress/);
+  assert.equal(count(text(page(REC, '2026-09-30')), 'In progress'), 1);
 });
 
-test('status words: every ledger status maps; an unknown status is shown escaped, never dropped', () => {
+test('months: a perfect month shows its fraction and no percentage; an empty month reads "No picks settled"', () => {
   const r = rec((x) => {
-    x.months[0].status = 'live';
-    x.months[1].status = 'confirmed';
-    x.months[2].status = 'republish_pending';
-    x.months.push({ ...x.months[2], period: '2026-07', status: '<b>weird</b>' });
+    Object.assign(x.months[1], { won: 40, lost: 0, pushes: 0, graded: 40, pct: 100, finished_fixtures: 41, coverage: 0.9756 });
+    Object.assign(x.months[2], { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null });
   });
-  const rows = allWith(elementWith(renderRecord(r, OPTS), 'class="bg-table rec-months"').html, 'data-figure="record-row"');
-  assert.match(text(rows[0]), /In progress/);
-  assert.match(text(rows[1]), /Confirmed/);
-  assert.match(text(rows[2]), /Being recomputed/);
-  assert.ok(rows[3].includes('&lt;b&gt;weird&lt;/b&gt;'));
-  assert.ok(!rows[3].includes('<b>weird'));
-  for (const raw of ['republish_pending', '>live<', '>provisional<', '>confirmed<']) {
-    assert.ok(!rows.slice(0, 3).join('').includes(raw), `raw key ${raw} leaked`);
-  }
+  const rows = monthRows(renderRecord(r, OPTS));
+  assert.match(text(rows[1]), /^September 2026 40 of 40 right/);
+  assert.doesNotMatch(text(rows[1]), /%/);
+  assert.match(text(rows[2]), /^August 2026 No picks settled/);
+  assert.doesNotMatch(text(rows[2]), /%|0 of 0/);
 });
 
 test('months: none yet renders an explicit empty state, not an empty table', () => {
   const r = rec((x) => { x.months = []; });
   const html = renderRecord(r, OPTS);
   assert.ok(!html.includes('<table'));
-  assert.match(text(html), /No month has a graded pick yet/);
+  assert.match(text(html), /No month has a settled pick yet/);
 });
 
 // ---------------------------------------------------------------------------------------------
-// Footnotes, empty record, copy rules, escaping
+// Footer, empty record, copy rules, escaping
 // ---------------------------------------------------------------------------------------------
+
+const footOf = (html) => /<ul class="rec-foot[^"]*"[^>]*>[\s\S]*?<\/ul>/.exec(html)?.[0] ?? null;
+
+test('footer: record start, updated stamp, the recent-figures line and the frozen-card commitment', () => {
+  const foot = footOf(renderRecord(REC, OPTS));
+  assert.deepEqual(allWith(foot, '<li').map(text), [
+    'Record starts August 2026.',
+    'Updated 7 Oct 2026, 06:05 WAT.',
+    'Recent figures can change slightly while late results are checked.',
+    "From Wed 7 Oct 2026, each day's card is frozen before its matches kick off.",
+  ]);
+  // "Record starts" follows the oldest month by value, not by order.
+  const r = rec((x) => { x.months.pop(); x.months.reverse(); });
+  assert.match(text(renderRecord(r, OPTS)), /Record starts September 2026\./);
+  // No months: no start line. No as_of: no stamp. The recent-figures line stays.
+  const bare = text(footOf(renderRecord(rec((x) => { x.months = []; x.as_of = null; }), { ...OPTS, days: [] })));
+  assert.equal(bare, 'Recent figures can change slightly while late results are checked.');
+});
 
 test('footnotes (spec §10): the frozen-card commitment dated from the oldest listed day; no repository, no link', () => {
   const html = renderRecord(REC, OPTS);
   const t = text(html);
-  assert.match(t, /Figures as of 7 Oct 2026, 06:05 WAT\./);
-  const foot = /<ul class="rec-foot[^"]*"[^>]*>[\s\S]*?<\/ul>/.exec(html)[0];
+  const foot = footOf(html);
   assert.ok(foot.includes("<li>From Wed 7 Oct 2026, each day&#39;s card is frozen before its matches kick off.</li>"), foot);
   assert.doesNotMatch(foot, /<a\b|href=/, 'the footnotes link nowhere');
   assert.doesNotMatch(t, /github|reposit|committed|open source/i);
   assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
-  // The old sentence claimed every pick in the record was committed: false for pre-repository days.
   assert.doesNotMatch(t, /Every pick is committed|before its day begins/);
-  // The oldest day comes from opts.days by value, not by its order.
   assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From Wed 30 Sep 2026, each day's card is frozen before its matches kick off\./);
-  // With no day listed there is no date to state: the commitment line is omitted, not left dateless.
   const none = text(renderRecord(REC, { ...OPTS, days: [] }));
   assert.doesNotMatch(none, /frozen before its matches kick off/);
   assert.doesNotMatch(none, /From \w{3} \d/);
-  assert.match(none, /Figures as of 7 Oct 2026, 06:05 WAT\./, 'the other footnotes stay');
-});
-
-test('footnotes: no item at all renders no empty list', () => {
-  const r = rec((x) => { x.months = []; x.as_of = null; });
-  assert.ok(!/<ul class="rec-foot/.test(renderRecord(r, { ...OPTS, days: [] })));
-  assert.match(renderRecord(r, OPTS), /<ul class="rec-foot[^"]*"[^>]*>\n<li>From Wed 7 Oct 2026/);
-});
-
-test('intro I3: picks are "made before kickoff", not "published before kickoff"', () => {
-  const t = text(renderRecord(REC, OPTS));
-  assert.match(t, /made before kickoff/);
-  assert.doesNotMatch(t, /published before kickoff/);
-});
-
-test('minor 5: "Record begins" is derived from the oldest month', () => {
-  assert.match(text(renderRecord(REC, OPTS)), /Record begins August 2026 — earlier months were not predicted before kickoff and are not published\./);
-  const r = rec((x) => { x.months.pop(); });
-  assert.match(text(renderRecord(r, OPTS)), /Record begins September 2026/);
-  assert.doesNotMatch(text(renderRecord(rec((x) => { x.months = []; }), OPTS)), /Record begins/);
+  assert.match(none, /Updated 7 Oct 2026, 06:05 WAT\./, 'the other footnotes stay');
 });
 
 test('I4: opts.days is required (a forgotten archive list must not silently unlink every day)', () => {
   assert.throws(() => renderRecord(REC, { today: '2026-10-07' }), TypeError);
   assert.throws(() => renderRecord(null, { today: '2026-10-07' }), TypeError);
-});
-
-test('footnotes: as-of line omitted when as_of is null', () => {
-  const r = rec((x) => { x.as_of = null; });
-  assert.doesNotMatch(text(renderRecord(r, OPTS)), /Figures as of/);
+  assert.throws(() => renderRecord(REC, { ...OPTS, today: '2026-13-01' }), TypeError);
 });
 
 test('renderRecord(null) renders the no-data state (S7) with no percentage', () => {
@@ -494,14 +357,23 @@ test('copy rules: no banned words, no "win rate", nothing ROI-shaped', () => {
   }
 });
 
-test('escaping: hostile scope and status values never reach the HTML raw; a repo option is never read', () => {
+test('escaping: a hostile month string never reaches the HTML raw; hostile statuses and scope are not printed', () => {
   const hostile = '<img src=x onerror=alert(1)>"\'&';
-  const r = rec((x) => { x.scope = hostile; x.last_6[1].status = hostile; });
+  // validateIndex rejects such a period; the renderer must still escape what it is handed.
+  const r = clone(REC);
+  r.months[1] = { ...r.months[1], period: `2026-09${hostile}` };
   const html = renderRecord(r, OPTS);
-  assert.ok(!html.includes('<img'));
-  assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;&quot;&#39;&amp;'));
-  assert.equal(renderRecord(REC, { ...OPTS, repo: 'x"><script>' }), renderRecord(REC, OPTS));
-  assert.throws(() => renderRecord(REC, { ...OPTS, today: '2026-13-01' }), TypeError);
+  assert.ok(!html.includes('<img'), 'no raw tag');
+  assert.doesNotMatch(html, /onerror=alert\(1\)>/);
+  assert.ok(html.includes('data-period="2026-09&lt;img src=x onerror=alert(1)&gt;&quot;&#39;&amp;"'), 'the period attribute is escaped');
+  assert.ok(text(monthRows(html)[1]).startsWith(`2026-09${hostile} `), 'an unreadable month is shown as given, escaped');
+  // Free-text ledger fields are no longer printed at all.
+  const s = clone(REC);
+  s.scope = hostile;
+  s.last_6[1].status = hostile;
+  s.months[2].status = hostile;
+  assert.doesNotMatch(renderRecord(s, OPTS), /onerror/);
+  assert.equal(renderRecord(REC, { ...OPTS, repo: 'x"><script>' }), renderRecord(REC, OPTS), 'a repo option is never read');
 });
 
 /** Percentages outside the headline block and record-rows, and record-rows lacking a fraction. */
@@ -511,22 +383,20 @@ function claimProblems(html) {
   const head = elementWith(html, 'data-claim="headline"');
   if (head) rest = rest.replace(head.html, '');
   for (const row of allWith(html, 'data-figure="record-row"')) {
-    if (!/\d of \d|no graded picks/i.test(text(row))) problems.push(`row without fraction: ${text(row)}`);
+    if (!/\d of \d|no picks settled/i.test(text(row))) problems.push(`row without fraction: ${text(row)}`);
     rest = rest.replace(row, '');
   }
   for (const m of text(rest).match(/\d+(\.\d+)?%/g) || []) problems.push(`stray ${m}`);
   return problems;
 }
 
-test('claim safety: every percentage sits in the headline block or a record-row (Task 6 rule)', () => {
+test('claim safety: every percentage sits in the headline block or a record-row', () => {
   const html = renderRecord(REC, OPTS);
   assert.deepEqual(claimProblems(html), []);
-  // Premise: a stray % injected INTO the rendered page (between sections) is reported...
   const injected = html.replace('<section class="rec-sec"', '<p class="x">83% of picks</p><section class="rec-sec"');
   assert.notEqual(injected, html);
   assert.deepEqual(claimProblems(injected), ['stray 83%']);
-  // ...and so is a record-row whose fraction is missing.
-  const noFrac = html.replace(/<p class="rec-day__frac mono">[^]*?<\/p>/, '');
+  const noFrac = html.replace(/<p class="rec-day__frac">[^]*?<\/p>/, '');
   assert.notEqual(noFrac, html);
   assert.ok(claimProblems(noFrac).some((p) => p.startsWith('row without fraction')));
 });
@@ -536,12 +406,17 @@ test('CSP: no inline style, <style> or <script> in the fragment', () => {
   assert.doesNotMatch(html, /\sstyle=|<style|<script/i);
 });
 
-test('record.css exists and is only rules (no @import)', () => {
+test('record.css: only rules, base tokens, and no class the renderer never emits (dead CSS)', () => {
   const css = readFileSync(join(ROOT, 'site/assets/css/record.css'), 'utf8');
+  const src = readFileSync(join(ROOT, 'site/lib/record.js'), 'utf8');
   assert.match(css, /\.rec-head/);
   assert.match(css, /\.rec-strip/);
   assert.doesNotMatch(css, /@import|url\(\s*['"]?https?:/);
-  // Minor 7: colours come from base.css tokens; no specificity hammer.
-  assert.doesNotMatch(css.replace(/\/\*[^]*?\*\//g, ''), /rgba?\(|#[0-9a-f]{3,8}\b/i);
-  assert.doesNotMatch(css, /!important/);
+  const rules = css.replace(/\/\*[^]*?\*\//g, '');
+  assert.doesNotMatch(rules, /rgba?\(|#[0-9a-f]{3,8}\b/i);
+  assert.doesNotMatch(rules, /!important/);
+  const classes = new Set([...rules.matchAll(/\.(rec-[a-z0-9_-]+)/g)].map((m) => m[1]));
+  assert.ok(classes.size > 5, 'premise: the stylesheet styles rec-* classes');
+  for (const c of classes) assert.ok(new RegExp(`\\b${c}\\b`).test(src), `record.css styles .${c}, which record.js never emits`);
+  assert.doesNotMatch(rules, /\.rec-foot a\b/);
 });

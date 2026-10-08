@@ -51,7 +51,9 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'eyebrow'), 'Today');
     assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'strip'), 'Tomorrow');
     assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'next'), "Tomorrow's card is published:");
-    assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'record'), 'Today (in progress)');
+    assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'record'), 'Today · so far');
+    // The record never says "Tomorrow" (nothing is settled ahead of its day).
+    assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'record'), '');
   });
 
   test('00:00:00 WAT on the 8th: the 7th is a date, the 8th is today', () => {
@@ -60,13 +62,16 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     assert.equal(stale.relLabel('2026-10-07', MIDNIGHT, 'eyebrow'), '');
     assert.equal(stale.relLabel('2026-10-08', MIDNIGHT, 'eyebrow'), 'Today');
     assert.equal(stale.relLabel('2026-10-08', MIDNIGHT, 'next'), "Today's card is published:");
-    assert.equal(stale.relLabel('2026-10-07', MIDNIGHT, 'record'), 'In progress');
+    // A past day carries no label at all: never "In progress" (Plan A Task 5, review I1).
+    assert.equal(stale.relLabel('2026-10-07', MIDNIGHT, 'record'), '');
+    assert.equal(stale.relLabel('2026-10-08', MIDNIGHT, 'record'), 'Today · so far');
   });
 
   test('a day two ahead, or in the past, reads as its date', () => {
     assert.equal(stale.relLabel('2026-10-09', BEFORE_MIDNIGHT, 'next'), `The card for ${fmtDayLong('2026-10-09')} is published:`);
     assert.equal(stale.relLabel('2026-10-08', FAR, 'ring'), `Picks published for ${T8}, settled so far`);
     assert.equal(stale.relLabel('2026-10-08', FAR, 'strip'), '');
+    assert.equal(stale.relLabel('2026-10-08', FAR, 'record'), '');
   });
 
   test('relDay names only today and tomorrow; bad input never throws', () => {
@@ -103,7 +108,7 @@ describe('static labels are dates, tagged for relabelling', () => {
         seen.add(kind);
         const shown = kind === 'ring' ? textOf(findAll(el, (n) => n.attrs.class === 'ring__label')[0]) : textOf(el);
         assert.equal(shown, stale.relLabel(date, FAR, kind), `${rel}: ${kind} ${date}`);
-        if (kind === 'eyebrow' || kind === 'strip') assert.ok(el.attrs.hidden !== undefined, `${rel}: an empty ${kind} is hidden`);
+        if (kind === 'eyebrow' || kind === 'strip' || kind === 'record') assert.ok(el.attrs.hidden !== undefined, `${rel}: an empty ${kind} is hidden`);
         if (kind === 'ring') assert.ok(el.attrs['aria-label'].startsWith(shown), `${rel}: ring aria-label starts with its label`);
       }
     }
@@ -174,14 +179,26 @@ describe('stale.js init on built pages (fake DOM)', () => {
     assert.equal(after1.querySelector('.stale').hidden, true, 'a day page never says the card is old');
   });
 
-  test('the record page relabels its in-progress day', async () => {
+  test('the record page labels its day "Today · so far" only while it is today', async () => {
     const html = await page('our-record/index.html');
+    assert.equal(findAll(parse(html), (n) => n.attrs['data-rel'] === 'record').length, 1, 'premise: one tagged day');
     const a = fakeDocument(html);
     stale.init({ doc: a, nowMs: BEFORE_MIDNIGHT, raf: sync, setTimer: noTimer });
-    assert.equal(a.querySelector('[data-rel="record"]').textContent, 'Today (in progress)');
+    const ta = a.querySelector('[data-rel="record"]');
+    assert.equal(ta.textContent, 'Today · so far');
+    assert.equal(ta.hidden, false);
     const b = fakeDocument(html);
     stale.init({ doc: b, nowMs: MIDNIGHT, raf: sync, setTimer: noTimer });
-    assert.equal(b.querySelector('[data-rel="record"]').textContent, 'In progress');
+    const tb = b.querySelector('[data-rel="record"]');
+    assert.equal(tb.textContent, '', 'a past day is never "In progress"');
+    assert.equal(tb.hidden, true);
+    // Still open at the next midnight: the label goes away.
+    const timers = [];
+    const c = fakeDocument(html);
+    stale.init({ doc: c, nowMs: BEFORE_MIDNIGHT, raf: sync, setTimer: (fn, ms) => timers.push([fn, ms]), now: () => MIDNIGHT });
+    assert.equal(c.querySelector('[data-rel="record"]').hidden, false);
+    timers[0][0]();
+    assert.equal(c.querySelector('[data-rel="record"]').hidden, true);
   });
 
   test('an open page relabels itself at the next Lagos midnight', async () => {
