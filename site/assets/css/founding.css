@@ -1,0 +1,53 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bet Gaffer — founding programme (Plan A Task 3, spec §2): the sitewide
+   banner under the header and the green Founding nav item.
+   Concatenated after waitlist.css into /assets/css/site.css; base.css tokens only.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Banner ──────────────────────────────────────────────────────────────────
+   A slim strip in normal flow (not sticky) directly under the sticky header.
+   One line on a wide screen; on a phone the line wraps and the close target
+   stays at the end. Nothing here may force a sideways scroll at 360px.
+   ─────────────────────────────────────────────────────────────────────────── */
+.bg-banner{
+  background:var(--surface-2);
+  border-left:3px solid var(--accent);
+  border-bottom:1px solid var(--line);
+}
+.bg-banner__in{
+  display:flex; align-items:center; gap:4px 12px;
+  min-height:var(--tap);
+}
+.bg-banner__in p{
+  flex:1 1 auto; min-width:0;
+  margin:0; padding-block:9px;
+  font-size:13.5px; line-height:1.45; color:var(--ink-2);
+  overflow-wrap:anywhere;
+}
+.bg-banner__in strong{ color:var(--ink); font-weight:700; }
+.bg-banner__in a{
+  color:var(--accent); font-weight:600; white-space:nowrap;
+  text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px;
+}
+.bg-banner__in a:hover{ color:var(--accent-hi); }
+
+/* The close button: a 44×44 target. The static HTML ships it [hidden] (no JS:
+   the banner cannot be closed); banner.js shows it. [hidden] must win over the
+   display below. */
+.bg-banner__x{
+  flex:none;
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:var(--tap); min-height:var(--tap);
+  margin-right:-10px;
+  padding:0; border:0; border-radius:var(--r-1);
+  background:transparent; color:var(--muted);
+  font:inherit; font-size:20px; line-height:1;
+  cursor:pointer;
+  transition:color .14s ease, background .14s ease;
+}
+.bg-banner__x:hover{ color:var(--ink); background:var(--surface-3); }
+.bg-banner__x[hidden]{ display:none; }
+
+/* ── Founding nav item ────────────────────────────────────────────────────── */
+.bg-topbar__nav a.bg-topbar__founding{ color:var(--accent); }
+.bg-topbar__nav a.bg-topbar__founding:hover{ color:var(--accent-hi); }

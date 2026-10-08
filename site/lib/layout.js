@@ -1,4 +1,4 @@
-// Page shell: <head>, header + nav, <main>, footer. BUILD ONLY (never shipped to the browser).
+// Page shell: <head>, header + nav, the founding banner, <main>, footer. BUILD ONLY (never shipped to the browser).
 //
 // CSP contract (plan S4, Task 2): the shell emits no inline <script> body, no <style> element and no
 // style= attribute. Scripts are external module scripts on same-origin root-relative paths only.
@@ -8,13 +8,27 @@ import { escHtml, escAttr } from './esc.js';
 import { lagosToday } from './time.js';
 import { requireOperator } from '../config.js';
 import { rcNumber } from '../content/common.js';
+import { TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT } from './founding.js';
 
-/** Primary navigation, in display order. */
+/**
+ * Primary navigation, in display order. `section: true` makes every page under the item's path
+ * current too (the founding waitlist's result pages, spec §2); `cls` is the item's own class.
+ */
 export const NAV = Object.freeze([
   Object.freeze({ href: '/', label: 'Predictions' }),
   Object.freeze({ href: '/our-record/', label: 'Our Record' }),
   Object.freeze({ href: '/features/', label: 'Features' }),
+  Object.freeze({ href: '/waitlist/', label: 'Founding', cls: 'bg-topbar__founding', section: true }),
 ]);
+
+/** The founding banner's own script: the FIRST module script on every page that carries the banner. */
+export const BANNER_SCRIPT = '/assets/js/banner.js';
+
+/** The founding Open Graph image (1200x630, generated once and committed) and its alt text. */
+export const OG_FOUNDING = '/assets/img/og-founding.png';
+const OG_ALT = Object.freeze({ [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${thousands(TOTAL_PLACES)} places.` });
+const OG_WIDTH = 1200;
+const OG_HEIGHT = 630;
 
 const LEGAL = Object.freeze([
   ['/privacy/', 'Privacy'],
@@ -29,6 +43,8 @@ export const NOT_A_BOOKMAKER = 'Bet Gaffer is football match intelligence. We ar
 const PATH_RE = /^\/[A-Za-z0-9._~/-]*$/;
 // A script: a same-origin root-relative .js module path.
 const SCRIPT_RE = /^\/[A-Za-z0-9._~/-]+\.js$/;
+// A social preview image: a same-origin root-relative raster (scrapers do not render SVG).
+const OG_IMAGE_RE = /\.(?:png|jpe?g)$/;
 // A data-* name: lower camelCase or kebab-case identifier (generatedAt / generated-at).
 const DATA_KEY_RE = /^[a-z][a-zA-Z0-9]*(?:-[a-z0-9]+)*$/;
 
@@ -64,10 +80,29 @@ function dataAttrs(mainData) {
   return out;
 }
 
+/** 1000 -> '1,000' (deterministic: never the host locale). */
+function thousands(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); } // hoisted: OG_ALT uses it
+
+/**
+ * The sitewide founding banner (spec §2). The numbers come from founding.js; the offer percentage
+ * sits in a data-figure="offer" element (the claim guard allows it nowhere else). The close button
+ * is hidden until banner.js runs: without JS the banner shows and cannot be closed.
+ */
+function banner() {
+  return `<aside class="bg-banner" aria-label="Founding members" data-banner>
+<div class="bg-wrap bg-banner__in">
+<p><strong>Founding members:</strong> ${escHtml(thousands(TOTAL_PLACES))} places — ${escHtml(thousands(WAITLIST_PLACES))} on the waitlist, ${escHtml(thousands(LAUNCH_PLACES))} at launch · <span data-figure="offer">${escHtml(DISCOUNT_PCT)}% off every subscription payment while you subscribe</span> · <a href="/waitlist/">See the benefits →</a></p>
+<button type="button" class="bg-banner__x" data-banner-close aria-label="Hide the founding banner" hidden>×</button>
+</div>
+</aside>`;
+}
+
 function header(path) {
-  const items = NAV.map(({ href, label }) => {
-    const current = href === path ? ' aria-current="page"' : '';
-    return `<li><a href="${escAttr(href)}"${current}>${escHtml(label)}</a></li>`;
+  const items = NAV.map(({ href, label, cls, section }) => {
+    const isCurrent = href === path || (section === true && path.startsWith(href));
+    const current = isCurrent ? ' aria-current="page"' : '';
+    const klass = cls ? ` class="${escAttr(cls)}"` : '';
+    return `<li><a href="${escAttr(href)}"${klass}${current}>${escHtml(label)}</a></li>`;
   }).join('');
   return `<a class="bg-skip" href="#main">Skip to content</a>
 <header class="bg-topbar">
@@ -122,10 +157,17 @@ function footer(op, year) {
  * @param {object} o.config       site config, REQUIRED (the build passes site/config.js explicitly);
  *                                operator identity, repo and origin are validated by requireOperator
  * @param {number} [o.year]       copyright year (default: the current Lagos year)
+ * @param {boolean} [o.banner]    the founding banner under the header (default true; false on
+ *                                /waitlist/ and its result pages, spec §2); true also loads
+ *                                banner.js as the first module script
+ * @param {string} [o.ogImage]    site path of a 1200x630 PNG/JPEG -> og:image (absolute, from
+ *                                config.origin) + og:image:width/height/alt
+ * @param {string} [o.ogImageAlt] og:image:alt; defaults to the known alt of OG_FOUNDING, required
+ *                                for any other image
  */
 export function page({
   path, title, description, body, scripts = [], noindex = false, mainData = {},
-  config, year, canonicalPath,
+  config, year, canonicalPath, banner: withBanner = true, ogImage, ogImageAlt,
 } = {}) {
   if (config === null || typeof config !== 'object' || Array.isArray(config)) {
     throw new TypeError('page: config is required (pass the site config object explicitly)');
@@ -142,6 +184,14 @@ export function page({
     }
   });
   if (typeof noindex !== 'boolean') throw new TypeError('page: noindex must be a boolean');
+  if (typeof withBanner !== 'boolean') throw new TypeError('page: banner must be a boolean');
+  let ogAlt = null;
+  if (ogImage !== undefined) {
+    checkPath(ogImage, 'ogImage');
+    if (!OG_IMAGE_RE.test(ogImage)) throw new TypeError(`page: ogImage must be a .png or .jpg path, got ${JSON.stringify(ogImage)}`);
+    ogAlt = ogImageAlt ?? (Object.hasOwn(OG_ALT, ogImage) ? OG_ALT[ogImage] : undefined);
+    if (!nonEmpty(ogAlt)) throw new TypeError(`page: ogImageAlt is required for ${ogImage}`);
+  }
   // Throws naming every missing operator field (plan S8), then every malformed contact_email,
   // privacy_email, repo or origin. The emails and origin land in href attributes below; repo is
   // validated but never rendered (spec §10: no page links or names the repository).
@@ -151,7 +201,14 @@ export function page({
 
   const fullTitle = `${title} — ${config.brand || 'Bet Gaffer'}`;
   const url = config.origin + (canonicalPath ?? path);
-  const scriptTags = scripts.map((s) => `<script type="module" src="${escAttr(s)}"></script>`).join('\n');
+  // banner.js first, so a dismissed banner is removed before any other module runs (spec §2).
+  const allScripts = withBanner ? [BANNER_SCRIPT, ...scripts.filter((s) => s !== BANNER_SCRIPT)] : scripts;
+  const scriptTags = allScripts.map((s) => `<script type="module" src="${escAttr(s)}"></script>`).join('\n');
+  const ogImageTags = ogImage === undefined ? '' : `<meta property="og:image" content="${escAttr(config.origin + ogImage)}">
+<meta property="og:image:width" content="${OG_WIDTH}">
+<meta property="og:image:height" content="${OG_HEIGHT}">
+<meta property="og:image:alt" content="${escAttr(ogAlt)}">
+`;
 
   return `<!doctype html>
 <html lang="en-NG">
@@ -173,10 +230,10 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">
 <meta property="og:title" content="${escAttr(fullTitle)}">
 <meta property="og:description" content="${escAttr(description)}">
-${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${scriptTags ? `${scriptTags}\n` : ''}</head>
+${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${scriptTags ? `${scriptTags}\n` : ''}</head>
 <body>
 ${header(path)}
-<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>
+${withBanner ? `${banner()}\n` : ''}<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>
 <div class="stale" role="status" hidden></div>
 ${body}
 </main>

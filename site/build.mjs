@@ -38,7 +38,7 @@ const SITE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(SITE, '..');
 
 /** site.css = these files, in this order. */
-export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css']);
+export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
 /** site/lib modules that run in the browser too, copied to /assets/js/lib/ for the archive loader. */
 export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js']);
 /** Same-site browser entry modules. */

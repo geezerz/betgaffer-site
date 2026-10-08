@@ -92,8 +92,8 @@ describe('build of the fixture artifact', () => {
     }
   });
 
-  test('site.css concatenates the five stylesheets in the fixed order', async () => {
-    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css']);
+  test('site.css concatenates the six stylesheets in the fixed order', async () => {
+    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
     const css = await read(ws, 'assets/css/site.css');
     let at = -1;
     for (const f of CSS_ORDER) {

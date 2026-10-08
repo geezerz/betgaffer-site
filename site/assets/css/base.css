@@ -178,7 +178,7 @@ ul[role="list"],ol[role="list"]{ list-style:none; margin:0; padding:0; }
 /* ── 6. TOPBAR ─────────────────────────────────────────────────────────────────
    Sticky glass bar. backdrop-filter makes it a containing block for fixed
    descendants, so nothing position:fixed may live inside it.
-   Below 600px the nav drops to its own full-width row of three equal tabs:
+   Below 600px the nav drops to its own full-width row of four equal tabs:
    it wraps, it never scrolls sideways, and it needs no JS and no hamburger.
    ─────────────────────────────────────────────────────────────────────────── */
 .bg-topbar{
@@ -205,13 +205,13 @@ a.bg-wordmark:hover{ color:#fff; }
 @media (min-width:1024px){ .bg-wordmark{ font-size:21px; } }
 
 .bg-topbar__nav{ flex:1 1 100%; margin-inline:calc(var(--gutter) * -1); border-top:1px solid var(--line); }
-.bg-topbar__nav ul{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.bg-topbar__nav ul{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }
 .bg-topbar__nav a{
   display:flex; align-items:center; justify-content:center; text-align:center;
-  min-height:var(--tap); padding:6px 6px;
+  min-height:var(--tap); padding:6px 2px;   /* four tabs: "PREDICTIONS" fits a 90px tab at 360px */
   color:var(--muted); text-decoration:none;
   font-family:var(--font-mono); font-size:11px; font-weight:600; line-height:1.2;
-  letter-spacing:.06em; text-transform:uppercase;
+  letter-spacing:.04em; text-transform:uppercase; overflow-wrap:anywhere;
   border-bottom:2px solid transparent;
   transition:color .14s ease, background .14s ease, border-color .14s ease;
 }

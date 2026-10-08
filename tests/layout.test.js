@@ -3,8 +3,12 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { page, NAV } from '../site/lib/layout.js';
+import { page, NAV, OG_FOUNDING } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
+import { TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT } from '../site/lib/founding.js';
+import { parse, find, findAll, textOf, claimViolations } from './html-scan.js';
+import { fakeDocument } from './fake-dom.js';
+import { init as bannerInit, STORAGE_KEY as BANNER_KEY } from '../site/assets/js/banner.js';
 
 // The private platform's name, built from char codes so the literal never appears in this repo.
 const INTERNAL = String.fromCharCode(70, 111, 114, 101, 99, 97, 120, 116);
@@ -156,13 +160,14 @@ test('premise: the CSP check fails on inline script, <style>, style= and handler
 });
 
 test('no inline script, no <style>, no style= anywhere (no scripts)', () => {
-  const html = base();
+  const html = base({ banner: false });
   assertCspClean(html);
-  assert.doesNotMatch(html, /<script/i, 'no scripts unless asked for');
+  assert.doesNotMatch(html, /<script/i, 'no scripts unless asked for (and no banner)');
+  assertCspClean(base()); // with the banner too
 });
 
 test('scripts render as external module scripts only', () => {
-  const html = base({ scripts: ['/assets/js/stale.js', '/assets/js/day.js'] });
+  const html = base({ scripts: ['/assets/js/stale.js', '/assets/js/day.js'], banner: false });
   assertCspClean(html);
   assert.match(html, /<script type="module" src="\/assets\/js\/stale.js"><\/script>/);
   assert.match(html, /<script type="module" src="\/assets\/js\/day.js"><\/script>/);
@@ -185,13 +190,16 @@ test('the wordmark is HTML text Bet<em>Gaffer</em> linking home with an accessib
   assert.match(html, /<a class="bg-wordmark" href="\/" aria-label="Bet Gaffer — home">Bet<em>Gaffer<\/em><\/a>/);
 });
 
-test('the nav carries Predictions, Our Record, Features in order', () => {
+test('the nav carries Predictions, Our Record, Features, Founding in order (spec §2)', () => {
   assert.deepEqual(NAV.map((n) => [n.href, n.label]),
-    [['/', 'Predictions'], ['/our-record/', 'Our Record'], ['/features/', 'Features']]);
+    [['/', 'Predictions'], ['/our-record/', 'Our Record'], ['/features/', 'Features'], ['/waitlist/', 'Founding']]);
   const html = base();
   const nav = html.match(/<nav class="bg-topbar__nav"[\s\S]*?<\/nav>/)[0];
-  const labels = [...nav.matchAll(/<a [^>]*>([^<]+)<\/a>/g)].map((m) => m[1]);
-  assert.deepEqual(labels, ['Predictions', 'Our Record', 'Features']);
+  const links = [...nav.matchAll(/<a ([^>]*)>([^<]+)<\/a>/g)];
+  assert.deepEqual(links.map((m) => m[2]), ['Predictions', 'Our Record', 'Features', 'Founding']);
+  // Only the Founding item carries the accent class.
+  assert.deepEqual(links.map((m) => /class="bg-topbar__founding"/.test(m[1])), [false, false, false, true]);
+  assert.match(links[3][1], /href="\/waitlist\/"/);
 });
 
 test('aria-current="page" is on the active nav item only', () => {
@@ -202,9 +210,19 @@ test('aria-current="page" is on the active nav item only', () => {
     assert.match(current[0], new RegExp(`href="${href.replace(/\//g, '\\/')}"`));
     assert.match(current[0], /aria-current="page"/);
   }
-  for (const path of ['/privacy/', '/day/2026-10-07/', '/waitlist/thanks/']) {
+  for (const path of ['/privacy/', '/day/2026-10-07/', '/waitlisted/', '/waitlist.html', '/features/waitlist/']) {
     assert.doesNotMatch(base({ path }), /aria-current/, `no aria-current on ${path}`);
   }
+});
+
+test('Founding is the current nav item on /waitlist/ and every page under it', () => {
+  for (const path of ['/waitlist/', '/waitlist/thanks/', '/waitlist/invalid/', '/waitlist/a/b/']) {
+    const current = base({ path }).match(/<a [^>]*aria-current[^>]*>[^<]*<\/a>/g) || [];
+    assert.equal(current.length, 1, `exactly one aria-current on ${path}`);
+    assert.match(current[0], /href="\/waitlist\/"[^>]*aria-current="page"[^>]*>Founding</, path);
+  }
+  // Sub-pages count only for the Founding item: a page under /our-record/ does not light Our Record.
+  assert.doesNotMatch(base({ path: '/our-record/x/' }), /aria-current/);
 });
 
 test('a skip link targets <main>', () => {
@@ -269,8 +287,196 @@ test('two mainData keys that map to the same data-* name throw instead of emitti
 });
 
 // ---------------------------------------------------------------------------------------------
-// Footer
+// Founding banner (spec §2, Plan A Task 3)
 // ---------------------------------------------------------------------------------------------
+
+const BANNER_TEXT = 'Founding members: 1,000 places — 500 on the waitlist, 500 at launch · '
+  + '30% off every subscription payment while you subscribe · See the benefits →';
+const bannerOf = (html) => find(parse(html), (n) => n.tag === 'aside' && n.attrs['data-banner'] !== undefined);
+const moduleScripts = (html) => findAll(parse(html), (n) => n.tag === 'script').map((s) => s.attrs.src);
+
+test('premise: the banner copy is the programme numbers (founding.js) with a thousands separator', () => {
+  assert.deepEqual([TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, DISCOUNT_PCT], [1000, 500, 500, 30]);
+});
+
+test('the banner is on by default: the spec §2 line, directly after the header, linking /waitlist/', () => {
+  const html = base();
+  const aside = bannerOf(html);
+  assert.ok(aside, 'a [data-banner] aside');
+  assert.equal(aside.attrs.class, 'bg-banner');
+  assert.equal(aside.attrs['aria-label'], 'Founding members');
+  const p = find(aside, (n) => n.tag === 'p');
+  assert.equal(textOf(p).replace(/\s+/g, ' ').trim(), BANNER_TEXT);
+  assert.equal(textOf(find(p, (n) => n.tag === 'strong')), 'Founding members:');
+  const links = findAll(aside, (n) => n.tag === 'a');
+  assert.deepEqual(links.map((a) => [a.attrs.href, textOf(a)]), [['/waitlist/', 'See the benefits →']]);
+  // Placement: </header> then the banner, before <main>.
+  assert.match(html, /<\/header>\n<aside class="bg-banner" aria-label="Founding members" data-banner>/);
+  assert.ok(html.indexOf('data-banner>') < html.indexOf('<main'), 'before <main>');
+  assert.equal((html.match(/data-banner>/g) || []).length, 1, 'one banner');
+});
+
+test('the banner offer percentage sits inside a data-figure="offer" element, and the claim scan passes', () => {
+  const aside = bannerOf(base());
+  const offer = find(aside, (n) => n.attrs?.['data-figure'] === 'offer');
+  assert.ok(offer, 'an offer figure');
+  assert.equal(textOf(offer), '30% off every subscription payment while you subscribe');
+  assert.deepEqual(claimViolations(base({ path: '/' })), []);
+  // Premise: the same scan reports the percentage once it leaves its figure.
+  const bare = base({ path: '/' }).replace('<span data-figure="offer">', '<span>');
+  assert.ok(claimViolations(bare).some((m) => /30%/.test(m)), 'a bare 30% is reported');
+});
+
+test('the close button is hidden in the static HTML (no JS: the banner shows and cannot be closed)', () => {
+  const aside = bannerOf(base());
+  const buttons = findAll(aside, (n) => n.tag === 'button');
+  assert.equal(buttons.length, 1);
+  const [b] = buttons;
+  assert.equal(b.attrs.type, 'button');
+  assert.equal(b.attrs.class, 'bg-banner__x');
+  assert.equal(b.attrs['aria-label'], 'Hide the founding banner');
+  assert.ok(b.attrs['data-banner-close'] !== undefined, 'data-banner-close');
+  assert.ok(b.attrs.hidden !== undefined, 'hidden');
+  assert.equal(textOf(b), '×');
+});
+
+test('banner: true loads /assets/js/banner.js as the FIRST module script, once', () => {
+  assert.deepEqual(moduleScripts(base()), ['/assets/js/banner.js']);
+  assert.deepEqual(moduleScripts(base({ scripts: ['/assets/js/stale.js', '/assets/js/day.js'] })),
+    ['/assets/js/banner.js', '/assets/js/stale.js', '/assets/js/day.js']);
+  // A caller that lists banner.js itself still gets it once, first.
+  assert.deepEqual(moduleScripts(base({ scripts: ['/assets/js/stale.js', '/assets/js/banner.js'] })),
+    ['/assets/js/banner.js', '/assets/js/stale.js']);
+});
+
+test('banner: false renders neither the banner nor banner.js', () => {
+  const html = base({ banner: false, scripts: ['/assets/js/waitlist.js'] });
+  assert.equal(bannerOf(html), null);
+  assert.doesNotMatch(html, /data-banner|bg-banner|banner\.js/);
+  assert.deepEqual(moduleScripts(html), ['/assets/js/waitlist.js']);
+  assert.throws(() => base({ banner: 'no' }), /banner/);
+  assert.throws(() => base({ banner: null }), /banner/);
+});
+
+// banner.js in a fake DOM built from a real page.
+function fakeStorage(init = {}, { throwOnGet = false, throwOnSet = false } = {}) {
+  const m = new Map(Object.entries(init));
+  return {
+    m,
+    getItem(k) { if (throwOnGet) throw new Error('SecurityError'); return m.has(k) ? m.get(k) : null; },
+    setItem(k, v) { if (throwOnSet) throw new Error('QuotaExceededError'); m.set(k, String(v)); },
+  };
+}
+const liveBanner = (doc) => doc.querySelector('[data-banner]');
+
+test('banner.js: shows the close button; a click remembers the choice and removes the banner', () => {
+  assert.equal(BANNER_KEY, 'bg.founding.banner');
+  const doc = fakeDocument(base());
+  const storage = fakeStorage();
+  bannerInit({ doc, storage });
+  const btn = doc.querySelector('[data-banner-close]');
+  assert.ok(liveBanner(doc), 'still there before the click');
+  assert.equal(btn.hidden, false, 'the close button is shown once JS runs');
+  assert.equal(btn.listeners.click.length, 1);
+  btn.listeners.click[0]();
+  assert.equal(liveBanner(doc), null, 'removed');
+  assert.equal(storage.m.get('bg.founding.banner'), 'hidden');
+});
+
+test('banner.js: a remembered dismissal removes the banner on load; other values do not', () => {
+  const doc = fakeDocument(base());
+  bannerInit({ doc, storage: fakeStorage({ 'bg.founding.banner': 'hidden' }) });
+  assert.equal(liveBanner(doc), null);
+  for (const v of ['shown', '', 'HIDDEN']) {
+    const d = fakeDocument(base());
+    bannerInit({ doc: d, storage: fakeStorage({ 'bg.founding.banner': v }) });
+    assert.ok(liveBanner(d), `value ${JSON.stringify(v)} keeps the banner`);
+  }
+});
+
+test('banner.js: blocked storage never breaks the page — the banner shows and still closes for this view', () => {
+  for (const storage of [null, fakeStorage({}, { throwOnGet: true, throwOnSet: true })]) {
+    const doc = fakeDocument(base());
+    assert.doesNotThrow(() => bannerInit({ doc, storage }));
+    const btn = doc.querySelector('[data-banner-close]');
+    assert.equal(btn.hidden, false);
+    assert.doesNotThrow(() => btn.listeners.click[0]());
+    assert.equal(liveBanner(doc), null);
+  }
+  // A page without the banner: nothing to do, nothing thrown.
+  assert.doesNotThrow(() => bannerInit({ doc: fakeDocument(base({ banner: false })), storage: fakeStorage() }));
+});
+
+test('banner.js never fetches and imports nothing (the counter is read on /waitlist/ only)', () => {
+  const src = readFileSync(join(ASSETS, 'js', 'banner.js'), 'utf8');
+  assert.doesNotMatch(src, /\bfetch\s*\(|XMLHttpRequest|sendBeacon|EventSource|WebSocket/);
+  assert.doesNotMatch(src, /^\s*import\b|\bimport\s*\(/m);
+});
+
+// ---------------------------------------------------------------------------------------------
+// Open Graph image
+// ---------------------------------------------------------------------------------------------
+
+test('ogImage renders og:image (absolute, from config.origin), its size and its alt text', () => {
+  assert.equal(OG_FOUNDING, '/assets/img/og-founding.png');
+  const html = base({ ogImage: OG_FOUNDING });
+  assert.match(html, /<meta property="og:image" content="https:\/\/betgaffer\.com\/assets\/img\/og-founding\.png">/);
+  assert.match(html, /<meta property="og:image:width" content="1200">/);
+  assert.match(html, /<meta property="og:image:height" content="630">/);
+  const alt = html.match(/<meta property="og:image:alt" content="([^"]+)">/);
+  assert.ok(alt, 'og:image:alt');
+  assert.match(alt[1], /founding member/i);
+  assert.doesNotMatch(alt[1], /%/, 'no offer percentage outside an offer figure');
+  assert.match(base({ ogImage: OG_FOUNDING, config: { ...cfg, origin: 'https://staging.example' } }),
+    /<meta property="og:image" content="https:\/\/staging\.example\/assets\/img\/og-founding\.png">/);
+});
+
+test('without ogImage no og:image meta is emitted; a bad ogImage throws', () => {
+  assert.doesNotMatch(base(), /og:image/);
+  for (const bad of ['https://evil.example/x.png', '//evil.example/x.png', 'x.png', '/a/../b.png', '/x.svg', '/x"y.png', 7]) {
+    assert.throws(() => base({ ogImage: bad }), /ogImage/, String(bad));
+  }
+  // Another image needs its own alt text; it is escaped.
+  assert.throws(() => base({ ogImage: '/assets/img/other.png' }), /ogImageAlt/);
+  const html = base({ ogImage: '/assets/img/other.png', ogImageAlt: 'A "card" <b>' });
+  assert.match(html, /<meta property="og:image:alt" content="A &quot;card&quot; &lt;b&gt;">/);
+});
+
+test('og-founding.png ships as a real 1200x630 PNG under 200 KB', () => {
+  const p = join(ASSETS, 'img', 'og-founding.png');
+  assert.ok(existsSync(p), 'exists');
+  const png = readFileSync(p);
+  assert.deepEqual([...png.subarray(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 'PNG signature');
+  assert.equal(png.subarray(12, 16).toString('latin1'), 'IHDR', 'IHDR is the first chunk');
+  assert.equal(png.readUInt32BE(16), 1200, 'width');
+  assert.equal(png.readUInt32BE(20), 630, 'height');
+  assert.ok(png.length < 200 * 1024, `${png.length} bytes < 200 KB`);
+  assert.ok(png.length > 5 * 1024, 'not a stub');
+});
+
+// ---------------------------------------------------------------------------------------------
+// founding.css + the four-tab mobile nav
+// ---------------------------------------------------------------------------------------------
+
+test('founding.css: banner on surface-2 with an accent rule, a 44px close target that [hidden] hides, green Founding item', () => {
+  const s = readFileSync(join(ASSETS, 'css', 'founding.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
+  const rule = (sel) => (new RegExp(`(?:^|\\})${sel.replace(/[.[\]-]/g, (c) => `\\${c}`)}\\{([^}]*)\\}`).exec(s) ?? [])[1] ?? '';
+  assert.match(rule('.bg-banner'), /background:var\(--surface-2\)/);
+  assert.match(rule('.bg-banner'), /border-left:\d+pxsolidvar\(--accent\)/);
+  assert.match(rule('.bg-banner__x'), /min-width:(44px|var\(--tap\))/);
+  assert.match(rule('.bg-banner__x'), /min-height:(44px|var\(--tap\))/);
+  assert.match(rule('.bg-banner__x[hidden]'), /display:none/);
+  assert.match(rule('.bg-banner__inp'), /min-width:0/, 'the line can shrink and wrap');
+  assert.match(rule('.bg-banner__inp'), /overflow-wrap:anywhere/, 'a long word never forces a sideways scroll');
+  assert.match(s, /\.bg-topbar__nava\.bg-topbar__founding\{[^}]*color:var\(--accent\)/);
+  assert.doesNotMatch(s, /var\(--gold\)/, 'gold stays reserved for the recommended pick');
+});
+
+test('below 600px the nav is four equal tabs (one per NAV item)', () => {
+  const s = readFileSync(join(ASSETS, 'css', 'base.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, '');
+  assert.equal(NAV.length, 4);
+  assert.match(s, /\.bg-topbar__navul\{display:grid;grid-template-columns:repeat\(4,minmax\(0,1fr\)\);?\}/);
+});
 
 test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, legal links, © and contact', () => {
   const html = base();
