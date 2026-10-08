@@ -27,11 +27,12 @@ const config = {
     // Filled in ({ name, monthly } with monthly in whole naira) when the operator decides to publish
     // prices, in the same commit that sets show_prices: true. requireOperator() refuses
     // show_prices: true while this is empty.
+    // Operator 2026-10-08: Starter is a new platform tier; Pro and Elite match the platform's plan table.
     tiers: [
       { name: 'Free account', monthly: 0 },
       { name: 'Starter', monthly: 1500 },
       { name: 'Pro', monthly: 3000 },
-      { name: 'Elite', monthly: 10000 },
+      { name: 'Elite', monthly: 5000 },
     ],
   },
   stale_after_hours: 6,

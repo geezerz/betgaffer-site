@@ -506,7 +506,7 @@ test('shipped config: operator identity and published prices', async () => {
   assert.equal(shipped.operator.contact_email, 'contact@betgaffer.com');
   assert.equal(shipped.pricing.show_prices, true);
   assert.deepEqual(shipped.pricing.tiers.map((t) => [t.name, t.monthly]),
-    [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 10000]]);
+    [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
 });
 
 test('features: tiers come from config and are validated', () => {
