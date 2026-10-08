@@ -192,7 +192,9 @@ const RETRO_RE = /\bso far\b|\bto date\b/i;
 const STATED_RE = /\bstated at\b/i;
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
   'November', 'December'];
-export const HEADLINE_PARTS = Object.freeze(['band', 'coverage', 'period', 'ci', 'status']);
+// The record headline states its figure plainly (Plan A Task 5, spec §7): the fraction and its
+// period. Selection rule, coverage, status and interval are no longer printed.
+export const HEADLINE_PARTS = Object.freeze(['period']);
 
 function periodText(p) {
   if (isDate(p)) return fmtDayLong(p);
@@ -225,8 +227,10 @@ function figureOf(el, pct) {
     return FRACTION_RE.test(t) && p !== null && t.includes(p) ? 'record-row' : null;
   }
   if (el.attrs['data-claim'] === 'headline') {
-    const parts = new Set(findAll(el, (n) => n !== el && n.attrs['data-claim-part'] !== undefined).map((n) => n.attrs['data-claim-part']));
-    return HEADLINE_PARTS.every((p) => parts.has(p)) ? 'headline' : null;
+    // Every part present with visible text, and the block carries its "X of Y" fraction.
+    const parts = new Set(findAll(el, (n) => n !== el && n.attrs['data-claim-part'] !== undefined && textOf(n) !== '')
+      .map((n) => n.attrs['data-claim-part']));
+    return HEADLINE_PARTS.every((p) => parts.has(p)) && FRACTION_RE.test(textOf(el)) ? 'headline' : null;
   }
   return null;
 }
@@ -243,7 +247,7 @@ const where = (el) => el.tag === '#root' ? 'the top level' : `<${el.tag}${el.att
  *   - banned phrases in the visible text, the <title> or the description metadata;
  *   - a percentage in visible text, aria-label, title or alt outside every allowed figure
  *     (pick-prob; a ring carrying its fraction; a record row carrying its fraction and period; the
- *     headline block holding all its parts; an offer figure, data-figure="offer", whose every
+ *     headline block holding its period part and its fraction; an offer figure, data-figure="offer", whose every
  *     percentage is DISCOUNT_PCT or TOPUP_BONUS_PCT from site/lib/founding.js);
  *   - a 100% not inside an element that also carries its fraction, "so far" and "stated at".
  */

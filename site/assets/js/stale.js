@@ -44,8 +44,10 @@ export function relDay(date, nowMs) {
  *   eyebrow, strip  'Today' | 'Tomorrow' | ''  (an empty label is hidden)
  *   ring            "Today's published picks, settled so far" | "Tomorrow's …" | "Picks published for <date>, settled so far"
  *   next            "Today's card is published:" | "Tomorrow's card is published:" | "The card for <date> is published:"
- *   record          'Today (in progress)' | 'In progress'
- * The third form is what the build renders statically (tests assert they agree).
+ *   record          'Today · so far' | ''  (only today's figure is still moving; an empty label is
+ *                   hidden, so a past day never reads "In progress" — Plan A Task 5)
+ * The third form (record, eyebrow, strip: the empty one) is what the build renders statically
+ * (tests assert they agree).
  */
 export function relLabel(date, nowMs, kind = 'ring') {
   const r = relDay(date, nowMs);
@@ -59,7 +61,7 @@ export function relLabel(date, nowMs, kind = 'ring') {
     case 'next':
       return Word ? `${Word}'s card is published:` : `The card for ${fmtDayLong(date)} is published:`;
     case 'record':
-      return r === 'today' ? 'Today (in progress)' : 'In progress';
+      return r === 'today' ? 'Today · so far' : '';
     default:
       throw new TypeError(`relLabel: unknown kind ${JSON.stringify(kind)}`);
   }
@@ -90,7 +92,7 @@ export function relabel(root, nowMs) {
       continue;
     }
     el.textContent = text;
-    if (kind === 'eyebrow' || kind === 'strip') el.hidden = text === '';
+    if (kind === 'eyebrow' || kind === 'strip' || kind === 'record') el.hidden = text === '';
   }
 }
 

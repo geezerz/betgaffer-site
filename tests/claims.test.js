@@ -9,7 +9,7 @@ import { readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { build } from '../site/build.mjs';
-import { claimViolations, percentagesOutsideOffers, visibleText } from './html-scan.js';
+import { claimViolations, percentagesOutsideOffers, visibleText, HEADLINE_PARTS } from './html-scan.js';
 import { DISCOUNT_PCT, TOPUP_BONUS_PCT } from '../site/lib/founding.js';
 import {
   testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, htmlFiles, EDGE_DAY,
@@ -209,14 +209,24 @@ describe('premise: the scanner reports each injected violation', () => {
     assert.ok(claimViolations(inject(pages['index.html'], '<p>for every gambler</p>')).includes('banned phrase "gambler"'));
   });
 
-  test('a headline block missing one of its parts no longer licenses its percentages', () => {
+  test('the headline needs its period (the one part it carries, Plan A Task 5) and its fraction', () => {
+    assert.deepEqual([...HEADLINE_PARTS], ['period']);
     const rec = pages['our-record/index.html'];
-    for (const part of ['band', 'coverage', 'period', 'ci', 'status']) {
+    assert.deepEqual(claimViolations(rec), [], 'premise: the real record page is clean');
+    for (const part of HEADLINE_PARTS) {
       const html = rec.replace(`data-claim-part="${part}"`, 'data-x="removed"');
       assert.notEqual(html, rec, `premise: ${part} present`);
       const v = claimViolations(html);
       assert.ok(v.some((m) => /84\.48%" outside an allowed figure/.test(m)), `${part}: ${v}`);
     }
+    // A period part with no text licenses nothing either.
+    const blank = rec.replace(/(<p [^>]*data-claim-part="period"[^>]*>)[^]*?(<\/p>)/, '$1$2');
+    assert.notEqual(blank, rec);
+    assert.ok(claimViolations(blank).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'blank period');
+    // A headline whose text lost every "X of Y" fraction no longer licenses its percentage.
+    const noFrac = rec.replace(/<p class="rec-hero">[^]*?<\/p>/, '');
+    assert.notEqual(noFrac, rec);
+    assert.ok(claimViolations(noFrac).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'no fraction');
   });
 
   test('a record row whose text lacks its period, or its fraction, is reported', () => {
