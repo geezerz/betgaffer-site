@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { validateIndex } from '../site/lib/data.js';
 import { renderRecord } from '../site/lib/record.js';
+import { CSS_ORDER } from '../site/build.mjs';
 import { fmtDayLong } from '../site/lib/time.js';
 import { claimViolations } from './html-scan.js';
 import { toLast7 } from './site-fixtures.js';
@@ -73,6 +74,8 @@ function allWith(html, attr) {
   return out;
 }
 const count = (hay, needle) => hay.split(needle).length - 1;
+/** What a sighted visitor reads: visible text with the visually hidden (.vh) spans dropped. */
+const seen = (html) => text(html.replace(/<span class="vh">[^<]*<\/span>/g, ''));
 const stripOf = (html) => elementWith(html, 'class="rec-strip ').html;
 const stripRows = (html) => allWith(stripOf(html), 'data-figure="record-row"');
 const monthRows = (html) => allWith(elementWith(html, 'class="bg-table rec-months"').html, 'data-figure="record-row"');
@@ -104,11 +107,15 @@ test('headline (spec §17.5): header row (title + period) -> the percentage hero
   assert.ok(top, 'a header row');
   assert.ok(top.html.includes('id="rec-head-h"') && top.html.includes('data-claim-part="period"'), top.html);
   assert.equal(text(top.html), `Last 30 days ${period}`);
-  // The hero is the percentage, alone, in the green figure class.
-  const hero = elementWith(head, 'data-figure="record-pct"');
+  // The hero is the percentage, alone on screen, in the green figure class; a screen reader hears
+  // "<pct> of picks right". It is marked data-hero, not data-figure: only the headline block licenses it.
+  const hero = elementWith(head, 'data-hero');
   assert.ok(hero, 'a hero percentage element');
-  assert.equal(text(hero.html), pct);
-  assert.match(hero.html, /^<p class="rec-hero rec-won"/);
+  assert.equal(seen(hero.html), pct);
+  assert.equal(text(hero.html), `${pct} of picks right`);
+  assert.ok(hero.html.includes('<span class="vh"> of picks right</span>'), hero.html);
+  assert.match(hero.html, /^<p class="rec-hero rec-won" data-hero>/);
+  assert.doesNotMatch(head, /data-figure=/, 'nothing in the headline claims to be a figure of its own');
   // Count line: the won count green, the total not.
   const countLine = elementWith(head, 'class="rec-count"');
   assert.equal(text(countLine.html), `${won} of ${graded} picks right`);
@@ -121,7 +128,7 @@ test('headline (spec §17.5): header row (title + period) -> the percentage hero
   const at = (h) => head.indexOf(h);
   assert.ok(at(top.html) < at(hero.html) && at(hero.html) < at(countLine.html) && at(countLine.html) < at(cap.html), 'order');
   assert.match(head.slice(at(cap.html) + cap.html.length), /^\s*<\/section>$/, 'the period no longer sits at the bottom');
-  assert.equal(text(head), `Last 30 days ${period} ${pct} ${won} of ${graded} picks right Our recommended picks were right ${won} times out of ${graded}.`);
+  assert.equal(seen(head), `Last 30 days ${period} ${pct} ${won} of ${graded} picks right Our recommended picks were right ${won} times out of ${graded}.`);
 });
 
 test('headline: the period line reads "8 Sep – 7 Oct 2026" and is the only claim part', () => {
@@ -155,8 +162,8 @@ test('headline: a perfect window\'s hero reads "Every pick right", the count lin
   const head = headOf(renderRecord(r, OPTS));
   const t = text(head);
   const n = fmt(PERFECT_30.won);
-  const hero = elementWith(head, 'data-figure="record-pct"').html;
-  assert.equal(text(hero), 'Every pick right');
+  const hero = elementWith(head, 'data-hero').html;
+  assert.equal(text(hero), 'Every pick right', 'the words need no screen-reader suffix');
   assert.match(hero, /^<p class="rec-hero rec-hero--words rec-won"/);
   assert.equal(text(elementWith(head, 'class="rec-count"').html), `${n} of ${n} picks right`);
   assert.ok(t.includes(`Our recommended picks were right ${n} times out of ${n}.`), t);
@@ -171,7 +178,7 @@ test('headline: a non-perfect window that rounds to 100 shows 99.99%, never 100.
   });
   const html = renderRecord(r, OPTS);
   assert.doesNotMatch(text(html), /100(\.0+)?%/);
-  assert.equal(text(elementWith(headOf(html), 'data-figure="record-pct"').html), '99.99%');
+  assert.equal(seen(elementWith(headOf(html), 'data-hero').html), '99.99%');
   assert.ok(text(headOf(html)).includes('29,999 of 30,000 picks right Our recommended picks were right 29,999 times out of 30,000.'));
   assert.match(text(stripRows(html)[1]), /29,999 of 30,000 right 99\.99%/);
   assert.match(text(monthRows(html)[0]), /29,999 of 30,000 right 99\.99%/);
@@ -197,7 +204,7 @@ test('removed: no coverage, confidence, status, selection rule, uncertainty or p
 
 test('strategy: the page states no selection rule, so any strategy renders', () => {
   const r = rec((x) => { x.strategy = 'probability_range'; });
-  const t = text(renderRecord(r, OPTS));
+  const t = seen(renderRecord(r, OPTS));
   assert.ok(t.includes(`${pctText(REC.last_30.pct)} ${fmt(REC.last_30.won)} of ${fmt(REC.last_30.graded)} picks right`), t);
   assert.doesNotMatch(t, /probability_range|edge_reliability/);
 });
@@ -274,14 +281,15 @@ test('strip: no status word on any day, whatever the ledger says', () => {
   }
 });
 
-test('strip: an empty day reads "No picks settled"; a perfect day "5 of 5 right" with no percentage', () => {
+test('strip: an empty day reads "No picks settled"; a perfect day "5 of 5 right" and "All right", never a percentage', () => {
   const r = rec((x) => {
     Object.assign(x.last_6[3], { won: 0, lost: 0, pushes: 0, graded: 0, finished_fixtures: 0, pct: null, coverage: null, status: null });
     Object.assign(x.last_6[2], { won: 5, lost: 0, pushes: 0, graded: 5, finished_fixtures: 6, pct: 100, coverage: 0.8333 });
   });
   const rows = stripRows(renderRecord(r, OPTS));
   assert.equal(text(rows[3]), `${fmtDayLong(REC.recent[3].period)} No picks settled`);
-  assert.equal(text(rows[2]), `${fmtDayLong(REC.recent[2].period)} 5 of 5 right`);
+  assert.equal(text(rows[2]), `${fmtDayLong(REC.recent[2].period)} 5 of 5 right All right`);
+  assert.ok(rows[2].includes('<p class="rec-day__pct rec-won">All right</p>'), rows[2]);
   assert.doesNotMatch(text(rows[2]), /%/);
 });
 
@@ -511,7 +519,7 @@ function greens(html) {
   const out = [];
   for (const m of html.matchAll(/<[a-z0-9]+\b[^>]*\bclass="([^"]*)"[^>]*>/gi)) {
     if (!m[1].split(/\s+/).includes('rec-won')) continue;
-    out.push(text(elementWith(html, m[0], m.index).html));
+    out.push(seen(elementWith(html, m[0], m.index).html));
   }
   return out;
 }
@@ -524,7 +532,7 @@ function expectedGreens(r) {
   for (const d of r.recent) {
     if (isEmptyG(d)) continue;
     out.push(fmt(d.won));
-    if (!isPerfectG(d)) out.push(pctText(shown(d)));
+    out.push(isPerfectG(d) ? 'All right' : pctText(shown(d)));
   }
   for (const mo of r.months) {
     if (isEmptyG(mo)) continue;
@@ -589,7 +597,9 @@ function fontSize(css, sel) {
 test('record.css (spec §17.5): the hero is the largest type on the page, 800, green; the count line ~40% of it', () => {
   const rules = (f) => readFileSync(join(ROOT, f), 'utf8').replace(/\/\*[^]*?\*\//g, '');
   const css = rules('site/assets/css/record.css');
-  const base = rules('site/assets/css/base.css');
+  // Every stylesheet the page loads: site.css is CSS_ORDER concatenated, plus the no-JS sheet.
+  assert.ok(CSS_ORDER.includes('record.css') && CSS_ORDER.includes('founding.css'), 'premise: the build order was read');
+  const base = [...CSS_ORDER.filter((f) => f !== 'record.css'), 'nojs.css'].map((f) => rules(`site/assets/css/${f}`)).join('\n');
   const [heroMin, heroMax] = fontSize(css, '.rec-hero');
   assert.ok(/\.rec-hero\s*\{[^}]*font-weight:\s*800/.test(css), 'hero weight 800');
   assert.ok(/\.rec-won\s*\{[^}]*color:\s*var\(--won\)/.test(css), '.rec-won is var(--won)');
@@ -627,4 +637,7 @@ test('record.css: day-card columns follow the data (7 or 6 from 1024px), 4 from 
   assert.match(block('(min-width:600px)'), /\.rec-strip\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
   const phone = block('(max-width:599.98px)');
   assert.match(phone, /\.rec-day__link,\s*\.rec-day__in\s*\{[^}]*display:\s*grid/);
+  // A fixed-width last track (growing only if its text would not fit), so every row's fraction lines
+  // up whatever its third cell holds.
+  assert.match(phone, /\.rec-day__link,\s*\.rec-day__in\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+(\d+(\.\d+)?(ch|rem|px)|minmax\(\d+(\.\d+)?(ch|rem|px),\s*max-content\))\s*;/);
 });

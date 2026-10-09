@@ -97,14 +97,14 @@
 @media (max-width:599.98px){
   .rec-strip{ gap:6px; }
   .rec-day__link,.rec-day__in{
-    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,auto);
+    display:grid; grid-template-columns:minmax(0,1fr) auto minmax(3.625rem,max-content);
     align-items:baseline; column-gap:8px; row-gap:2px;
     padding:10px 12px;
   }
   .rec-day__date{ font-size:12px; }
   .rec-day__frac{ text-align:right; font-size:12px; }
   .rec-day__frac .mono{ font-size:13px; }
-  .rec-day__pct{ font-size:15px; letter-spacing:-.01em; text-align:right; min-width:6ch; }
+  .rec-day__pct{ font-size:15px; letter-spacing:-.01em; text-align:right; white-space:nowrap; }
   .rec-day__none{ grid-column:2 / -1; text-align:right; padding-block:0; font-size:13px; }
   .rec-day .rec-day__rel{ grid-column:1 / -1; margin-top:0; padding-top:0; }
 }

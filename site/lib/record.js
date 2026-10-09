@@ -5,12 +5,13 @@
 // rule, coverage and ledger statuses; this page no longer prints them. Claim-safety markup (the
 // tests/html-scan.js scanner):
 //   - the 30-day headline is ONE element with data-claim="headline" holding its "X of Y" fraction (the
-//     count line) and a data-claim-part="period" line (in its header row);
+//     count line) and a data-claim-part="period" line (in its header row); the hero percentage is
+//     marked data-hero (styling and tests only), NOT data-figure: the headline block licenses it;
 //   - every strip day and every month row is an element with data-figure="record-row" (plus
 //     data-period) whose visible text carries its "n of m" fraction and its period (a strip day by
 //     its full date, e.g. "Wed 7 Oct 2026");
-//   - no figure ever prints as a bare 100%: a perfect window, day or month shows its fraction and no
-//     percentage; a non-perfect one that rounded up is shown as 99.99%.
+//   - no figure ever prints as a bare 100%: a perfect window, day or month shows its fraction and
+//     words instead ("Every pick right", "All right"); a non-perfect one that rounded up is 99.99%.
 // Green figures (spec §17.5): every right count and every percentage carries .rec-won (bold, --won);
 // a total ("of Y") never does.
 // Status: only the current Lagos month says "In progress" (whatever the ledger says); today's strip
@@ -71,8 +72,8 @@ function headline(rec) {
     const won = int(g.won);
     const graded = int(g.graded);
     const hero = isPerfect(g)
-      ? '<p class="rec-hero rec-hero--words rec-won" data-figure="record-pct">Every pick right</p>'
-      : `<p class="rec-hero rec-won" data-figure="record-pct">${escHtml(pct2(shownPct(g)))}</p>`;
+      ? '<p class="rec-hero rec-hero--words rec-won" data-hero>Every pick right</p>'
+      : `<p class="rec-hero rec-won" data-hero>${escHtml(pct2(shownPct(g)))}<span class="vh"> of picks right</span></p>`;
     body = `${hero}
 <p class="rec-count"><strong class="rec-won">${won}</strong> of ${graded} picks right</p>
 <p class="rec-hero__cap">Our recommended picks were right ${won} times out of ${graded}.</p>`;
@@ -92,7 +93,8 @@ ${body}
 function stripFigure(g) {
   if (isEmpty(g)) return '<p class="rec-day__none">No picks settled</p>';
   const frac = `<p class="rec-day__frac"><strong class="rec-won mono">${int(g.won)}</strong> of <span class="mono">${int(g.graded)}</span> right</p>`;
-  if (isPerfect(g)) return frac;
+  // A perfect day says so in words, so no card or row looks like it is missing its value.
+  if (isPerfect(g)) return `${frac}\n<p class="rec-day__pct rec-won">All right</p>`;
   return `${frac}\n<p class="rec-day__pct rec-won mono">${escHtml(pct2(shownPct(g)))}</p>`;
 }
 
