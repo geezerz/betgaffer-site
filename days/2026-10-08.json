@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-08T10:59:04Z",
-    "grades_as_of": "2026-10-09T03:10:01Z",
+    "grades_as_of": "2026-10-09T07:10:02Z",
     "prev_hash": null,
-    "picks_hash": "sha256:0c352a3c2def6303178d63859a974c541d689df324db291ccf34858c54ee29a9",
+    "picks_hash": "sha256:e2c3a02398cc4b1330745948f40396c805eb2c828de9ba51834eb7c207ce6243",
     "counts": {
         "fixtures": 143,
-        "priced": 133,
+        "priced": 131,
         "recommended": 137,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 105,
+        "won": 106,
         "lost": 15,
         "pushes": 0,
-        "graded": 120,
-        "pct": 87.5
+        "graded": 121,
+        "pct": 87.6
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3637,8 +3637,8 @@
             "frozen_at": "2026-10-08T10:59:04Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4404,7 +4404,7 @@
             "away": "Auto Esporte",
             "home_id": 757891,
             "away_id": 8828,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4417,8 +4417,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1577363,
@@ -4441,8 +4448,8 @@
             "frozen_at": "2026-10-08T10:59:04Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         }
     ]

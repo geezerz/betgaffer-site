@@ -3,30 +3,30 @@
     "lagos_day": "2026-10-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-08T22:15:06Z",
-    "grades_as_of": "2026-10-09T03:10:01Z",
-    "prev_hash": "sha256:0c352a3c2def6303178d63859a974c541d689df324db291ccf34858c54ee29a9",
-    "picks_hash": "sha256:c856be8a946eec39168400014cc01c10053c4f99b403495e63a392a0ce8b60c0",
+    "grades_as_of": "2026-10-09T07:10:02Z",
+    "prev_hash": "sha256:e2c3a02398cc4b1330745948f40396c805eb2c828de9ba51834eb7c207ce6243",
+    "picks_hash": "sha256:2fa2aedc160f047fbc9f39369cae65482ec89d7f756c8e56733bad6e002c3c3e",
     "counts": {
-        "fixtures": 451,
-        "priced": 451,
-        "recommended": 439,
+        "fixtures": 452,
+        "priced": 442,
+        "recommended": 440,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 7,
+        "won": 12,
         "lost": 1,
         "pushes": 1,
-        "graded": 8,
-        "pct": 87.5
+        "graded": 13,
+        "pct": 92.31
     },
     "accuracy_rule": 2,
     "pick_source": {
         "strategy": "edge_reliability",
         "fallback": "probability_range",
         "ledger_match_rate": 1.0,
-        "ledger_match_n": 438,
-        "ledger_match_matched": 423,
-        "ledger_match_served_n": 423,
+        "ledger_match_n": 439,
+        "ledger_match_matched": 424,
+        "ledger_match_served_n": 424,
         "ledger_match_unserved": 15
     },
     "fixtures": [
@@ -327,7 +327,7 @@
             "away": "Millonarios",
             "home_id": 285,
             "away_id": 245,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -340,8 +340,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 521340,
@@ -352,7 +359,7 @@
             "away": "Alianza",
             "home_id": 6966,
             "away_id": 165185,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -365,8 +372,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138655,
@@ -402,7 +416,7 @@
             "away": "Jeonbuk Motors",
             "home_id": 4213,
             "away_id": 4218,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -415,8 +429,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147979,
@@ -427,7 +448,7 @@
             "away": "Hwaseong",
             "home_id": 4219,
             "away_id": 4589,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -440,8 +461,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 284180,
@@ -452,7 +480,7 @@
             "away": "Ulsan Citizen",
             "home_id": 75466,
             "away_id": 75453,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -465,8 +493,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 147980,
@@ -1369,31 +1404,6 @@
             "score": null
         },
         {
-            "fx": 1551329,
-            "api_fx": 1638582,
-            "ko": "2026-10-09T10:00:00Z",
-            "comp": "Friendlies Women",
-            "home": "Andorra W",
-            "away": "Faroe Islands W",
-            "home_id": 1544,
-            "away_id": 1547,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 85,
-                "price": 1.18,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-08T22:15:06Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 1312971,
             "api_fx": 1621635,
             "ko": "2026-10-09T10:30:00Z",
@@ -1435,6 +1445,31 @@
                 "price": 1.2,
                 "price_est": false,
                 "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T22:15:06Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1551329,
+            "api_fx": 1638582,
+            "ko": "2026-10-09T10:30:00Z",
+            "comp": "Friendlies Women",
+            "home": "Andorra W",
+            "away": "Faroe Islands W",
+            "home_id": 1544,
+            "away_id": 1547,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 85,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
@@ -1583,31 +1618,6 @@
                 "label": "AH Home +1",
                 "pct": 87,
                 "price": 1.15,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-08T22:15:06Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1274771,
-            "api_fx": 1619572,
-            "ko": "2026-10-09T11:00:00Z",
-            "comp": "Ligue A (Burundi)",
-            "home": "Young Star",
-            "away": "Bumamuru",
-            "home_id": 629551,
-            "away_id": 629546,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 90,
-                "price": 1.12,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -3388,12 +3398,37 @@
             "away": "Panthere Noir",
             "home_id": 629553,
             "away_id": 622278,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
                 "pct": 89,
                 "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T22:15:06Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "void",
+            "score": null
+        },
+        {
+            "fx": 1274771,
+            "api_fx": 1619572,
+            "ko": "2026-10-09T13:00:00Z",
+            "comp": "Ligue A (Burundi)",
+            "home": "Young Star",
+            "away": "Bumamuru",
+            "home_id": 629551,
+            "away_id": 629546,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 90,
+                "price": 1.12,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -4618,8 +4653,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5043,8 +5078,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5168,8 +5203,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5193,8 +5228,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5218,8 +5253,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5243,8 +5278,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5268,8 +5303,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5338,31 +5373,6 @@
                 "pct": 89,
                 "price": 1.11,
                 "price_est": false,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-08T22:15:06Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1549242,
-            "api_fx": 1628544,
-            "ko": "2026-10-09T15:00:00Z",
-            "comp": "NPFL (Nigeria)",
-            "home": "Katsina United",
-            "away": "Enyimba",
-            "home_id": 75266,
-            "away_id": 75246,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1",
-                "label": "AH Home +1",
-                "pct": 88,
-                "price": 1.13,
-                "price_est": true,
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-08T22:15:06Z",
@@ -6390,8 +6400,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -6445,6 +6455,31 @@
             "score": null
         },
         {
+            "fx": 1549242,
+            "api_fx": 1628544,
+            "ko": "2026-10-09T16:30:00Z",
+            "comp": "NPFL (Nigeria)",
+            "home": "Katsina United",
+            "away": "Enyimba",
+            "home_id": 75266,
+            "away_id": 75246,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-08T22:15:06Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1572176,
             "api_fx": 1643358,
             "ko": "2026-10-09T16:30:00Z",
@@ -6459,6 +6494,31 @@
                 "label": "Away Over 0.5 Goals",
                 "pct": 80,
                 "price": 1.13,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-08T22:15:06Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 488020,
+            "api_fx": 1611406,
+            "ko": "2026-10-09T16:45:00Z",
+            "comp": "Ligue 1 (Algeria)",
+            "home": "JS Kabylie",
+            "away": "ASO Chlef",
+            "home_id": 2147,
+            "away_id": 2141,
+            "status": "NS",
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 90,
+                "price": 1.12,
                 "price_est": false,
                 "why": "Attacking output vs both defenses"
             },
@@ -6803,31 +6863,6 @@
             "late": false,
             "withdrawn": false,
             "grade": null,
-            "score": null
-        },
-        {
-            "fx": 488020,
-            "api_fx": 1611406,
-            "ko": "2026-10-09T17:00:00Z",
-            "comp": "Ligue 1 (Algeria)",
-            "home": "JS Kabylie",
-            "away": "ASO Chlef",
-            "home_id": 2147,
-            "away_id": 2141,
-            "status": "NS",
-            "pick": {
-                "market": "home_over_0_5",
-                "label": "Home Over 0.5 Goals",
-                "pct": 90,
-                "price": 1.12,
-                "price_est": false,
-                "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-10-08T22:15:06Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
             "score": null
         },
         {
@@ -8294,8 +8329,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -8319,8 +8354,8 @@
             "frozen_at": "2026-10-08T22:15:06Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -9503,6 +9538,31 @@
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-08T22:15:06Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1548575,
+            "api_fx": 1600783,
+            "ko": "2026-10-09T18:00:00Z",
+            "comp": "Ligi kuu Bara (Tanzania)",
+            "home": "Coastal Union",
+            "away": "Azam",
+            "home_id": 301489,
+            "away_id": 6981,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-09T07:10:02Z",
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
