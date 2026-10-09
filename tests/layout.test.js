@@ -1095,6 +1095,15 @@ test('/waitlist/ from 1024 px (spec §17.3): two columns; the Gaffer aside spans
   assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', W), undefined, 'no 1024 px benefits rule');
   assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', '(min-width:640px)'), 'repeat(2,minmax(0,1fr))');
   assert.ok(!r.some((x) => x.sels.includes('.bg-fd__benefits') && /repeat\(3/.test(x.decls.map(([, v]) => v).join(';'))), 'never three across');
+  // D4 review: beside the aside at 1024-1279px the left column starts at ~573px, too narrow for three steps
+  // across; the steps go back to one column there (the phone layout: number beside the text).
+  const MID = '(min-width:1024px)and(max-width:1279.98px)';
+  assert.equal(valueOf(r, '.bg-fd__steps', 'grid-template-columns', '(min-width:768px)'), 'repeat(3,minmax(0,1fr))', 'premise: three across from 768');
+  assert.equal(valueOf(r, '.bg-fd__steps', 'grid-template-columns', MID), 'minmax(0,1fr)', 'one column at 1024-1279');
+  assert.equal(valueOf(r, '.bg-fd__step', 'grid-template-columns', MID), '36px minmax(0,1fr)', 'number beside the text');
+  assert.equal(valueOf(r, '.bg-fd__step::before', 'grid-row', MID), '1 / span 2');
+  const src = readFileSync(join(ASSETS, 'css', 'founding.css'), 'utf8');
+  assert.ok(src.lastIndexOf('max-width:1279.98px') > src.lastIndexOf('@media (min-width:768px)'), 'the 1024-1279 rules come after the 768 rules (same specificity: later wins)');
 });
 
 test('single-row header below 600 px: base.css and predictions.css fallbacks are the one-row values', () => {

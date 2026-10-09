@@ -51,15 +51,18 @@ const RESULT_KINDS = ['thanks', 'invalid', 'slow-down', 'unavailable'];
 // spec §17.3: the Gaffer column. Headings are the spec's; sentences are the final ux-copy wording.
 const GAFFER_HEADING = 'Gaffer, your betting assistant';
 const GAFFER_LINE = 'Coming soon — founding members first.';
+// Gaffer is not live (D4 review): a lead-in under the coming-soon line, and every card sentence continues it
+// as a verb phrase ("When Gaffer launches, it will: Show …"), so no card reads as a feature you can use today.
+const GAFFER_LEAD = 'When Gaffer launches, it will:';
 const GAFFER_CARDS = [
-  ['Check your slip', 'Before you place a slip, Gaffer shows the chance the whole slip lands and its weakest leg.'],
-  ['Spot repeated legs', "Gaffer warns you when a leg you're adding is already on another of your slips, so one bad result can't sink several."],
-  ['Read a booking code', 'Paste a booking code and Gaffer opens the slip and checks every leg.'],
-  ['Build a slip to your odds', 'Ask for a slip around the odds you want — you confirm before Gaffer builds it.'],
-  ['Swap a weak leg', 'When one leg looks weak, Gaffer offers replacements from our recommended picks only.'],
-  ['Match opinions', 'Ask about a match and get form, head-to-head, the table and lineups in one answer.'],
-  ['The pick, explained', 'See our recommended pick first, then the reasons behind it.'],
-  ['How your bets are doing', 'Get a plain recap of your own slips instead of scrolling through screenshots.'],
+  ['Check your slip', 'Show the chance the whole slip lands and which leg is weakest, before you place it.'],
+  ['Spot repeated legs', "Warn you when a leg you're adding is already on another of your slips, before one bad result sinks several."],
+  ['Read a booking code', 'Open the slip behind a booking code you paste and check every leg.'],
+  ['Build a slip to your odds', 'Suggest a slip around the odds you want, and build it only when you confirm.'],
+  ['Swap a weak leg', 'Offer replacements for a weak leg, from our recommended picks only.'],
+  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and lineups in one reply.'],
+  ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
+  ['How your bets are doing', "Recap your own slips in plain words, so you're not scrolling through screenshots."],
 ];
 /**
  * The aside's own ban list (spec §17.3): phrases the features page bans for its own reasons plus the ones
@@ -359,14 +362,27 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.equal(h2[0].tag, 'h2');
     assert.equal(textOf(h2[0]), GAFFER_HEADING);
     assert.ok(h2[0].attrs.id && aside.attrs['aria-labelledby'] === h2[0].attrs.id, 'aria-labelledby the heading');
-    assert.ok(findAll(aside, (n) => n.tag === 'p' && textOf(n) === GAFFER_LINE).length === 1, 'the coming-soon line');
-    // The eight cards, in order, each a short heading and one sentence.
+    // Not live (D4 review): the coming-soon line describes the aside, and it and the lead-in come before the cards.
+    const soon = findAll(aside, (n) => n.tag === 'p' && textOf(n) === GAFFER_LINE);
+    assert.equal(soon.length, 1, 'the coming-soon line');
+    assert.ok(soon[0].attrs.id, 'the line has an id');
+    assert.equal(aside.attrs['aria-describedby'], soon[0].attrs.id, 'aria-describedby the coming-soon line');
+    const lead = findAll(aside, (n) => n.tag === 'p' && textOf(n) === GAFFER_LEAD);
+    assert.equal(lead.length, 1, 'the lead-in');
     const list = findAll(aside, (n) => n.tag === 'ul');
     assert.equal(list.length, 1);
+    const pre = findAll(aside, () => true);
+    assert.ok(pre.indexOf(h2[0]) < pre.indexOf(soon[0]) && pre.indexOf(soon[0]) < pre.indexOf(lead[0])
+      && pre.indexOf(lead[0]) < pre.indexOf(list[0]), 'heading, coming-soon line, lead-in, then the cards');
+    // The eight cards, in order, each a short heading and one sentence that continues the lead-in.
     const items = findAll(list[0], (n) => n.tag === 'li');
     assert.deepEqual(items.map((li) => [textOf(find(li, (n) => n.tag === 'h3')), textOf(find(li, (n) => n.tag === 'p'))]), GAFFER_CARDS);
     items.forEach((li, i) => assert.equal(textOf(li), GAFFER_CARDS[i].join(' '), `card ${i + 1}: nothing else in it`));
-    for (const [, s] of GAFFER_CARDS) assert.equal(s.split(/[.!?](?:\s|$)/).filter(Boolean).length, 1, `one sentence: ${s}`);
+    for (const [, s] of GAFFER_CARDS) {
+      assert.equal(s.split(/[.!?](?:\s|$)/).filter(Boolean).length, 1, `one sentence: ${s}`);
+      // A verb phrase after "it will:", never a present-tense claim about Gaffer.
+      assert.doesNotMatch(s, /\bGaffer\b|\b(?:shows|warns|opens|checks|builds|offers|gives)\b/, `continues the lead-in: ${s}`);
+    }
     // Static: no link, form, button or figure inside (not live; nothing to click, nothing to measure).
     assert.equal(find(aside, (n) => ['a', 'form', 'button', 'input', 'script'].includes(n.tag)), null);
     assert.equal(find(aside, (n) => n.attrs['data-figure'] !== undefined), null);
@@ -384,7 +400,9 @@ describe('/waitlist/ and the founding card in the built site', () => {
     // Premise: the "Credit" ban is scoped — the page itself does say Credits, outside the aside.
     assert.match(visibleText(page), /\bCredits\b/, 'premise: the rest of the page names Credits');
     // Prove each guard fires on a planted sentence inside the aside.
-    const last = GAFFER_CARDS[7][1];
+    // Plant into card 7: its sentence has no apostrophe, so the raw text is also the escaped HTML.
+    const last = GAFFER_CARDS[6][1];
+    assert.ok(html.includes(last), 'premise: the plant target is in the markup verbatim');
     const plant = (s) => textOf(parse(html.replace(last, s)));
     for (const [s, hit] of [
       ['Gaffer can create a booking code for you.', 'booking'], ['Make a booking code in one tap.', 'booking'],
@@ -400,6 +418,36 @@ describe('/waitlist/ and the founding card in the built site', () => {
     }
     assert.deepEqual(findBanned(html.replace(last, 'A sure bet, every time.')), ['sure bet']);
     assert.ok(claimViolations(page.replace(last, 'Right 84% of the time.')).some((m) => /84%/.test(m)), 'a stray percentage');
+  });
+
+  test('booking codes appear in card 3 only (heading + its sentence, exactly twice); planted anywhere else they are caught', () => {
+    const start = page.indexOf('<aside class="bg-fd__gaffer"');
+    const html = page.slice(start, page.indexOf('</aside>', start) + '</aside>'.length);
+    const BC = /booking codes?/gi;
+    /** Allowlist on the premise: every mention is inside card 3, and card 3 has exactly its two. */
+    const bookingCodeViolations = (asideHtml) => {
+      const d = parse(asideHtml);
+      const cards = findAll(d, (n) => n.tag === 'li');
+      const out = [];
+      if (cards.length !== GAFFER_CARDS.length) out.push(`${cards.length} cards`);
+      const inCard3 = (textOf(cards[2] ?? { children: [] }).match(BC) ?? []).length;
+      const total = (textOf(d).match(BC) ?? []).length;
+      if (inCard3 !== 2) out.push(`card 3 mentions booking codes ${inCard3} times, not 2`);
+      if (total !== inCard3) out.push(`${total - inCard3} mention(s) outside card 3`);
+      return out;
+    };
+    assert.deepEqual(bookingCodeViolations(html), []);
+    assert.equal((textOf(parse(html)).match(BC) ?? []).length, 2, 'premise: the heading and the sentence');
+    const other = GAFFER_CARDS[6][1];
+    assert.ok(html.includes(other), 'premise: the plant target');
+    for (const s of ['Help with making a booking code.', 'Help with creating a booking code.', 'Gaffer builds a booking code.',
+      'It turns your slip into a booking code.', 'Share booking codes with friends.']) {
+      assert.ok(bookingCodeViolations(html.replace(other, s)).some((m) => /outside card 3/.test(m)), s);
+    }
+    // Card 3 itself can't grow a third mention or lose one.
+    const c3 = GAFFER_CARDS[2][1];
+    assert.ok(bookingCodeViolations(html.replace(c3, `${c3.slice(0, -1)} and turn it into a booking code.`)).some((m) => /card 3/.test(m)));
+    assert.ok(bookingCodeViolations(html.replace(c3, 'Open the slip you paste and check every leg.')).some((m) => /card 3/.test(m)));
   });
 
   test('the Gaffer aside is on /waitlist/ only, not on its result pages', async () => {

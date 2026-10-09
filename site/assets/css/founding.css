@@ -140,8 +140,12 @@ html.fd-hidden [data-banner]{ display:none; }
    had (the 46rem measure); the Gaffer aside takes column 2, placed explicitly over rows 1-7 — the seven
    left sections (hero, counts, join, benefits, how it works, questions, rules link). Not "1 / -1": the
    left rows are implicit, so -1 would be line 1 and the aside would collapse to row 1 (a test pins 7 to
-   the page's section count). align-self:start keeps the panel its own height. Below 1024px the aside is
-   an ordinary flex item, so it follows the join form at full width. */
+   the page's section count). Only RENDERED direct children count toward that 7. A direct child that is
+   display:none takes no row; anything else does, including an empty one and one carrying the hidden
+   attribute whose class sets display (these classes do: an author display beats the browser's
+   [hidden]{display:none}) — that row is empty and the aside does not span it. Change the span with the
+   section list. align-self:start keeps the panel its own
+   height. Below 1024px the aside is an ordinary flex item, so it follows the join form at full width. */
 @media (min-width:1024px){
   .bg-fd{
     display:grid; grid-template-columns:minmax(0,46rem) minmax(18rem,22rem);
@@ -240,6 +244,15 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd__step-h{ margin:0; padding-top:6px; font-size:17px; font-weight:700; line-height:1.3; color:var(--ink); }
 @media (min-width:768px){ .bg-fd__step-h{ padding-top:0; } }
 .bg-fd__step-t{ margin:0; max-width:60ch; font-size:15px; line-height:1.6; color:var(--ink-2); }
+/* 1024-1279px: beside the Gaffer aside the column is 573px at 1024 (46rem only from ~1150), too narrow for three steps across, so
+   the steps return to one column with the number beside the text (the phone layout). After the 768px
+   rules: same specificity, the later rule wins. From 1280px the column is 46rem and three fit again. */
+@media (min-width:1024px) and (max-width:1279.98px){
+  .bg-fd__steps{ grid-template-columns:minmax(0,1fr); gap:20px; }
+  .bg-fd__step{ grid-template-columns:36px minmax(0,1fr); row-gap:4px; padding-top:0; border-top:0; }
+  .bg-fd__step::before{ grid-row:1 / span 2; }
+  .bg-fd__step-h{ padding-top:6px; }
+}
 
 /* ── Questions: native <details>, so keyboard and screen readers work without JS ── */
 .bg-fd__faq{ max-width:46rem; border-top:1px solid var(--line); }
@@ -307,6 +320,8 @@ html.fd-hidden [data-banner]{ display:none; }
   content:''; flex:none;
   width:7px; height:7px; margin-top:calc((1.45em - 7px) / 2); border-radius:50%; background:var(--hold);
 }
+/* The lead-in the cards continue ("When Gaffer launches, it will:" + "Show …"): Gaffer is not live. */
+.bg-fd__gaffer-lead{ margin:0; padding-top:16px; font-size:14px; line-height:1.45; color:var(--muted); }
 .bg-fd__tools{ display:grid; grid-template-columns:minmax(0,1fr); column-gap:32px; }
 .bg-fd__tool{
   display:flex; flex-direction:column; gap:4px;

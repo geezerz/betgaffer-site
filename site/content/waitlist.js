@@ -62,21 +62,24 @@ const QUESTIONS = Object.freeze([
     + 'the place passes to the next member in line.'],
 ]);
 
-// The Gaffer column (spec §17.3): a static, coming-soon list. The headings are the spec's; the sentences
-// are the ux-copy wording (problem -> solution, one sentence each). No prices, dates, Credits or figures,
-// and never a claim that Gaffer makes a booking code (tests/waitlist-page.test.js holds the ban list).
+// The Gaffer column (spec §17.3): a static, coming-soon list. Gaffer is not live, so the cards continue a
+// lead-in ("When Gaffer launches, it will:") as verb phrases — nothing reads as a feature you can use today.
+// The headings are the spec's; the sentences are the ux-copy wording (one sentence each). No prices, dates,
+// Credits or figures; "booking code" only in card 3, and never a claim that Gaffer makes one
+// (tests/waitlist-page.test.js holds the ban list and the booking-code allowlist).
 const GAFFER_HEADING = 'Gaffer, your betting assistant';
 const GAFFER_LINE = 'Coming soon — founding members first.';
+const GAFFER_LEAD = 'When Gaffer launches, it will:';
 const GAFFER = Object.freeze([
-  ['Check your slip', 'Before you place a slip, Gaffer shows the chance the whole slip lands and its weakest leg.'],
-  ['Spot repeated legs', "Gaffer warns you when a leg you're adding is already on another of your slips, so one bad "
-    + "result can't sink several."],
-  ['Read a booking code', 'Paste a booking code and Gaffer opens the slip and checks every leg.'],
-  ['Build a slip to your odds', 'Ask for a slip around the odds you want — you confirm before Gaffer builds it.'],
-  ['Swap a weak leg', 'When one leg looks weak, Gaffer offers replacements from our recommended picks only.'],
-  ['Match opinions', 'Ask about a match and get form, head-to-head, the table and lineups in one answer.'],
-  ['The pick, explained', 'See our recommended pick first, then the reasons behind it.'],
-  ['How your bets are doing', 'Get a plain recap of your own slips instead of scrolling through screenshots.'],
+  ['Check your slip', 'Show the chance the whole slip lands and which leg is weakest, before you place it.'],
+  ['Spot repeated legs', "Warn you when a leg you're adding is already on another of your slips, before one bad result "
+    + 'sinks several.'],
+  ['Read a booking code', 'Open the slip behind a booking code you paste and check every leg.'],
+  ['Build a slip to your odds', 'Suggest a slip around the odds you want, and build it only when you confirm.'],
+  ['Swap a weak leg', 'Offer replacements for a weak leg, from our recommended picks only.'],
+  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and lineups in one reply.'],
+  ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
+  ['How your bets are doing', "Recap your own slips in plain words, so you're not scrolling through screenshots."],
 ]);
 
 const hasPct = (s) => /%/.test(s);
@@ -109,11 +112,12 @@ function tool([title, text]) {
  * full width; from 1024px founding.css moves it to the second grid column beside every other section.
  */
 function gafferAside() {
-  return `<aside class="bg-fd__gaffer" aria-labelledby="fd-gaffer-h">
+  return `<aside class="bg-fd__gaffer" aria-labelledby="fd-gaffer-h" aria-describedby="fd-gaffer-soon">
 <div class="bg-fd__gaffer-head">
 <h2 class="bg-fd__gaffer-h" id="fd-gaffer-h">${escHtml(GAFFER_HEADING)}</h2>
-<p class="bg-fd__gaffer-soon">${escHtml(GAFFER_LINE)}</p>
+<p class="bg-fd__gaffer-soon" id="fd-gaffer-soon">${escHtml(GAFFER_LINE)}</p>
 </div>
+<p class="bg-fd__gaffer-lead">${escHtml(GAFFER_LEAD)}</p>
 <ul class="bg-fd__tools" role="list">
 ${GAFFER.map(tool).join('\n')}
 </ul>
