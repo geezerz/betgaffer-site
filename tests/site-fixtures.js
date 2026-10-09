@@ -99,6 +99,56 @@ export async function addArchive(root) {
 }
 
 /**
+ * The day-pill window (spec §17.1) over a full week: the fixture artifact plus its archive, with
+ * compacted days 2026-10-02..05 (index.today stays 2026-10-07, so the listed days are D-5..D+1):
+ *   10-02, 10-03  graded (outside the window: D-5, D-4)
+ *   10-04         a perfect day (12 of 12)
+ *   10-05         nothing graded (2 pushes)
+ *   10-06         the edge day (2 of 3)
+ *   10-07         today: ungraded as in the fixture, or with `today` = { won, lost }: its first won + lost
+ *                 counted picks graded (grades are outside picks_hash) and the accuracy set to match
+ *   10-08         tomorrow (130 fixtures)
+ * `drop` removes days from the index (their files stay, unlisted). Returns the written index.
+ */
+export const PILL_DAYS = Object.freeze({
+  '2026-10-02': { fixtures: 70, accuracy: { won: 50, lost: 10, pushes: 0, graded: 60, pct: 83.33 } },
+  '2026-10-03': { fixtures: 64, accuracy: { won: 40, lost: 9, pushes: 1, graded: 49, pct: 81.63 } },
+  '2026-10-04': { fixtures: 40, accuracy: { won: 12, lost: 0, pushes: 1, graded: 12, pct: 100 } },
+  '2026-10-05': { fixtures: 88, accuracy: { won: 0, lost: 0, pushes: 2, graded: 0, pct: null } },
+});
+export async function pillArtifact(root, { drop = [], today = null } = {}) {
+  await copyArtifact(root);
+  await addArchive(root);
+  const index = await readJson(join(root, 'index.json'));
+  for (const [day, { fixtures, accuracy }] of Object.entries(PILL_DAYS)) {
+    const hash = `sha256:${day.slice(-1).repeat(64)}`;
+    await writeJson(join(root, 'days', `${day}.min.json`), {
+      schema: 1, lagos_day: day, compacted: true, strategy: 'edge_reliability',
+      picks_frozen_at: '2026-10-01T22:15:00Z', grades_as_of: '2026-10-07T03:00:00Z', prev_hash: null, picks_hash: hash,
+      counts: { fixtures, priced: fixtures, recommended: 30, markets_per_fixture: 92 }, accuracy,
+    });
+    index.days = index.days.filter((e) => e.day !== day);
+    index.days.push({ day, compacted: true, picks_hash: hash, fixtures, accuracy });
+  }
+  if (today) {
+    const p = join(root, 'days', '2026-10-07.json');
+    const file = await readJson(p);
+    const counted = file.fixtures.filter((f) => f.pick && f.pre_ko && !f.withdrawn && Number.isInteger(f.pick.pct));
+    if (counted.length < today.won + today.lost) throw new Error('pillArtifact: not enough counted picks to grade');
+    counted.slice(0, today.won).forEach((f) => { f.grade = 'won'; });
+    counted.slice(today.won, today.won + today.lost).forEach((f) => { f.grade = 'lost'; });
+    const graded = today.won + today.lost;
+    file.accuracy = { won: today.won, lost: today.lost, pushes: 0, graded, pct: Math.round((10000 * today.won) / graded) / 100 };
+    await writeJson(p, file);
+    index.days.find((e) => e.day === '2026-10-07').accuracy = file.accuracy;
+  }
+  index.days = index.days.filter((e) => !drop.includes(e.day)).sort((a, b) => (a.day < b.day ? 1 : -1));
+  index.newest_day = index.days[0].day;
+  await writeJson(join(root, 'index.json'), index);
+  return index;
+}
+
+/**
  * Spec §17.5: the raw index `record` with `last_7` (seven days, newest first) in place of the legacy
  * `last_6`: the six fixture days plus the day before the oldest. Mutates and returns `record`.
  */

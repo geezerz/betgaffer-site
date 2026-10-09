@@ -118,24 +118,93 @@ export function chooseDays(index) {
 
 // ------------------------------------------------------------------ page parts
 
+const DOW_LONG = { Sun: 'Sunday', Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday' };
+const MON_LONG = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
+/** 12154 -> '12,154' (no locale lookup). */
+const int = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
 /**
- * Up to seven listed days around `shown` (ascending), as links to /day/<d>/. Each day's
- * "Today"/"Tomorrow" tag is empty and hidden here: stale.js fills it for the visitor's date.
+ * A day's accuracy as a pill percentage (spec §17.1): one decimal, rounded half up on the published
+ * two decimals (87.55 -> '87.6%'); a day with a wrong pick never reads 100.0% (capped at 99.9%, as
+ * record.js caps its two-decimal figures). null when nothing is graded, and for a perfect day,
+ * which says "All right" with its fraction instead (the charter's 100% rule).
  */
-function dayStrip(listedAsc, shown, { onDayPage }) {
-  if (listedAsc.length < 2) return '';
-  const at = shown === null ? listedAsc.length - 1 : Math.max(0, listedAsc.indexOf(shown));
-  const start = Math.min(Math.max(0, at - 3), Math.max(0, listedAsc.length - 7));
-  const items = listedAsc.slice(start, start + 7).map((d) => {
+export function pillPct(a) {
+  if (a.graded === 0 || a.pct === null || a.won === a.graded) return null;
+  const tenths = Math.round(Math.round(a.pct * 100) / 10);
+  return `${(Math.min(tenths, 999) / 10).toFixed(1)}%`;
+}
+
+/**
+ * The day pills (spec §17.1): a window anchored on the index's `today` (D), not on the page's own
+ * day — the listed calendar days D-3, D-2, D-1, then D, then D+1; a gap day is absent, nothing
+ * beyond D+1 shows, and fewer than two pills render nothing. `current` (the page's day, or the
+ * home page's shown day) carries aria-current ("page" on a day page, "true" on /); a day outside
+ * the window gets no current pill.
+ *
+ * Each pill is one link: weekday + date, the day's figure from index.days[] (past and today: the
+ * percentage, or "All right" on a perfect day, or "—"; tomorrow: its fixture count) and a small
+ * line beneath (the "won of graded" fraction, "No results", "No results yet" or "fixtures"), a meter
+ * of the same share, and the full date in visually hidden text. A pill with a percentage is a
+ * data-figure="record-row" with data-period (tests/html-scan.js: the claim needs its fraction and
+ * that date). The build writes date forms only; stale.js fills the empty, hidden relative label
+ * (data-rel="pill": Yesterday / Today / Tomorrow) and the "so far" note (data-rel="sofar", only on
+ * pills with a figure) for the VISITOR's Lagos date, and moves data-when and the aria-label prefix.
+ * The static data-when="today" marks the build's today (the outline without JS).
+ */
+export function dayPills(listed, today, current, { onDayPage }) {
+  const by = new Map(listed.map((e) => [e.day, e]));
+  const days = [-3, -2, -1, 0, 1].map((n) => addDays(today, n)).filter((d) => by.has(d));
+  if (days.length < 2) return '';
+  const tomorrow = addDays(today, 1);
+  const items = days.map((d) => {
+    const { accuracy: a, fixtures } = by.get(d);
     const [dow, dd, mon] = fmtDayLong(d).split(' ');
-    const current = d === shown ? (onDayPage ? ' aria-current="page"' : ' aria-current="true"') : '';
-    return `<li><a class="day-strip__link" href="/day/${escAttr(d)}/"${current}>`
-      + `<span class="day-strip__dow">${escHtml(dow)}</span>`
-      + `<span class="day-strip__date">${escHtml(`${dd} ${mon}`)}</span>`
-      + `<span class="day-strip__tag" data-rel-day="${escAttr(d)}" data-rel="strip" hidden></span>`
-      + `<span class="vh">${escHtml(` — ${fmtDayLong(d)}`)}</span></a></li>`;
+    const aDate = `${DOW_LONG[dow]} ${dd} ${MON_LONG[mon]}`;
+    const isToday = d === today;
+    let fig;
+    let figCls = '';
+    let sub;
+    let aria;
+    let share = null; // the meter's filled share, 0..100; null: an empty (dashed) track
+    let figure = '';
+    if (d === tomorrow) {
+      fig = int(fixtures);
+      sub = fixtures === 1 ? 'fixture' : 'fixtures';
+      aria = `${int(fixtures)} ${sub}`;
+    } else if (a.graded === 0) {
+      fig = '—';
+      sub = isToday ? 'No results yet' : 'No results';
+      aria = isToday ? 'no results yet' : 'no results';
+    } else {
+      const pct = pillPct(a);
+      fig = pct ?? 'All right';
+      figCls = ' day-pill__fig--won';
+      sub = `${int(a.won)} of ${int(a.graded)}`;
+      aria = `${sub} picks right${pct ? `, ${pct}` : ''}`;
+      share = Math.round((a.won / a.graded) * 10000) / 100;
+      if (pct) figure = ` data-figure="record-row" data-period="${escAttr(d)}"`;
+    }
+    const current1 = d === current ? (onDayPage ? ' aria-current="page"' : ' aria-current="true"') : '';
+    const when = isToday ? ' data-when="today"' : '';
+    const sofar = share !== null ? ` <span class="day-pill__sofar" data-rel-day="${escAttr(d)}" data-rel="sofar" hidden></span>` : '';
+    const meter = '<svg class="day-pill__meter" viewBox="0 0 100 4" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+      + (share === null
+        ? '<line class="day-pill__track day-pill__track--empty" x1="0" y1="2" x2="100" y2="2" stroke-dasharray="2 3"/>'
+        : `<rect class="day-pill__track" width="100" height="4"/><rect class="day-pill__bar" width="${escAttr(share)}" height="4"/>`)
+      + '</svg>';
+    return `<li><a class="day-pill" href="/day/${escAttr(d)}/"${current1}${when}${figure} aria-label="${escAttr(`${aDate}: ${aria}`)}">`
+      + '<span class="day-pill__head">'
+      + `<span class="day-pill__rel" data-rel-day="${escAttr(d)}" data-rel="pill" hidden></span>`
+      + `<span class="day-pill__dow">${escHtml(dow)}</span> `
+      + `<span class="day-pill__date"><span class="day-pill__dd">${escHtml(dd)}</span> <span class="day-pill__mon">${escHtml(mon)}</span></span>`
+      + '</span>'
+      + `<span class="day-pill__fig${figCls}">${escHtml(fig)}</span> `
+      + `<span class="day-pill__sub">${escHtml(sub)}${sofar}</span>`
+      + meter
+      + `<span class="vh">${escHtml(fmtDayLong(d))}</span></a></li>`;
   }).join('');
-  return `<nav class="day-strip" aria-label="Published days"><ol class="day-strip__list" role="list">${items}</ol></nav>`;
+  return `<nav class="day-pills" aria-label="Recent days"><ol class="day-pills__list" role="list">${items}</ol></nav>`;
 }
 
 const pageHead = (sub) => `<header class="day-head home-head"><div class="day-head__title"><h1 class="t-d1">Football predictions</h1>${sub ? `<p class="day-head__date">${sub}</p>` : ''}</div></header>`;
@@ -146,7 +215,7 @@ function tomorrowLine(tomorrow) {
   return `<p class="home-next"><span data-rel-day="${escAttr(tomorrow)}" data-rel="next">${escHtml(`The card for ${fmtDayLong(tomorrow)} is published:`)}</span> <a href="/day/${escAttr(tomorrow)}/">${escHtml(fmtDayLong(tomorrow))}</a></p>`;
 }
 
-function homeBody({ index, choice, days, listedAsc, neighbours }) {
+function homeBody({ index, choice, days, neighbours }) {
   if (!index) {
     return `${pageHead('')}
 <div class="bg-empty home-empty">
@@ -156,7 +225,7 @@ function homeBody({ index, choice, days, listedAsc, neighbours }) {
 </div>`;
   }
   const { today, home, tomorrow, missingToday } = choice;
-  const strip = dayStrip(listedAsc, home, { onDayPage: false });
+  const strip = dayPills(index.days, today, home, { onDayPage: false });
   if (home === null) {
     return `${pageHead('')}
 <div class="bg-empty home-empty">
@@ -416,7 +485,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     pages.set(o.path, page({ config, year, ...o }));
   };
 
-  const home = homeBody({ index, choice, days, listedAsc, neighbours });
+  const home = homeBody({ index, choice, days, neighbours });
   add({
     path: '/',
     title: 'Football predictions',
@@ -447,7 +516,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
       path: `/day/${d}/`,
       title: `Football predictions for ${fmtDayLong(d)}`,
       description: `The Bet Gaffer card for ${fmtDayLong(d)}: each fixture we cover, at most one recommended pick with its probability, graded after full time.`,
-      body: `${dayStrip(listedAsc, d, { onDayPage: true })}\n${body}`,
+      body: `${dayPills(listed, index.today, d, { onDayPage: true })}\n${body}`,
       // The home page shows this same card: name / as the canonical URL (review M7).
       canonicalPath: d === choice.home && d === today ? '/' : undefined,
       // A stub's day.js imports predictions.js itself and enhances the card once it is verified.

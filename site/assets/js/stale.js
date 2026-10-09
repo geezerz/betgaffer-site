@@ -4,8 +4,8 @@
 // The build cannot know when a visitor reads the page, so nothing relative is baked into it:
 //   - every relative label is rendered in its DATE form (true whenever it is read, with or without
 //     JS) and tagged data-rel-day="<date>" data-rel="<kind>"; relabel() turns it into
-//     "Today…"/"Tomorrow…" for the VISITOR's Lagos date on each page view, and again at the next
-//     Lagos midnight while the page stays open;
+//     "Today…"/"Tomorrow…" (and, on the day pills only, "Yesterday") for the VISITOR's Lagos
+//     date on each page view, and again at the next Lagos midnight while the page stays open;
 //   - from <main data-generated-at data-day data-tomorrow data-view data-stale-after-hours>:
 //     the published data is older than the window -> "Last updated <stamp>. … this one is late.";
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
@@ -24,40 +24,47 @@ const DAY_MS = 24 * HOUR_MS;
 const LAGOS_OFFSET_MS = HOUR_MS; // UTC+1 all year (lib/time.js)
 export const DEFAULT_STALE_HOURS = 6;
 
-function nextDate(date) {
+function shiftDate(date, n) {
   const [y, m, d] = date.split('-').map(Number);
-  const t = new Date(Date.UTC(y, m - 1, d) + DAY_MS);
+  const t = new Date(Date.UTC(y, m - 1, d) + n * DAY_MS);
   return `${String(t.getUTCFullYear()).padStart(4, '0')}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`;
 }
 
-/** 'today' | 'tomorrow' for the visitor's Lagos date at nowMs, else null (never throws). */
+/** 'yesterday' | 'today' | 'tomorrow' for the visitor's Lagos date at nowMs, else null (never throws). */
 export function relDay(date, nowMs) {
   if (!isDate(date) || typeof nowMs !== 'number' || !Number.isFinite(nowMs)) return null;
   const today = lagosToday(nowMs);
   if (date === today) return 'today';
-  if (date === nextDate(today)) return 'tomorrow';
+  if (date === shiftDate(today, 1)) return 'tomorrow';
+  if (date === shiftDate(today, -1)) return 'yesterday';
   return null;
 }
 
 /**
  * The text of a tagged label. kind:
- *   eyebrow, strip  'Today' | 'Tomorrow' | ''  (an empty label is hidden)
+ *   eyebrow         'Today' | 'Tomorrow' | ''  (an empty label is hidden)
+ *   pill            'Yesterday' | 'Today' | 'Tomorrow' | ''  (a day pill's relative word, spec §17.1;
+ *                   an empty one is hidden and the pill shows its weekday)
+ *   sofar           'so far' | ''  (a day pill's note beside today's figure; hidden when empty)
  *   ring            "Today's published picks, settled so far" | "Tomorrow's …" | "Picks published for <date>, settled so far"
  *   next            "Today's card is published:" | "Tomorrow's card is published:" | "The card for <date> is published:"
  *   record          'Today · so far' | ''  (only today's figure is still moving; an empty label is
  *                   hidden, so a past day never reads "In progress" — Plan A Task 5)
  *   daybar          'Today · <date>' | '<date>'  (the list's day bar, spec §5; never empty, never
  *                   "Tomorrow": the bar is a date with an optional "Today" in front)
- * The third form (record, eyebrow, strip: the empty one) is what the build renders statically
- * (tests assert they agree).
+ * The third form (record, eyebrow, pill, sofar: the empty one) is what the build renders statically
+ * (tests assert they agree). Only the pills name yesterday: every other kind keeps its date form.
  */
 export function relLabel(date, nowMs, kind = 'ring') {
   const r = relDay(date, nowMs);
   const Word = r === 'today' ? 'Today' : r === 'tomorrow' ? 'Tomorrow' : null;
   switch (kind) {
     case 'eyebrow':
-    case 'strip':
       return Word ?? '';
+    case 'pill':
+      return r === 'yesterday' ? 'Yesterday' : (Word ?? '');
+    case 'sofar':
+      return r === 'today' ? 'so far' : '';
     case 'ring':
       return Word ? `${Word}'s published picks, settled so far` : `Picks published for ${fmtDayLong(date)}, settled so far`;
     case 'next':
@@ -77,7 +84,37 @@ export function msUntilLagosMidnight(nowMs) {
   return DAY_MS - intoDay;
 }
 
-const KINDS = new Set(['eyebrow', 'strip', 'ring', 'next', 'record', 'daybar']);
+const KINDS = new Set(['eyebrow', 'pill', 'sofar', 'ring', 'next', 'record', 'daybar']);
+const HIDE_WHEN_EMPTY = new Set(['eyebrow', 'pill', 'sofar', 'record']);
+const PILL_PREFIX_RE = /^(?:Yesterday|Today|Tomorrow), /;
+const PILL_SOFAR_RE = / so far$/;
+
+/** The .day-pill link holding el (el itself excluded), or null. */
+function pillOf(el) {
+  for (let n = el.parentNode; n; n = n.parentNode) {
+    if (n.classList && n.classList.contains('day-pill')) return n;
+  }
+  return null;
+}
+
+/**
+ * A day pill follows its relative word: data-when (the today outline, the phone label) and the
+ * accessible name, "<Word>, <date>: <result>[ so far]". The build's name is the date form, so the
+ * prefix and the note are stripped first: relabelling again never stacks them.
+ */
+function relabelPill(el, date, nowMs) {
+  const pill = pillOf(el);
+  if (!pill) return;
+  const r = relDay(date, nowMs);
+  if (r) pill.setAttribute('data-when', r);
+  else pill.removeAttribute('data-when');
+  const aria = pill.getAttribute('aria-label');
+  if (!aria) return;
+  const base = aria.replace(PILL_PREFIX_RE, '').replace(PILL_SOFAR_RE, '');
+  const word = relLabel(date, nowMs, 'pill');
+  const sofar = pill.querySelector('[data-rel="sofar"]') && r === 'today' ? ' so far' : '';
+  pill.setAttribute('aria-label', `${word ? `${word}, ` : ''}${base}${sofar}`);
+}
 
 /** Rewrite every [data-rel-day] label under root for the visitor's date at nowMs. */
 export function relabel(root, nowMs) {
@@ -96,7 +133,8 @@ export function relabel(root, nowMs) {
       continue;
     }
     el.textContent = text;
-    if (kind === 'eyebrow' || kind === 'strip' || kind === 'record') el.hidden = text === '';
+    if (HIDE_WHEN_EMPTY.has(kind)) el.hidden = text === '';
+    if (kind === 'pill') relabelPill(el, date, nowMs);
   }
 }
 
@@ -117,7 +155,7 @@ export function staleNotice({ nowMs, generatedAt, day, tomorrow, staleAfterHours
   const hours = typeof staleAfterHours === 'number' && Number.isFinite(staleAfterHours) && staleAfterHours > 0
     ? staleAfterHours : DEFAULT_STALE_HOURS;
   if (isIsoZ(generatedAt) && nowMs - Date.parse(generatedAt) > hours * HOUR_MS) {
-    out.push({ kind: 'late', text: `Last updated ${fmtStamp(generatedAt)}. Updates normally run every 4 hours; this one is late.` });
+    out.push({ kind: 'late', text: `Last updated ${fmtStamp(generatedAt)}. Updates normally run every 2 hours; this one is late.` });
   }
   if (isDate(day)) {
     const visitor = lagosToday(nowMs);

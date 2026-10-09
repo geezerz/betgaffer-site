@@ -378,20 +378,20 @@ describe('build of the fixture artifact', () => {
     assert.equal(d.attrs['data-day'], '2026-10-08');
   });
 
-  test('home and day pages load stale.js and carry the empty hidden banner region and the 7-day strip', async () => {
+  test('home and day pages load stale.js and carry the empty hidden banner region and the day pills', async () => {
     for (const rel of ['index.html', 'day/2026-10-07/index.html', 'day/2026-10-08/index.html']) {
       const html = await read(ws, rel);
       const doc = parse(html);
       assert.ok(find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/stale.js'), `${rel} stale.js`);
       const region = find(doc, (n) => n.attrs.class === 'stale');
       assert.ok(region && region.attrs.hidden !== undefined && textOf(region) === '', `${rel} empty hidden banner`);
-      const strip = find(doc, (n) => n.tag === 'nav' && /day-strip/.test(n.attrs.class ?? ''));
-      assert.ok(strip, `${rel} strip`);
+      const strip = find(doc, (n) => n.tag === 'nav' && /\bday-pills\b/.test(n.attrs.class ?? ''));
+      assert.ok(strip, `${rel} pills`);
       const hrefs = findAll(strip, (n) => n.tag === 'a').map((a) => a.attrs.href);
-      assert.deepEqual(hrefs, ['/day/2026-10-07/', '/day/2026-10-08/'], `${rel} strip links`);
+      assert.deepEqual(hrefs, ['/day/2026-10-07/', '/day/2026-10-08/'], `${rel} pill links`);
     }
     const day7 = parse(await read(ws, 'day/2026-10-07/index.html'));
-    const cur = findAll(day7, (n) => n.tag === 'a' && n.attrs['aria-current'] === 'page' && /day-strip/.test(n.attrs.class ?? ''));
+    const cur = findAll(day7, (n) => n.tag === 'a' && n.attrs['aria-current'] === 'page' && /\bday-pill\b/.test(n.attrs.class ?? ''));
     assert.deepEqual(cur.map((a) => a.attrs.href), ['/day/2026-10-07/']);
   });
 
@@ -754,11 +754,13 @@ describe('archive: every listed day gets a page; older days are stubs', () => {
     assert.equal(find(doc, (n) => n.tag === 'script' && n.attrs.src === '/assets/js/day.js'), null);
   });
 
-  test('the strip shows listed days around the shown day', async () => {
-    const doc = parse(await read(ws, 'day/2026-10-06/index.html'));
-    const strip = find(doc, (n) => n.tag === 'nav' && /day-strip/.test(n.attrs.class ?? ''));
-    assert.deepEqual(findAll(strip, (n) => n.tag === 'a').map((a) => a.attrs.href),
-      ['/day/2026-10-05/', '/day/2026-10-06/', '/day/2026-10-07/', '/day/2026-10-08/']);
+  test('the pills are anchored on today: every archive page shows the same window (spec §17.1)', async () => {
+    for (const d of ['2026-10-05', '2026-10-06']) {
+      const doc = parse(await read(ws, `day/${d}/index.html`));
+      const strip = find(doc, (n) => n.tag === 'nav' && /\bday-pills\b/.test(n.attrs.class ?? ''));
+      assert.deepEqual(findAll(strip, (n) => n.tag === 'a').map((a) => a.attrs.href),
+        ['/day/2026-10-05/', '/day/2026-10-06/', '/day/2026-10-07/', '/day/2026-10-08/'], d);
+    }
   });
 
   test('only listed day files are copied, under their listed names', async () => {
@@ -1043,7 +1045,7 @@ describe('staleNotice (built stale.js) at the Lagos-midnight boundaries', () => 
     assert.deepEqual(at('2026-10-08T04:15:00Z', { day: null }), []);
     const n = at('2026-10-08T04:15:01Z', { day: null });
     assert.deepEqual(kinds(n), ['late']);
-    assert.equal(n[0].text, `Last updated ${fmtStamp(GEN)}. Updates normally run every 4 hours; this one is late.`);
+    assert.equal(n[0].text, `Last updated ${fmtStamp(GEN)}. Updates normally run every 2 hours; this one is late.`);
   });
 
   test('late and past midnight together give both notices, late first', () => {

@@ -14,13 +14,14 @@ import { build } from '../site/build.mjs';
 import { fmtDayLong } from '../site/lib/time.js';
 import { parse, findAll, textOf, visibleText } from './html-scan.js';
 import { fakeDocument } from './fake-dom.js';
-import { testConfig, workspace, copyArtifact, addArchive, readJson, htmlFiles } from './site-fixtures.js';
+import { testConfig, workspace, copyArtifact, addArchive, readJson, htmlFiles, pillArtifact } from './site-fixtures.js';
 
 const NOW = Date.parse('2026-10-07T22:30:00Z');
 const BEFORE_MIDNIGHT = Date.parse('2026-10-07T22:59:59Z'); // 23:59:59 WAT, Wed 7 Oct
 const MIDNIGHT = Date.parse('2026-10-07T23:00:00Z'); //        00:00:00 WAT, Thu 8 Oct
 const FAR = Date.parse('2030-01-01T12:00:00Z');
-const KINDS = ['eyebrow', 'strip', 'ring', 'next', 'record', 'daybar'];
+const KINDS = ['eyebrow', 'pill', 'sofar', 'ring', 'next', 'record', 'daybar'];
+const HIDE_WHEN_EMPTY = ['eyebrow', 'pill', 'sofar', 'record'];
 const sync = (fn) => fn();
 const noTimer = () => {};
 
@@ -49,7 +50,13 @@ describe('relLabel at the Lagos-midnight boundary', () => {
     assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'ring'), "Today's published picks, settled so far");
     assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'ring'), "Tomorrow's published picks, settled so far");
     assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'eyebrow'), 'Today');
-    assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'strip'), 'Tomorrow');
+    assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'pill'), 'Tomorrow');
+    assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'pill'), 'Today');
+    assert.equal(stale.relLabel('2026-10-06', BEFORE_MIDNIGHT, 'pill'), 'Yesterday');
+    assert.equal(stale.relLabel('2026-10-05', BEFORE_MIDNIGHT, 'pill'), '');
+    assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'sofar'), 'so far');
+    assert.equal(stale.relLabel('2026-10-06', BEFORE_MIDNIGHT, 'sofar'), '');
+    assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'sofar'), '');
     assert.equal(stale.relLabel('2026-10-08', BEFORE_MIDNIGHT, 'next'), "Tomorrow's card is published:");
     assert.equal(stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'record'), 'Today · so far');
     // The record never says "Tomorrow" (nothing is settled ahead of its day).
@@ -75,17 +82,29 @@ describe('relLabel at the Lagos-midnight boundary', () => {
   test('a day two ahead, or in the past, reads as its date', () => {
     assert.equal(stale.relLabel('2026-10-09', BEFORE_MIDNIGHT, 'next'), `The card for ${fmtDayLong('2026-10-09')} is published:`);
     assert.equal(stale.relLabel('2026-10-08', FAR, 'ring'), `Picks published for ${T8}, settled so far`);
-    assert.equal(stale.relLabel('2026-10-08', FAR, 'strip'), '');
+    assert.equal(stale.relLabel('2026-10-08', FAR, 'pill'), '');
+    assert.equal(stale.relLabel('2026-10-08', FAR, 'sofar'), '');
     assert.equal(stale.relLabel('2026-10-08', FAR, 'record'), '');
     assert.equal(stale.relLabel('2026-10-08', FAR, 'daybar'), T8);
   });
 
-  test('relDay names only today and tomorrow; bad input never throws', () => {
+  test('relDay names yesterday, today and tomorrow; bad input never throws', () => {
     assert.equal(stale.relDay('2026-10-07', BEFORE_MIDNIGHT), 'today');
     assert.equal(stale.relDay('2026-10-08', BEFORE_MIDNIGHT), 'tomorrow');
-    assert.equal(stale.relDay('2026-10-06', BEFORE_MIDNIGHT), null);
+    assert.equal(stale.relDay('2026-10-06', BEFORE_MIDNIGHT), 'yesterday');
+    assert.equal(stale.relDay('2026-10-05', BEFORE_MIDNIGHT), null);
+    assert.equal(stale.relDay('2026-10-09', BEFORE_MIDNIGHT), null);
     assert.equal(stale.relDay('nope', BEFORE_MIDNIGHT), null);
     assert.throws(() => stale.relLabel('2026-10-07', BEFORE_MIDNIGHT, 'nope'), /kind/);
+  });
+
+  test('yesterday is a word on the pills only: every other label keeps its date form', () => {
+    const Y = '2026-10-06';
+    assert.equal(stale.relLabel(Y, BEFORE_MIDNIGHT, 'eyebrow'), '');
+    assert.equal(stale.relLabel(Y, BEFORE_MIDNIGHT, 'ring'), `Picks published for ${fmtDayLong(Y)}, settled so far`);
+    assert.equal(stale.relLabel(Y, BEFORE_MIDNIGHT, 'next'), `The card for ${fmtDayLong(Y)} is published:`);
+    assert.equal(stale.relLabel(Y, BEFORE_MIDNIGHT, 'record'), '');
+    assert.equal(stale.relLabel(Y, BEFORE_MIDNIGHT, 'daybar'), fmtDayLong(Y));
   });
 
   test('msUntilLagosMidnight counts to the next 00:00 WAT', () => {
@@ -114,7 +133,7 @@ describe('static labels are dates, tagged for relabelling', () => {
         seen.add(kind);
         const shown = kind === 'ring' ? textOf(findAll(el, (n) => n.attrs.class === 'ring__label')[0]) : textOf(el);
         assert.equal(shown, stale.relLabel(date, FAR, kind), `${rel}: ${kind} ${date}`);
-        if (kind === 'eyebrow' || kind === 'strip' || kind === 'record') assert.ok(el.attrs.hidden !== undefined, `${rel}: an empty ${kind} is hidden`);
+        if (HIDE_WHEN_EMPTY.includes(kind)) assert.ok(el.attrs.hidden !== undefined, `${rel}: an empty ${kind} is hidden`);
         if (kind === 'ring') assert.ok(el.attrs['aria-label'].startsWith(shown), `${rel}: ring aria-label starts with its label`);
       }
     }
@@ -144,8 +163,8 @@ describe('stale.js init on built pages (fake DOM)', () => {
     assert.equal(eyebrow.textContent, 'Today');
     assert.equal(eyebrow.hidden, false);
     assert.equal(doc.querySelector('[data-rel="next"]').textContent, "Tomorrow's card is published:");
-    const tags = doc.querySelectorAll('[data-rel="strip"]').map((t) => [t.getAttribute('data-rel-day'), t.textContent, t.hidden]);
-    assert.deepEqual(tags.filter(([d]) => d >= '2026-10-07'), [['2026-10-07', 'Today', false], ['2026-10-08', 'Tomorrow', false]]);
+    const tags = doc.querySelectorAll('[data-rel="pill"]').map((t) => [t.getAttribute('data-rel-day'), t.textContent, t.hidden]);
+    assert.deepEqual(tags, [['2026-10-05', '', true], ['2026-10-06', 'Yesterday', false], ['2026-10-07', 'Today', false], ['2026-10-08', 'Tomorrow', false]]);
     assert.equal(doc.querySelector('.stale').hidden, true);
     const bar = doc.querySelector('[data-rel="daybar"]');
     assert.equal(bar.textContent, `Today · ${fmtDayLong('2026-10-07')}`);
@@ -222,6 +241,115 @@ describe('stale.js init on built pages (fake DOM)', () => {
     timers[0][0]();
     assert.equal(doc.querySelector('[data-rel="eyebrow"]').hidden, true);
     assert.equal(doc.querySelector('[data-rel="next"]').textContent, "Today's card is published:");
+  });
+});
+
+// ------------------------------------------------------------------ the day pills (spec §17.1)
+
+describe('stale.js relabels the day pills for the viewer\'s Lagos date (fake DOM)', () => {
+  // A week listed (D-5..D+1, D = 2026-10-07), today graded: the window is 10-04..10-08.
+  const TODAY_ACC = { won: 6, lost: 1 }; // 6 of 7, 85.71
+  const AT = {
+    D: Date.parse('2026-10-07T12:00:00Z'), //       13:00 WAT, Wed 7 Oct
+    NEXT: Date.parse('2026-10-08T07:00:00Z'), //    08:00 WAT, Thu 8 Oct: the page was cached overnight
+    PREV: Date.parse('2026-10-06T12:00:00Z'), //    a viewer whose day is 10-06 (the mechanism, not a real case)
+  };
+  let pws;
+  before(async () => {
+    pws = await workspace();
+    await pillArtifact(pws.root, { today: TODAY_ACC });
+    await build({ root: pws.root, out: pws.out, config: testConfig(), now: NOW, warn: () => {} });
+  });
+  after(() => pws.cleanup());
+
+  const pills = (doc) => doc.querySelectorAll('a').filter((a) => (a.getAttribute('class') ?? '').split(' ').includes('day-pill'));
+  const state = (doc) => pills(doc).map((a) => {
+    const d = a.getAttribute('href').slice(5, 15);
+    const rel = a.querySelector('[data-rel="pill"]');
+    const sofar = a.querySelector('[data-rel="sofar"]');
+    return {
+      d,
+      label: rel.hidden ? '' : rel.textContent,
+      sofar: sofar && !sofar.hidden ? sofar.textContent : '',
+      when: a.getAttribute('data-when'),
+      aria: a.getAttribute('aria-label'),
+    };
+  });
+  const load = async (rel, nowMs, extra = {}) => {
+    const doc = fakeDocument(await readFile(join(pws.out, rel), 'utf8'));
+    stale.init({ doc, nowMs, raf: sync, setTimer: noTimer, ...extra });
+    return doc;
+  };
+
+  test('viewer on D: Yesterday / Today / Tomorrow, weekday elsewhere; "so far" on today only', async () => {
+    const s = state(await load('index.html', AT.D));
+    assert.deepEqual(s.map((p) => [p.d, p.label, p.sofar, p.when]), [
+      ['2026-10-04', '', '', null],
+      ['2026-10-05', '', '', null],
+      ['2026-10-06', 'Yesterday', '', 'yesterday'],
+      ['2026-10-07', 'Today', 'so far', 'today'],
+      ['2026-10-08', 'Tomorrow', '', 'tomorrow'],
+    ]);
+    const today = s.find((p) => p.d === '2026-10-07');
+    assert.equal(today.aria, 'Today, Wednesday 7 October: 6 of 7 picks right, 85.7% so far');
+    assert.equal(s.find((p) => p.d === '2026-10-06').aria, 'Yesterday, Tuesday 6 October: 2 of 3 picks right, 66.7%');
+    assert.equal(s.find((p) => p.d === '2026-10-04').aria, 'Sunday 4 October: 12 of 12 picks right');
+  });
+
+  test('a page cached overnight (viewer on D+1): D is Yesterday, D+1 Today, and "so far" leaves D', async () => {
+    for (const rel of ['index.html', 'day/2026-10-05/index.html']) {
+      const s = state(await load(rel, AT.NEXT));
+      assert.deepEqual(s.map((p) => [p.d, p.label, p.sofar, p.when]), [
+        ['2026-10-04', '', '', null],
+        ['2026-10-05', '', '', null],
+        ['2026-10-06', '', '', null],
+        ['2026-10-07', 'Yesterday', '', 'yesterday'],
+        // D+1 shows its fixture count (no figure), so no pill says "so far".
+        ['2026-10-08', 'Today', '', 'today'],
+      ], rel);
+      assert.equal(s.find((p) => p.d === '2026-10-07').aria, 'Yesterday, Wednesday 7 October: 6 of 7 picks right, 85.7%');
+      assert.equal(s.find((p) => p.d === '2026-10-08').aria, 'Today, Thursday 8 October: 130 fixtures');
+    }
+  });
+
+  test('the "so far" note follows the viewer\'s today to any pill with a figure', async () => {
+    const s = state(await load('index.html', AT.PREV));
+    assert.deepEqual(s.filter((p) => p.sofar !== '').map((p) => p.d), ['2026-10-06']);
+    assert.equal(s.find((p) => p.d === '2026-10-06').aria, 'Today, Tuesday 6 October: 2 of 3 picks right, 66.7% so far');
+  });
+
+  test('an open page relabels at midnight, and the accessible name never stacks prefixes', async () => {
+    const timers = [];
+    const doc = await load('index.html', Date.parse('2026-10-07T22:59:59Z'), {
+      setTimer: (fn, ms) => timers.push([fn, ms]), now: () => Date.parse('2026-10-07T23:00:00Z'),
+    });
+    assert.equal(state(doc).find((p) => p.d === '2026-10-07').label, 'Today');
+    timers[0][0]();
+    stale.relabel(doc, Date.parse('2026-10-07T23:00:01Z'));
+    const s = state(doc);
+    assert.equal(s.find((p) => p.d === '2026-10-07').aria, 'Yesterday, Wednesday 7 October: 6 of 7 picks right, 85.7%');
+    assert.equal(s.find((p) => p.d === '2026-10-08').label, 'Today');
+  });
+
+  test('unknown or invalid dates leave the build labels', async () => {
+    const html = (await readFile(join(pws.out, 'index.html'), 'utf8')).replaceAll('data-rel-day="2026-10-06"', 'data-rel-day="2026-02-30"');
+    const doc = fakeDocument(html);
+    const before1 = pills(doc).find((a) => a.getAttribute('href') === '/day/2026-10-06/');
+    const aria = before1.getAttribute('aria-label');
+    stale.init({ doc, nowMs: AT.D, raf: sync, setTimer: noTimer });
+    const rel = before1.querySelector('[data-rel="pill"]');
+    assert.equal(rel.hidden, true);
+    assert.equal(rel.textContent, '');
+    assert.equal(before1.getAttribute('aria-label'), aria);
+    assert.equal(before1.getAttribute('data-when'), null);
+    // The others still relabel.
+    assert.equal(state(doc).find((p) => p.d === '2026-10-07').label, 'Today');
+  });
+
+  test('no JS: the static pills name no relative day', async () => {
+    const s = state(fakeDocument(await readFile(join(pws.out, 'index.html'), 'utf8')));
+    assert.deepEqual(s.map((p) => p.label), ['', '', '', '', '']);
+    assert.ok(s.every((p) => !/\b(today|tomorrow|yesterday)\b/i.test(p.aria)), 'static accessible names are dates');
   });
 });
 

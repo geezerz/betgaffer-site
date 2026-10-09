@@ -18,7 +18,7 @@
 .day-head__title{ display:flex; flex-direction:column; gap:6px; }
 .day-head__title .t-lbl{ margin-bottom:2px; }
 /* "Today"/"Tomorrow": empty and hidden in the static HTML; stale.js fills it for the visitor's date. */
-.day-head__rel[hidden],.day-strip__tag[hidden]{ display:none; }
+.day-head__rel[hidden]{ display:none; }
 .day-head__date{ margin:0; font-size:17px; font-weight:600; color:var(--ink); letter-spacing:-.01em; }
 .day-head__count{ margin:0; font-size:12.5px; color:var(--muted); }
 .day-head__note{ margin:0; font-size:13px; line-height:1.55; color:var(--muted); max-width:62ch; }
@@ -291,31 +291,86 @@
 .day-nav__date{ font-size:13.5px; font-weight:600; }
 
 /* ── 8. HOME, ARCHIVE AND STATUS (build.mjs, day.js, stale.js) ─────────────────
-   The 7-day strip shares the width evenly (minmax(0,1fr) columns: seven days fit
-   at 360px with no sideways scroll). Archive stubs reuse the day header; day.js
-   swaps the full card into #day-root or appends an error box.
+   The day pills (spec §17.1): up to five days anchored on today, sharing the
+   width evenly (grid-auto-columns minmax(0,1fr): no column count from markup,
+   the CSP forbids style=). Each pill reads like a small scoreboard tile:
+   weekday and date, the day's figure, its fraction, and a meter of the same
+   share drawn in the ring's language (a filled track; dashed when there is
+   nothing to count). The page's own day is filled; today keeps a green
+   outline when the page is another day; past days stay quiet. stale.js fills
+   the relative word in place (same line, no shift): below 1024px only "Today"
+   replaces the weekday (the pill is too narrow for "Yesterday 6 Oct"); from
+   1024px Yesterday / Today / Tomorrow all do, and today's "so far" shows.
+   Archive stubs reuse the day header; day.js swaps the full card into
+   #day-root or appends an error box.
    ─────────────────────────────────────────────────────────────────────────── */
 .stale p{ margin:0; }
 
-.day-strip__list{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:4px; }
-.day-strip__link{
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-  min-height:var(--tap); padding:6px 2px; text-align:center;
-  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-1);
+.day-pills__list{
+  display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:8px;
+  margin:0; padding:0; list-style:none;
+}
+.day-pills__list > li{ display:flex; min-width:0; }
+.day-pill{
+  flex:1 1 auto; min-width:0; min-height:var(--tap);
+  display:flex; flex-direction:column; align-items:flex-start;
+  padding:10px 12px 11px;
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
   color:var(--ink-2); text-decoration:none;
 }
-.day-strip__link:hover{ border-color:var(--line-2); background:var(--surface-2); color:var(--ink); }
-.day-strip__link[aria-current]{ border-color:var(--accent); background:var(--accent-quiet); color:var(--ink); }
-.day-strip__dow{
-  font-family:var(--font-mono); font-size:9.5px; font-weight:600; letter-spacing:.08em;
-  text-transform:uppercase; color:var(--muted);
+.day-pill:hover{ border-color:var(--line-2); background:var(--surface-2); color:var(--ink); }
+.day-pill[data-when="today"]{ border-color:var(--accent); }
+.day-pill[aria-current]{ border-color:var(--accent); background:var(--accent-quiet); color:var(--ink); }
+.day-pill[aria-current]:hover{ border-color:var(--accent-hi); }
+/* Every part below sets a display, which beats the UA [hidden] rule: hide explicitly. */
+.day-pill [hidden]{ display:none; }
+
+.day-pill__head{
+  display:flex; align-items:baseline; gap:6px; max-width:100%; overflow:hidden; white-space:nowrap;
+  font-family:var(--font-mono); font-size:10.5px; font-weight:600; line-height:1.3;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
 }
-.day-strip__date{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:12px; font-weight:600; white-space:nowrap; }
-.day-strip__tag{ font-size:9.5px; line-height:1.2; color:var(--accent); overflow-wrap:anywhere; }
-@media (min-width:640px){
-  .day-strip__dow{ font-size:10.5px; }
-  .day-strip__date{ font-size:13px; }
-  .day-strip__tag{ font-size:10.5px; }
+.day-pill__rel{ display:none; color:var(--accent); }
+.day-pill[data-when="today"] .day-pill__rel:not([hidden]){ display:inline; }
+.day-pill[data-when="today"] .day-pill__rel:not([hidden]) + .day-pill__dow{ display:none; }
+.day-pill__date{ color:var(--ink-2); }
+.day-pill[aria-current] .day-pill__date{ color:var(--ink); }
+
+.day-pill__fig{
+  margin-top:6px;
+  font-family:var(--font-display); font-size:22px; font-weight:800; line-height:1.05;
+  letter-spacing:-.025em; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--ink);
+}
+.day-pill__fig--won{ color:var(--won); }
+.day-pill__sub{
+  margin-top:3px; margin-bottom:10px;
+  font-size:12px; line-height:1.3; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted);
+}
+.day-pill__sofar{ display:none; color:var(--ink-2); }
+
+.day-pill__meter{ display:block; align-self:stretch; height:3px; margin-top:auto; border-radius:2px; overflow:hidden; }
+.day-pill__track{ fill:var(--line); }
+.day-pill__track--empty{ fill:none; stroke:var(--line-2); stroke-width:4; }
+.day-pill__bar{ fill:var(--won); }
+
+@media (min-width:1024px){
+  .day-pill__rel:not([hidden]){ display:inline; }
+  .day-pill__rel:not([hidden]) + .day-pill__dow{ display:none; }
+  .day-pill__sofar:not([hidden]){ display:inline; }
+}
+
+/* Phones: five across, centred; "TUE 6" (or "TODAY"), the figure, and the fraction as a
+   small third line that may wrap but is never hidden. No sideways scroll at 320px. */
+@media (max-width:599.98px){
+  .day-pills__list{ gap:4px; }
+  .day-pill{ align-items:center; text-align:center; padding:7px 3px 8px; border-radius:var(--r-1); }
+  .day-pill__head{ justify-content:center; gap:3px; font-size:9.5px; letter-spacing:.04em; }
+  .day-pill__mon{ display:none; }
+  /* "TODAY" stands alone; every other pill reads "TUE 6". */
+  .day-pill[data-when="today"] .day-pill__rel:not([hidden]) ~ .day-pill__date{ display:none; }
+  .day-pill__fig{ margin-top:4px; font-size:clamp(12.5px,4vw,16px); letter-spacing:-.03em; white-space:normal; }
+  .day-pill__sub{ margin-top:2px; margin-bottom:6px; font-size:9.5px; line-height:1.25; white-space:normal; }
+  .day-pill__meter{ height:2px; }
 }
 
 .home-head{ margin-bottom:4px; }
@@ -330,7 +385,7 @@
 .home-empty{ margin-top:8px; }
 main > .home-notice,
 main > .home-next,
-main > .day-strip{ margin-bottom:16px; }
+main > .day-pills{ margin-bottom:16px; }
 
 .day-stub__note{ margin:0; font-size:13.5px; line-height:1.55; color:var(--muted); }
 .day-stub__note a{ color:var(--ink-2); overflow-wrap:anywhere; }
