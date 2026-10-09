@@ -13,7 +13,7 @@ import { build } from '../site/build.mjs';
 import { claimViolations, percentagesOutsideOffers, visibleText, HEADLINE_PARTS } from './html-scan.js';
 import { DISCOUNT_PCT, TOPUP_BONUS_PCT } from '../site/lib/founding.js';
 import {
-  testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, htmlFiles, EDGE_DAY,
+  testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, htmlFiles, EDGE_DAY, toLast7,
 } from './site-fixtures.js';
 
 const RULE2_DAY = fileURLToPath(new URL('./fixtures/rule2-day.json', import.meta.url));
@@ -85,6 +85,13 @@ async function onlyTomorrow(root) {
   await writeJson(join(root, 'index.json'), i);
 }
 
+/** Spec §17.5: the record carries last_7 (seven days) instead of the legacy last_6. */
+async function last7(root) {
+  const i = await readJson(join(root, 'index.json'));
+  toLast7(i.record);
+  await writeJson(join(root, 'index.json'), i);
+}
+
 const inject = (html, fragment) => {
   assert.ok(html.includes('</main>'), 'premise: page has a <main>');
   return html.replace('</main>', `${fragment}\n</main>`);
@@ -102,10 +109,11 @@ describe('every built page passes the claim scan', () => {
     builds.missedToday = await built(missedToday);
     builds.onlyTomorrow = await built(onlyTomorrow);
     builds.rule2 = await built(rule2Home);
+    builds.last7 = await built(last7);
   });
   after(() => Promise.all(Object.values(builds).map((w) => w.cleanup())));
 
-  for (const name of ['plain', 'archive', 'perfect', 'mixed', 'edge', 'noData', 'missedToday', 'onlyTomorrow', 'rule2']) {
+  for (const name of ['plain', 'archive', 'perfect', 'mixed', 'edge', 'noData', 'missedToday', 'onlyTomorrow', 'rule2', 'last7']) {
     test(`${name}: no banned phrase, no stray percentage, no bare 100%`, async () => {
       const files = await htmlFiles(builds[name].out);
       assert.ok(files.length >= 11, 'premise: the whole site was built (11 pages with no data)');
@@ -118,6 +126,9 @@ describe('every built page passes the claim scan', () => {
     assert.match(rec, /data-claim="headline"/);
     assert.match(rec, /data-figure="record-row"/);
     assert.match(visibleText(rec), /84\.48%/);
+    const rec7 = await readFile(join(builds.last7.out, 'our-record/index.html'), 'utf8');
+    assert.match(visibleText(rec7), /The last seven days/);
+    assert.equal((rec7.match(/<li class="rec-day" data-figure="record-row"/g) || []).length, 7);
     const home = await readFile(join(builds.plain.out, 'index.html'), 'utf8');
     assert.match(home, /data-figure="pick-prob"/);
     assert.match(visibleText(home), /\d+%/);
@@ -251,7 +262,7 @@ describe('premise: the scanner reports each injected violation', () => {
     assert.notEqual(blank, rec);
     assert.ok(claimViolations(blank).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'blank period');
     // A headline whose text lost every "X of Y" fraction no longer licenses its percentage.
-    const noFrac = rec.replace(/<p class="rec-hero">[^]*?<\/p>/, '');
+    const noFrac = rec.replace(/<p class="rec-count">[^]*?<\/p>/, '');
     assert.notEqual(noFrac, rec);
     assert.ok(claimViolations(noFrac).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'no fraction');
   });

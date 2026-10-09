@@ -4,13 +4,15 @@
 // every value from it is still escaped on the way out. The data contract still carries the selection
 // rule, coverage and ledger statuses; this page no longer prints them. Claim-safety markup (the
 // tests/html-scan.js scanner):
-//   - the 30-day headline is ONE element with data-claim="headline" holding its "X of Y" fraction and
-//     a data-claim-part="period" line;
+//   - the 30-day headline is ONE element with data-claim="headline" holding its "X of Y" fraction (the
+//     count line) and a data-claim-part="period" line (in its header row);
 //   - every strip day and every month row is an element with data-figure="record-row" (plus
 //     data-period) whose visible text carries its "n of m" fraction and its period (a strip day by
 //     its full date, e.g. "Wed 7 Oct 2026");
 //   - no figure ever prints as a bare 100%: a perfect window, day or month shows its fraction and no
 //     percentage; a non-perfect one that rounded up is shown as 99.99%.
+// Green figures (spec §17.5): every right count and every percentage carries .rec-won (bold, --won);
+// a total ("of Y") never does.
 // Status: only the current Lagos month says "In progress" (whatever the ledger says); today's strip
 // day is tagged for stale.js, which labels it "Today · so far" on the visitor's day only. One footer
 // line says recent figures can still move while late results are checked.
@@ -64,18 +66,23 @@ function headline(rec) {
   if (isEmpty(g)) {
     body = '<p class="rec-hero rec-hero--empty">No picks settled in the last 30 days yet.</p>';
   } else {
+    // Spec §17.5, top to bottom: the percentage (the hero), the count it comes from, one caption.
+    // A perfect window never prints 100%: its hero says so in words.
     const won = int(g.won);
     const graded = int(g.graded);
-    const sentence = isPerfect(g)
-      ? `Our recommended picks were right <strong>${won} times out of ${graded}</strong>.`
-      : `Our recommended picks were right <strong>${won} times out of ${graded}</strong>: <strong>${escHtml(pct2(shownPct(g)))}</strong>.`;
-    body = `<p class="rec-hero"><span class="mono rec-hero__won">${won}</span> <span class="rec-hero__of">of</span> <span class="mono">${graded}</span></p>
-<p class="rec-hero__cap">${sentence}</p>`;
+    const hero = isPerfect(g)
+      ? '<p class="rec-hero rec-hero--words rec-won" data-figure="record-pct">Every pick right</p>'
+      : `<p class="rec-hero rec-won" data-figure="record-pct">${escHtml(pct2(shownPct(g)))}</p>`;
+    body = `${hero}
+<p class="rec-count"><strong class="rec-won">${won}</strong> of ${graded} picks right</p>
+<p class="rec-hero__cap">Our recommended picks were right ${won} times out of ${graded}.</p>`;
   }
   return `<section class="rec-head" data-claim="headline" aria-labelledby="rec-head-h">
+<div class="rec-head__top">
 <h2 class="rec-head__h" id="rec-head-h">Last 30 days</h2>
-${body}
 <p class="rec-head__period" data-claim-part="period">${periodHtml(g.period)}</p>
+</div>
+${body}
 </section>
 <p class="rec-under t-s">${escHtml("Picks that ended level (a push) or void aren't counted.")}</p>`;
 }
@@ -84,9 +91,9 @@ ${body}
 
 function stripFigure(g) {
   if (isEmpty(g)) return '<p class="rec-day__none">No picks settled</p>';
-  const frac = `<p class="rec-day__frac"><span class="mono">${int(g.won)}</span> of <span class="mono">${int(g.graded)}</span> right</p>`;
+  const frac = `<p class="rec-day__frac"><strong class="rec-won mono">${int(g.won)}</strong> of <span class="mono">${int(g.graded)}</span> right</p>`;
   if (isPerfect(g)) return frac;
-  return `${frac}\n<p class="rec-day__pct mono">${escHtml(pct2(shownPct(g)))}</p>`;
+  return `${frac}\n<p class="rec-day__pct rec-won mono">${escHtml(pct2(shownPct(g)))}</p>`;
 }
 
 function stripDay(g, { today, listed }) {
@@ -103,12 +110,18 @@ ${stripFigure(g)}${rel}`;
   return `<li class="rec-day" data-figure="record-row" data-period="${escAttr(g.period)}">${body}</li>`;
 }
 
+// The heading and the column count follow the data: last_7 (spec §17.5) or the legacy last_6.
+const STRIP_HEADING = { 7: 'The last seven days', 6: 'The last six days' };
+
 function strip(rec, opts) {
+  const n = rec.recent.length;
+  const heading = STRIP_HEADING[n];
+  if (heading === undefined) throw new TypeError(`renderRecord: record.recent must hold 6 or 7 days, got ${n}`);
   return `<section class="rec-sec" aria-labelledby="rec-strip-h">
-<h2 class="t-h" id="rec-strip-h">The last six days</h2>
+<h2 class="t-h" id="rec-strip-h">${heading}</h2>
 <p class="t-s rec-sec__lede">Daily volume swings with the fixture calendar, so read each day with its count.</p>
-<ol class="rec-strip" role="list">
-${rec.last_6.map((g) => stripDay(g, opts)).join('\n')}
+<ol class="rec-strip rec-strip--${n}" role="list">
+${rec.recent.map((g) => stripDay(g, opts)).join('\n')}
 </ol>
 </section>`;
 }
@@ -122,8 +135,8 @@ function monthRow(g, currentMonth) {
   // columns; a perfect month says "Every pick right" instead of a percentage (no bare 100%).
   const cells = isEmpty(g)
     ? '<td class="num" colspan="2" data-label="Right">No picks settled</td>'
-    : `<td class="num" data-label="Right">${escHtml(`${int(g.won)} of ${int(g.graded)} right`)}</td>
-<td class="num" data-label="Accuracy">${isPerfect(g) ? 'Every pick right' : escHtml(pct2(shownPct(g)))}</td>`;
+    : `<td class="num" data-label="Right"><span><strong class="rec-won">${int(g.won)}</strong> of ${int(g.graded)} right</span></td>
+<td class="num" data-label="Accuracy"><strong class="rec-won">${isPerfect(g) ? 'Every pick right' : escHtml(pct2(shownPct(g)))}</strong></td>`;
   return `<tr data-figure="record-row" data-period="${escAttr(g.period)}">
 <th scope="row"><span class="rec-month">${escHtml(monthName(g.period))}</span>${chip}</th>
 ${cells}

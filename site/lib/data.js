@@ -195,11 +195,19 @@ function record(c, v) {
   const last_30 = grain(c, l30raw, 'record.last_30', isRange);
   last_30.status_days = statusDays(c, get(c, l30raw, 'status_days', 'record.last_30.'), 'record.last_30.status_days');
 
-  const l6 = get(c, v, 'last_6', 'record.');
-  if (!Array.isArray(l6) || l6.length !== 6) c.fail('record.last_6', 'must be an array of exactly 6 entries');
-  const last_6 = l6.map((e, i) => {
-    const g = grain(c, e, `record.last_6[${i}]`, isDate);
-    g.status = str(c, e, 'status', `record.last_6[${i}].`, { nullable: true });
+  // The recent days (spec §17.5): `last_7` (exactly 7) or, until the publisher switches, the legacy
+  // `last_6` (exactly 6). Exactly one of the two; the renderer reads one normalised list.
+  const has7 = has(v, 'last_7');
+  const has6 = has(v, 'last_6');
+  if (has7 && has6) c.fail('record', 'has both last_6 and last_7; exactly one is allowed');
+  if (!has7 && !has6) c.fail('record', 'needs last_7 or the legacy last_6; it has neither');
+  const recent_key = has7 ? 'last_7' : 'last_6';
+  const want = has7 ? 7 : 6;
+  const rawDays = v[recent_key];
+  if (!Array.isArray(rawDays) || rawDays.length !== want) c.fail(`record.${recent_key}`, `must be an array of exactly ${want} entries`);
+  const recent = rawDays.map((e, i) => {
+    const g = grain(c, e, `record.${recent_key}[${i}]`, isDate);
+    g.status = str(c, e, 'status', `record.${recent_key}[${i}].`, { nullable: true });
     return g;
   });
 
@@ -217,7 +225,8 @@ function record(c, v) {
     selection,
     as_of: isoZ(c, v, 'as_of', 'record.', { nullable: true }),
     last_30,
-    last_6,
+    recent,
+    recent_key,
     months,
   };
 }

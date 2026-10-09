@@ -98,6 +98,25 @@ export async function addArchive(root) {
   await writeJson(join(root, 'index.json'), index);
 }
 
+/**
+ * Spec §17.5: the raw index `record` with `last_7` (seven days, newest first) in place of the legacy
+ * `last_6`: the six fixture days plus the day before the oldest. Mutates and returns `record`.
+ */
+export function toLast7(record) {
+  const six = record.last_6;
+  const oldest = six[six.length - 1].period;
+  const before = new Date(Date.parse(`${oldest}T12:00:00Z`) - 86400000).toISOString().slice(0, 10);
+  const won = 75;
+  const graded = 90;
+  const ff = 101;
+  record.last_7 = [...six, {
+    period: before, won, lost: graded - won, pushes: 3, graded, finished_fixtures: ff,
+    pct: Math.round((won / graded) * 10000) / 100, coverage: Math.round((graded / ff) * 10000) / 10000, status: 'live',
+  }];
+  delete record.last_6;
+  return record;
+}
+
 /** Every file under dir -> sha256 of its bytes, keyed by forward-slash relative path. */
 export async function snapshot(dir) {
   const out = {};

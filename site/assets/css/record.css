@@ -1,40 +1,59 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Bet Gaffer — /our-record/ (site/lib/record.js), stated plainly (spec §7).
-   The 30-day fraction is the one loud thing on the page; everything around it
-   is quiet. Numbers are mono and tabular so columns of counts line up.
+   Bet Gaffer — /our-record/ (site/lib/record.js), stated plainly (spec §7, §17.5).
+   One loud thing: the 30-day percentage, the largest type on the page. Every
+   other figure is quiet, except that a right count and a percentage are always
+   bold green (.rec-won) and a total ("of Y") never is.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .rec-intro{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; max-width:62ch; }
 .rec-intro__lede{ color:var(--muted); }
 
-/* ── Headline: the fraction, the sentence that reads it out, its period ── */
+/* ── The green figure: every right count and every percentage ── */
+.rec-won{ color:var(--won); font-weight:800; }
+
+/* ── Headline: header row, the percentage, the count it comes from, one caption ── */
 .rec-head{
-  display:flex; flex-direction:column; gap:10px;
-  padding:20px 16px 18px;
+  display:flex; flex-direction:column; gap:12px;
+  padding:18px 16px 20px;
   background:var(--surface);
   border:1px solid var(--line); border-left:3px solid var(--accent);
   border-radius:var(--r-3);
 }
-@media (min-width:640px){ .rec-head{ padding:26px 26px 22px; } }
-@media (min-width:960px){ .rec-head{ padding:32px 34px; } }
-.rec-head__h{ margin:0 0 4px; font-size:14px; font-weight:600; letter-spacing:-.005em; color:var(--muted); }
+@media (min-width:640px){ .rec-head{ padding:22px 26px 26px; } }
+@media (min-width:960px){ .rec-head{ padding:26px 34px 32px; } }
 
+/* Title left, period beneath it on phones and right-aligned on the same line from 600px. */
+.rec-head__top{
+  display:flex; flex-direction:column; gap:2px;
+  padding-bottom:12px; margin-bottom:6px; border-bottom:1px solid var(--line);
+}
+@media (min-width:600px){
+  .rec-head__top{ flex-direction:row; flex-wrap:wrap; align-items:baseline; justify-content:space-between; column-gap:16px; }
+}
+.rec-head__h{ margin:0; font-size:15px; font-weight:700; letter-spacing:-.005em; color:var(--ink); }
+.rec-head__period{ margin:0; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+@media (min-width:600px){ .rec-head__period{ font-size:13.5px; text-align:right; } }
+
+/* The hero: the largest type on the page at every width (t-d1 tops out at 46px). */
 .rec-hero{
-  margin:0; color:var(--ink);
-  font-family:var(--font-mono); font-variant-numeric:tabular-nums;
-  font-weight:700; font-size:clamp(34px,10vw,64px); line-height:1; letter-spacing:-.045em;
-  display:flex; flex-wrap:wrap; align-items:baseline; column-gap:.28em; row-gap:4px;
+  margin:0;
+  font-family:var(--font-display); font-weight:800; font-variant-numeric:tabular-nums;
+  font-size:clamp(56px,15vw,96px); line-height:.9; letter-spacing:-.045em;
 }
-.rec-hero .mono{ font-weight:700; }
-.rec-hero__won{ color:var(--accent); }
-.rec-hero__of{
-  font-family:var(--font-ui); font-weight:500; font-size:.42em; letter-spacing:0;
-  color:var(--muted);
+/* A perfect window says so in words (never a bare 100%): still the hero, set to wrap. */
+.rec-hero--words{ font-size:clamp(48px,12vw,80px); line-height:.98; letter-spacing:-.035em; }
+.rec-hero--empty{
+  font-weight:700; color:var(--ink);
+  font-size:clamp(22px,5vw,30px); line-height:1.2; letter-spacing:-.02em;
 }
-.rec-hero--empty{ font-family:var(--font-display); font-size:clamp(22px,5vw,30px); letter-spacing:-.02em; }
-.rec-hero__cap{ margin:0; font-size:17px; line-height:1.5; color:var(--ink-2); max-width:48ch; }
-.rec-hero__cap strong{ color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
-.rec-head__period{ margin:4px 0 0; padding-top:10px; border-top:1px solid var(--line); font-size:13.5px; color:var(--muted); }
+
+/* The count line: about 40% of the hero; only the right count is green. */
+.rec-count{
+  margin:0; color:var(--ink-2);
+  font-family:var(--font-display); font-weight:600; font-variant-numeric:tabular-nums;
+  font-size:clamp(22px,5.8vw,38px); line-height:1.1; letter-spacing:-.025em;
+}
+.rec-hero__cap{ margin:2px 0 0; font-size:15px; line-height:1.5; color:var(--muted); max-width:52ch; }
 
 .rec-under{ margin:12px 0 0; max-width:72ch; color:var(--muted); }
 
@@ -42,17 +61,20 @@
 .rec-sec{ margin-top:40px; display:flex; flex-direction:column; gap:12px; }
 .rec-sec__lede{ margin-top:-6px; }
 
-/* ── Six-day strip: 2 → 3 → 6 columns, never sideways ── */
+/* ── The last seven (or six) days: compact rows → 4 columns → one row of 7 (or 6) ── */
 .rec-strip{
   list-style:none; margin:0; padding:0;
-  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;
+  display:grid; grid-template-columns:minmax(0,1fr); gap:10px;
 }
-@media (min-width:640px){ .rec-strip{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-@media (min-width:1024px){ .rec-strip{ grid-template-columns:repeat(6,minmax(0,1fr)); } }
+@media (min-width:600px){ .rec-strip{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
+@media (min-width:1024px){
+  .rec-strip--7{ grid-template-columns:repeat(7,minmax(0,1fr)); }
+  .rec-strip--6{ grid-template-columns:repeat(6,minmax(0,1fr)); }
+}
 
 .rec-day{ display:flex; }
 .rec-day__link,.rec-day__in{
-  flex:1; display:flex; flex-direction:column; gap:4px;
+  flex:1; display:flex; flex-direction:column; gap:6px;
   padding:12px 14px 14px;
   background:var(--surface); border:1px solid var(--line); border-radius:var(--r-2);
   color:inherit; text-decoration:none;
@@ -61,30 +83,48 @@
 .rec-day__link:hover{ border-color:var(--line-2); background:var(--surface-2); color:inherit; }
 .rec-day p{ margin:0; }
 .rec-day__date{ font-size:12.5px; color:var(--muted); }
-.rec-day__frac{ font-size:12.5px; line-height:1.3; color:var(--muted); }
-.rec-day__frac .mono{ font-size:19px; font-weight:700; color:var(--ink); letter-spacing:-.02em; }
-.rec-day__pct{ font-size:13.5px; color:var(--ink-2); }
+.rec-day__frac{ font-size:12.5px; line-height:1.35; color:var(--muted); }
+.rec-day__frac .mono{ font-size:14.5px; color:var(--ink-2); }
+.rec-day__frac .rec-won{ color:var(--won); }
+.rec-day__pct{ font-size:21px; line-height:1.05; letter-spacing:-.03em; }
 .rec-day__none{ font-size:14px; color:var(--muted); padding-block:4px; }
 /* "Today · so far": empty and hidden in the static HTML; stale.js fills it on the visitor's day. */
-.rec-day .rec-day__rel{ margin-top:auto; padding-top:6px; font-size:12px; font-weight:600; color:var(--hold); }
+.rec-day .rec-day__rel{ margin-top:auto; padding-top:4px; font-size:12px; font-weight:600; color:var(--hold); }
 .rec-day__rel[hidden]{ display:none; }
+
+/* Phones: one compact row per day — date · count · percentage — with the full date and the
+   "n of m" kept as text. Columns shrink and wrap before anything scrolls sideways. */
+@media (max-width:599.98px){
+  .rec-strip{ gap:6px; }
+  .rec-day__link,.rec-day__in{
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,auto);
+    align-items:baseline; column-gap:8px; row-gap:2px;
+    padding:10px 12px;
+  }
+  .rec-day__date{ font-size:12px; }
+  .rec-day__frac{ text-align:right; font-size:12px; }
+  .rec-day__frac .mono{ font-size:13px; }
+  .rec-day__pct{ font-size:15px; letter-spacing:-.01em; text-align:right; min-width:6ch; }
+  .rec-day__none{ grid-column:2 / -1; text-align:right; padding-block:0; font-size:13px; }
+  .rec-day .rec-day__rel{ grid-column:1 / -1; margin-top:0; padding-top:0; }
+}
 
 /* ── The current month's chip: sentence case here, not the shouting caps of the base chip ── */
 .rec-chip{ text-transform:none; letter-spacing:.01em; font-size:11.5px; white-space:normal; margin-left:6px; vertical-align:1px; }
 
-/* ── Month table ── */
+/* ── Month table: the right count and the percentage green, the total neutral ── */
 .rec-months-card{ padding:4px 16px; }
 @media (min-width:640px){ .rec-months-card{ padding:6px 22px; } }
 .rec-months th[scope="row"]{ font-family:var(--font-ui); font-size:14.5px; font-weight:600; letter-spacing:0; text-transform:none; color:var(--ink); white-space:normal; }
 .rec-months tbody tr:last-child th,.rec-months tbody tr:last-child td{ border-bottom:0; }
-.rec-months td.num{ color:var(--ink); }
+.rec-months td.num{ color:var(--ink-2); }
 @media (max-width:639.98px){
   .rec-months tbody tr:last-child{ border-bottom:0; }
   .rec-months th[scope="row"]{ padding-bottom:6px; }
 }
 
-/* ── Footnotes ── */
-.rec-foot{
+/* ── Footnotes ── (two classes: the ul[role="list"] reset (0,1,1) would otherwise zero the spacing) */
+.rec-foot.t-s{
   list-style:none; margin:36px 0 0; padding:18px 0 0; border-top:1px solid var(--line);
   display:flex; flex-direction:column; gap:8px; max-width:78ch;
 }

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadSite, validateIndex, validateDay, nodeSha256 } from '../site/lib/data.js';
+import { toLast7 } from './site-fixtures.js';
 
 const ART = fileURLToPath(new URL('./fixtures/artifact/', import.meta.url));
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
@@ -42,7 +43,8 @@ test('loads the fixture artifact: index + both full days, newest first, no warni
   assert.equal(site.days.get('2026-10-08').fixtures.length, 130);
   assert.equal(site.days.get('2026-10-07').fixtures.length, 146);
   assert.equal(site.days.get('2026-10-08').picks_hash, DAY08.picks_hash);
-  assert.equal(site.index.record.last_6.length, 6);
+  assert.equal(site.index.record.recent.length, INDEX.record.last_6.length);
+  assert.equal(site.index.record.recent_key, 'last_6');
   assert.deepEqual(warnings, []);
 });
 
@@ -197,7 +199,7 @@ test('validateIndex accepts the legitimate nulls the publisher emits', () => {
   o.record.months[0].status = 'sealed_v2'; // a status this build does not know yet
   o.record.last_6[0].status = 'audit_hold';
   const v = validateIndex(o);
-  assert.equal(v.record.last_6[5].status, null);
+  assert.equal(v.record.recent[5].status, null);
   assert.deepEqual(v.record.last_30.status_days, {});
   assert.equal(v.record.selection.min_odds, null);
   assert.equal(v.record.months[0].status, 'sealed_v2');
@@ -219,6 +221,12 @@ test('validateIndex rejects contract violations', () => {
     ['fixtures not integer', (o) => { o.days[0].fixtures = 1.5; }, /fixtures/],
     ['last_6 has 5 entries', (o) => { o.record.last_6.pop(); }, /last_6/],
     ['last_6 has 7 entries', (o) => { o.record.last_6.push(clone(o.record.last_6[0])); }, /last_6/],
+    ['last_7 has 6 entries', (o) => { toLast7(o.record); o.record.last_7.pop(); }, /last_7/],
+    ['last_7 has 8 entries', (o) => { toLast7(o.record); o.record.last_7.push(clone(o.record.last_7[0])); }, /last_7/],
+    ['last_7 not an array', (o) => { toLast7(o.record); o.record.last_7 = {}; }, /last_7/],
+    ['last_7 entry malformed', (o) => { toLast7(o.record); o.record.last_7[6].period = '2026-10'; }, /last_7\[6\]\.period/],
+    ['both last_6 and last_7', (o) => { o.record.last_7 = toLast7(clone(o.record)).last_7; }, /both last_6 and last_7/],
+    ['neither last_6 nor last_7', (o) => { delete o.record.last_6; }, /last_7 or the legacy last_6/],
     ['pct 0 without a denominator', (o) => { Object.assign(o.record.last_6[0], { won: 0, lost: 0, graded: 0, pct: 0 }); }, /pct/],
     ['pct null with a denominator', (o) => { o.record.months[0].pct = null; }, /pct/],
     ['coverage 0 without a denominator', (o) => { Object.assign(o.record.last_6[0], { finished_fixtures: 0, coverage: 0 }); }, /coverage/],
@@ -239,6 +247,24 @@ test('validateIndex rejects contract violations', () => {
   for (const [name, mut, re] of cases) {
     const o = name === 'root not an object' ? [] : badIndex(mut);
     assert.throws(() => validateIndex(o), re, name);
+  }
+});
+
+test('spec §17.5: the record carries last_7 (exactly 7) or the legacy last_6 (exactly 6) as one list', () => {
+  const seven = toLast7(clone(INDEX.record));
+  assert.equal(seven.last_7.length, 7, 'premise: the fixture helper builds seven days');
+  assert.equal(seven.last_6, undefined, 'premise: the helper drops last_6');
+  const v7 = validateIndex({ ...clone(INDEX), record: seven }).record;
+  assert.equal(v7.recent_key, 'last_7');
+  assert.deepEqual(v7.recent.map((g) => g.period), seven.last_7.map((g) => g.period));
+  assert.deepEqual(v7.recent.map((g) => [g.won, g.graded, g.pct, g.status]), seven.last_7.map((g) => [g.won, g.graded, g.pct, g.status]));
+  const v6 = validateIndex(clone(INDEX)).record;
+  assert.equal(v6.recent_key, 'last_6');
+  assert.deepEqual(v6.recent.map((g) => g.period), INDEX.record.last_6.map((g) => g.period));
+  // One normalised list: the raw keys do not leak through the allowlist.
+  for (const v of [v6, v7]) {
+    assert.equal(v.last_6, undefined);
+    assert.equal(v.last_7, undefined);
   }
 });
 

@@ -6,6 +6,8 @@ import { join } from 'node:path';
 import { validateIndex } from '../site/lib/data.js';
 import { renderRecord } from '../site/lib/record.js';
 import { fmtDayLong } from '../site/lib/time.js';
+import { claimViolations } from './html-scan.js';
+import { toLast7 } from './site-fixtures.js';
 
 // Our Record, stated plainly (Plan A Task 5, spec §7).
 
@@ -26,6 +28,15 @@ function rec(mutate) {
   mutate(raw.record);
   return validateIndex(raw).record;
 }
+/** The same, with the record carrying last_7 (spec §17.5) instead of the legacy last_6. */
+const rec7 = (mutate = () => {}) => rec((x) => { toLast7(x); mutate(x); });
+const REC7 = rec7();
+/** 12154 -> '12,154', independent of the renderer's own formatter. */
+const fmt = (n) => n.toLocaleString('en-US');
+/** A published pct as the page prints it. */
+const pctText = (v) => `${v.toFixed(2)}%`;
+const isPerfectG = (g) => g.graded > 0 && g.won === g.graded;
+const isEmptyG = (g) => g.graded === 0 || g.pct === null;
 
 /** Visible text of an HTML fragment (tags dropped, entities for the five escaped chars decoded). */
 function text(html) {
@@ -62,7 +73,8 @@ function allWith(html, attr) {
   return out;
 }
 const count = (hay, needle) => hay.split(needle).length - 1;
-const stripRows = (html) => allWith(elementWith(html, 'class="rec-strip"').html, 'data-figure="record-row"');
+const stripOf = (html) => elementWith(html, 'class="rec-strip ').html;
+const stripRows = (html) => allWith(stripOf(html), 'data-figure="record-row"');
 const monthRows = (html) => allWith(elementWith(html, 'class="bg-table rec-months"').html, 'data-figure="record-row"');
 const headOf = (html) => elementWith(html, 'data-claim="headline"').html;
 const PERFECT_30 = { won: 12, lost: 0, pushes: 0, graded: 12, pct: 100, finished_fixtures: 14, coverage: 0.8571 };
@@ -78,17 +90,38 @@ test('intro: the spec §7 sentence, picks "made before kickoff"', () => {
   assert.doesNotMatch(t, /published before kickoff/);
 });
 
-test('headline: one block, "Last 30 days", the hero fraction and the exact sentence with 10,268 / 12,154 / 84.48%', () => {
+test('headline (spec §17.5): header row (title + period) -> the percentage hero -> "won of graded picks right" -> one caption without the %', () => {
   const html = renderRecord(REC, OPTS);
   assert.equal(count(html, 'data-claim="headline"'), 1, 'exactly one headline block');
   const head = headOf(html);
-  const t = text(head);
-  assert.match(t, /^Last 30 days /);
-  assert.ok(t.includes('10,268 of 12,154'), t);
-  assert.ok(t.includes('Our recommended picks were right 10,268 times out of 12,154: 84.48%.'), t);
-  // The figures are emphasised as the spec shows them.
-  assert.ok(head.includes('<strong>10,268 times out of 12,154</strong>'), head);
-  assert.ok(head.includes('<strong>84.48%</strong>'), head);
+  const g = REC.last_30;
+  const won = fmt(g.won);
+  const graded = fmt(g.graded);
+  const pct = pctText(g.pct);
+  const period = text(elementWith(head, 'data-claim-part="period"').html);
+  // The header row holds the title AND the period, in one element, at the top of the card.
+  const top = elementWith(head, 'class="rec-head__top"');
+  assert.ok(top, 'a header row');
+  assert.ok(top.html.includes('id="rec-head-h"') && top.html.includes('data-claim-part="period"'), top.html);
+  assert.equal(text(top.html), `Last 30 days ${period}`);
+  // The hero is the percentage, alone, in the green figure class.
+  const hero = elementWith(head, 'data-figure="record-pct"');
+  assert.ok(hero, 'a hero percentage element');
+  assert.equal(text(hero.html), pct);
+  assert.match(hero.html, /^<p class="rec-hero rec-won"/);
+  // Count line: the won count green, the total not.
+  const countLine = elementWith(head, 'class="rec-count"');
+  assert.equal(text(countLine.html), `${won} of ${graded} picks right`);
+  assert.ok(countLine.html.includes(`<strong class="rec-won">${won}</strong> of ${graded} picks right`), countLine.html);
+  // One caption sentence, no percentage.
+  const cap = elementWith(head, 'class="rec-hero__cap"');
+  assert.equal(text(cap.html), `Our recommended picks were right ${won} times out of ${graded}.`);
+  assert.doesNotMatch(text(cap.html), /%/);
+  // Order inside the card: header row, hero, count line, caption; nothing after the caption.
+  const at = (h) => head.indexOf(h);
+  assert.ok(at(top.html) < at(hero.html) && at(hero.html) < at(countLine.html) && at(countLine.html) < at(cap.html), 'order');
+  assert.match(head.slice(at(cap.html) + cap.html.length), /^\s*<\/section>$/, 'the period no longer sits at the bottom');
+  assert.equal(text(head), `Last 30 days ${period} ${pct} ${won} of ${graded} picks right Our recommended picks were right ${won} times out of ${graded}.`);
 });
 
 test('headline: the period line reads "8 Sep – 7 Oct 2026" and is the only claim part', () => {
@@ -117,11 +150,16 @@ test('headline: null pct reads "No picks settled in the last 30 days yet." and n
   assert.ok(head.includes('data-claim-part="period"'), 'the period still shows');
 });
 
-test('headline: a perfect window states its fraction and no percentage at all', () => {
+test('headline: a perfect window\'s hero reads "Every pick right", the count line stays, no percentage at all', () => {
   const r = rec((x) => Object.assign(x.last_30, PERFECT_30));
-  const t = text(headOf(renderRecord(r, OPTS)));
-  assert.ok(t.includes('12 of 12'), t);
-  assert.ok(t.includes('Our recommended picks were right 12 times out of 12.'), t);
+  const head = headOf(renderRecord(r, OPTS));
+  const t = text(head);
+  const n = fmt(PERFECT_30.won);
+  const hero = elementWith(head, 'data-figure="record-pct"').html;
+  assert.equal(text(hero), 'Every pick right');
+  assert.match(hero, /^<p class="rec-hero rec-hero--words rec-won"/);
+  assert.equal(text(elementWith(head, 'class="rec-count"').html), `${n} of ${n} picks right`);
+  assert.ok(t.includes(`Our recommended picks were right ${n} times out of ${n}.`), t);
   assert.doesNotMatch(t, /%/);
 });
 
@@ -133,7 +171,8 @@ test('headline: a non-perfect window that rounds to 100 shows 99.99%, never 100.
   });
   const html = renderRecord(r, OPTS);
   assert.doesNotMatch(text(html), /100(\.0+)?%/);
-  assert.ok(text(headOf(html)).includes('right 29,999 times out of 30,000: 99.99%.'));
+  assert.equal(text(elementWith(headOf(html), 'data-figure="record-pct"').html), '99.99%');
+  assert.ok(text(headOf(html)).includes('29,999 of 30,000 picks right Our recommended picks were right 29,999 times out of 30,000.'));
   assert.match(text(stripRows(html)[1]), /29,999 of 30,000 right 99\.99%/);
   assert.match(text(monthRows(html)[0]), /29,999 of 30,000 right 99\.99%/);
 });
@@ -159,7 +198,7 @@ test('removed: no coverage, confidence, status, selection rule, uncertainty or p
 test('strategy: the page states no selection rule, so any strategy renders', () => {
   const r = rec((x) => { x.strategy = 'probability_range'; });
   const t = text(renderRecord(r, OPTS));
-  assert.ok(t.includes('Our recommended picks were right 10,268 times out of 12,154: 84.48%.'));
+  assert.ok(t.includes(`${pctText(REC.last_30.pct)} ${fmt(REC.last_30.won)} of ${fmt(REC.last_30.graded)} picks right`), t);
   assert.doesNotMatch(t, /probability_range|edge_reliability/);
 });
 
@@ -183,10 +222,24 @@ test('under the card: one line for pushes and voids; the ledger scope string is 
 // The last six days
 // ---------------------------------------------------------------------------------------------
 
-test('strip: six record-rows, each "<full date> <won> of <graded> right <pct>%"', () => {
-  const rows = stripRows(renderRecord(REC, OPTS));
-  assert.equal(rows.length, 6);
-  REC.last_6.forEach((d, i) => {
+test('strip (spec §17.5): last_7 -> "The last seven days", seven cards in a 7-column strip; legacy last_6 -> "The last six days", six', () => {
+  for (const [r, n, heading, other] of [[REC7, 7, 'The last seven days', 'The last six days'], [REC, 6, 'The last six days', 'The last seven days']]) {
+    assert.equal(r.recent.length, n, 'premise: the record carries n days');
+    const html = renderRecord(r, OPTS);
+    const sec = elementWith(html, 'aria-labelledby="rec-strip-h"').html;
+    assert.equal(text(elementWith(sec, 'id="rec-strip-h"').html), heading);
+    assert.match(sec, new RegExp(`<ol class="rec-strip rec-strip--${n}" role="list">`));
+    const rows = stripRows(html);
+    assert.equal(rows.length, n);
+    r.recent.forEach((d, i) => assert.ok(rows[i].includes(`data-period="${d.period}"`), `${heading}: row ${i}`));
+    assert.ok(!text(html).includes(other), `${heading}: not "${other}"`);
+  }
+});
+
+test('strip: record-rows, each "<full date> <won> of <graded> right <pct>%"', () => {
+  const rows = stripRows(renderRecord(REC7, OPTS));
+  assert.equal(rows.length, 7);
+  REC7.recent.forEach((d, i) => {
     assert.ok(rows[i].includes(`data-period="${d.period}"`), `row ${i} period attribute`);
     assert.ok(rows[i].includes(`datetime="${d.period}"`), `row ${i} time element`);
     const want = `${fmtDayLong(d.period)} ${d.won.toLocaleString('en-US')} of ${d.graded.toLocaleString('en-US')} right ${d.pct.toFixed(2)}%`;
@@ -211,6 +264,8 @@ test('strip: no status word on any day, whatever the ledger says', () => {
     x.last_6[2].status = 'confirmed';
     x.last_6[3].status = 'republish_pending';
     x.last_6[4].status = 'sealed_v2';
+    toLast7(x);
+    x.last_7[6].status = 'republish_pending';
   });
   for (const row of stripRows(renderRecord(r, OPTS))) {
     assert.doesNotMatch(text(row), STATUS_WORDS);
@@ -225,18 +280,20 @@ test('strip: an empty day reads "No picks settled"; a perfect day "5 of 5 right"
     Object.assign(x.last_6[2], { won: 5, lost: 0, pushes: 0, graded: 5, finished_fixtures: 6, pct: 100, coverage: 0.8333 });
   });
   const rows = stripRows(renderRecord(r, OPTS));
-  assert.equal(text(rows[3]), `${fmtDayLong(REC.last_6[3].period)} No picks settled`);
-  assert.equal(text(rows[2]), `${fmtDayLong(REC.last_6[2].period)} 5 of 5 right`);
+  assert.equal(text(rows[3]), `${fmtDayLong(REC.recent[3].period)} No picks settled`);
+  assert.equal(text(rows[2]), `${fmtDayLong(REC.recent[2].period)} 5 of 5 right`);
   assert.doesNotMatch(text(rows[2]), /%/);
 });
 
 test('strip: links only days the archive lists', () => {
-  const strip = elementWith(renderRecord(REC, OPTS), 'class="rec-strip"').html;
+  const strip = stripOf(renderRecord(REC7, OPTS));
   assert.ok(strip.includes('href="/day/2026-10-07/"'));
-  for (const d of ['2026-10-06', '2026-10-05', '2026-10-04', '2026-10-03', '2026-10-02']) {
+  const unlisted = REC7.recent.map((g) => g.period).filter((d) => !DAYS.has(d));
+  assert.equal(unlisted.length, 6, 'premise: six of the seven days are not listed');
+  for (const d of unlisted) {
     assert.ok(!strip.includes(`/day/${d}/`), `${d} is not listed, so it must not link`);
   }
-  const strip2 = elementWith(renderRecord(REC, { ...OPTS, days: ['2026-10-06'] }), 'class="rec-strip"').html;
+  const strip2 = stripOf(renderRecord(REC, { ...OPTS, days: ['2026-10-06'] }));
   assert.ok(strip2.includes('href="/day/2026-10-06/"'));
   assert.ok(!strip2.includes('href="/day/2026-10-07/"'));
 });
@@ -287,7 +344,7 @@ test('months: a perfect month reads "Every pick right" (no %); an empty month on
   const html = renderRecord(r, OPTS);
   const rows = monthRows(html);
   assert.equal(text(rows[1]), 'September 2026 40 of 40 right Every pick right');
-  assert.ok(rows[1].includes('<td class="num" data-label="Accuracy">Every pick right</td>'), rows[1]);
+  assert.ok(rows[1].includes('<td class="num" data-label="Accuracy"><strong class="rec-won">Every pick right</strong></td>'), rows[1]);
   assert.doesNotMatch(text(rows[1]), /%/);
   assert.equal(text(rows[2]), 'August 2026 No picks settled');
   assert.ok(rows[2].includes('<td class="num" colspan="2" data-label="Right">No picks settled</td>'), rows[2]);
@@ -376,7 +433,7 @@ test('escaping: a hostile month string never reaches the HTML raw; hostile statu
   // Free-text ledger fields are no longer printed at all.
   const s = clone(REC);
   s.scope = hostile;
-  s.last_6[1].status = hostile;
+  s.recent[1].status = hostile;
   s.months[2].status = hostile;
   assert.doesNotMatch(renderRecord(s, OPTS), /onerror/);
   assert.equal(renderRecord(REC, { ...OPTS, repo: 'x"><script>' }), renderRecord(REC, OPTS), 'a repo option is never read');
@@ -417,6 +474,7 @@ test('record.css: only rules, base tokens, and no class the renderer never emits
   // Class tokens the renderer actually emits, over every state it has (full, empty, perfect, none).
   const outputs = [
     renderRecord(REC, OPTS),
+    renderRecord(REC7, OPTS),
     renderRecord(null, OPTS),
     renderRecord(rec((x) => {
       x.months = [];
@@ -442,4 +500,131 @@ test('record.css: only rules, base tokens, and no class the renderer never emits
   assert.ok(classes.has('rec-months') && classes.has('mono') && classes.size > 5, 'premise: the stylesheet\'s class selectors were read');
   for (const c of classes) assert.ok(emitted.has(c), `record.css styles .${c}, which renderRecord never emits as a class`);
   assert.doesNotMatch(rules, /\.rec-foot a\b/);
+});
+
+// ---------------------------------------------------------------------------------------------
+// Spec §17.5: green figures, the claim scanner over the page, the hero's type and the strip's columns
+// ---------------------------------------------------------------------------------------------
+
+/** Visible text of every element whose class list holds `rec-won`, in document order. */
+function greens(html) {
+  const out = [];
+  for (const m of html.matchAll(/<[a-z0-9]+\b[^>]*\bclass="([^"]*)"[^>]*>/gi)) {
+    if (!m[1].split(/\s+/).includes('rec-won')) continue;
+    out.push(text(elementWith(html, m[0], m.index).html));
+  }
+  return out;
+}
+const shown = (g) => (g.won < g.graded && g.pct > 99.99 ? 99.99 : g.pct);
+/** What the page must paint green, from the data: every right count and every percentage, no total. */
+function expectedGreens(r) {
+  const out = [];
+  const g = r.last_30;
+  if (!isEmptyG(g)) out.push(isPerfectG(g) ? 'Every pick right' : pctText(shown(g)), fmt(g.won));
+  for (const d of r.recent) {
+    if (isEmptyG(d)) continue;
+    out.push(fmt(d.won));
+    if (!isPerfectG(d)) out.push(pctText(shown(d)));
+  }
+  for (const mo of r.months) {
+    if (isEmptyG(mo)) continue;
+    out.push(fmt(mo.won), isPerfectG(mo) ? 'Every pick right' : pctText(shown(mo)));
+  }
+  return out;
+}
+const MIXED = rec7((x) => {
+  Object.assign(x.last_7[1], { won: 5, lost: 0, pushes: 0, graded: 5, finished_fixtures: 6, pct: 100, coverage: 0.8333 });
+  Object.assign(x.last_7[4], { won: 0, lost: 0, pushes: 0, graded: 0, finished_fixtures: 0, pct: null, coverage: null, status: null });
+  Object.assign(x.months[1], { won: 40, lost: 0, pushes: 0, graded: 40, pct: 100, finished_fixtures: 41, coverage: 0.9756 });
+  Object.assign(x.months[2], { won: 0, lost: 0, pushes: 0, graded: 0, pct: null, finished_fixtures: 0, coverage: null });
+});
+
+test('green figures: every right count and every percentage (hero, count line, day cards, months) and no total', () => {
+  for (const [name, r] of [['last_6', REC], ['last_7', REC7], ['mixed', MIXED], ['perfect 30', rec7((x) => Object.assign(x.last_30, PERFECT_30))]]) {
+    const html = renderRecord(r, OPTS);
+    const want = expectedGreens(r);
+    assert.ok(want.length >= 2 + r.recent.length, `${name}: premise: the data has figures to paint`);
+    assert.deepEqual(greens(html), want, name);
+    // Every percentage in the visible text is one of the green ones (none left neutral).
+    const pcts = text(html).match(/\d+(\.\d+)?%/g) || [];
+    assert.deepEqual(pcts, want.filter((w) => w.endsWith('%')), `${name}: every percentage is green`);
+  }
+  // The guard fires: a total painted green, or a count left neutral, breaks the list.
+  const html = renderRecord(REC, OPTS);
+  const g = REC.last_30;
+  const totalGreen = html.replace(` of ${fmt(g.graded)} picks right`, ` of <strong class="rec-won">${fmt(g.graded)}</strong> picks right`);
+  assert.notEqual(totalGreen, html);
+  assert.notDeepEqual(greens(totalGreen), expectedGreens(REC));
+  const neutral = html.replace(`<strong class="rec-won">${fmt(g.won)}</strong>`, fmt(g.won));
+  assert.notEqual(neutral, html);
+  assert.notDeepEqual(greens(neutral), expectedGreens(REC));
+});
+
+test('claims scanner (tests/html-scan.js): the rendered page has no violation, last_7 and legacy last_6 alike', () => {
+  const page = (frag) => `<!doctype html><html lang="en"><head><title>Our record</title></head><body><main>${frag}</main></body></html>`;
+  for (const r of [REC, REC7, MIXED, rec7((x) => Object.assign(x.last_30, PERFECT_30))]) {
+    assert.deepEqual(claimViolations(page(renderRecord(r, OPTS))), []);
+  }
+  // Premise: the scanner reasons about this markup: the hero needs the headline's period part and its fraction.
+  const html = page(renderRecord(REC7, OPTS));
+  const hero = pctText(REC7.last_30.pct);
+  const noPeriod = html.replace('data-claim-part="period"', 'data-x="gone"');
+  assert.notEqual(noPeriod, html);
+  assert.ok(claimViolations(noPeriod).some((m) => m.includes(`"${hero}" outside an allowed figure`)), 'no period');
+  const noCount = html.replace(/<p class="rec-count">[^]*?<\/p>/, '');
+  assert.notEqual(noCount, html);
+  assert.ok(claimViolations(noCount).some((m) => m.includes(`"${hero}" outside an allowed figure`)), 'no fraction');
+});
+
+/** [min, max] px of a `font-size:` declaration in rule `sel` (a clamp gives both ends, a px value twice). */
+function fontSize(css, sel) {
+  const rule = new RegExp(`${sel.replace(/[.[\]-]/g, '\\$&')}\\s*\\{([^}]*)\\}`).exec(css);
+  assert.ok(rule, `a ${sel} rule`);
+  const v = /font-size:\s*([^;]+)/.exec(rule[1]);
+  assert.ok(v, `${sel} sets font-size`);
+  const px = [...v[1].matchAll(/(\d+(?:\.\d+)?)px/g)].map((m) => Number(m[1]));
+  return [px[0], px[px.length - 1]];
+}
+
+test('record.css (spec §17.5): the hero is the largest type on the page, 800, green; the count line ~40% of it', () => {
+  const rules = (f) => readFileSync(join(ROOT, f), 'utf8').replace(/\/\*[^]*?\*\//g, '');
+  const css = rules('site/assets/css/record.css');
+  const base = rules('site/assets/css/base.css');
+  const [heroMin, heroMax] = fontSize(css, '.rec-hero');
+  assert.ok(/\.rec-hero\s*\{[^}]*font-weight:\s*800/.test(css), 'hero weight 800');
+  assert.ok(/\.rec-won\s*\{[^}]*color:\s*var\(--won\)/.test(css), '.rec-won is var(--won)');
+  assert.ok(/\.rec-won\s*\{[^}]*font-weight:\s*(700|800)/.test(css), '.rec-won is bold');
+  // Largest at every width: the hero's smallest size (and its perfect-window wording's) beats every
+  // other px size the page's CSS sets.
+  const [wordsMin] = fontSize(css, '.rec-hero--words');
+  const others = [...(css.replace(/\.rec-hero(--words)?\s*\{[^}]*\}/g, '') + base).matchAll(/font-size:\s*([^;}]+)/g)]
+    .flatMap((m) => [...m[1].matchAll(/(\d+(?:\.\d+)?)px/g)].map((x) => Number(x[1])));
+  assert.ok(others.length > 10, 'premise: the other sizes were read');
+  for (const [name, min] of [['hero', heroMin], ['perfect-window hero', wordsMin]]) {
+    assert.ok(min > Math.max(...others), `${name} ${min}px vs largest other ${Math.max(...others)}px`);
+  }
+  const [cMin, cMax] = fontSize(css, '.rec-count');
+  for (const [c, h] of [[cMin, heroMin], [cMax, heroMax]]) assert.ok(c / h >= 0.35 && c / h <= 0.45, `count ${c}px is ~40% of hero ${h}px`);
+});
+
+test('record.css: day-card columns follow the data (7 or 6 from 1024px), 4 from 600px, compact rows below 600px', () => {
+  const css = readFileSync(join(ROOT, 'site/assets/css/record.css'), 'utf8').replace(/\/\*[^]*?\*\//g, '');
+  /** Every `@media <q>{...}` block's text, joined. */
+  const block = (q) => {
+    const out = [];
+    for (let at = css.indexOf(`@media ${q}{`); at >= 0; at = css.indexOf(`@media ${q}{`, at + 1)) {
+      let depth = 0;
+      for (let i = css.indexOf('{', at); i < css.length; i++) {
+        if (css[i] === '{') depth++;
+        if (css[i] === '}' && --depth === 0) { out.push(css.slice(at, i + 1)); break; }
+      }
+    }
+    assert.ok(out.length > 0, `a ${q} block`);
+    return out.join(' ');
+  };
+  const wide = block('(min-width:1024px)');
+  for (const n of [7, 6]) assert.match(wide, new RegExp(`\\.rec-strip--${n}\\s*\\{[^}]*grid-template-columns:\\s*repeat\\(${n},\\s*minmax\\(0,\\s*1fr\\)\\)`));
+  assert.match(block('(min-width:600px)'), /\.rec-strip\s*\{[^}]*grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
+  const phone = block('(max-width:599.98px)');
+  assert.match(phone, /\.rec-day__link,\s*\.rec-day__in\s*\{[^}]*display:\s*grid/);
 });
