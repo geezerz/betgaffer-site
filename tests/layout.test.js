@@ -1035,6 +1035,68 @@ test('nojs.css: below 600 px it restores today\'s tab row exactly (every propert
   assert.equal(valueOf(n, 'html', 'scroll-padding-top', NARROW), 'calc(var(--bar-h) + 52px)');
 });
 
+test('wordmark (spec §17.4): 22px below 1024 px, 26px from 1024 px, weight 800; the bar heights stay 56/64', () => {
+  const r = cssRules('base.css');
+  const WIDE = '(min-width:1024px)';
+  assert.equal(valueOf(r, '.bg-wordmark', 'font-size'), '22px', 'below 1024 px');
+  assert.equal(valueOf(r, '.bg-wordmark', 'font-size', WIDE), '26px', 'from 1024 px');
+  assert.equal(valueOf(r, '.bg-wordmark', 'font-weight'), '800', 'weight unchanged');
+  for (const rule of r) {
+    if (!rule.sels.some((s) => /\.bg-wordmark(?![\w-])/.test(s))) continue;
+    if (rule.decls.some(([p]) => p === 'font-size' || p === 'font')) {
+      assert.ok([null, WIDE].includes(rule.media), `no other width resizes the wordmark: ${rule.sels} in ${rule.media}`);
+    }
+  }
+  assert.ok(!cssRules('nojs.css').some((x) => x.sels.some((s) => s.includes('bg-wordmark'))), 'nojs.css leaves it alone');
+  // The bar does not grow: the balloon, the ☰ panel and the sticky toolbar keep their offsets.
+  assert.equal(valueOf(r, ':root', '--bar-h'), '56px');
+  assert.equal(valueOf(r, ':root', '--bar-h-lg'), '64px');
+  assert.equal(valueOf(r, '.bg-topbar__in', 'min-height'), 'var(--bar-h)');
+  assert.equal(valueOf(r, '.bg-topbar__in', 'min-height', WIDE), 'var(--bar-h-lg)');
+  const mh = Number.parseFloat(valueOf(r, '.bg-wordmark', 'min-height'));
+  assert.ok(mh >= 44 && mh <= 56, `the wordmark's box (${mh}px) is a tap target that fits the 56px bar`);
+  assert.equal(valueOf(r, '.bg-wordmark', 'line-height'), '1', 'premise: one line box, so 26px text sits inside it');
+});
+
+test('/waitlist/ from 1024 px (spec §17.3): two columns; the Gaffer aside spans exactly the left sections, placed explicitly', () => {
+  const html = readFileSync(join(BUILT.out, 'waitlist', 'index.html'), 'utf8');
+  const article = find(parse(html), (n) => n.tag === 'article' && (n.attrs.class ?? '').split(/\s+/).includes('bg-fd'));
+  const kids = article.children.filter((c) => c.tag !== undefined);
+  const asides = kids.filter((k) => k.tag === 'aside');
+  assert.equal(asides.length, 1, 'the aside is a grid item of .bg-fd');
+  assert.equal(asides[0].attrs.class, 'bg-fd__gaffer');
+  const N = kids.length - 1;
+  assert.equal(N, 7, 'premise: hero, counts, join, benefits, how it works, questions, rules link');
+  const r = cssRules('founding.css');
+  const W = '(min-width:1024px)';
+  // Below 1024 px: today's single column (the aside follows the form in DOM order).
+  assert.equal(valueOf(r, '.bg-fd', 'display'), 'flex');
+  assert.equal(valueOf(r, '.bg-fd', 'flex-direction'), 'column');
+  assert.ok(!r.some((x) => x.media !== W && x.sels.some((s) => /\.bg-fd__gaffer(?![\w-])/.test(s)) && x.decls.some(([p]) => /^grid-(?:row|column|area)/.test(p))),
+    'no placement below 1024 px');
+  // From 1024 px: the grid.
+  assert.equal(valueOf(r, '.bg-fd', 'display', W), 'grid');
+  const cols = valueOf(r, '.bg-fd', 'grid-template-columns', W);
+  const m = /^minmax\(0,\s*46rem\)\s+minmax\((\d+(?:\.\d+)?)rem,\s*(\d+(?:\.\d+)?)rem\)$/.exec(cols ?? '');
+  assert.ok(m, `main column keeps its 46rem cap, then the aside column: ${cols}`);
+  assert.ok(Number(m[2]) >= 22 && Number(m[2]) <= 24, `aside column ~22-24rem (max ${m[2]}rem)`);
+  assert.ok(Number(m[1]) >= 18 && Number(m[1]) <= Number(m[2]), `aside min ${m[1]}rem`);
+  const gap = valueOf(r, '.bg-fd', 'column-gap', W) ?? '';
+  const gapMin = /^clamp\((\d+)px,/.exec(gap)?.[1] ?? /^(\d+)px$/.exec(gap)?.[1];
+  assert.ok(Number(gapMin) >= 48, `column gap >= 48px (${gap})`);
+  // Every left section in column 1; the aside in column 2 over rows 1..N — never 1 / -1 (that is the
+  // explicit grid's last line, and the left sections' rows are implicit).
+  assert.equal(valueOf(r, '.bg-fd > *', 'grid-column', W), '1');
+  assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'grid-column', W), '2');
+  assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'grid-row', W), `1 / span ${N}`);
+  assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'align-self', W), 'start', 'the panel is its own height, not the column\'s');
+  for (const x of r) for (const [p, v] of x.decls) if (/^grid-(?:row|column|area)/.test(p)) assert.doesNotMatch(v, /-1/, `${x.sels} ${p}:${v}`);
+  // The benefits stay two across beside the aside (no third column at 1024 px).
+  assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', W), undefined, 'no 1024 px benefits rule');
+  assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', '(min-width:640px)'), 'repeat(2,minmax(0,1fr))');
+  assert.ok(!r.some((x) => x.sels.includes('.bg-fd__benefits') && /repeat\(3/.test(x.decls.map(([, v]) => v).join(';'))), 'never three across');
+});
+
 test('single-row header below 600 px: base.css and predictions.css fallbacks are the one-row values', () => {
   const b = cssRules('base.css');
   assert.equal(valueOf(b, 'html', 'scroll-padding-top'), 'calc(var(--bar-h) + 12px)', 'one row at every width');

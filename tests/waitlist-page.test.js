@@ -48,6 +48,31 @@ const THANKS = "You're on the founding waitlist. We'll email your invite when it
 
 const RESULT_KINDS = ['thanks', 'invalid', 'slow-down', 'unavailable'];
 
+// spec §17.3: the Gaffer column. Headings are the spec's; sentences are the final ux-copy wording.
+const GAFFER_HEADING = 'Gaffer, your betting assistant';
+const GAFFER_LINE = 'Coming soon — founding members first.';
+const GAFFER_CARDS = [
+  ['Check your slip', 'Before you place a slip, Gaffer shows the chance the whole slip lands and its weakest leg.'],
+  ['Spot repeated legs', "Gaffer warns you when a leg you're adding is already on another of your slips, so one bad result can't sink several."],
+  ['Read a booking code', 'Paste a booking code and Gaffer opens the slip and checks every leg.'],
+  ['Build a slip to your odds', 'Ask for a slip around the odds you want — you confirm before Gaffer builds it.'],
+  ['Swap a weak leg', 'When one leg looks weak, Gaffer offers replacements from our recommended picks only.'],
+  ['Match opinions', 'Ask about a match and get form, head-to-head, the table and lineups in one answer.'],
+  ['The pick, explained', 'See our recommended pick first, then the reasons behind it.'],
+  ['How your bets are doing', 'Get a plain recap of your own slips instead of scrolling through screenshots.'],
+];
+/**
+ * The aside's own ban list (spec §17.3): phrases the features page bans for its own reasons plus the ones
+ * Gaffer must never say while it is not live. Scoped to the aside's text: the rest of the page legitimately
+ * says "double Credits". Returns the patterns that match (by source), [] when clean.
+ */
+const GAFFER_BANNED = [
+  /\b(?:create|make|generate|get)s?\s+(?:a|your|the)?\s*booking codes?\b/i, /\bbooking codes for\b/i, /\bexposure\b/i,
+  /\bsuggested stakes?\b/i, /\bguarantee/i, /\bsure\b/i, /\bedge\b/i, /\bvalue\b/i, /\bcredits?\b/i, /₦/, /%/, /\d/,
+  /\bprices?\b/i, /\bfree\b/i,
+];
+const gafferViolations = (text) => GAFFER_BANNED.filter((re) => re.test(text)).map((re) => re.source);
+
 /** Percentages written in s that are not one of the programme's two offer numbers. */
 const OFFER = new Set([`${F.DISCOUNT_PCT}%`, `${F.TOPUP_BONUS_PCT}%`]);
 const strayPercentages = (s) => [...s.matchAll(/\d[\d.,]*%/g)].map((m) => m[0]).filter((p) => !OFFER.has(p));
@@ -206,6 +231,10 @@ describe('/waitlist/ and the founding card in the built site', () => {
       ['counter tile', (n) => n.attrs['data-waitlist-places'] !== undefined],
       ['launch tile', (n) => n.tag === 'p' && textOf(n).startsWith('500 places') && n.attrs['data-waitlist-places'] === undefined],
       ['form', (n) => n.tag === 'form' && n.attrs['data-waitlist'] !== undefined],
+      // spec §17.3: the Gaffer aside comes right after the join form in the DOM (below 1024 px it follows
+      // the form full width; from 1024 px CSS moves it to the right column).
+      ['Gaffer aside', (n) => n.tag === 'aside' && has(n, 'bg-fd__gaffer')],
+      ...GAFFER_CARDS.map(([h]) => [`Gaffer: ${h}`, (n) => n.tag === 'h3' && textOf(n) === h]),
       ...F.BENEFITS.map((b) => [`benefit ${b.id}`, (n) => /^h[23]$/.test(n.tag) && textOf(n) === b.title]),
       ['How it works', (n) => n.tag === 'h2' && textOf(n) === 'How it works'],
       ...STEPS.map(([title], i) => [`step ${i + 1}`, (n) => n.tag === 'h3' && textOf(n) === title]),
@@ -311,6 +340,75 @@ describe('/waitlist/ and the founding card in the built site', () => {
     const plant = (frag) => page.replace('</main>', `${frag}</main>`);
     assert.ok(claimViolations(plant('<p>30% off</p>')).some((m) => /"30%"/.test(m)));
     assert.ok(claimViolations(plant('<p data-figure="offer">25% off</p>')).some((m) => /"25%"/.test(m)));
+  });
+
+  test('the Gaffer aside (spec §17.3): one aside, the next sibling of the join section, heading + line + the eight cards verbatim', () => {
+    const main = find(doc, (n) => n.tag === 'main');
+    const asides = findAll(main, (n) => n.tag === 'aside');
+    assert.equal(asides.length, 1, 'one aside on the page');
+    const [aside] = asides;
+    assert.ok(has(aside, 'bg-fd__gaffer'));
+    const article = find(main, (n) => n.tag === 'article' && has(n, 'bg-fd'));
+    const kids = article.children.filter((c) => c.tag !== undefined);
+    const at = kids.indexOf(aside);
+    assert.ok(at > 0, 'a direct child of the founding article (the CSS grid places it)');
+    assert.ok(kids[at - 1].tag === 'section' && has(kids[at - 1], 'bg-fd__join'), 'right after the join form');
+    // Named by its heading.
+    const h2 = findAll(aside, (n) => /^h[1-6]$/.test(n.tag) && n.tag !== 'h3');
+    assert.equal(h2.length, 1);
+    assert.equal(h2[0].tag, 'h2');
+    assert.equal(textOf(h2[0]), GAFFER_HEADING);
+    assert.ok(h2[0].attrs.id && aside.attrs['aria-labelledby'] === h2[0].attrs.id, 'aria-labelledby the heading');
+    assert.ok(findAll(aside, (n) => n.tag === 'p' && textOf(n) === GAFFER_LINE).length === 1, 'the coming-soon line');
+    // The eight cards, in order, each a short heading and one sentence.
+    const list = findAll(aside, (n) => n.tag === 'ul');
+    assert.equal(list.length, 1);
+    const items = findAll(list[0], (n) => n.tag === 'li');
+    assert.deepEqual(items.map((li) => [textOf(find(li, (n) => n.tag === 'h3')), textOf(find(li, (n) => n.tag === 'p'))]), GAFFER_CARDS);
+    items.forEach((li, i) => assert.equal(textOf(li), GAFFER_CARDS[i].join(' '), `card ${i + 1}: nothing else in it`));
+    for (const [, s] of GAFFER_CARDS) assert.equal(s.split(/[.!?](?:\s|$)/).filter(Boolean).length, 1, `one sentence: ${s}`);
+    // Static: no link, form, button or figure inside (not live; nothing to click, nothing to measure).
+    assert.equal(find(aside, (n) => ['a', 'form', 'button', 'input', 'script'].includes(n.tag)), null);
+    assert.equal(find(aside, (n) => n.attrs['data-figure'] !== undefined), null);
+  });
+
+  test('the Gaffer aside says nothing Gaffer cannot back: its own ban list, findBanned and the claim scan are clean; each guard fires', () => {
+    const start = page.indexOf('<aside class="bg-fd__gaffer"');
+    assert.ok(start > -1, 'premise: the aside markup');
+    const html = page.slice(start, page.indexOf('</aside>', start) + '</aside>'.length);
+    const text = textOf(parse(html));
+    assert.ok(text.includes(GAFFER_HEADING) && text.includes(GAFFER_CARDS[7][1]), 'premise: the whole aside was sliced');
+    assert.deepEqual(gafferViolations(text), []);
+    assert.deepEqual(findBanned(html), []);
+    assert.deepEqual(claimViolations(page), []);
+    // Premise: the "Credit" ban is scoped — the page itself does say Credits, outside the aside.
+    assert.match(visibleText(page), /\bCredits\b/, 'premise: the rest of the page names Credits');
+    // Prove each guard fires on a planted sentence inside the aside.
+    const last = GAFFER_CARDS[7][1];
+    const plant = (s) => textOf(parse(html.replace(last, s)));
+    for (const [s, hit] of [
+      ['Gaffer can create a booking code for you.', 'booking'], ['Make a booking code in one tap.', 'booking'],
+      ['Gaffer makes booking codes for any slip.', 'booking'], ['Booking codes for every slip.', 'booking codes for'],
+      ['Watch your Exposure across slips.', 'exposure'], ['See a suggested stake for each slip.', 'suggested stakes'],
+      ['We guarantee a better slip.', 'guarantee'], ['Make sure every leg is right.', 'sure'],
+      ['See the edge on every leg.', 'edge'], ['Spot value in every market.', 'value'],
+      ['Each answer costs Credits.', 'credits'], ['Each answer costs ₦50.', '₦'], ['Right 9 times in 10.', '\\d'],
+      ['Our price beats the market.', 'prices'], ['Free for founding members.', 'free'],
+    ]) {
+      const v = gafferViolations(plant(s));
+      assert.ok(v.some((x) => x.includes(hit)), `"${s}" -> ${JSON.stringify(v)}`);
+    }
+    assert.deepEqual(findBanned(html.replace(last, 'A sure bet, every time.')), ['sure bet']);
+    assert.ok(claimViolations(page.replace(last, 'Right 84% of the time.')).some((m) => /84%/.test(m)), 'a stray percentage');
+  });
+
+  test('the Gaffer aside is on /waitlist/ only, not on its result pages', async () => {
+    assert.match(page, /bg-fd__gaffer/, 'premise: on /waitlist/');
+    for (const k of RESULT_KINDS) {
+      const html = await read(`waitlist/${k}/index.html`);
+      assert.doesNotMatch(html, /bg-fd__gaffer|<aside/, k);
+      assert.ok(!visibleText(html).includes(GAFFER_HEADING), k);
+    }
   });
 
   test('the four result pages are built with no banner (the every-page banner rule is in build.test.js)', async () => {

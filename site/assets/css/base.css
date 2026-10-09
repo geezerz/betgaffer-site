@@ -204,13 +204,13 @@ ul[role="list"],ol[role="list"]{ list-style:none; margin:0; padding:0; }
 
 .bg-wordmark{
   display:inline-flex; align-items:center; min-height:52px;
-  font-family:var(--font-display); font-weight:800; font-size:18px; line-height:1;
+  font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1;
   letter-spacing:-.035em; color:#fff; text-decoration:none; white-space:nowrap;
   margin-right:auto;
 }
 .bg-wordmark em{ font-style:normal; color:var(--accent); }
 a.bg-wordmark:hover{ color:#fff; }
-@media (min-width:1024px){ .bg-wordmark{ font-size:21px; } }
+@media (min-width:1024px){ .bg-wordmark{ font-size:26px; } }   /* spec §17.4: 18→22, 21→26; the bar heights stay 56/64 */
 
 .bg-topbar__nav{ flex:1 1 100%; margin-inline:calc(var(--gutter) * -1); border-top:1px solid var(--line); }
 .bg-topbar__nav ul{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); }

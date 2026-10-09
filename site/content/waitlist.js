@@ -62,6 +62,23 @@ const QUESTIONS = Object.freeze([
     + 'the place passes to the next member in line.'],
 ]);
 
+// The Gaffer column (spec §17.3): a static, coming-soon list. The headings are the spec's; the sentences
+// are the ux-copy wording (problem -> solution, one sentence each). No prices, dates, Credits or figures,
+// and never a claim that Gaffer makes a booking code (tests/waitlist-page.test.js holds the ban list).
+const GAFFER_HEADING = 'Gaffer, your betting assistant';
+const GAFFER_LINE = 'Coming soon — founding members first.';
+const GAFFER = Object.freeze([
+  ['Check your slip', 'Before you place a slip, Gaffer shows the chance the whole slip lands and its weakest leg.'],
+  ['Spot repeated legs', "Gaffer warns you when a leg you're adding is already on another of your slips, so one bad "
+    + "result can't sink several."],
+  ['Read a booking code', 'Paste a booking code and Gaffer opens the slip and checks every leg.'],
+  ['Build a slip to your odds', 'Ask for a slip around the odds you want — you confirm before Gaffer builds it.'],
+  ['Swap a weak leg', 'When one leg looks weak, Gaffer offers replacements from our recommended picks only.'],
+  ['Match opinions', 'Ask about a match and get form, head-to-head, the table and lineups in one answer.'],
+  ['The pick, explained', 'See our recommended pick first, then the reasons behind it.'],
+  ['How your bets are doing', 'Get a plain recap of your own slips instead of scrolling through screenshots.'],
+]);
+
 const hasPct = (s) => /%/.test(s);
 /** data-figure="offer" on any element whose copy prints a percentage. */
 const offerAttr = (...copy) => (copy.some(hasPct) ? ' data-figure="offer"' : '');
@@ -80,6 +97,29 @@ function step([title, text]) {
 </li>`;
 }
 
+function tool([title, text]) {
+  return `<li class="bg-fd__tool">
+<h3 class="bg-fd__tool-h">${escHtml(title)}</h3>
+<p class="bg-fd__tool-t">${escHtml(text)}</p>
+</li>`;
+}
+
+/**
+ * The Gaffer aside (spec §17.3). In the DOM right after the join form: below 1024px it follows the form
+ * full width; from 1024px founding.css moves it to the second grid column beside every other section.
+ */
+function gafferAside() {
+  return `<aside class="bg-fd__gaffer" aria-labelledby="fd-gaffer-h">
+<div class="bg-fd__gaffer-head">
+<h2 class="bg-fd__gaffer-h" id="fd-gaffer-h">${escHtml(GAFFER_HEADING)}</h2>
+<p class="bg-fd__gaffer-soon">${escHtml(GAFFER_LINE)}</p>
+</div>
+<ul class="bg-fd__tools" role="list">
+${GAFFER.map(tool).join('\n')}
+</ul>
+</aside>`;
+}
+
 function question([q, a]) {
   const summary = hasPct(q) ? `<span data-figure="offer">${escHtml(q)}</span>` : escHtml(q);
   return `<details class="bg-fd__q">
@@ -89,7 +129,9 @@ function question([q, a]) {
 }
 
 /**
- * The /waitlist/ body: the seven sections of spec §3, in order.
+ * The /waitlist/ body: the seven sections of spec §3, in order, with the spec §17.3 Gaffer aside after
+ * the join form (founding.css: from 1024px it spans all seven left-column rows — keep that span in step
+ * with the number of sections here; tests/layout.test.js pins both).
  * @param {object} cfg  the site config (unused today; kept for the content-module interface)
  * @param {{ waitlistHtml: string }} o  the waitlist form (trusted HTML from waitlistForm())
  */
@@ -121,6 +163,7 @@ export function render(cfg, { waitlistHtml } = {}) {
 <p class="bg-fd__full" data-waitlist-full hidden>${escHtml(FULL_LINE)}</p>
 ${waitlistHtml}
 </section>
+${gafferAside()}
 <section class="bg-fd__sec" aria-labelledby="fd-benefits-h">
 <h2 class="t-d2" id="fd-benefits-h">What founding members get</h2>
 <ul class="bg-fd__benefits" role="list">
