@@ -17,7 +17,9 @@
 //     a.e.t. result and the pens when present, if the file carries a well-formed score (checked
 //     here too: the archive renders raw fetched files); never on any other status;
 //   - an estimated price never appears without its marker (spec test 15);
-//   - every state has its own words: the 3px edge colour is never the only channel.
+//   - every state has its own words: the 3px edge colour is never the only channel;
+//   - every non-withdrawn row carries data-phase (phaseOf, spec §17.2): the edge colour (CSS) and a
+//     pending chip appear only once the match is live or done.
 // Every per-pick probability sits in an element with data-figure="pick-prob" (claim scanner).
 // The ring is cross-checked against the rows: renderDay recounts won / lost / pushes with the
 // day's own rule and throws if day.accuracy (or its pct) disagrees. There is no "accept either":
@@ -40,6 +42,10 @@ const STATUS_LABELS = Object.freeze({
 const FINISHED = new Set(['FT', 'AET', 'PEN']);
 // Statuses whose published kickoff time is not a time anyone should plan around.
 const NO_KICKOFF = new Set(['PST', 'CANC', 'TBD']);
+// The row's phase (spec §17.2): the edge colour and a pending chip appear only once the match has
+// started. done = finished (FINISHED) or settled without play (AWD, WO); off = not played as listed.
+const DONE = new Set([...FINISHED, 'AWD', 'WO']);
+const OFF = new Set(['PST', 'CANC', 'ABD', 'SUSP']);
 
 const GRADES = Object.freeze({
   won: { chip: 'Won', mod: 'bg-chip--won' },
@@ -88,6 +94,18 @@ export function statusLabel(code) {
   if (typeof code !== 'string' || code === '' || code === 'NS') return null;
   if (LIVE.has(code)) return 'Live';
   return Object.hasOwn(STATUS_LABELS, code) ? STATUS_LABELS[code] : code;
+}
+
+/**
+ * The match phase of a status code (spec §17.2): 'live' (in play), 'done' (finished, awarded or a
+ * walkover), 'off' (postponed, cancelled, abandoned, suspended) or 'pre' for everything else —
+ * NS, TBD and any code this card does not know (Set lookups: no inherited-member trap).
+ */
+export function phaseOf(code) {
+  if (LIVE.has(code)) return 'live';
+  if (DONE.has(code)) return 'done';
+  if (OFF.has(code)) return 'off';
+  return 'pre';
 }
 
 /**
@@ -254,7 +272,7 @@ function selHtml(p, struck) {
   return `<p class="fx__sel">${struck ? `<s>${inner}</s>` : inner}</p>`;
 }
 
-function outcome(f, state, rule) {
+function outcome(f, state, rule, phase) {
   const p = f.pick;
   if (state === 'withdrawn') {
     const chip = '<span class="bg-chip bg-chip--void fx__grade">Withdrawn</span>';
@@ -271,9 +289,13 @@ function outcome(f, state, rule) {
   if (state === 'nopick') return `<div class="fx__pick fx__pick--none"><p class="fx__msg">${escHtml(MSG.none)}</p></div>`;
 
   const g = GRADES[state];
+  // Before kickoff (and on a match not played as listed) a pending pick has no chip: "Pending"
+  // would read as a match under way (spec §17.2). A settled grade always shows its chip.
+  const chip = state === 'pending' && (phase === 'pre' || phase === 'off')
+    ? '' : `<span class="bg-chip ${g.mod} fx__grade">${g.chip}</span>`;
   return '<div class="fx__pick">'
     + '<p class="fx__pickhead"><span class="bg-eyebrow"><span class="bg-star" aria-hidden="true">★</span>Recommended pick</span>'
-    + `<span class="bg-chip ${g.mod} fx__grade">${g.chip}</span></p>`
+    + `${chip}</p>`
     + selHtml(p, false)
     + probHtml(p, false)
     + (p.why === null || p.why === undefined || p.why === '' ? '' : `<p class="fx__why">${escHtml(p.why)}</p>`)
@@ -286,13 +308,16 @@ function fixtureRow(f, rule) {
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
   const state = rowState(f, rule);
   const uncounted = rule === 1 && state !== 'withdrawn' && f.pick && f.pre_ko === false ? ' data-uncounted' : '';
+  // A withdrawn row has no phase: it keeps its own treatment whatever its (frozen) status.
+  const phase = state === 'withdrawn' ? null : phaseOf(f.status);
   // id: the client's "Jump to now" target; data-ko / data-status: what it needs to pick one
   // (predictions.js, Plan B Task B3). Names are NOT repeated as attributes (page weight): the
   // client indexes the .fx__team / .fx__comp text.
   return `<li class="fx" id="fx-${escAttr(f.fx)}" data-fx="${escAttr(f.fx)}" data-state="${state}"`
+    + (phase === null ? '' : ` data-phase="${phase}"`)
     + ` data-ko="${escAttr(f.ko)}" data-status="${escAttr(f.status)}"${uncounted}>`
     + `<p class="fx__comp">${escHtml(f.comp === '' ? 'Competition not named' : f.comp)}</p>`
-    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule)
+    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule, phase)
     + '</li>';
 }
 

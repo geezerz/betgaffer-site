@@ -909,6 +909,28 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
     assert.match(html, /href="\/day\/2026-10-05\/"/);
   });
 
+  test('an archived day gets the same phase rule (spec §17.2): data-phase per status, no Pending chip before kickoff', async () => {
+    const html = await dayjs.loadDay({ ...stub(), fetchImpl: respond(edge) });
+    const PHASE = { live: ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT'], done: ['FT', 'AET', 'PEN', 'AWD', 'WO'], off: ['PST', 'CANC', 'ABD', 'SUSP'] };
+    const want = (s) => Object.keys(PHASE).find((p) => PHASE[p].includes(s)) ?? 'pre';
+    const seen = new Set();
+    let quiet = 0;
+    for (const f of edge.fixtures) {
+      const li = new RegExp(`<li class="fx"[^>]*data-fx="${f.fx}"[^>]*>[\\s\\S]*?</li>`).exec(html)[0];
+      const phase = /data-phase="([^"]*)"/.exec(/^<li[^>]*>/.exec(li)[0])?.[1] ?? null;
+      if (f.withdrawn === true) { assert.equal(phase, null, `fx ${f.fx}`); continue; }
+      assert.equal(phase, want(f.status), `fx ${f.fx} ${f.status}`);
+      seen.add(phase);
+      if (f.grade === 'pending' && (phase === 'pre' || phase === 'off')) {
+        quiet++;
+        assert.doesNotMatch(li, /fx__grade/, `fx ${f.fx}: no grade chip before kickoff`);
+        assert.match(li, /data-figure="pick-prob"|probability not recorded/, `fx ${f.fx}: the pick still shows`);
+      }
+    }
+    for (const p of ['pre', 'live', 'done', 'off']) assert.ok(seen.has(p), `premise: the archived day has a ${p} row`);
+    assert.ok(quiet > 0, 'premise: a pending pick before kickoff');
+  });
+
   test('the day file is fetched same-origin with cache: no-cache (a republished grade is never served stale)', async () => {
     const calls = [];
     await dayjs.loadDay({ ...stub(), fetchImpl: async (url, opts) => { calls.push([url, opts]); return respond(edge)(); } });

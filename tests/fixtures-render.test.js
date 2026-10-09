@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT, ruleOf, isCounted } from '../site/lib/fixtures.js';
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
@@ -34,6 +34,28 @@ function row(html, fx) {
   return m[0];
 }
 const stateOf = (rowHtml) => /data-state="([^"]+)"/.exec(rowHtml)[1];
+/** The row's data-phase, or null when it carries none (spec §17.2). Reads the <li> tag only. */
+const phaseAttr = (rowHtml) => /data-phase="([^"]*)"/.exec(/^<li[^>]*>/.exec(rowHtml)[0])?.[1] ?? null;
+
+// Spec §17.2: every provider status belongs to exactly one phase. `pre` is "everything else": NS,
+// TBD, an unknown code, and inherited Object.prototype names (a lookup must use own members only).
+const PHASES = Object.freeze({
+  live: ['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT'],
+  done: ['FT', 'AET', 'PEN', 'AWD', 'WO'],
+  off: ['PST', 'CANC', 'ABD', 'SUSP'],
+  pre: ['NS', 'TBD', 'X<Y', 'ZZZ', 'toString', '__proto__'],
+});
+const expectedPhase = (status) => Object.keys(PHASES).find((p) => p !== 'pre' && PHASES[p].includes(status)) ?? 'pre';
+
+/** A copy of a day with some rows' status replaced: Map fx → status, or one status for every row. */
+function withStatus(day, statuses) {
+  const copy = structuredClone(day);
+  for (const f of copy.fixtures) {
+    if (typeof statuses === 'string') f.status = statuses;
+    else if (statuses.has(f.fx)) f.status = statuses.get(f.fx);
+  }
+  return copy;
+}
 
 const EDGE_HTML = renderDay(EDGE, opts({ prevDay: '2026-10-05', nextDay: '2026-10-07' }));
 
@@ -49,10 +71,13 @@ test('edge-day.json validates through data.js and its picks_hash recomputes', as
 // ---------------------------------------------------------------- every row state
 
 test('won / lost / push / void / pending render their grade chip and state', () => {
-  const cases = [[900001, 'won', 'Won'], [900002, 'lost', 'Lost'], [900003, 'push', 'Push'],
-    [900004, 'void', 'Void'], [900005, 'pending', 'Pending']];
-  for (const [fx, state, chip] of cases) {
-    const r = row(EDGE_HTML, fx);
+  // 900005 is NS + pending: before kickoff it shows no chip (spec §17.2, tested below), so the
+  // Pending chip is checked on the same row once its match is in play (2H).
+  const inPlay = renderDay(withStatus(EDGE, new Map([[900005, '2H']])), opts());
+  const cases = [[EDGE_HTML, 900001, 'won', 'Won'], [EDGE_HTML, 900002, 'lost', 'Lost'], [EDGE_HTML, 900003, 'push', 'Push'],
+    [EDGE_HTML, 900004, 'void', 'Void'], [inPlay, 900005, 'pending', 'Pending']];
+  for (const [html, fx, state, chip] of cases) {
+    const r = row(html, fx);
     assert.equal(stateOf(r), state);
     assert.match(r, new RegExp(`<span class="bg-chip[^"]*fx__grade[^"]*">${chip}</span>`), `${fx} chip ${chip}`);
     assert.match(text(r), /★ Recommended pick/);
@@ -201,10 +226,21 @@ test('kickoff is Lagos HH:MM (23:00Z the evening before = 00:00)', () => {
 });
 
 test('every row has its state text — colour is never the only channel', () => {
+  // A pending pick whose match has not started (pre) or will not be played as listed (off) has no
+  // chip and no edge colour (spec §17.2): its words are "Recommended pick" and nothing claims a grade.
+  let quiet = 0;
   for (const f of EDGE.fixtures) {
-    const t = text(row(EDGE_HTML, f.fx));
+    const r = row(EDGE_HTML, f.fx);
+    const t = text(r);
+    if (stateOf(r) === 'pending' && ['pre', 'off'].includes(phaseAttr(r))) {
+      quiet++;
+      assert.match(t, /★ Recommended pick/, `fx ${f.fx}: ${t}`);
+      assert.ok(!/Won|Lost|Push|Void|Pending/.test(t), `fx ${f.fx}: no grade word before kickoff: ${t}`);
+      continue;
+    }
     assert.ok(/Won|Lost|Push|Void|Pending|Withdrawn|No pick —|No recommendation\./.test(t), `fx ${f.fx}: ${t}`);
   }
+  assert.ok(quiet > 0, 'premise: the edge day has pending picks before kickoff');
 });
 
 // ---------------------------------------------------------------- escaping
@@ -950,5 +986,199 @@ test('fixtures.css: scores sit right of each team name, digits aligned, extra li
   for (const d of [/grid-column:2/, /justify-self:end/, /white-space:nowrap/, /font-size:/]) assert.match(xt, d);
   assert.match(css, /\.fx\[data-uncounted\] \.fx__grade\{[^}]*border-style:dashed/, 'rule-1 files still mark uncounted rows');
   assert.match(bodyOf(top, '.fx__note'), /border-left/, 'rule-1 files still show the moved note');
+});
+
+// ---------------------------------------------------------------- spec §17.2: the edge only once a match has started
+
+const GRADE_WORDS = Object.freeze({ won: 'Won', lost: 'Lost', push: 'Push', void: 'Void', pending: 'Pending' });
+const chipOf = (rowHtml) => /<span class="bg-chip[^"]*fx__grade[^"]*">([^<]*)<\/span>/.exec(rowHtml)?.[1] ?? null;
+const ALL_STATUSES = Object.values(PHASES).flat();
+
+test('the phase sets are the renderer\'s own: live codes are the ones labelled Live, and the sets are disjoint', () => {
+  for (const code of PHASES.live) assert.equal(statusLabel(code), 'Live', code);
+  for (const p of ['done', 'off', 'pre']) for (const code of PHASES[p]) assert.notEqual(statusLabel(code), 'Live', code);
+  assert.equal(new Set(ALL_STATUSES).size, ALL_STATUSES.length, 'no status in two phases');
+});
+
+test('every non-withdrawn row carries data-phase from its status; a withdrawn row carries none', () => {
+  for (const [phase, codes] of Object.entries(PHASES)) {
+    for (const code of codes) {
+      const day = withStatus(EDGE, code);
+      const html = renderDay(day, opts());
+      let rows = 0;
+      for (const f of day.fixtures) {
+        const r = row(html, f.fx);
+        if (f.withdrawn === true) {
+          assert.ok(!/data-phase/.test(/^<li[^>]*>/.exec(r)[0]), `withdrawn fx ${f.fx} (${code}): no data-phase attribute`);
+        } else {
+          assert.equal(phaseAttr(r), phase, `fx ${f.fx} status ${code}`);
+          rows++;
+        }
+      }
+      assert.ok(rows > 0 && rows < day.fixtures.length, `premise (${code}): both kinds of row present`);
+    }
+  }
+});
+
+test('real days: each row\'s data-phase follows its own status (unknown codes are pre)', () => {
+  const seen = new Set();
+  for (const [day, html] of [[EDGE, EDGE_HTML], [D07, renderDay(D07, opts())], [D08, renderDay(D08, opts())], [R2, R2_HTML]]) {
+    for (const f of day.fixtures) {
+      const got = phaseAttr(row(html, f.fx));
+      if (f.withdrawn === true) { assert.equal(got, null, `fx ${f.fx}`); continue; }
+      assert.equal(got, expectedPhase(f.status), `fx ${f.fx} status ${f.status}`);
+      seen.add(got);
+    }
+  }
+  for (const p of Object.keys(PHASES)) assert.ok(seen.has(p), `premise: the real and edge days include a ${p} row`);
+});
+
+test('the grade chip: hidden only for a pending pick before kickoff (pre) or off; a settled grade always shows', () => {
+  const picked = EDGE.fixtures.filter((f) => f.withdrawn !== true && f.pick);
+  const grades = new Set(picked.map((f) => f.grade));
+  for (const g of Object.keys(GRADE_WORDS)) assert.ok(grades.has(g), `premise: the edge day has a ${g} pick`);
+  let hiddenSeen = 0;
+  for (const code of ALL_STATUSES) {
+    const phase = expectedPhase(code);
+    const html = renderDay(withStatus(EDGE, code), opts());
+    for (const f of picked) {
+      const r = row(html, f.fx);
+      const t = text(r);
+      const hidden = f.grade === 'pending' && (phase === 'pre' || phase === 'off');
+      assert.equal(chipOf(r), hidden ? null : GRADE_WORDS[f.grade], `fx ${f.fx} ${f.grade} ${code}`);
+      if (hidden) {
+        hiddenSeen++;
+        assert.ok(!t.includes('Pending'), `fx ${f.fx} ${code}: no "Pending" text before kickoff`);
+      }
+      // The pick itself is never hidden: eyebrow, selection, price (or its designed absence), probability.
+      assert.match(t, /★ Recommended pick/, `fx ${f.fx} ${code}`);
+      assert.ok(t.includes(f.pick.label ?? f.pick.market), `fx ${f.fx} ${code}: selection`);
+      assert.ok(f.pick.price === null ? t.includes('no price recorded') : t.includes(`@ ${f.pick.price.toFixed(2)}`), `fx ${f.fx} ${code}: price`);
+      assert.match(r, /<p class="fx__prob[^"]*"/, `fx ${f.fx} ${code}: probability`);
+      if (Number.isInteger(f.pick.pct)) assert.match(r, /data-figure="pick-prob"/, `fx ${f.fx} ${code}: probability figure`);
+    }
+  }
+  assert.ok(hiddenSeen > 0, 'premise: some pending pick was rendered before kickoff');
+});
+
+test('an off row keeps its status label and, graded void, its Void chip (EDGE 900004: PST + void)', () => {
+  const r = row(EDGE_HTML, 900004);
+  assert.equal(phaseAttr(r), 'off');
+  assert.equal(chipOf(r), 'Void');
+  assert.match(text(r), /Postponed/);
+  for (const code of PHASES.off) {
+    const rr = row(renderDay(withStatus(EDGE, new Map([[900004, code]])), opts()), 900004);
+    assert.equal(chipOf(rr), 'Void', code);
+    assert.ok(text(rr).includes(statusLabel(code)), `${code} label kept`);
+  }
+});
+
+test('the ring and its counts do not depend on the phase (accuracy maths untouched)', () => {
+  const headOf = (html) => /<header class="day-head">[\s\S]*?<\/header>/.exec(html)[0];
+  for (const code of ALL_STATUSES) {
+    assert.equal(headOf(renderDay(withStatus(EDGE, code), opts())), headOf(EDGE_HTML), code);
+  }
+});
+
+// -- CSS: parse every rule (at-rule bodies too) and check which rows an edge colour can reach.
+
+/** Split a selector list on top-level commas only (a comma inside :not(...) is not a separator). */
+function splitSelectors(list) {
+  const out = [];
+  let depth = 0;
+  let cur = '';
+  for (const ch of list) {
+    if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth--;
+    if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+/** Every innermost rule of a stylesheet, one entry per selector, in source order. */
+function allRules(css) {
+  const flat = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const out = [];
+  for (const m of flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    for (const sel of splitSelectors(m[1])) out.push({ sel, body: m[2] });
+  }
+  return out;
+}
+/** The subject (last) compound of a selector. */
+const subjectOf = (sel) => sel.split(/\s*[\s>+~]\s*/).pop();
+/** The colour a rule gives the LEFT edge, or null: border-left-color, or the colour in a border-left / border shorthand. */
+function leftEdgeColour(body) {
+  let colour = null;
+  for (const decl of body.split(';')) {
+    const m = /^\s*(border-left-color|border-left|border-inline-start-color|border-inline-start|border-color|border)\s*:(.*)$/.exec(decl);
+    if (m) {
+      const v = /var\((--[\w-]+)\)/.exec(m[2]);
+      colour = v ? v[1] : m[2].trim();
+    }
+  }
+  return colour;
+}
+/** A `.fx` subject compound as its attribute tests, or null when it is not a plain `.fx[...]` compound. */
+function fxAttrs(compound) {
+  const m = /^\.fx((?:\[[\w-]+(?:="[^"]*")?\])*)$/.exec(compound);
+  if (!m) return null;
+  return [...m[1].matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)].map((a) => [a[1], a[2] ?? null]);
+}
+const CSS_DIR = here('../site/assets/css/');
+const ALL_CSS = readdirSync(CSS_DIR).filter((n) => n.endsWith('.css')).map((n) => [n, readFileSync(CSS_DIR + n, 'utf8')]);
+
+test('fixtures CSS: every edge colour keyed on data-state is scoped to a live or done phase (withdrawn excepted)', () => {
+  let scoped = 0;
+  for (const [name, css] of ALL_CSS) {
+    for (const { sel, body } of allRules(css)) {
+      const subj = subjectOf(sel);
+      if (!/^\.fx(?![\w-])/.test(subj) || leftEdgeColour(body) === null) continue;
+      // Nothing keyed on the quiet phases colours the edge.
+      assert.ok(!/\[data-phase="(pre|off)"\]/.test(subj), `${name}: ${sel} colours a pre/off row`);
+      if (!/\[data-state=/.test(subj)) continue;
+      if (/\[data-state="withdrawn"\]/.test(subj)) {
+        // Withdrawn rows carry no phase: a phase condition would make the rule dead.
+        assert.ok(!/\[data-phase/.test(subj), `${name}: ${sel} — withdrawn keeps its edge with no phase condition`);
+        continue;
+      }
+      assert.match(subj, /\[data-phase="(live|done)"\]/, `${name}: ${sel} colours the edge with no live/done phase`);
+      scoped++;
+    }
+  }
+  assert.ok(scoped > 0, 'premise: phase-scoped edge rules exist');
+});
+
+test('fixtures CSS: the edge each row gets — neutral before kickoff and when off, coloured once live or done', () => {
+  const rules = [];
+  for (const [, css] of ALL_CSS) {
+    for (const { sel, body } of allRules(css)) {
+      const attrs = fxAttrs(sel);
+      const colour = leftEdgeColour(body);
+      if (attrs !== null && colour !== null) rules.push({ attrs, colour });
+    }
+  }
+  /** The winning rule for a row: most attribute tests (specificity), then the later rule. */
+  const edgeOf = (rowAttrs) => {
+    let best = null;
+    for (const r of rules) {
+      if (!r.attrs.every(([k, v]) => Object.hasOwn(rowAttrs, k) && (v === null || rowAttrs[k] === v))) continue;
+      if (best === null || r.attrs.length >= best.attrs.length) best = r;
+    }
+    return best?.colour ?? null;
+  };
+  assert.equal(edgeOf({}), '--line', 'premise: the base row edge is the neutral --line');
+  const states = ['won', 'lost', 'push', 'void', 'pending', 'late', 'nopick'];
+  const DONE = { won: '--won', lost: '--lost', push: '--void', void: '--void', pending: '--hold', late: '--line', nopick: '--line' };
+  for (const state of states) {
+    for (const phase of ['pre', 'off']) assert.equal(edgeOf({ 'data-state': state, 'data-phase': phase }), '--line', `${phase} ${state}`);
+    assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'done' }), DONE[state], `done ${state}`);
+    // In play: the hold colour whatever the grade; a row with no pick stays quiet.
+    assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'live' }), Object.hasOwn(GRADE_WORDS, state) ? '--hold' : '--line', `live ${state}`);
+  }
+  assert.equal(edgeOf({ 'data-state': 'withdrawn' }), '--void', 'withdrawn keeps its own edge');
+  // Every state the renderer emits is covered above (derived from the edge day's rows).
+  for (const s of new Set([...EDGE_HTML.matchAll(/<li class="fx"[^>]*data-state="([^"]+)"/g)].map((m) => m[1]))) {
+    assert.ok(states.includes(s) || s === 'withdrawn', `state ${s} checked`);
+  }
 });
 

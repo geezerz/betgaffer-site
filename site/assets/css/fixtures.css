@@ -114,11 +114,20 @@
   font-size:11.5px; line-height:1.35; color:var(--muted);
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.fx[data-state="won"]{ border-left-color:var(--won); }
-.fx[data-state="lost"]{ border-left-color:var(--lost); }
-.fx[data-state="pending"]{ border-left-color:var(--hold); }
-.fx[data-state="push"],
-.fx[data-state="void"],
+/* The edge colours a row only once its match has started (spec §17.2). Before kickoff (pre) and
+   for a match not played as listed (off) the edge stays the neutral --line whatever the grade.
+   In play: the hold colour whatever the grade. Finished: the grade, hold until it is graded. */
+.fx[data-phase="live"][data-state="won"],
+.fx[data-phase="live"][data-state="lost"],
+.fx[data-phase="live"][data-state="pending"],
+.fx[data-phase="live"][data-state="push"],
+.fx[data-phase="live"][data-state="void"]{ border-left-color:var(--hold); }
+.fx[data-phase="done"][data-state="won"]{ border-left-color:var(--won); }
+.fx[data-phase="done"][data-state="lost"]{ border-left-color:var(--lost); }
+.fx[data-phase="done"][data-state="pending"]{ border-left-color:var(--hold); }
+.fx[data-phase="done"][data-state="push"],
+.fx[data-phase="done"][data-state="void"]{ border-left-color:var(--void); }
+/* A withdrawn row carries no phase and keeps its own edge. */
 .fx[data-state="withdrawn"]{ border-left-color:var(--void); }
 
 .fx__time{ grid-column:1; grid-row:2; display:flex; flex-direction:column; align-items:center; gap:2px; text-align:center; }
