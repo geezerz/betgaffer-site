@@ -293,7 +293,7 @@ describe('stale.js relabels the day pills for the viewer\'s Lagos date (fake DOM
     const today = s.find((p) => p.d === '2026-10-07');
     assert.equal(today.aria, 'Today, Wednesday 7 October: 6 of 7 picks right, 85.7% so far');
     assert.equal(s.find((p) => p.d === '2026-10-06').aria, 'Yesterday, Tuesday 6 October: 2 of 3 picks right, 66.7%');
-    assert.equal(s.find((p) => p.d === '2026-10-04').aria, 'Sunday 4 October: 12 of 12 picks right');
+    assert.equal(s.find((p) => p.d === '2026-10-04').aria, 'All right, Sunday 4 October: 12 of 12 picks right');
   });
 
   test('a page cached overnight (viewer on D+1): D is Yesterday, D+1 Today, and "so far" leaves D', async () => {
@@ -316,6 +316,13 @@ describe('stale.js relabels the day pills for the viewer\'s Lagos date (fake DOM
     const s = state(await load('index.html', AT.PREV));
     assert.deepEqual(s.filter((p) => p.sofar !== '').map((p) => p.d), ['2026-10-06']);
     assert.equal(s.find((p) => p.d === '2026-10-06').aria, 'Today, Tuesday 6 October: 2 of 3 picks right, 66.7% so far');
+  });
+
+  test('a perfect day relabelled: the relative word, then the visible "All right", then the date', async () => {
+    const s = state(await load('index.html', Date.parse('2026-10-05T12:00:00Z'))); // viewer on 10-05: 10-04 is yesterday
+    assert.equal(s.find((p) => p.d === '2026-10-04').aria, 'Yesterday, All right, Sunday 4 October: 12 of 12 picks right');
+    const t = state(await load('index.html', Date.parse('2026-10-04T12:00:00Z'))); // and today, with its note
+    assert.equal(t.find((p) => p.d === '2026-10-04').aria, 'Today, All right, Sunday 4 October: 12 of 12 picks right so far');
   });
 
   test('an open page relabels at midnight, and the accessible name never stacks prefixes', async () => {

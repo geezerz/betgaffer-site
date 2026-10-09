@@ -99,8 +99,9 @@ function pillOf(el) {
 
 /**
  * A day pill follows its relative word: data-when (the today outline, the phone label) and the
- * accessible name, "<Word>, <date>: <result>[ so far]". The build's name is the date form, so the
- * prefix and the note are stripped first: relabelling again never stacks them.
+ * accessible name, "<Word>, [All right, ]<date>: <result>[ so far]". The build's name is the date
+ * form (a perfect day's starts with its visible "All right"), so the prefix and the note are stripped
+ * first: relabelling again never stacks them.
  */
 function relabelPill(el, date, nowMs) {
   const pill = pillOf(el);

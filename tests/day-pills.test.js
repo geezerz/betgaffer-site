@@ -150,7 +150,8 @@ describe('pill content comes from index.days[]', () => {
       assert.equal(textOf(part(a, 'day-pill__mon')), mon, d);
       assert.ok(findAll(a, (n) => n.attrs.class === 'vh').some((n) => textOf(n) === fmtDayLong(d)), `${d}: hidden full date`);
       assert.doesNotMatch(a.attrs['aria-label'], /percent/i, `${d}: the % glyph, never the word`);
-      assert.ok(a.attrs['aria-label'].startsWith(`${ariaDate(d)}: `), `${d}: ${a.attrs['aria-label']}`);
+      // The name starts with the date, or with the pill's own words on a perfect day (WCAG 2.5.3).
+      assert.ok(a.attrs['aria-label'].replace(/^All right, /, '').startsWith(`${ariaDate(d)}: `), `${d}: ${a.attrs['aria-label']}`);
     }
   });
 
@@ -175,17 +176,18 @@ describe('pill content comes from index.days[]', () => {
     assert.equal(textOf(part(a, 'day-pill__fig')), 'All right');
     assert.equal(textOf(part(a, 'day-pill__sub')), `${won} of ${graded}`);
     assert.doesNotMatch(`${textOf(a)} ${a.attrs['aria-label']}`, /%/);
-    assert.equal(a.attrs['aria-label'], `${ariaDate(d)}: ${won} of ${graded} picks right`);
+    assert.equal(a.attrs['aria-label'], `All right, ${ariaDate(d)}: ${won} of ${graded} picks right`, 'the visible words lead the name');
   });
 
-  test('a past day with nothing graded: "—" and "No results"', () => {
+  test('a past day with nothing graded: "—" and "No results yet" (as the ring: grading can lag, pushes are not counted)', () => {
     const d = '2026-10-05';
     assert.equal(PILL_DAYS[d].accuracy.graded, 0, 'premise');
     const a = pills.get(d);
     assert.equal(textOf(part(a, 'day-pill__fig')), '—');
-    assert.equal(textOf(part(a, 'day-pill__sub')), 'No results');
+    assert.equal(textOf(part(a, 'day-pill__sub')), 'No results yet');
     assert.equal(a.attrs['data-figure'], undefined);
-    assert.equal(a.attrs['aria-label'], `${ariaDate(d)}: no results`);
+    assert.equal(a.attrs['aria-label'], `${ariaDate(d)}: no results yet`);
+    assert.doesNotMatch(textOf(a), /No results(?! yet)/, 'never a final-sounding "No results"');
   });
 
   test('today graded: the percentage and fraction, with a hidden "so far" slot for stale.js', () => {
@@ -302,14 +304,27 @@ describe('pill CSS', () => {
     assert.match(body(narrow, '.day-pill__mon'), /display:none/);
   });
 
-  test('below 1024px only "Today" replaces the weekday; from 1024px every relative word and "so far" show', () => {
+  test('below 1024px only "Today" replaces the weekday; from 1024px every relative word shows', () => {
     const wide = [...css.matchAll(/@media \(min-width:1024px\)\{((?:[^{}]*\{[^}]*\})*)\s*\}/g)].map((m) => m[1]).join('\n');
     assert.match(body(top, '.day-pill__rel'), /display:none/);
     assert.match(body(top, '.day-pill[data-when="today"] .day-pill__rel:not([hidden])'), /display:inline/);
-    assert.match(body(top, '.day-pill__sofar'), /display:none/);
     assert.match(body(wide, '.day-pill__rel:not([hidden])'), /display:inline/);
     assert.match(body(wide, '.day-pill__rel:not([hidden]) + .day-pill__dow'), /display:none/);
-    assert.match(body(wide, '.day-pill__sofar:not([hidden])'), /display:inline/);
+  });
+
+  test('"so far" shows at every width; below 1024px it is its own line, reserved while hidden (no shift when stale.js fills it)', () => {
+    const wide = [...css.matchAll(/@media \(min-width:1024px\)\{((?:[^{}]*\{[^}]*\})*)\s*\}/g)].map((m) => m[1]).join('\n');
+    assert.match(body(top, '.day-pill__sofar'), /display:block/);
+    // An empty block is 0px tall: the line is held open by a min-height of one line, not by its text.
+    assert.match(body(top, '.day-pill__sofar'), /min-height:1lh/);
+    assert.doesNotMatch(body(top, '.day-pill__sofar'), /display:none/);
+    const reserved = body(top, '.day-pill .day-pill__sofar[hidden]');
+    assert.match(reserved, /display:block/);
+    assert.match(reserved, /visibility:hidden/);
+    // From 1024px it sits inline on the one-line fraction (nowrap), so showing it changes no height.
+    assert.match(body(wide, '.day-pill__sofar'), /display:inline/);
+    assert.match(body(wide, '.day-pill .day-pill__sofar[hidden]'), /display:none/);
+    assert.match(body(top, '.day-pill__sub'), /white-space:nowrap/);
   });
 
   test('a [hidden] slot really hides (the pill parts set a display)', () => {

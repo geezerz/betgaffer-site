@@ -144,7 +144,8 @@ export function pillPct(a) {
  *
  * Each pill is one link: weekday + date, the day's figure from index.days[] (past and today: the
  * percentage, or "All right" on a perfect day, or "—"; tomorrow: its fixture count) and a small
- * line beneath (the "won of graded" fraction, "No results", "No results yet" or "fixtures"), a meter
+ * line beneath (the "won of graded" fraction, "No results yet" — as the ring says, since grading can lag
+ * and pushes are not counted — or "fixtures"), a meter
  * of the same share, and the full date in visually hidden text. A pill with a percentage is a
  * data-figure="record-row" with data-period (tests/html-scan.js: the claim needs its fraction and
  * that date). The build writes date forms only; stale.js fills the empty, hidden relative label
@@ -168,14 +169,15 @@ export function dayPills(listed, today, current, { onDayPage }) {
     let aria;
     let share = null; // the meter's filled share, 0..100; null: an empty (dashed) track
     let figure = '';
+    let lead = ''; // a perfect day's name starts with its visible words (WCAG 2.5.3)
     if (d === tomorrow) {
       fig = int(fixtures);
       sub = fixtures === 1 ? 'fixture' : 'fixtures';
       aria = `${int(fixtures)} ${sub}`;
     } else if (a.graded === 0) {
       fig = '—';
-      sub = isToday ? 'No results yet' : 'No results';
-      aria = isToday ? 'no results yet' : 'no results';
+      sub = 'No results yet';
+      aria = 'no results yet';
     } else {
       const pct = pillPct(a);
       fig = pct ?? 'All right';
@@ -184,6 +186,7 @@ export function dayPills(listed, today, current, { onDayPage }) {
       aria = `${sub} picks right${pct ? `, ${pct}` : ''}`;
       share = Math.round((a.won / a.graded) * 10000) / 100;
       if (pct) figure = ` data-figure="record-row" data-period="${escAttr(d)}"`;
+      else lead = 'All right, ';
     }
     const current1 = d === current ? (onDayPage ? ' aria-current="page"' : ' aria-current="true"') : '';
     const when = isToday ? ' data-when="today"' : '';
@@ -193,7 +196,7 @@ export function dayPills(listed, today, current, { onDayPage }) {
         ? '<line class="day-pill__track day-pill__track--empty" x1="0" y1="2" x2="100" y2="2" stroke-dasharray="2 3"/>'
         : `<rect class="day-pill__track" width="100" height="4"/><rect class="day-pill__bar" width="${escAttr(share)}" height="4"/>`)
       + '</svg>';
-    return `<li><a class="day-pill" href="/day/${escAttr(d)}/"${current1}${when}${figure} aria-label="${escAttr(`${aDate}: ${aria}`)}">`
+    return `<li><a class="day-pill" href="/day/${escAttr(d)}/"${current1}${when}${figure} aria-label="${escAttr(`${lead}${aDate}: ${aria}`)}">`
       + '<span class="day-pill__head">'
       + `<span class="day-pill__rel" data-rel-day="${escAttr(d)}" data-rel="pill" hidden></span>`
       + `<span class="day-pill__dow">${escHtml(dow)}</span> `
