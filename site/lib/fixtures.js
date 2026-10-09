@@ -101,7 +101,7 @@ export function statusLabel(code) {
  * walkover), 'off' (postponed, cancelled, abandoned, suspended) or 'pre' for everything else —
  * NS, TBD and any code this card does not know (Set lookups: no inherited-member trap).
  */
-export function phaseOf(code) {
+function phaseOf(code) {
   if (LIVE.has(code)) return 'live';
   if (DONE.has(code)) return 'done';
   if (OFF.has(code)) return 'off';

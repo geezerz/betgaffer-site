@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { CSS_ORDER } from '../site/build.mjs';
 import { fileURLToPath } from 'node:url';
 import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT, ruleOf, isCounted } from '../site/lib/fixtures.js';
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
@@ -1081,6 +1082,9 @@ test('the ring and its counts do not depend on the phase (accuracy maths untouch
 });
 
 // -- CSS: parse every rule (at-rule bodies too) and check which rows an edge colour can reach.
+// Any selector form counts: `.fx` anywhere in the subject compound (li.fx, [a].fx, :is(.fx)), with
+// or without ancestors, and a class-less subject (li, *, a bare [data-state]) that could reach a row.
+// Attribute quotes are normalised, so [data-phase=pre] and [data-phase='pre'] are seen too.
 
 /** Split a selector list on top-level commas only (a comma inside :not(...) is not a separator). */
 function splitSelectors(list) {
@@ -1095,67 +1099,102 @@ function splitSelectors(list) {
   if (cur.trim()) out.push(cur.trim());
   return out;
 }
-/** Every innermost rule of a stylesheet, one entry per selector, in source order. */
+/** Attribute selectors in one spelling: [name], [name<op>"value"] (unquoted / single-quoted / spaced). */
+const normAttrs = (sel) => sel.replace(
+  /\[\s*([\w-]+)\s*(?:([~|^$*]?=)\s*(?:"([^"]*)"|'([^']*)'|([^\]\s]+))\s*([iIsS])?\s*)?\]/g,
+  (_, name, op, dq, sq, bare, flag) => (op === undefined ? `[${name}]`
+    : `[${name}${op}"${dq ?? sq ?? bare}"${flag ? ` ${flag}` : ''}]`),
+);
+/** Every innermost rule of a stylesheet, one entry per (normalised) selector, in source order. */
 function allRules(css) {
   const flat = css.replace(/\/\*[\s\S]*?\*\//g, '');
   const out = [];
   for (const m of flat.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    for (const sel of splitSelectors(m[1])) out.push({ sel, body: m[2] });
+    for (const sel of splitSelectors(m[1])) out.push({ sel: normAttrs(sel), body: m[2] });
   }
   return out;
 }
-/** The subject (last) compound of a selector. */
-const subjectOf = (sel) => sel.split(/\s*[\s>+~]\s*/).pop();
-/** The colour a rule gives the LEFT edge, or null: border-left-color, or the colour in a border-left / border shorthand. */
-function leftEdgeColour(body) {
-  let colour = null;
-  for (const decl of body.split(';')) {
-    const m = /^\s*(border-left-color|border-left|border-inline-start-color|border-inline-start|border-color|border)\s*:(.*)$/.exec(decl);
-    if (m) {
-      const v = /var\((--[\w-]+)\)/.exec(m[2]);
-      colour = v ? v[1] : m[2].trim();
-    }
+/** The subject (last) compound of a selector: split on combinators outside [...] and (...). */
+function subjectOf(sel) {
+  let depth = 0;
+  let cur = '';
+  for (const ch of sel.trim()) {
+    if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth--;
+    if (depth === 0 && /[\s>+~]/.test(ch)) cur = ''; else cur += ch;
   }
-  return colour;
+  return cur;
 }
-/** A `.fx` subject compound as its attribute tests, or null when it is not a plain `.fx[...]` compound. */
-function fxAttrs(compound) {
-  const m = /^\.fx((?:\[[\w-]+(?:="[^"]*")?\])*)$/.exec(compound);
+const HAS_FX = /\.fx(?![\w-])/;
+/** Could this subject compound select a fixture row? `.fx` anywhere, or no class at all on li / * / nothing. */
+const reachesRows = (compound) => HAS_FX.test(compound)
+  || (!/\.[\w-]/.test(compound) && /^(?:li|\*)?(?![\w-])/i.test(compound));
+const EDGE_PROPS = /^\s*(border-left-color|border-left|border-inline-start-color|border-inline-start|border-inline-color|border-inline|border-color|border)\s*:(.*)$/i;
+/** The left-edge declarations of a rule body: [{ prop, value, important }]. */
+const edgeDecls = (body) => body.split(';').map((d) => EDGE_PROPS.exec(d)).filter(Boolean)
+  .map((m) => ({ prop: m[1].toLowerCase(), value: m[2].replace(/!\s*important/i, '').trim(), important: /!\s*important/i.test(m[2]) }));
+/** The colour the last edge declaration gives the LEFT edge (a token name, or the raw value). */
+function leftEdgeColour(body) {
+  const ds = edgeDecls(body);
+  if (ds.length === 0) return null;
+  const { prop, value } = ds[ds.length - 1];
+  // border-color: top right bottom left (left = 4th, else 2nd, else 1st); the others name one colour.
+  const parts = /^border(?:-inline)?-color$/.test(prop) ? value.split(/\s+(?![^(]*\))/) : [value];
+  const left = parts[3] ?? parts[1] ?? parts[0];
+  const v = /var\((--[\w-]+)\)/.exec(left);
+  return v ? v[1] : left;
+}
+/** A PLAIN `.fx[...]` selector (no tag, ancestors or pseudo-classes) as its attribute tests, else null. */
+function fxAttrs(sel) {
+  const m = /^\.fx((?:\[[\w-]+(?:="[^"]*")?\])*)$/.exec(sel);
   if (!m) return null;
   return [...m[1].matchAll(/\[([\w-]+)(?:="([^"]*)")?\]/g)].map((a) => [a[1], a[2] ?? null]);
 }
+// The stylesheets every page links, in cascade order (build.mjs CSS_ORDER), plus the <noscript>
+// sheet; the directory must hold no other sheet, so a new file cannot slip past this guard.
 const CSS_DIR = here('../site/assets/css/');
-const ALL_CSS = readdirSync(CSS_DIR).filter((n) => n.endsWith('.css')).map((n) => [n, readFileSync(CSS_DIR + n, 'utf8')]);
+const CSS_FILES = [...CSS_ORDER, 'nojs.css'];
+const ALL_CSS = CSS_FILES.map((n) => [n, readFileSync(CSS_DIR + n, 'utf8')]);
+/** Every rule, across all sheets, whose subject could reach a row and which sets a left-edge colour. */
+const rowEdgeRules = (sheets) => sheets.flatMap(([name, css]) => allRules(css)
+  .filter(({ sel, body }) => reachesRows(subjectOf(sel)) && edgeDecls(body).length > 0)
+  .map((r) => ({ name, ...r })));
+
+test('fixtures CSS: the edge guard reads every stylesheet (CSS_ORDER + nojs.css, nothing else)', () => {
+  assert.deepEqual(readdirSync(CSS_DIR).filter((n) => n.endsWith('.css')).sort(), [...CSS_FILES].sort());
+});
 
 test('fixtures CSS: every edge colour keyed on data-state is scoped to a live or done phase (withdrawn excepted)', () => {
   let scoped = 0;
-  for (const [name, css] of ALL_CSS) {
-    for (const { sel, body } of allRules(css)) {
-      const subj = subjectOf(sel);
-      if (!/^\.fx(?![\w-])/.test(subj) || leftEdgeColour(body) === null) continue;
-      // Nothing keyed on the quiet phases colours the edge.
-      assert.ok(!/\[data-phase="(pre|off)"\]/.test(subj), `${name}: ${sel} colours a pre/off row`);
-      if (!/\[data-state=/.test(subj)) continue;
-      if (/\[data-state="withdrawn"\]/.test(subj)) {
-        // Withdrawn rows carry no phase: a phase condition would make the rule dead.
-        assert.ok(!/\[data-phase/.test(subj), `${name}: ${sel} — withdrawn keeps its edge with no phase condition`);
-        continue;
-      }
-      assert.match(subj, /\[data-phase="(live|done)"\]/, `${name}: ${sel} colours the edge with no live/done phase`);
-      scoped++;
+  for (const { name, sel, body } of rowEdgeRules(ALL_CSS)) {
+    const subj = subjectOf(sel);
+    const where = `${name}: ${sel}`;
+    assert.ok(!edgeDecls(body).some((d) => d.important), `${where} — !important on a row edge`);
+    // Exact-match tests only: [data-state^="w"] and the like cannot be reasoned about.
+    assert.ok(!/\[data-(?:state|phase)(?:[~|^$*]=|\])/.test(subj), `${where} — a non-exact data-state / data-phase test`);
+    // Nothing keyed on the quiet phases colours the edge.
+    assert.ok(!/\[data-phase="(pre|off)"/.test(subj), `${where} colours a pre/off row`);
+    if (!/\[data-state=/.test(subj)) continue;
+    if (/\[data-state="withdrawn"/.test(subj)) {
+      // Withdrawn rows carry no phase: a phase condition would make the rule dead.
+      assert.ok(!/\[data-phase/.test(subj), `${where} — withdrawn keeps its edge with no phase condition`);
+      continue;
     }
+    assert.match(subj, /\[data-phase="(live|done)"/, `${where} colours the edge with no live/done phase`);
+    scoped++;
   }
   assert.ok(scoped > 0, 'premise: phase-scoped edge rules exist');
 });
 
 test('fixtures CSS: the edge each row gets — neutral before kickoff and when off, coloured once live or done', () => {
+  // Every rule that can colour a row's edge must be a plain `.fx[...]` rule this model can resolve:
+  // a tag, an ancestor, a pseudo-class or !important would change the cascade, so it fails here.
   const rules = [];
-  for (const [, css] of ALL_CSS) {
-    for (const { sel, body } of allRules(css)) {
-      const attrs = fxAttrs(sel);
-      const colour = leftEdgeColour(body);
-      if (attrs !== null && colour !== null) rules.push({ attrs, colour });
-    }
+  for (const { name, sel, body } of rowEdgeRules(ALL_CSS)) {
+    const attrs = fxAttrs(sel);
+    assert.ok(attrs !== null, `${name}: ${sel} — a row edge colour on a selector that is not a plain .fx[...] rule`);
+    assert.ok(!edgeDecls(body).some((d) => d.important), `${name}: ${sel} — !important on a row edge`);
+    rules.push({ attrs, colour: leftEdgeColour(body) });
   }
   /** The winning rule for a row: most attribute tests (specificity), then the later rule. */
   const edgeOf = (rowAttrs) => {
