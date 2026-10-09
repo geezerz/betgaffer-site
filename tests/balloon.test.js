@@ -10,7 +10,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { build } from '../site/build.mjs';
+import { build, dayPills } from '../site/build.mjs';
 import {
   DESKTOP_MIN, GAP, NOMINAL, PAD, POS_KEYS, clamp, defaultTop, floorTop, msToLagosMidnight, readFigures, ringModel, sizeClass, storageKey,
 } from '../site/lib/balloon-model.js';
@@ -269,6 +269,16 @@ describe('clamp, size class and storage keys', () => {
     assert.equal(defaultTop({ barBottom: 64, bannerBottom: 150, floor: 184 }), 184, 'the stuck toolbar wins');
   });
 
+  test('defaultTop: below the LOWER of the banner and the day pills while each is on screen (spec §17.1)', () => {
+    assert.equal(defaultTop({ barBottom: 64, stripBottom: 230, floor: 72 }), 238, 'the pills alone');
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 150, stripBottom: 330, floor: 72 }), 338, 'pills under the banner');
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 400, stripBottom: 330, floor: 72 }), 408, 'whichever is lower');
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: null, stripBottom: 40, floor: 72 }), 72, 'pills scrolled under the topbar');
+    assert.equal(defaultTop({ barBottom: 64, bannerBottom: 150, stripBottom: null, floor: 72 }), 158, 'no pills: the banner as before');
+    assert.equal(defaultTop({ barBottom: 64, stripBottom: 230, floor: 300 }), 300, 'never above the floor');
+    assert.equal(defaultTop({ barBottom: 64, stripBottom: Number.NaN, floor: 72 }), 72, 'an unmeasurable strip is no obstacle');
+  });
+
   test('msToLagosMidnight', () => {
     assert.equal(msToLagosMidnight(Date.parse('2026-10-07T22:59:00Z')), 60000);
     assert.equal(msToLagosMidnight(Date.parse('2026-10-07T23:00:00Z')), 86400000);
@@ -284,13 +294,19 @@ const YDAY_ATTRS = (a, date) => [
   ['yday-won', a.won], ['yday-lost', a.lost], ['yday-pushes', a.pushes], ['yday-graded', a.graded], ['yday-pct', a.pct], ['yday-date', date],
 ];
 
-function pageOf({ today = A24, yesterday = Y18, date = TODAY, ydate = '2026-10-06', extra = [], banner = false } = {}) {
+/** The real day pills (build.mjs), so the selector balloon.js uses is checked against the shipped markup. */
+const PILLS = dayPills([
+  { day: '2026-10-07', compacted: false, picks_hash: `sha256:${'b'.repeat(64)}`, fixtures: 9, accuracy: acc(24, 5, 82.76) },
+  { day: '2026-10-06', compacted: true, picks_hash: `sha256:${'a'.repeat(64)}`, fixtures: 9, accuracy: acc(18, 4, 81.82) },
+], TODAY, TODAY, { onDayPage: false });
+
+function pageOf({ today = A24, yesterday = Y18, date = TODAY, ydate = '2026-10-06', extra = [], banner = false, pills = false } = {}) {
   const pairs = [...(today ? RING_ATTRS(today, date) : []), ...(yesterday ? YDAY_ATTRS(yesterday, ydate) : []), ...extra];
   const data = pairs.filter(([, v]) => v !== null && v !== undefined).map(([k, v]) => ` data-${k}="${v}"`).join('');
   return '<!doctype html><html lang="en-NG"><head><title>t</title></head><body>'
     + '<header class="bg-topbar"><a href="/">Bet Gaffer</a></header>'
     + (banner ? foundingCard(0) : '') // the real founding card: balloon.js finds it by [data-banner] / [data-banner-close]
-    + `<main id="main"${data}><div class="day"><div class="day-tools" data-day-tools></div><p>card</p></div></main></body></html>`;
+    + `<main id="main"${data}>${pills ? PILLS : ''}<div class="day"><div class="day-tools" data-day-tools></div><p>card</p></div></main></body></html>`;
 }
 
 function memStorage(init = {}) {
@@ -306,7 +322,7 @@ function memStorage(init = {}) {
 
 function setup({
   width = 1280, height = 800, html = pageOf(), store = {}, storage, clock = NOW, RO = FakeResizeObserver,
-  tools: toolsRect = { top: 300, bottom: 360 }, banner: bannerRect = null,
+  tools: toolsRect = { top: 300, bottom: 360 }, banner: bannerRect = null, pills: pillsRect = null,
 } = {}) {
   const doc = fakeDocument(html);
   doc.querySelector('.bg-topbar')._rect = { top: 0, bottom: 64 };
@@ -314,6 +330,8 @@ function setup({
   if (tools) { tools.offsetHeight = 60; tools._rect = toolsRect; }
   const bannerEl = doc.querySelector('[data-banner]');
   if (bannerEl && bannerRect) bannerEl._rect = bannerRect;
+  const pillsEl = doc.querySelector('nav');
+  if (pillsEl && pillsRect) pillsEl._rect = pillsRect;
   const win = {
     innerWidth: width, innerHeight: height, listeners: {},
     addEventListener(t, fn) { (this.listeners[t] ??= []).push(fn); },
@@ -556,6 +574,33 @@ describe('balloon.js: position', () => {
     assert.equal(u.style('top'), '90px');
   });
 
+  test('the day pills on screen: the default starts below them, and below the lower of pills and card (spec §17.1)', () => {
+    assert.match(PILLS, /<nav class="day-pills"/, 'premise: the real pills markup');
+    for (const width of [1280, 360]) {
+      const s = setup({ width, height: 800, html: pageOf({ pills: true }), pills: { top: 120, bottom: 220 } });
+      assert.equal(s.style('top'), `${220 + GAP}px`, `${width}: below the pills`);
+    }
+    // Card and pills both on screen: the lower one decides; dismissing the card keeps the ring below the pills.
+    const s = setup({ width: 360, height: 800, html: pageOf({ banner: true, pills: true }), banner: { top: 64, bottom: 150 }, pills: { top: 160, bottom: 240 } });
+    assert.equal(s.style('top'), `${240 + GAP}px`);
+    fire(s.doc.querySelector('[data-banner-close]'), 'click');
+    s.doc.querySelector('[data-banner]').remove();
+    s.doc.querySelector('nav')._rect = { top: 64, bottom: 144 }; // the page closed up under the header
+    s.flush();
+    assert.equal(s.style('top'), `${144 + GAP}px`, 're-placed below the pills after the card is dismissed');
+    // The pills scroll away like the card: once under the header they no longer count.
+    s.doc.querySelector('nav')._rect = { top: -60, bottom: 20 };
+    s.scroll();
+    assert.equal(s.style('top'), `${64 + GAP}px`);
+  });
+
+  test('the pills never move a ring the visitor placed, and a pills box of 0 (not displayed) gives no offset', () => {
+    const u = setup({ width: 360, height: 800, html: pageOf({ pills: true }), pills: { top: 120, bottom: 220 }, store: { 'bg.balloon.pos.sm': JSON.stringify({ left: 20, top: 90 }) } });
+    assert.equal(u.style('top'), '90px');
+    const z = setup({ width: 360, height: 800, html: pageOf({ pills: true }), pills: { top: 0, left: 0, width: 0, height: 0 } });
+    assert.equal(z.style('top'), `${64 + GAP}px`);
+  });
+
   test('a card hidden from first paint (html.fd-hidden, display:none) gives no offset: the default sits below the topbar', () => {
     // In Chrome a display:none card's box is 0x0 at the viewport origin.
     const zero = setup({ width: 360, height: 700, html: pageOf({ banner: true }), banner: { top: 0, left: 0, width: 0, height: 0 } });
@@ -602,10 +647,10 @@ describe('balloon.js: position', () => {
     assert.deepEqual(s.storage.writes, []);
   });
 
-  test('re-clamped when the sticky header, the banner or the card resizes (ResizeObserver)', () => {
-    const s = setup({ html: pageOf({ banner: true }), banner: { top: 64, bottom: 120 }, store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 80 }) } });
+  test('re-clamped when the sticky header, the banner, the pills or the card resizes (ResizeObserver)', () => {
+    const s = setup({ html: pageOf({ banner: true, pills: true }), banner: { top: 64, bottom: 120 }, store: { 'bg.balloon.pos': JSON.stringify({ left: 100, top: 80 }) } });
     const ro = FakeResizeObserver.last;
-    for (const sel of ['.bg-topbar', 'main', '[data-banner]']) assert.ok(ro.targets.includes(s.doc.querySelector(sel)), sel);
+    for (const sel of ['.bg-topbar', 'main', '[data-banner]', '.day-pills']) assert.ok(ro.targets.includes(s.doc.querySelector(sel)), sel);
     assert.equal(s.style('top'), '80px');
     s.doc.querySelector('.bg-topbar')._rect = { top: 0, bottom: 97 };
     ro.trigger();

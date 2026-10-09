@@ -15,8 +15,9 @@
 //   - never above the floor: the sticky header, or the sticky toolbar while it is stuck under it
 //     (re-checked on scroll); where the viewport has no room below the floor, hidden.
 // Until the visitor drags it, the ring starts top right (operator, 2026-10-08): right from the CSS
-// (12px / 24px in, plus the right safe area), top = just below the header — or below the founding
-// banner while it is on screen, so its close button stays tappable — written through CSSOM.
+// (12px / 24px in, plus the right safe area), top = just below the header — or below the lower of
+// the founding banner and the day pills (spec §17.1) while they are on screen, so the card's close
+// button and every pill stay uncovered — written through CSSOM.
 // No flash of the old ring (spec §16.7): with scripting on, balloon.css hides the day header's static
 // ring from the first paint. Whenever this module decides NOT to show the floating ring (nothing
 // graded on a phone, invalid figures, no room below the bar, an unmeasurable viewport, init failing)
@@ -220,6 +221,14 @@ export function init({
     return r.height > 0 && Number.isFinite(r.bottom) ? Math.round(r.bottom) : null;
   }
 
+  /** The day pills' bottom while they are in the page and displayed, else null (as bannerBottom). */
+  function stripBottom() {
+    const strip = doc.querySelector('.day-pills');
+    if (!strip || strip.hidden) return null;
+    const r = strip.getBoundingClientRect();
+    return r.height > 0 && Number.isFinite(r.bottom) ? Math.round(r.bottom) : null;
+  }
+
   function box() {
     return {
       vw: win.innerWidth,
@@ -266,8 +275,9 @@ export function init({
         show(c.fits);
         return;
       }
-      // Not dragged: right from the CSS anchor, top just below the header (or the banner).
-      const c = clamp({ left: b.vw, top: defaultTop({ barBottom: barBottom(), bannerBottom: bannerBottom(), floor: b.minTop }) }, b);
+      // Not dragged: right from the CSS anchor, top just below the header (or the banner / the pills).
+      const top = defaultTop({ barBottom: barBottom(), bannerBottom: bannerBottom(), stripBottom: stripBottom(), floor: b.minTop });
+      const c = clamp({ left: b.vw, top }, b);
       if (c.fits) {
         for (const k of ['left', 'right', 'bottom']) drop(k);
         put('top', `${Math.round(c.top)}px`);
@@ -414,6 +424,8 @@ export function init({
       ro.observe(main);
       const banner = doc.querySelector('[data-banner]');
       if (banner) ro.observe(banner);
+      const strip = doc.querySelector('.day-pills');
+      if (strip) ro.observe(strip);
     } catch {
       // No observer: resize still re-clamps.
     }

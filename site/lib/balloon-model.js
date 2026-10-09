@@ -228,13 +228,16 @@ export function floorTop(barBottom, tools) {
 
 /**
  * The default top (operator, 2026-10-08): just below the header at every width — but below the
- * founding banner while it is on screen, so its close button stays tappable — and never above floor.
+ * founding banner and the day pills (spec §17.1) while they are on screen, so the card's close
+ * button and every pill stay uncovered: below the LOWER of the two. An obstacle whose bottom is at
+ * or above the header's (scrolled away) or unmeasurable does not count. Never above floor.
  *
- * @param {{barBottom:number, bannerBottom:number|null, floor:number}} o
+ * @param {{barBottom:number, bannerBottom?:number|null, stripBottom?:number|null, floor:number}} o
  */
-export function defaultTop({ barBottom, bannerBottom = null, floor }) {
+export function defaultTop({ barBottom, bannerBottom = null, stripBottom = null, floor }) {
   const bar = finite(barBottom) ? Math.max(0, barBottom) : 0;
-  const below = finite(bannerBottom) && bannerBottom > bar ? bannerBottom : bar;
+  let below = bar;
+  for (const b of [bannerBottom, stripBottom]) if (finite(b) && b > below) below = b;
   return Math.max(below + GAP, finite(floor) ? floor : 0);
 }
 
