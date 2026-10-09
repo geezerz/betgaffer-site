@@ -1172,8 +1172,9 @@ test('fixtures CSS: the edge each row gets — neutral before kickoff and when o
   for (const state of states) {
     for (const phase of ['pre', 'off']) assert.equal(edgeOf({ 'data-state': state, 'data-phase': phase }), '--line', `${phase} ${state}`);
     assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'done' }), DONE[state], `done ${state}`);
-    // In play: the hold colour whatever the grade; a row with no pick stays quiet.
-    assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'live' }), Object.hasOwn(GRADE_WORDS, state) ? '--hold' : '--line', `live ${state}`);
+    // In play: a settled grade colours the edge as it does when finished; pending is hold; a row
+    // with no pick stays quiet. (Operator decision 2026-10-09: live + won is --won, not --hold.)
+    assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'live' }), DONE[state], `live ${state}`);
   }
   assert.equal(edgeOf({ 'data-state': 'withdrawn' }), '--void', 'withdrawn keeps its own edge');
   // Every state the renderer emits is covered above (derived from the edge day's rows).
