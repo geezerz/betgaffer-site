@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-12",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-11T21:10:02Z",
-    "grades_as_of": "2026-10-11T22:15:01Z",
+    "grades_as_of": "2026-10-11T23:10:02Z",
     "prev_hash": "sha256:b5ff7b25dc652357cf1f2cc5eb5e2acdc742288c70eaa7b301d5000c0f7fde61",
-    "picks_hash": "sha256:98ed55a9a150851433f18e69a566298f5195100922e1d721024ff77c8981e759",
+    "picks_hash": "sha256:fb2eae3c769970c5c33380cb6bc0990825ed43b9e4973b131d238f8d6330de85",
     "counts": {
         "fixtures": 205,
         "priced": 205,
-        "recommended": 199,
+        "recommended": 201,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -64,7 +64,7 @@
             "away": "Santos Laguna",
             "home_id": 2870,
             "away_id": 3735,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -89,7 +89,7 @@
             "away": "Marquense",
             "home_id": 9163,
             "away_id": 9162,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -114,7 +114,7 @@
             "away": "Palestino",
             "home_id": 5035,
             "away_id": 9057,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -139,7 +139,7 @@
             "away": "Deportivo Saprissa",
             "home_id": 565948,
             "away_id": 565944,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -214,7 +214,7 @@
             "away": "H&H Export",
             "home_id": 4937,
             "away_id": 763941,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1908,12 +1908,19 @@
             "home_id": 1545,
             "away_id": 1484,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 85,
+                "price": 1.24,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-11T23:10:02Z",
+            "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": null,
+            "grade": "pending",
             "score": null
         },
         {
@@ -2894,12 +2901,19 @@
             "home_id": 6789,
             "away_id": 6754,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 84,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-11T23:10:02Z",
+            "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": null,
+            "grade": "pending",
             "score": null
         },
         {
