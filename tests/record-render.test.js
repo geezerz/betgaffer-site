@@ -380,7 +380,7 @@ test('footer: record start, updated stamp, the recent-figures line and the froze
   assert.deepEqual(allWith(foot, '<li').map(text), [
     'Record starts August 2026.',
     'Updated 7 Oct 2026, 06:05 WAT.',
-    'Recent figures can change slightly while late results are checked.',
+    'Recent figures can change slightly while final results are checked.',
     "From Wed 7 Oct 2026, each day's card is frozen before its matches kick off.",
   ]);
   // "Record starts" follows the oldest month by value, not by order.
@@ -388,7 +388,7 @@ test('footer: record start, updated stamp, the recent-figures line and the froze
   assert.match(text(renderRecord(r, OPTS)), /Record starts September 2026\./);
   // No months: no start line. No as_of: no stamp. The recent-figures line stays.
   const bare = text(footOf(renderRecord(rec((x) => { x.months = []; x.as_of = null; }), { ...OPTS, days: [] })));
-  assert.equal(bare, 'Recent figures can change slightly while late results are checked.');
+  assert.equal(bare, 'Recent figures can change slightly while final results are checked.');
 });
 
 test('footnotes (spec §10): the frozen-card commitment dated from the oldest listed day; no repository, no link', () => {

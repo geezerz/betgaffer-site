@@ -158,11 +158,38 @@ test('withdrawn without a pick', () => {
   assert.ok(!text(r).includes('15:30'));
 });
 
-test('late row', () => {
+// Plan E1: a row whose legacy `late` flag is true renders exactly like any pick-less row.
+// The edge day's own test team names are "Late Home" / "Late Away" (fixture data, never published).
+const noTestNames = (t) => t.replace(/Late (Home|Away)/g, '');
+const pickBlock = (rowHtml) => /<div class="fx__pick[^"]*">[\s\S]*?<\/div>/.exec(rowHtml)[0];
+test('a pick-less row with the legacy late flag: "No recommendation.", exactly like any pick-less row', () => {
+  assert.equal(EDGE_RAW.fixtures.find((f) => f.fx === 900009).late, true, 'premise: the file says late');
   const r = row(EDGE_HTML, 900009);
-  assert.equal(stateOf(r), 'late');
-  assert.match(text(r), /No pick — first seen less than 10 minutes before kickoff, or later\./);
+  assert.equal(stateOf(r), 'nopick');
+  assert.match(text(r), /No recommendation\./);
   assert.match(text(r), /Live/);
+  assert.equal(pickBlock(r), pickBlock(row(EDGE_HTML, 900010)));
+  assert.doesNotMatch(noTestNames(text(r)), /\blate\b|too late|first (listed|seen)|10 minutes/i);
+});
+
+test('`late` is ignored: every fixture day renders the same with it removed or set to any value, under either rule', () => {
+  const DAYS = [EDGE_RAW, D07_RAW, D08_RAW, readJson('./fixtures/rule2-day.json')];
+  for (const raw of DAYS) {
+    assert.ok(raw.fixtures.some((f) => 'late' in f), `premise: ${raw.lagos_day} carries late`);
+    const bare = structuredClone(raw);
+    for (const f of bare.fixtures) delete f.late;
+    const ref = renderDay(validateDay(bare, { expectDate: raw.lagos_day }), opts());
+    assert.equal(renderDay(bare, opts()), ref, `${raw.lagos_day}: raw (archive) and validated agree without late`);
+    assert.equal(renderDay(validateDay(structuredClone(raw), { expectDate: raw.lagos_day }), opts()), ref, `${raw.lagos_day}: as published`);
+    for (const v of [true, false, null, 'x', 1]) {
+      const day = structuredClone(raw);
+      for (const f of day.fixtures) f.late = v;
+      assert.equal(renderDay(day, opts()), ref, `${raw.lagos_day}: raw with late = ${JSON.stringify(v)}`);
+      assert.equal(renderDay(validateDay(day, { expectDate: raw.lagos_day }), opts()), ref, `${raw.lagos_day}: validated with late = ${JSON.stringify(v)}`);
+    }
+    assert.doesNotMatch(noTestNames(text(ref)), /\blate\b|too late|first (listed|seen)|10 minutes/i, raw.lagos_day);
+    assert.doesNotMatch(ref, /data-state="late"/);
+  }
 });
 
 test('no-pick row', () => {
@@ -560,8 +587,8 @@ test('"How this card was built": both fractions, no rate, no strategy key', () =
   const t = text(foot);
   assert.match(t, /How this card was built/);
   assert.match(t, /At most one recommended pick per fixture, chosen from 92 priced markets\./);
-  assert.match(t, /Of the 129 fixtures listed in time for a pick \(at least 10 minutes before kickoff\) that the graded record had a pick for, the card showed a pick for 120 — 120 of them the same pick the record grades — and showed no pick for 9\./);
-  assert.ok(!/first listed too late/.test(t), 'D08 has no late row, so no late sentence');
+  assert.ok(t.includes('Of the 129 fixtures checked against the graded record, the card showed a pick for 120, all of them the same pick the record grades, and no pick for 9.'), t);
+  assert.doesNotMatch(t, /\blate\b|too late|first (listed|seen)|10 minutes|in time/i);
   assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring\./);
   assert.ok(!/Each competition/.test(t), 'no grouping left in the copy');
   assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
@@ -579,29 +606,51 @@ test('"How this card was built" with nothing checked yet', () => {
 });
 
 const howText = (day) => text(/<details class="day-how">[\s\S]*?<\/details>/.exec(renderDay(day, opts()))[0]);
-const LATE_NOTE = 'Fixtures first listed too late carry no pick here; the graded record may still include them.';
+/** A copy of a day with its pick_source counts set (the "checked against the graded record" sentence). */
+const withCounts = (day, n, served, matched, unserved) => {
+  const d = structuredClone(day);
+  Object.assign(d.pick_source, { ledger_match_n: n, ledger_match_served_n: served, ledger_match_matched: matched, ledger_match_unserved: unserved });
+  return d;
+};
+/** The one sentence of the box that reports the check (or says nothing was checked). */
+const checkSentence = (day) => howText(day).split(/(?<=\.) /).filter((x) => /checked against/.test(x)).join(' ');
 
-test('"How this card was built": no "showed no pick" clause when every checked fixture was served', () => {
-  const t = howText(D07); // pick_source 7 / 7 / 7, unserved 0
-  assert.match(t, /Of the 7 fixtures listed in time for a pick \(at least 10 minutes before kickoff\) that the graded record had a pick for, the card showed a pick for 7 — 7 of them the same pick the record grades\./);
-  assert.ok(!/showed no pick/.test(t), t);
-  const one = structuredClone(D08);
-  Object.assign(one.pick_source, { ledger_match_n: 1, ledger_match_served_n: 1, ledger_match_matched: 1, ledger_match_unserved: 0 });
-  assert.match(howText(one), /Of the 1 fixture listed in time for a pick \(at least 10 minutes before kickoff\) that the graded record had a pick for, the card showed a pick for 1 — 1 of them the same pick the record grades\./);
+// BRAND-approved (2026-10-11): commas, not dashes; "all of them" when every pick matched; the no-pick
+// clause only when there is one; "1 fixture" in the singular. The same sentence under both rules.
+test('"How this card was built": the checked sentence, every form, under both rules', () => {
+  for (const base of [D08, R2]) {
+    const rule = base === R2 ? 2 : 1;
+    const is = (c, want) => assert.equal(checkSentence(withCounts(base, ...c)), want, `rule ${rule} ${c}`);
+    // matched == picked
+    is([111, 107, 107, 4], 'Of the 111 fixtures checked against the graded record, the card showed a pick for 107, all of them the same pick the record grades, and no pick for 4.');
+    // matched < picked
+    is([111, 107, 105, 4], 'Of the 111 fixtures checked against the graded record, the card showed a pick for 107, 105 of them the same pick the record grades, and no pick for 4.');
+    // no pick-less fixture: the clause is dropped entirely
+    is([7, 7, 7, 0], 'Of the 7 fixtures checked against the graded record, the card showed a pick for 7, all of them the same pick the record grades.');
+    is([7, 7, 6, 0], 'Of the 7 fixtures checked against the graded record, the card showed a pick for 7, 6 of them the same pick the record grades.');
+    // singular: "1 fixture", never "1 fixtures"; one pick that matched is not "all of them"
+    is([1, 1, 1, 0], 'Of the 1 fixture checked against the graded record, the card showed a pick for 1, the same pick the record grades.');
+    is([1, 0, 0, 1], 'Of the 1 fixture checked against the graded record, the card showed no pick for 1.');
+    is([2, 1, 0, 1], 'Of the 2 fixtures checked against the graded record, the card showed a pick for 1, 0 of them the same pick the record grades, and no pick for 1.');
+    is([2, 1, 1, 1], 'Of the 2 fixtures checked against the graded record, the card showed a pick for 1, the same pick the record grades, and no pick for 1.');
+    // nothing picked at all
+    is([4, 0, 0, 4], 'Of the 4 fixtures checked against the graded record, the card showed no pick for 4.');
+    // nothing checked: unchanged
+    is([0, 0, 0, 0], 'No fixture on this card has been checked against the graded record.');
+    for (const c of [[111, 107, 107, 4], [111, 107, 105, 4], [7, 7, 7, 0], [1, 1, 1, 0], [1, 0, 0, 1], [4, 0, 0, 4], [0, 0, 0, 0]]) {
+      const t = checkSentence(withCounts(base, ...c));
+      assert.doesNotMatch(t, /\blate\b|too late|first (listed|seen)|when first|10 minutes|in time|—|\b1 fixtures/i, `rule ${rule} ${c}: ${t}`);
+    }
+  }
 });
 
-test('"How this card was built": a day with late rows says they carry no pick but may still be graded', () => {
-  assert.ok(D07.fixtures.some((f) => f.late === true) && EDGE.fixtures.some((f) => f.late === true), 'premise: late rows exist');
-  for (const day of [D07, EDGE]) assert.ok(howText(day).includes(LATE_NOTE), day.lagos_day);
-  assert.ok(!howText(D08).includes(LATE_NOTE), 'no late row, no note');
-  // also when nothing was checked yet
-  const none = structuredClone(D07);
-  Object.assign(none.pick_source, { ledger_match_n: 0, ledger_match_matched: 0, ledger_match_served_n: 0, ledger_match_unserved: 0, ledger_match_rate: null });
-  const t = howText(none);
-  assert.match(t, /No fixture on this card has been checked against the graded record\./);
-  assert.ok(t.includes(LATE_NOTE));
-  // EDGE: 12 checked, 10 served, 9 the same, 2 not served
-  assert.match(howText(EDGE), /Of the 12 fixtures listed in time for a pick \(at least 10 minutes before kickoff\) that the graded record had a pick for, the card showed a pick for 10 — 9 of them the same pick the record grades — and showed no pick for 2\./);
+test('"How this card was built": the fixture days as published; a day with late rows says nothing about them', () => {
+  assert.ok(D07_RAW.fixtures.some((f) => f.late === true) && EDGE_RAW.fixtures.some((f) => f.late === true), 'premise: the files carry late rows');
+  assert.equal(checkSentence(D07), 'Of the 7 fixtures checked against the graded record, the card showed a pick for 7, all of them the same pick the record grades.');
+  assert.equal(checkSentence(EDGE), 'Of the 12 fixtures checked against the graded record, the card showed a pick for 10, 9 of them the same pick the record grades, and no pick for 2.');
+  for (const day of [D07, D08, EDGE, R2, withCounts(D07, 0, 0, 0, 0)]) {
+    assert.doesNotMatch(howText(day), /\blate\b|too late|first (listed|seen)|10 minutes|in time|may still include/i, day.lagos_day);
+  }
 });
 
 test('prev / next day links when given, none otherwise', () => {
@@ -717,7 +766,7 @@ test('fixtures.css: hiding really hides, rows are virtualised, the competition l
 // ---------------------------------------------------------------- spec §16: accuracy rule 2, scores
 
 // The publisher's real 2026-10-08 file as a rule-2 day: scores on finished rows (one AET, one PEN),
-// 558451 late WITH a pick, 558454 picked with pre_ko false, 147972 late without a pick.
+// 558451 (legacy late flag) WITH a pick, 558454 picked with pre_ko false, 147972 (legacy late flag) without a pick.
 const R2_RAW = readJson('./fixtures/rule2-day.json');
 const R2 = validateDay(R2_RAW, { expectDate: '2026-10-08' });
 const R2_HTML = renderDay(R2, opts());
@@ -740,7 +789,7 @@ test('isCounted: rule 1 needs pre_ko; rule 2 counts every non-withdrawn won/lost
   const moved = r('won', 80, { pre_ko: false });
   assert.equal(isCounted(moved, 1), false);
   assert.equal(isCounted(moved, 2), true);
-  assert.equal(isCounted(r('lost', 80, { pre_ko: false, late: true }), 2), true);
+  assert.equal(isCounted(r('lost', 80, { pre_ko: false }), 2), true);
   for (const rule of [1, 2]) {
     assert.equal(isCounted(r('won', 80), rule), true);
     assert.equal(isCounted(r('withdrawn', 80, { withdrawn: true }), rule), false);
@@ -790,9 +839,9 @@ test('rule 2: a 100% day states the mean of every counted pick, moved kickoff in
   assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), new RegExp(`stated at an average ${mean}%`));
 });
 
-test('rule 2: no late / moved notes, no uncounted marker; a late row with a pick renders like any pick', () => {
+test('rule 2: no moved note, no uncounted marker; a legacy late row with a pick renders like any pick', () => {
   const t = text(R2_HTML);
-  assert.ok(!t.includes('No pick — first seen'), 'no late note');
+  assert.ok(!/first seen|\blate\b/i.test(noTestNames(t)), 'no late wording');
   assert.ok(!t.includes('Kickoff was moved'), 'no moved note');
   assert.ok(!/data-uncounted|fx__note/.test(R2_HTML));
   assert.ok(!/data-state="late"/.test(R2_HTML));
@@ -805,7 +854,7 @@ test('rule 2: no late / moved notes, no uncounted marker; a late row with a pick
   const bare = row(R2_HTML, 147972);
   assert.equal(stateOf(bare), 'nopick');
   assert.match(text(bare), /^Serie A \(Brazil\) .* No recommendation\.$/);
-  // EDGE as rule 2 (recounted): its late row and moved row lose their notes too.
+  // EDGE as rule 2 (recounted): its moved row loses its note too.
   const edge2 = structuredClone(EDGE);
   edge2.accuracy_rule = 2;
   edge2.accuracy = { won: 3, lost: 1, pushes: 1, graded: 4, pct: 75 };
@@ -813,27 +862,26 @@ test('rule 2: no late / moved notes, no uncounted marker; a late row with a pick
   assert.equal(stateOf(row(h, 900009)), 'nopick');
   assert.match(text(row(h, 900009)), /No recommendation\./);
   assert.ok(!/data-uncounted|fx__note|Kickoff was moved|first seen/.test(h));
-  // while rule 1 (EDGE as published) keeps them
+  // while rule 1 (EDGE as published) keeps the moved note — and has no late wording (Plan E1)
   assert.match(EDGE_HTML, /data-uncounted/);
   assert.match(text(EDGE_HTML), /Kickoff was moved/);
-  assert.match(text(EDGE_HTML), /No pick — first seen/);
+  assert.doesNotMatch(noTestNames(text(EDGE_HTML)), /first seen|\blate\b/i);
 });
 
-test('rule 2: "How this card was built" names the card pick and drops every late / moved / 10-minute sentence', () => {
+test('rule 2: "How this card was built" names the card pick and has no late / moved / 10-minute / first-listed sentence', () => {
   const t = howText(R2);
   assert.match(t, /^How this card was built At most one recommended pick per fixture — the platform's card pick — graded after full time\. /);
-  assert.match(t, /Of the 111 fixtures checked against the graded record when first listed, the card showed a pick for 107 — 107 of them the same pick the record grades — and showed no pick for 4\./);
+  assert.ok(t.includes('Of the 111 fixtures checked against the graded record, the card showed a pick for 107, all of them the same pick the record grades, and no pick for 4.'), t);
   assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks and withdrawn picks are shown but not counted in the ring\./);
   assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
-  assert.ok(!/10 minutes|\blate\b|too late|moved|in time|priced markets/i.test(t), t);
+  assert.ok(!/10 minutes|\blate\b|too late|first (listed|seen)|moved|in time|priced markets/i.test(t), t);
   assert.ok(!t.includes('%'));
   // nothing checked yet
   const none = structuredClone(R2);
   Object.assign(none.pick_source, { ledger_match_n: 0, ledger_match_matched: 0, ledger_match_served_n: 0, ledger_match_unserved: 0, ledger_match_rate: null });
   assert.match(howText(none), /No fixture on this card has been checked against the graded record\./);
-  // rule 1 keeps the old copy
+  // rule 1 keeps its own first line
   assert.match(howText(EDGE), /At most one recommended pick per fixture, chosen from 92 priced markets\./);
-  assert.ok(howText(EDGE).includes(LATE_NOTE));
 });
 
 test('the archive renders the raw file: raw and validated rule-2 / rule-1 days give the same card', () => {
@@ -1206,8 +1254,8 @@ test('fixtures CSS: the edge each row gets — neutral before kickoff and when o
     return best?.colour ?? null;
   };
   assert.equal(edgeOf({}), '--line', 'premise: the base row edge is the neutral --line');
-  const states = ['won', 'lost', 'push', 'void', 'pending', 'late', 'nopick'];
-  const DONE = { won: '--won', lost: '--lost', push: '--void', void: '--void', pending: '--hold', late: '--line', nopick: '--line' };
+  const states = ['won', 'lost', 'push', 'void', 'pending', 'nopick'];
+  const DONE = { won: '--won', lost: '--lost', push: '--void', void: '--void', pending: '--hold', nopick: '--line' };
   for (const state of states) {
     for (const phase of ['pre', 'off']) assert.equal(edgeOf({ 'data-state': state, 'data-phase': phase }), '--line', `${phase} ${state}`);
     assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'done' }), DONE[state], `done ${state}`);

@@ -538,7 +538,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     title: 'Our Record',
     description: 'Every graded Bet Gaffer card pick: each figure with its count and its period.',
     body: renderRecord(index ? index.record : null, { today, days: listedAsc }),
-    scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the late-data banner
+    scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the stale-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
   });
 

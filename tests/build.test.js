@@ -1041,24 +1041,26 @@ describe('staleNotice (built stale.js) at the Lagos-midnight boundaries', () => 
     assert.deepEqual(at('2026-10-08T23:00:00Z', { day: null, generatedAt: '2026-10-08T22:00:00Z' }), []);
   });
 
-  test('late: exactly 6 h old is fine; 6 h and 1 s is late, with the stamp', () => {
+  test('overdue: exactly 6 h old is fine; 6 h and 1 s is overdue, with the stamp (brand-approved copy, Plan E1)', () => {
     assert.deepEqual(at('2026-10-08T04:15:00Z', { day: null }), []);
     const n = at('2026-10-08T04:15:01Z', { day: null });
-    assert.deepEqual(kinds(n), ['late']);
-    assert.equal(n[0].text, `Last updated ${fmtStamp(GEN)}. Updates normally run every 2 hours; this one is late.`);
+    assert.deepEqual(kinds(n), ['overdue']);
+    assert.equal(fmtStamp(GEN), '7 Oct 2026, 23:15 WAT', 'premise: the stamp format is unchanged');
+    assert.equal(n[0].text, 'Last updated 7 Oct 2026, 23:15 WAT. Updates usually run every 2 hours; this one is taking longer than usual.');
+    assert.doesNotMatch(n[0].text, /\blate\b/i);
   });
 
-  test('late and past midnight together give both notices, late first', () => {
-    assert.deepEqual(kinds(at('2026-10-08T05:00:00Z')), ['late', 'tomorrow']);
+  test('overdue and past midnight together give both notices, overdue first', () => {
+    assert.deepEqual(kinds(at('2026-10-08T05:00:00Z')), ['overdue', 'tomorrow']);
   });
 
   test('a configured window is honoured; a missing or nonsense one falls back to 6 h', () => {
-    assert.deepEqual(kinds(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: 1 })), ['late']);
+    assert.deepEqual(kinds(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: 1 })), ['overdue']);
     assert.deepEqual(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: NaN }), []);
     assert.deepEqual(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: 0 }), []);
   });
 
-  test('a generated_at in the future (clock skew) or malformed is never "late"', () => {
+  test('a generated_at in the future (clock skew) or malformed is never overdue', () => {
     assert.deepEqual(at('2026-10-07T20:00:00Z', { day: null, generatedAt: '2026-10-08T22:00:00Z' }), []);
     assert.deepEqual(at('2026-10-09T20:00:00Z', { day: null, generatedAt: 'yesterday' }), []);
   });
@@ -1202,5 +1204,61 @@ describe('CLI', () => {
     } finally {
       await ws.cleanup();
     }
+  });
+});
+
+// ------------------------------------------------------------------ Plan E1: no "late" a visitor can see
+
+describe('no "late" wording in anything the build ships (Plan E1, operator order 2026-10-09)', () => {
+  // Two builds between them render every card shape: the fixture artifact plus its archive (a rule-1
+  // home day with late rows, the edge day as an archive stub) and a rule-2 home day. Every shipped
+  // text file is scanned (HTML, CSS, JS, _headers, licences...) except the copied publisher data
+  // (index.json, days/*.json), which the publisher and the one-off strip clean (Plan E2/E3).
+  const BANNED = [/\blate\b/i, /too late/i, /first listed/i, /first seen/i, /10 minutes/i];
+  const BINARY = /\.(woff2|png|jpe?g|gif|webp|ico)$/i;
+  const DATA = (rel) => rel === 'index.json' || rel.startsWith('days/');
+  const wss = [];
+  before(async () => {
+    const a = await workspace();
+    await copyArtifact(a.root);
+    await addArchive(a.root);
+    await run(a);
+    const b = await workspace();
+    await copyArtifact(b.root);
+    const r2 = await readJson(join(REPO_ROOT, 'tests/fixtures/rule2-day.json'));
+    await writeJson(join(b.root, 'days/2026-10-08.json'), r2);
+    const i = await readJson(join(b.root, 'index.json'));
+    i.today = '2026-10-08';
+    Object.assign(i.days.find((d) => d.day === '2026-10-08'), { picks_hash: r2.picks_hash, fixtures: r2.fixtures.length, accuracy: r2.accuracy });
+    await writeJson(join(b.root, 'index.json'), i);
+    await run(b);
+    wss.push(a, b);
+  });
+  after(() => Promise.all(wss.map((w) => w.cleanup())));
+
+  test('premise: the builds render a rule-1 day with late rows and a rule-2 day', async () => {
+    const [a, b] = wss;
+    const d07 = await readJson(join(a.out, 'days/2026-10-07.json'));
+    assert.ok(d07.fixtures.some((f) => f.late === true && f.pick === null), 'premise: a late, pick-less row is published data');
+    assert.match(await read(a, 'day/2026-10-07/index.html'), /data-state="nopick"/);
+    assert.match(visibleText(await read(b, 'index.html')), /the platform's card pick/);
+  });
+
+  test('no whole-word "late", "too late", "first listed", "first seen" or "10 minutes" in any shipped file', async () => {
+    const hits = [];
+    let scanned = 0;
+    for (const w of wss) {
+      for (const rel of Object.keys(await snapshot(w.out)).sort()) {
+        if (DATA(rel) || BINARY.test(rel)) continue;
+        const src = await readFile(join(w.out, rel), 'utf8');
+        scanned++;
+        for (const re of BANNED) {
+          const m = new RegExp(re.source, 'gi');
+          for (const x of src.matchAll(m)) hits.push(`${rel}: ${JSON.stringify(src.slice(Math.max(0, x.index - 40), x.index + 40))}`);
+        }
+      }
+    }
+    assert.ok(scanned >= 40, `premise: the whole site was scanned (${scanned} files)`);
+    assert.deepEqual(hits, []);
   });
 });

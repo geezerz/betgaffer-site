@@ -13,8 +13,10 @@ import { picksHash } from './hash.js';
 
 export const SCHEMA = 1;
 // The day file's accuracy rule (spec §16.6). Absent = 1: a pick counts only when it was published
-// before kickoff (pre_ko) and a late row never carries a pick. 2: every non-withdrawn pick counts and
-// a late row may carry one. The renderer (fixtures.js) recounts the ring with the same rule.
+// before kickoff (pre_ko). 2: every non-withdrawn pick counts. The renderer (fixtures.js) recounts the
+// ring with the same rule.
+// A row's legacy `late` flag (operator order 2026-10-09, Plan E1) is optional and, whatever its value,
+// accepted and dropped: like any key the contract does not name, it never reaches a page.
 export const ACCURACY_RULES = new Set([1, 2]);
 export const GRADES = new Set(['won', 'lost', 'push', 'void', 'pending', 'withdrawn']);
 // The ledger statuses known today. Validation accepts any string (a new status must not fail a
@@ -321,7 +323,7 @@ function pick(c, v, path) {
   };
 }
 
-function fixture(c, v, i, rule) {
+function fixture(c, v, i) {
   const path = `fixtures[${i}]`;
   obj(c, v, path);
   const p = `${path}.`;
@@ -340,7 +342,6 @@ function fixture(c, v, i, rule) {
     pick: pick(c, rawPick, `${p}pick`),
     frozen_at: isoZ(c, v, 'frozen_at', p, { nullable: true }),
     pre_ko: bool(c, v, 'pre_ko', p),
-    late: bool(c, v, 'late', p),
     withdrawn: bool(c, v, 'withdrawn', p),
     grade: oneOf(c, v, 'grade', p, GRADES, { nullable: true }),
     score: score(c, v, p),
@@ -351,8 +352,6 @@ function fixture(c, v, i, rule) {
     c.fail(`${p}grade`, `is ${JSON.stringify(f.grade)} but the row ${f.pick === null ? 'has no pick' : 'has a pick'} (grade is null exactly when there is no pick)`);
   }
   if (!f.withdrawn && f.grade === 'withdrawn') c.fail(`${p}grade`, 'is "withdrawn" on a row whose withdrawn flag is false');
-  // Rule 1 only: under rule 2 a late row may take the card's pick (spec §16.6).
-  if (rule === 1 && f.late && f.pick !== null) c.fail(`${p}late`, 'is true but the row carries a pick (a late row never has one under accuracy rule 1)');
   if (f.pick !== null && f.frozen_at === null) c.fail(`${p}frozen_at`, 'is null but the row carries a pick');
   return f;
 }
@@ -404,7 +403,7 @@ export function validateDay(o, { expectDate } = {}) {
   if (!Array.isArray(fx)) c.fail('fixtures', 'must be an array');
   const seen = new Set();
   out.fixtures = fx.map((f, i) => {
-    const row = fixture(c, f, i, rule);
+    const row = fixture(c, f, i);
     if (seen.has(row.fx)) c.fail(`fixtures[${i}].fx`, `duplicate fx ${row.fx}`);
     seen.add(row.fx);
     return row;

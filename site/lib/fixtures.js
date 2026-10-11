@@ -9,10 +9,12 @@
 // Row rules (spec §5 "Data facts", §7):
 //   - a withdrawn row keeps its published `status` forever, so it is rendered from `withdrawn`;
 //   - the day's accuracy rule (ruleOf, spec §16.6) decides what counts and what is said:
-//     rule 1 (no accuracy_rule: files published before round 3): a late row never has a pick and
-//     says so; a picked row with pre_ko === false is marked (data-uncounted + note) and not counted;
-//     rule 2: every non-withdrawn pick counts, a late row may carry a pick and no row carries a
-//     late / moved note or marker (late and pre_ko are metadata only);
+//     rule 1 (no accuracy_rule: files published before round 3): a picked row with pre_ko === false
+//     is marked (data-uncounted + note) and not counted;
+//     rule 2: every non-withdrawn pick counts and no row carries a moved note or marker (pre_ko is
+//     metadata only);
+//   - a row without a pick says "No recommendation." under either rule; the publisher's old
+//     first-sight timing flag is never read (operator order 2026-10-09, Plan E1);
 //   - a finished row (FT / AET / PEN) shows its 90-minute score (what markets settle on), plus the
 //     a.e.t. result and the pens when present, if the file carries a well-formed score (checked
 //     here too: the archive renders raw fetched files); never on any other status;
@@ -58,7 +60,6 @@ const GRADES = Object.freeze({
 const MSG = Object.freeze({
   withdrawnPick: 'This fixture changed after the pick was published, so the pick is not graded.',
   withdrawnBare: 'This fixture changed after it was published.',
-  late: 'No pick — first seen less than 10 minutes before kickoff, or later.',
   none: 'No recommendation.',
   moved: 'Kickoff was moved to a time before this pick was frozen — not counted in the ring.',
   // Rule-2 days only (spec §16 amendments): the first line of "How this card was built".
@@ -175,8 +176,8 @@ function checkAccuracyAgainstRows(day, rule) {
   }
 }
 
-/** The row's state: withdrawn | won | lost | push | void | pending | late (rule 1 only) | nopick. */
-function rowState(f, rule) {
+/** The row's state: withdrawn | won | lost | push | void | pending | nopick. */
+function rowState(f) {
   if (f.withdrawn === true) {
     if (f.grade !== 'withdrawn' && f.grade !== null) {
       throw new Error(`renderDay: fx ${f.fx} is withdrawn but its grade is ${JSON.stringify(f.grade)}`);
@@ -192,7 +193,7 @@ function rowState(f, rule) {
   if (f.grade !== null && f.grade !== undefined) {
     throw new Error(`renderDay: fx ${f.fx} has no pick but grade ${JSON.stringify(f.grade)}`);
   }
-  return rule === 1 && f.late === true ? 'late' : 'nopick';
+  return 'nopick';
 }
 
 // ------------------------------------------------------------------ row parts
@@ -285,7 +286,6 @@ function outcome(f, state, rule, phase) {
       + selHtml(p, true) + probHtml(p, true)
       + `<p class="fx__msg">${escHtml(MSG.withdrawnPick)}</p></div>`;
   }
-  if (state === 'late') return `<div class="fx__pick fx__pick--none"><p class="fx__msg">${escHtml(MSG.late)}</p></div>`;
   if (state === 'nopick') return `<div class="fx__pick fx__pick--none"><p class="fx__msg">${escHtml(MSG.none)}</p></div>`;
 
   const g = GRADES[state];
@@ -306,7 +306,7 @@ function outcome(f, state, rule, phase) {
 function fixtureRow(f, rule) {
   if (!Number.isInteger(f.fx)) throw new TypeError('renderDay: a fixture has a non-integer fx');
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
-  const state = rowState(f, rule);
+  const state = rowState(f);
   const uncounted = rule === 1 && state !== 'withdrawn' && f.pick && f.pre_ko === false ? ' data-uncounted' : '';
   // A withdrawn row has no phase: it keeps its own treatment whatever its (frozen) status.
   const phase = state === 'withdrawn' ? null : phaseOf(f.status);
@@ -356,15 +356,26 @@ function howBuilt(day, rule) {
   const served = count(ps.ledger_match_served_n, 'pick_source.ledger_match_served_n');
   const matched = count(ps.ledger_match_matched, 'pick_source.ledger_match_matched');
   const unserved = count(ps.ledger_match_unserved, 'pick_source.ledger_match_unserved');
-  // State counts only, never a cause (the data does not record one), and never the bare rate.
-  const none = 'No fixture on this card has been checked against the graded record.';
-  const tail = `the card showed a pick for ${served} — ${matched} of them the same pick the record grades`
-    + (unserved > 0 ? ` — and showed no pick for ${unserved}.` : '.');
+  // State counts only, never a cause (the data does not record one), and never the bare rate. The
+  // same sentence under both rules (brand-approved 2026-10-11): it states how many fixtures the
+  // check covered, not which, and never when they were listed (Plan E1).
+  let check;
+  if (n === 0) {
+    check = 'No fixture on this card has been checked against the graded record.';
+  } else {
+    let picked;
+    if (served === 0) picked = `the card showed no pick for ${unserved}`;
+    else {
+      const same = matched === served
+        ? (served === 1 ? 'the same pick the record grades' : 'all of them the same pick the record grades')
+        : `${matched} of them the same pick the record grades`;
+      picked = `the card showed a pick for ${served}, ${same}` + (unserved > 0 ? `, and no pick for ${unserved}` : '');
+    }
+    check = `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record, ${picked}.`;
+  }
   if (rule === 2) {
     // Rule 2 (spec §16.6): any row may take the card's pick, every non-withdrawn pick counts, and
-    // nothing on the card speaks of late or moved kickoffs. The check still covers only the rows
-    // the publisher fed it; the sentence states how many, not which.
-    const check = n === 0 ? none : `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record when first listed, ${tail}`;
+    // nothing on the card speaks of moved kickoffs.
     return '<details class="day-how"><summary>How this card was built</summary><div class="day-how__body">'
       + `<p>${escHtml(MSG.howRule2)}</p>`
       + `<p>${escHtml(check)}</p>`
@@ -373,16 +384,6 @@ function howBuilt(day, rule) {
       + '<p>Prices marked est. are estimates: no market price was captured for them.</p>'
       + '</div></details>';
   }
-  // Rule 1: the check covers fixtures listed in time for a pick; a late row never has one, but the
-  // graded record may still grade that fixture, so a day with late rows says so.
-  const checked = n === 0
-    ? none
-    : `Of the ${plural(n, 'fixture', 'fixtures')} listed in time for a pick (at least 10 minutes before kickoff) `
-      + `that the graded record had a pick for, ${tail}`;
-  const hasLate = day.fixtures.some((f) => f.late === true);
-  const check = hasLate
-    ? `${checked} Fixtures first listed too late carry no pick here; the graded record may still include them.`
-    : checked;
   return '<details class="day-how"><summary>How this card was built</summary><div class="day-how__body">'
     + `<p>At most one recommended pick per fixture, chosen from ${escHtml(plural(markets, 'priced market', 'priced markets'))}.</p>`
     + `<p>${escHtml(check)}</p>`
@@ -427,7 +428,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const prev = optDate(prevDay, 'prevDay');
   const next = optDate(nextDay, 'nextDay');
   const rule = ruleOf(day);
-  day.fixtures.forEach((f) => rowState(f, rule)); // every row renderable (named errors) before the ring is checked
+  day.fixtures.forEach((f) => rowState(f)); // every row renderable (named errors) before the ring is checked
   checkAccuracyAgainstRows(day, rule);
 
   const d = day.lagos_day;

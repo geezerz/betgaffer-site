@@ -324,7 +324,6 @@ test('validateDay rejects contract violations', () => {
     // The publisher nulls grade exactly when pick is null on EVERY row (its grading step).
     ['withdrawn row with a pick but grade null', (d) => { Object.assign(d.fixtures[picked(d)], { withdrawn: true, grade: null }); }, /grade/],
     ['withdrawn row with no pick but a grade', (d) => { Object.assign(d.fixtures[unpicked(d)], { withdrawn: true, grade: 'withdrawn' }); }, /grade/],
-    ['late row with a pick', (d) => { d.fixtures[picked(d)].late = true; }, /late/],
     ['pick without frozen_at', (d) => { d.fixtures[picked(d)].frozen_at = null; }, /frozen_at/],
     ['pre_ko not bool', (d) => { d.fixtures[0].pre_ko = 'true'; }, /pre_ko/],
     ['pick.market empty', (d) => { d.fixtures[picked(d)].pick.market = ''; }, /market/],
@@ -378,13 +377,13 @@ test('nodeSha256 is lowercase hex SHA-256 of the UTF-8 bytes', async () => {
 
 // ---------------------------------------------------------------- spec §16: scores, accuracy rule 2
 
-// The publisher's real 2026-10-08 file with accuracy_rule 2, scores on finished rows, a late row
-// that carries a pick (558451) and a picked row with pre_ko false (558454). Only fields outside
+// The publisher's real 2026-10-08 file with accuracy_rule 2, scores on finished rows, a row whose
+// legacy `late` flag is true and that carries a pick (558451) and a picked row with pre_ko false (558454). Only fields outside
 // picks_hash differ from the published file, so the receipt still recomputes.
 const RULE2 = readJson(fileURLToPath(new URL('./fixtures/rule2-day.json', import.meta.url)));
 const at = (d, fx) => d.fixtures.find((f) => f.fx === fx);
 
-test('rule-2 fixture premise: hash recomputes, a late row with a pick, scores on finished rows', async () => {
+test('rule-2 fixture premise: hash recomputes, a legacy late:true row with a pick, scores on finished rows', async () => {
   const { picksHash } = await import('../site/lib/hash.js');
   assert.equal(await picksHash(RULE2.fixtures, nodeSha256), RULE2.picks_hash);
   assert.equal(RULE2.accuracy_rule, 2);
@@ -402,7 +401,7 @@ test('validateDay: old files carry no score / accuracy_rule -> rule 1, score nul
   }
 });
 
-test('validateDay: a rule-2 file keeps its rule, its scores (allowlisted) and its late picked row', () => {
+test('validateDay: a rule-2 file keeps its rule, its scores (allowlisted) and its picked row (legacy late dropped)', () => {
   const raw = clone(RULE2);
   const pen = raw.fixtures.find((f) => f.status === 'PEN');
   pen.score.extra = 'x';
@@ -415,7 +414,7 @@ test('validateDay: a rule-2 file keeps its rule, its scores (allowlisted) and it
   assert.ok(Number.isInteger(aet.score.aet_home) && aet.score.pen_home === null);
   const ft = v.fixtures.find((f) => f.status === 'FT' && f.score !== null);
   assert.deepEqual([ft.score.aet_home, ft.score.aet_away, ft.score.pen_home, ft.score.pen_away], [null, null, null, null]);
-  assert.equal(at(v, 558451).late, true);
+  assert.ok(!Object.hasOwn(at(v, 558451), 'late'), 'the legacy late flag is dropped');
   assert.notEqual(at(v, 558451).pick, null);
   assert.equal(v.fixtures.filter((f) => f.score !== null).length, RULE2.fixtures.filter((f) => f.score !== null).length);
 });
@@ -474,14 +473,33 @@ test('validateDay: accuracy_rule is absent, 1 or 2 — anything else throws', ()
   }
 });
 
-test('validateDay: a late row with a pick is allowed under rule 2 only', () => {
-  assert.doesNotThrow(() => validateDay(clone(RULE2), { expectDate: '2026-10-08' }));
-  const r1 = clone(RULE2);
-  delete r1.accuracy_rule;
-  assert.throws(() => validateDay(r1, { expectDate: '2026-10-08' }), /late/);
-  const explicit1 = clone(RULE2);
-  explicit1.accuracy_rule = 1;
-  assert.throws(() => validateDay(explicit1, { expectDate: '2026-10-08' }), /late/);
+// Plan E1 (operator order 2026-10-09: "seen too late" never in front of customers): `late` is
+// optional and, whatever its value, accepted and DROPPED from the validated row — under either rule.
+test('validateDay: `late` is optional; any value is accepted and dropped, under rule 1 and rule 2', () => {
+  const VALUES = [true, false, null, 0, 1, 'yes', '', [], {}, { x: 1 }];
+  const days = [[RULE2, '2026-10-08'], [DAY07, '2026-10-07'], [DAY08, '2026-10-08']];
+  for (const [raw, d] of days) {
+    // the same day with every row's late removed is the reference
+    const bare = clone(raw);
+    for (const f of bare.fixtures) delete f.late;
+    const ref = validateDay(bare, { expectDate: d });
+    assert.ok(ref.fixtures.every((f) => !Object.hasOwn(f, 'late')), `${d}: no late key on the reference`);
+    assert.deepEqual(validateDay(clone(raw), { expectDate: d }), ref, `${d}: the file as published`);
+    for (const v of VALUES) {
+      const withLate = clone(raw);
+      for (const f of withLate.fixtures) f.late = structuredClone(v);
+      assert.deepEqual(validateDay(withLate, { expectDate: d }), ref, `${d}: late = ${JSON.stringify(v)}`);
+    }
+  }
+  // the old rule-1 refusal (a late row with a pick) is gone: the flag no longer means anything
+  for (const rule of [undefined, 1]) {
+    const r1 = clone(RULE2);
+    if (rule === undefined) delete r1.accuracy_rule; else r1.accuracy_rule = rule;
+    assert.ok(at(r1, 558451).late === true && at(r1, 558451).pick !== null, 'premise');
+    const v = validateDay(r1, { expectDate: '2026-10-08' });
+    assert.equal(v.accuracy_rule, 1);
+    assert.ok(!Object.hasOwn(at(v, 558451), 'late'));
+  }
 });
 
 test('validateDay: a compacted summary carries its accuracy_rule (absent -> 1; bad -> throws)', () => {

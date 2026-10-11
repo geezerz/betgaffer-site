@@ -7,7 +7,7 @@
 //     "Today…"/"Tomorrow…" (and, on the day pills only, "Yesterday") for the VISITOR's Lagos
 //     date on each page view, and again at the next Lagos midnight while the page stays open;
 //   - from <main data-generated-at data-day data-tomorrow data-view data-stale-after-hours>:
-//     the published data is older than the window -> "Last updated <stamp>. … this one is late.";
+//     the published data is older than the window -> "Last updated <stamp>. … taking longer than usual.";
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
 //     card is already published (the normal 00:00–00:10 window, not a failure) and is linked, or
 //     today's card has not been published yet.
@@ -140,12 +140,12 @@ export function relabel(root, nowMs) {
 }
 
 /**
- * The notices to show, in order (late first): [] when the page is current.
- * Each is { kind: 'late' | 'tomorrow' | 'old', text, href?, linkText? }.
+ * The notices to show, in order (overdue first): [] when the page is current.
+ * Each is { kind: 'overdue' | 'tomorrow' | 'old', text, href?, linkText? }.
  *
  * @param {object} o
  * @param {number} o.nowMs              visitor's clock, epoch ms
- * @param {string} [o.generatedAt]      index.generated_at (ISO-Z); absent/malformed -> no late check
+ * @param {string} [o.generatedAt]      index.generated_at (ISO-Z); absent/malformed -> no overdue check
  * @param {string|null} [o.day]         the shown day; pass it ONLY on the home page
  * @param {string|null} [o.tomorrow]    the published tomorrow date, when listed
  * @param {number} [o.staleAfterHours]  window; not a positive finite number -> 6
@@ -156,7 +156,7 @@ export function staleNotice({ nowMs, generatedAt, day, tomorrow, staleAfterHours
   const hours = typeof staleAfterHours === 'number' && Number.isFinite(staleAfterHours) && staleAfterHours > 0
     ? staleAfterHours : DEFAULT_STALE_HOURS;
   if (isIsoZ(generatedAt) && nowMs - Date.parse(generatedAt) > hours * HOUR_MS) {
-    out.push({ kind: 'late', text: `Last updated ${fmtStamp(generatedAt)}. Updates normally run every 2 hours; this one is late.` });
+    out.push({ kind: 'overdue', text: `Last updated ${fmtStamp(generatedAt)}. Updates usually run every 2 hours; this one is taking longer than usual.` });
   }
   if (isDate(day)) {
     const visitor = lagosToday(nowMs);

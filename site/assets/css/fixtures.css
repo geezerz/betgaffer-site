@@ -166,7 +166,7 @@
   font-size:10.5px; font-weight:600; line-height:1.3; color:var(--muted);
 }
 
-/* The outcome block: pick, withdrawn, late or nothing. */
+/* The outcome block: pick, withdrawn or nothing. */
 .fx__pick{
   grid-column:1 / -1; grid-row:3;
   display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:baseline;
@@ -203,7 +203,6 @@
 
 /* Rows without a recommendation stay quiet. */
 .fx__pick--none{ grid-template-columns:minmax(0,1fr); }
-.fx[data-state="late"] .fx__team,
 .fx[data-state="nopick"] .fx__team{ color:var(--ink-2); }
 
 /* Withdrawn: the published pick stays visible, struck, and plainly not graded. */

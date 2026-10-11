@@ -16,7 +16,7 @@
 // a total ("of Y") never does.
 // Status: only the current Lagos month says "In progress" (whatever the ledger says); today's strip
 // day is tagged for stale.js, which labels it "Today · so far" on the visitor's day only. One footer
-// line says recent figures can still move while late results are checked.
+// line says recent figures can still move while final results are checked.
 // Copy: "right", never "win rate"; no ROI, profit, yield, staking or bankroll anywhere.
 
 import { escHtml, escAttr } from './esc.js';
@@ -181,8 +181,8 @@ function footnotes(rec, listed) {
   const oldestMonth = rec.months.reduce((m, g) => (m === null || g.period < m ? g.period : m), null);
   const starts = oldestMonth === null ? '' : `<li>${escHtml(`Record starts ${monthName(oldestMonth)}.`)}</li>\n`;
   const updated = rec.as_of === null ? '' : `<li>${escHtml(`Updated ${fmtStamp(rec.as_of)}.`)}</li>\n`;
-  // The ledger can still move recent figures as late results settle (spec §7).
-  const recent = '<li>Recent figures can change slightly while late results are checked.</li>\n';
+  // The ledger can still move recent figures as final results settle (spec §7).
+  const recent = '<li>Recent figures can change slightly while final results are checked.</li>\n';
   // The commitment is dated from the oldest listed day (the ledger figures reach further back);
   // with no day listed there is no date to state, so the line is omitted (spec §10).
   const oldestDay = [...listed].sort()[0];
