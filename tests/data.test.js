@@ -502,6 +502,38 @@ test('validateDay: `late` is optional; any value is accepted and dropped, under 
   }
 });
 
+// E1 review: the "checked against the graded record" sentence is built from these counts, so they
+// must agree — n = served + unserved (the publisher derives served as n - unserved) and matched <=
+// served — or the card could say "no pick for 0" of n > 0 fixtures, or "5 of them" out of 3 picks.
+test('validateDay: pick_source counts must agree (n = served + unserved, matched <= served)', () => {
+  const ps = (d, n, served, matched, unserved) => Object.assign(d.pick_source, {
+    ledger_match_n: n, ledger_match_served_n: served, ledger_match_matched: matched, ledger_match_unserved: unserved,
+  });
+  for (const [raw, d] of [[RULE2, '2026-10-08'], [DAY07, '2026-10-07'], [DAY08, '2026-10-08']]) {
+    const p = raw.pick_source;
+    assert.equal(p.ledger_match_n, p.ledger_match_served_n + p.ledger_match_unserved, `premise: ${d} is consistent`);
+    assert.doesNotThrow(() => validateDay(clone(raw), { expectDate: d }), d);
+  }
+  // boundaries that agree
+  for (const c of [[0, 0, 0, 0], [4, 0, 0, 4], [7, 7, 7, 0], [7, 7, 0, 0], [111, 107, 107, 4]]) {
+    const d = clone(RULE2);
+    ps(d, ...c);
+    assert.deepEqual(Object.values(validateDay(d, { expectDate: '2026-10-08' }).pick_source).slice(3), [c[0], c[2], c[1], c[3]], String(c));
+  }
+  // n != served + unserved
+  for (const c of [[4, 0, 0, 0], [5, 3, 3, 1], [3, 3, 3, 1], [111, 107, 107, 5]]) {
+    const d = clone(RULE2);
+    ps(d, ...c);
+    assert.throws(() => validateDay(d, { expectDate: '2026-10-08' }), /pick_source\.ledger_match_n .*served_n.*unserved/, String(c));
+  }
+  // matched > served
+  for (const c of [[4, 3, 5, 1], [1, 0, 1, 1], [111, 107, 108, 4]]) {
+    const d = clone(RULE2);
+    ps(d, ...c);
+    assert.throws(() => validateDay(d, { expectDate: '2026-10-08' }), /pick_source\.ledger_match_matched .*served_n/, String(c));
+  }
+});
+
 test('validateDay: a compacted summary carries its accuracy_rule (absent -> 1; bad -> throws)', () => {
   const { fixtures, pick_source, ...rest } = clone(RULE2);
   void fixtures; void pick_source;

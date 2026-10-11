@@ -359,7 +359,7 @@ function fixture(c, v, i) {
 function pickSource(c, v) {
   obj(c, v, 'pick_source');
   const p = 'pick_source.';
-  return {
+  const out = {
     strategy: str(c, v, 'strategy', p, { nonEmpty: true }),
     fallback: str(c, v, 'fallback', p),
     ledger_match_rate: num(c, v, 'ledger_match_rate', p, { nullable: true }),
@@ -368,6 +368,12 @@ function pickSource(c, v) {
     ledger_match_served_n: int(c, v, 'ledger_match_served_n', p),
     ledger_match_unserved: int(c, v, 'ledger_match_unserved', p),
   };
+  // The card's "checked against the graded record" sentence is built from these counts, so they must
+  // agree: the publisher derives served_n as n - unserved, and matched counts served fixtures only.
+  const { ledger_match_n: n, ledger_match_matched: matched, ledger_match_served_n: served, ledger_match_unserved: unserved } = out;
+  if (n !== served + unserved) c.fail(`${p}ledger_match_n`, `(${n}) != ledger_match_served_n (${served}) + ledger_match_unserved (${unserved})`);
+  if (matched > served) c.fail(`${p}ledger_match_matched`, `(${matched}) > ledger_match_served_n (${served})`);
+  return out;
 }
 
 /**

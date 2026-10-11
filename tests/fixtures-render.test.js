@@ -631,15 +631,19 @@ test('"How this card was built": the checked sentence, every form, under both ru
     // singular: "1 fixture", never "1 fixtures"; one pick that matched is not "all of them"
     is([1, 1, 1, 0], 'Of the 1 fixture checked against the graded record, the card showed a pick for 1, the same pick the record grades.');
     is([1, 0, 0, 1], 'Of the 1 fixture checked against the graded record, the card showed no pick for 1.');
-    is([2, 1, 0, 1], 'Of the 2 fixtures checked against the graded record, the card showed a pick for 1, 0 of them the same pick the record grades, and no pick for 1.');
+    // none matched (E1 review): "none of them", and for a single pick "not the same pick"
+    is([2, 1, 0, 1], 'Of the 2 fixtures checked against the graded record, the card showed a pick for 1, not the same pick the record grades, and no pick for 1.');
+    is([1, 1, 0, 0], 'Of the 1 fixture checked against the graded record, the card showed a pick for 1, not the same pick the record grades.');
+    is([111, 107, 0, 4], 'Of the 111 fixtures checked against the graded record, the card showed a pick for 107, none of them the same pick the record grades, and no pick for 4.');
+    is([3, 3, 0, 0], 'Of the 3 fixtures checked against the graded record, the card showed a pick for 3, none of them the same pick the record grades.');
     is([2, 1, 1, 1], 'Of the 2 fixtures checked against the graded record, the card showed a pick for 1, the same pick the record grades, and no pick for 1.');
     // nothing picked at all
     is([4, 0, 0, 4], 'Of the 4 fixtures checked against the graded record, the card showed no pick for 4.');
     // nothing checked: unchanged
     is([0, 0, 0, 0], 'No fixture on this card has been checked against the graded record.');
-    for (const c of [[111, 107, 107, 4], [111, 107, 105, 4], [7, 7, 7, 0], [1, 1, 1, 0], [1, 0, 0, 1], [4, 0, 0, 4], [0, 0, 0, 0]]) {
+    for (const c of [[111, 107, 107, 4], [111, 107, 105, 4], [7, 7, 7, 0], [1, 1, 1, 0], [1, 0, 0, 1], [4, 0, 0, 4], [0, 0, 0, 0], [2, 1, 0, 1], [3, 3, 0, 0]]) {
       const t = checkSentence(withCounts(base, ...c));
-      assert.doesNotMatch(t, /\blate\b|too late|first (listed|seen)|when first|10 minutes|in time|—|\b1 fixtures/i, `rule ${rule} ${c}: ${t}`);
+      assert.doesNotMatch(t, /\blate\b|too late|first (listed|seen)|when first|10 minutes|in time|—|\b1 fixtures|\b0 of them/i, `rule ${rule} ${c}: ${t}`);
     }
   }
 });

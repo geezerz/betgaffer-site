@@ -366,9 +366,11 @@ function howBuilt(day, rule) {
     let picked;
     if (served === 0) picked = `the card showed no pick for ${unserved}`;
     else {
-      const same = matched === served
-        ? (served === 1 ? 'the same pick the record grades' : 'all of them the same pick the record grades')
-        : `${matched} of them the same pick the record grades`;
+      let same;
+      if (served === 1) same = matched === 1 ? 'the same pick the record grades' : 'not the same pick the record grades';
+      else if (matched === served) same = 'all of them the same pick the record grades';
+      else if (matched === 0) same = 'none of them the same pick the record grades';
+      else same = `${matched} of them the same pick the record grades`;
       picked = `the card showed a pick for ${served}, ${same}` + (unserved > 0 ? `, and no pick for ${unserved}` : '');
     }
     check = `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record, ${picked}.`;

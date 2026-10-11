@@ -1214,6 +1214,8 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
   // home day with late rows, the edge day as an archive stub) and a rule-2 home day. Every shipped
   // text file is scanned (HTML, CSS, JS, _headers, licences...) except the copied publisher data
   // (index.json, days/*.json), which the publisher and the one-off strip clean (Plan E2/E3).
+  // Binary files (fonts and images, PNGs included) are NOT scanned; the one image with text, the OG
+  // card assets/img/og-founding.png, was checked by eye for E1 and carries no such wording.
   const BANNED = [/\blate\b/i, /too late/i, /first listed/i, /first seen/i, /10 minutes/i];
   const BINARY = /\.(woff2|png|jpe?g|gif|webp|ico)$/i;
   const DATA = (rel) => rel === 'index.json' || rel.startsWith('days/');
