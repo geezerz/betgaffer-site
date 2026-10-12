@@ -78,18 +78,26 @@ test('.gitignore keeps every build working path out of git', () => {
   assert.ok(existsSync(join(ROOT, '.gitignore')));
 });
 
-// Operator decision D15 (2026-10-11): a pick frozen after kickoff (pre_ko: false) is shown and counted
-// with its real grade under accuracy rule 2. The README is public and must say so: the receipt proves a
-// pick did not change after its freeze time, not that it came before kickoff.
-test('README: says what is true about picks frozen after kickoff (D15)', () => {
+// Operator decision D15 (BRAND wording 2026-10-12): every pick is made before kickoff on the platform;
+// `frozen_at` is when this site LISTED it and `pre_ko` says whether that listing was before
+// kickoff; rule 2 counts every non-withdrawn pick with its real grade. The README is public and must
+// say exactly that: the receipt proves a pick did not change after `frozen_at` — it does not by itself
+// prove the pick preceded kickoff.
+test('README: says what is true about picks listed after kickoff (D15)', () => {
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   const flat = readme.replace(/\s+/g, ' ');
-  assert.doesNotMatch(flat, /committed before its kickoff|Every pick is committed before/i);
-  const preKo = readme.split('\n').find((l) => l.startsWith('| `pre_ko` |'));
-  assert.ok(preKo, 'premise: the pre_ko field row exists');
-  assert.doesNotMatch(preKo, /left out of the accuracy figures/);
-  assert.match(preKo, /counts? with its real grade/);
-  assert.match(flat, /does not prove (that )?(the|a) pick (came|was made|was frozen) before kickoff/);
-  assert.match(flat, /`accuracy_rule: 2`/);
-  assert.doesNotMatch(flat, /gets its first pick before kickoff/);
+  const rowOf = (k) => readme.split('\n').find((l) => l.startsWith(`| \`${k}\` |`));
+  assert.doesNotMatch(flat, /committed before its kickoff|Every pick is committed before|frozen before kickoff/i);
+  assert.match(flat, /Every pick is made before kickoff/);
+  assert.match(flat, /made on the Bet Gaffer platform before kickoff/);
+  assert.match(flat, /`frozen_at` \(UTC\), the moment this site listed the pick/);
+  assert.match(flat, /`pre_ko` says whether that listing was before kickoff/);
+  assert.match(flat, /`accuracy_rule: 2`\) every pick that is not withdrawn counts with its real grade, including one with `pre_ko: false`/);
+  assert.match(flat, /The receipt \(`picks_hash`\) proves that a pick did not change after `frozen_at`; it does not by itself prove that the pick preceded kickoff/);
+  assert.ok(rowOf('pre_ko') && rowOf('frozen_at'), 'premise: the field rows exist');
+  assert.doesNotMatch(rowOf('pre_ko'), /left out of the accuracy figures|frozen/);
+  assert.match(rowOf('pre_ko'), /this site listed the pick before kickoff/);
+  assert.match(rowOf('pre_ko'), /counts with its real grade/);
+  assert.match(rowOf('frozen_at'), /When this site listed the pick \(UTC\)/);
+  assert.doesNotMatch(flat, /gets its first pick before kickoff|shows its listing time|first listed/);
 });

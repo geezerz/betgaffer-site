@@ -1246,24 +1246,25 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
     assert.match(visibleText(await read(b, 'index.html')), /the platform's card pick/);
   });
 
-  // Operator decision D15: a pick first published after kickoff is shown and counted with its real
-  // grade, so no page may say picks are made / frozen / committed before kickoff. The one allowed
-  // "before kickoff" is the qualified "Most (picks) are published before kickoff".
-  test('D15: no built page claims every pick came before kickoff', async () => {
+  // Operator decision D15 (BRAND wording 2026-10-12): every pick is MADE before kickoff on the
+  // platform, but this site may LIST one after kickoff (recorded with its listing time, counted
+  // with its real grade). So a page may say "made before kickoff" and nothing else about it: never
+  // frozen / published / listed / committed before kickoff, and never that a row shows its listing time.
+  test('D15: a built page says picks are made before kickoff — never frozen, published or listed before it', async () => {
     const hits = [];
     let pages = 0;
     for (const w of wss) {
       for (const { rel, html } of await htmlFiles(w.out)) {
         pages++;
         const t = visibleText(html);
-        for (const re of [/frozen before/gi, /made before kickoff/gi, /committed before/gi, /before its matches kick off/gi, /before (its |their )?kick-?off/gi]) {
+        for (const re of [/frozen before/gi, /committed before/gi, /before its matches kick off/gi, /shows? its listing time/gi, /before (its |their )?kick-?off/gi]) {
           for (const x of t.matchAll(re)) {
             const before = t.slice(Math.max(0, x.index - 40), x.index);
-            if (/before kick-?off/i.test(x[0]) && /Most (picks )?are published $/.test(before)) continue;
+            if (/^before kick-?off$/i.test(x[0]) && / made $/.test(before)) continue;
             hits.push(`${rel}: ${JSON.stringify(t.slice(Math.max(0, x.index - 50), x.index + 40))}`);
           }
         }
-        assert.ok(t.includes('Every pick on a published card carries its freeze time and a receipt code. Most are published before kickoff; a pick first published after kickoff is shown and counted with its real grade.'), `${rel}: the footer line`);
+        assert.ok(t.includes('Every pick is made before kickoff and carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
       }
     }
     assert.ok(pages >= 28, `premise: every page of both builds was read (${pages})`);

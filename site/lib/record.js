@@ -179,7 +179,7 @@ ${rec.months.map((g) => monthRow(g, currentMonth)).join('\n')}
 function intro() {
   return `<header class="rec-intro">
 <h1 class="t-d1">Our record</h1>
-<p class="t-b rec-intro__lede">${escHtml("We recommend at most one pick per fixture and grade it after full time. Here's how they've done.")}</p>
+<p class="t-b rec-intro__lede">${escHtml("We recommend at most one pick per fixture, made before kickoff and graded after full time. Here's how they've done.")}</p>
 </header>`;
 }
 
@@ -191,13 +191,14 @@ function footnotes(rec, listed) {
   // The ledger can still move recent figures as final results settle (spec §7).
   const recent = '<li>Recent figures can change slightly while final results are checked.</li>\n';
   // The receipt line is dated from the oldest listed day (the ledger figures reach further back);
-  // with no day listed there is no date to state, so the line is omitted (spec §10). It promises a
-  // receipt, not a time: a pick first published after kickoff is shown and counted with its real
-  // grade (operator decision D15), so nothing here says a card is frozen before its matches start.
+  // with no day listed there is no date to state, so the line is omitted (spec §10). Operator
+  // decision D15: every pick is made before kickoff on the platform, but this site may list
+  // one after kickoff; it is then recorded with its listing time and counted with its real grade.
+  // So nothing here says a card is frozen (listed) before its matches start.
   const oldestDay = [...listed].sort()[0];
   const frozen = oldestDay === undefined
     ? ''
-    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code. Most picks are published before kickoff; a pick first published after kickoff is shown and counted with its real grade.`)}</li>\n`;
+    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code. Every pick is made before kickoff; a pick this site listed after kickoff is recorded with its listing time and counted with its real grade.`)}</li>\n`;
   return `<ul class="rec-foot t-s" role="list">
 ${starts}${updated}${recent}${frozen}</ul>`;
 }
