@@ -138,8 +138,9 @@
 /* A fraction with thousands separators ("1,131 of 1,308", "10,081 of 12,154") is wider than the 64px
    ring at any readable size: balloon.js writes it as two words (.bg-balloon__w), which the rule above
    stacks — "1,131 of" over "1,308" — at this same size. The large ring keeps it on one line.
-   Three lines are taller than two, so the percentage above them steps down a size (data-stacked). */
-.bg-balloon[data-size="compact"][data-stacked] .bg-balloon__pct{ font-size:12px; }
+   Three lines are taller than two, so the percentage above them steps down a size (data-stacked);
+   :not(--frac) because a perfect day's fraction is itself a .bg-balloon__pct and keeps its 8px. */
+.bg-balloon[data-size="compact"][data-stacked] .bg-balloon__pct:not(.bg-balloon__pct--frac){ font-size:12px; }
 
 /* No flash of the old ring (spec §16.7). With scripting on, the header's static copy is hidden from
    the first paint, so it never shows before the floating ring replaces it. balloon.js adds

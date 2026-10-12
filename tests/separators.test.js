@@ -56,6 +56,9 @@ describe('bareRuns / bareCounts: what counts as a bare count', () => {
   test('the registration number and a 12-hex receipt code are allowed; nothing else is', () => {
     for (const ok of ['RC 1234567', '(RC1234567)', 'receipt d9025801ee16', 'efd3e3a637cc', '537a79be18e8.']) assert.deepEqual(bareRuns(ok), [], ok);
     for (const bad of ['RC: 1234567', 'receipt d9025801ee16f', 'receipt D9025801EE16', 'ref 9025801', 'x9025801ee16a2']) assert.ok(bareRuns(bad).length >= 1, bad);
+    // "RC" is the whole word: a word that merely ends in it excuses nothing
+    for (const bad of ['ARC 1234', 'ARC1234567', 'SRC 12345', 'aRC 1234567']) assert.equal(bareRuns(bad).length, 1, bad);
+    for (const ok of ['· RC 1234567 ·', 'Ltd (RC 1234567)', 'RC1234567']) assert.deepEqual(bareRuns(ok), [], ok);
   });
 
   test('bareCounts reads text nodes, <title>, readable attributes and text metas — one node at a time', () => {

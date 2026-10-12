@@ -84,13 +84,12 @@ function span(doc, cls, text) {
 }
 
 /**
- * The "won of graded" fraction. Up to twelve characters it is one run. A longer one — the counts
- * carry thousands separators: "1,131 of 1,308" — is written as two words, "1,131 of" and "1,308",
- * which the small ring stacks (balloon.css: .bg-balloon__w is a block there) because the whole
- * fraction is wider than a 64px ring at any readable size. The text content is unchanged.
+ * The "won of graded" fraction. Without a thousands separator ("998 of 999") it is one run. As soon
+ * as a count carries one — "863 of 1,018", "1,131 of 1,308" — it is written as two words, "863 of"
+ * and "1,018", which the small ring stacks (balloon.css: .bg-balloon__w is a block there): on one
+ * line even "863 of 1,018" reaches the arc of a 64px ring. The text content is unchanged.
  */
-const FRAC_ONE_RUN = 12;
-const isStacked = (fracText) => typeof fracText === 'string' && fracText.length > FRAC_ONE_RUN && fracText.includes(' of ');
+const isStacked = (fracText) => typeof fracText === 'string' && fracText.includes(',') && fracText.includes(' of ');
 function fracSpan(doc, cls, fracText) {
   const cut = fracText.indexOf(' of ');
   if (!isStacked(fracText)) return span(doc, cls, fracText);

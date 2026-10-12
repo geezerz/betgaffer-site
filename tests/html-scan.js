@@ -378,7 +378,7 @@ export function cspViolations(html) {
 // A run is allowed only when, within its own node, it is exactly one of:
 //   year     exactly four digits, 1900-2099, straight after a month name or its three-letter form
 //            and one space ("Oct 2026", "8 October 2026"), after "© ", or after "Act " (a statute);
-//   reg      straight after "RC" or "RC " (the operator's company registration number);
+//   reg      straight after the whole word "RC" or "RC " (the operator's company registration number);
 //   receipt  inside a token of exactly twelve lower-case hex characters (the receipt code).
 // Not scanned: the text of .fx__comp / .fx__team / .fx__selname / .fx__why — names and words the
 // publisher supplies ("1461 Trabzon FK", "Schalke 04"), which the site never formats.
@@ -397,7 +397,7 @@ export function bareRuns(s) {
     const at = m.index;
     const before = s.slice(0, at);
     if (receipts.some(([a, b]) => at >= a && at + run.length <= b)) continue;
-    if (/RC ?$/.test(before)) continue;
+    if (/(?<![A-Za-z])RC ?$/.test(before)) continue;
     const isYear = run.length === 4 && Number(run) >= 1900 && Number(run) <= 2099;
     if (isYear && (MONTH_BEFORE.test(before) || /(?:©|\bAct) $/.test(before))) continue;
     out.push({ run, context: s.slice(Math.max(0, at - 30), at + run.length + 20) });

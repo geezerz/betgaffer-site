@@ -998,21 +998,35 @@ describe('balloon.js and balloon-model.js: source', () => {
 
 // ------------------------------------------------------------------ thousands separators (BRAND 2026-10-12)
 
-// The small ring is 64px wide. A fraction written with thousands separators ("1,131 of 1,308") is
-// wider than the ring at any readable size, so balloon.js writes a long fraction as two words and
-// the stylesheet stacks them in the small ring ("1,131 of" over "1,308"); the large ring keeps one
-// line. The text content is the same fraction either way.
+// The small ring is 64px wide. A fraction written with a thousands separator ("863 of 1,018",
+// "1,131 of 1,308") is too wide for it at any readable size (even "863 of 1,018" on one line touches
+// the arc), so balloon.js writes every fraction that contains a comma as two words and the stylesheet
+// stacks them in the small ring ("1,131 of" over "1,308"); the large ring keeps one line. The text
+// content is the same fraction either way.
 describe('balloon.js: a separated four- or five-digit fraction in the ring', () => {
   const SHEET = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8');
   const ringOf = (today, width) => setup({ width, html: pageOf({ today, yesterday: null }) }).el;
   const words = (el, cls) => el.querySelector(`.${cls}`).querySelectorAll('.bg-balloon__w').map((w) => w.textContent);
 
-  test('up to twelve characters: one run, as before', () => {
-    for (const [a, frac] of [[acc(24, 5, 82.76), '24 of 29'], [acc(240, 50, 82.76), '240 of 290'], [acc(999, 1, 99.9), '999 of 1,000']]) {
+  const fracEl = (el) => el.querySelector('.bg-balloon__frac') ?? el.querySelector('.bg-balloon__pct--frac');
+
+  test('no comma: one run, as before — up to "999 of 999"', () => {
+    for (const [a, frac] of [[acc(24, 5, 82.76), '24 of 29'], [acc(240, 50, 82.76), '240 of 290'], [acc(998, 1, 99.9), '998 of 999'], [acc(999, 0, 100), '999 of 999']]) {
       for (const width of [390, 1280]) {
-        const frac1 = ringOf(a, width).querySelector('.bg-balloon__frac');
+        const frac1 = fracEl(ringOf(a, width));
         assert.equal(frac1.textContent, frac);
         assert.equal(frac1.querySelectorAll('.bg-balloon__w').length, 0, `${frac} at ${width}`);
+      }
+    }
+  });
+
+  test('the first comma stacks: "863 of 1,018" and "999 of 1,000" are two words too', () => {
+    for (const [a, first, second] of [[acc(863, 155, 84.77), '863 of', '1,018'], [acc(999, 1, 99.9), '999 of', '1,000']]) {
+      for (const width of [390, 1280]) {
+        const el = ringOf(a, width);
+        assert.deepEqual(words(el, 'bg-balloon__frac'), [first, second], `${first} at ${width}`);
+        assert.equal(el.querySelector('.bg-balloon__frac').textContent, `${first} ${second}`);
+        assert.equal(el.getAttribute('data-stacked'), '');
       }
     }
   });
@@ -1049,9 +1063,13 @@ describe('balloon.js: a separated four- or five-digit fraction in the ring', () 
     for (const a of [acc(1131, 177, 86.47), acc(10081, 2073, 82.94), acc(1200, 0, 100)]) {
       for (const width of [390, 1280]) assert.equal(ringOf(a, width).getAttribute('data-stacked'), '', `${a.won} at ${width}`);
     }
-    for (const a of [acc(24, 5, 82.76), acc(240, 50, 82.76), acc(999, 1, 99.9)]) assert.equal(ringOf(a, 390).getAttribute('data-stacked'), null, String(a.won));
-    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct\{ font-size:12px; \}/);
-    assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct{') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:13px; }'), 'after the 13px rule, so it wins');
+    for (const a of [acc(24, 5, 82.76), acc(240, 50, 82.76), acc(998, 1, 99.9), acc(999, 0, 100)]) assert.equal(ringOf(a, 390).getAttribute('data-stacked'), null, String(a.won));
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct:not\(\.bg-balloon__pct--frac\)\{ font-size:12px; \}/);
+    assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct:not(') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:13px; }'), 'after the 13px rule, so it wins');
+    // A perfect day's fraction IS a .bg-balloon__pct (with --frac): a bare selector would match it too
+    // and, coming later at the same specificity, undo its 8px long-fraction size.
+    assert.doesNotMatch(SHEET, /\[data-stacked\] \.bg-balloon__pct\s*[{,]/, 'the step-down never reaches .bg-balloon__pct--frac');
+    assert.equal(ringOf(acc(1200, 0, 100), 390).querySelector('.bg-balloon__pct--frac').className, 'bg-balloon__pct bg-balloon__pct--frac', 'premise: the perfect-day fraction carries both classes');
     assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\[data-stacked\]/, 'the large ring is unchanged');
   });
 });
