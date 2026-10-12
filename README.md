@@ -8,9 +8,12 @@ cover, with at most one recommended pick per fixture. It is not a bookmaker and 
 
 ## What the receipts show
 
-- **Every pick is committed before its kickoff** (a kickoff later moved earlier is marked
-  `pre_ko: false` and not counted). Each row carries its freeze time (`frozen_at`, UTC), and a
-  fixture first seen less than 10 minutes before kickoff carries no pick (`late: true`).
+- **Every pick carries its freeze time and the day's receipt.** Each row has `frozen_at` (UTC), the
+  moment its pick was frozen, and the day's `picks_hash` covers every pick. `pre_ko` says whether
+  the pick was frozen before kickoff. Under accuracy rule 2 (`accuracy_rule: 2`) every pick that is
+  not withdrawn counts with its real grade, including one with `pre_ko: false`. The receipt proves
+  that a pick did not change after its freeze time; it does not prove that the pick came before
+  kickoff. A fixture first seen less than 10 minutes before kickoff carries no pick (`late: true`).
 - **A published pick never changes.** Later updates add grades and display details (kickoff time,
   status, names); none of those is part of the receipt hash.
 - **The record figures come from the accuracy ledger**, which includes days before this repository
@@ -40,12 +43,13 @@ against them** — they would be overwritten, and a card can't be edited after t
 | `home_id`, `away_id` | Team ids |
 | `pick` | `{market, label, pct, price, price_est, why}` or `null`; `pct` is the stated probability in whole percent; `price` is a decimal price or `null`, `price_est: true` when it is an estimate |
 | `frozen_at` | When the pick was frozen (UTC) |
-| `pre_ko` | `false` if the kickoff moved to before the freeze; such a pick is marked and left out of the accuracy figures |
+| `pre_ko` | `true` if the pick was frozen before kickoff; `false` if it was frozen after kickoff, or the kickoff later moved to before the freeze. Under accuracy rule 2 a `pre_ko: false` pick is shown and counts with its real grade |
 | `late` | First seen within 10 minutes of kickoff (or after it); never has a pick |
 | `withdrawn` | The fixture's identity changed after publication; the row is kept, marked and left out of the accuracy figures |
 | `grade` | `won`, `lost`, `push`, `void`, `pending`, `withdrawn`, or `null` when there is no pick |
 | `picks_hash` | The receipt: a SHA-256 over every row's identity, pick, freeze time and withdrawn flag |
 | `prev_hash` | The previous day's `picks_hash` at the time of publishing |
+| `accuracy_rule` | A day-level field. `2`: every pick that is not withdrawn counts with its real grade. Absent (older files): a `pre_ko: false` pick was not counted |
 
 ## Verify the cards
 
@@ -87,9 +91,9 @@ sha256:77be54ba48d4aace9a1439296590130a38c9d03eaa41967a3e921c57fc436a21
 The `unicode` vector in the same file covers U+2028/U+2029 and non-ASCII text.
 
 The publisher changes a day's `picks_hash` between versions of its file only when a new fixture row
-appears, a row published without a pick gets its first pick before kickoff (stamped with that run's
-`frozen_at`), or a row becomes `withdrawn`. An existing pick never changes. To see every version:
-`git log -p -- days/<day>.json`.
+appears, a row published without a pick gets its first pick (stamped with that run's `frozen_at`;
+`pre_ko` is `false` when that is after kickoff), or a row becomes `withdrawn`. An existing pick never
+changes. To see every version: `git log -p -- days/<day>.json`.
 
 ### Check a compacted day
 

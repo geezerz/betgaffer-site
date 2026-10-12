@@ -44,6 +44,13 @@ const isPerfect = (g) => g.graded > 0 && g.won === g.graded;
 const isEmpty = (g) => g.graded === 0 || g.pct === null;
 
 /** '2026-10' -> 'October 2026'; anything else is shown as given (escaped by the caller). */
+/** '2026-10-08' -> '8 October 2026' (the receipt footnote's date: no weekday, the month spelled out). */
+function dateName(date) {
+  if (!isDate(date)) throw new TypeError(`renderRecord: not a real YYYY-MM-DD date: ${String(date)}`);
+  const [y, m, d] = date.split('-').map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+}
+
 function monthName(period) {
   const m = /^(\d{4})-(\d{2})$/.exec(period);
   const i = m ? Number(m[2]) - 1 : -1;
@@ -172,7 +179,7 @@ ${rec.months.map((g) => monthRow(g, currentMonth)).join('\n')}
 function intro() {
   return `<header class="rec-intro">
 <h1 class="t-d1">Our record</h1>
-<p class="t-b rec-intro__lede">${escHtml("We recommend at most one pick per fixture, made before kickoff and graded after full time. Here's how they've done.")}</p>
+<p class="t-b rec-intro__lede">${escHtml("We recommend at most one pick per fixture and grade it after full time. Here's how they've done.")}</p>
 </header>`;
 }
 
@@ -183,12 +190,14 @@ function footnotes(rec, listed) {
   const updated = rec.as_of === null ? '' : `<li>${escHtml(`Updated ${fmtStamp(rec.as_of)}.`)}</li>\n`;
   // The ledger can still move recent figures as final results settle (spec §7).
   const recent = '<li>Recent figures can change slightly while final results are checked.</li>\n';
-  // The commitment is dated from the oldest listed day (the ledger figures reach further back);
-  // with no day listed there is no date to state, so the line is omitted (spec §10).
+  // The receipt line is dated from the oldest listed day (the ledger figures reach further back);
+  // with no day listed there is no date to state, so the line is omitted (spec §10). It promises a
+  // receipt, not a time: a pick first published after kickoff is shown and counted with its real
+  // grade (operator decision D15), so nothing here says a card is frozen before its matches start.
   const oldestDay = [...listed].sort()[0];
   const frozen = oldestDay === undefined
     ? ''
-    : `<li>${escHtml(`From ${fmtDayLong(oldestDay)}, each day's card is frozen before its matches kick off.`)}</li>\n`;
+    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code. Most picks are published before kickoff; a pick first published after kickoff is shown and counted with its real grade.`)}</li>\n`;
   return `<ul class="rec-foot t-s" role="list">
 ${starts}${updated}${recent}${frozen}</ul>`;
 }
@@ -213,7 +222,7 @@ function toSet(days) {
  * @param {string} opts.today   the index's Lagos 'YYYY-MM-DD' today: tags that strip day for the
  *   "Today · so far" relabel, and its month is the one month marked "In progress"
  * @param {Set<string>|Map|string[]} opts.days  REQUIRED: dates listed in index.days ([] when none) —
- *   strip days link to /day/<d>/ only when listed; the oldest dates the frozen-card footnote
+ *   strip days link to /day/<d>/ only when listed; the oldest dates the receipt footnote
  */
 export function renderRecord(record, { today, days } = {}) {
   if (!isDate(today)) throw new TypeError(`renderRecord: today must be a real YYYY-MM-DD date, got ${String(today)}`);

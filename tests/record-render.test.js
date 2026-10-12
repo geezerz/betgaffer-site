@@ -87,10 +87,16 @@ const STATUS_WORDS = /in progress|provisional|confirmed|being recomputed|republi
 // Intro and headline
 // ---------------------------------------------------------------------------------------------
 
-test('intro: the spec §7 sentence, picks "made before kickoff"', () => {
-  const t = text(renderRecord(REC, OPTS));
-  assert.ok(t.includes("We recommend at most one pick per fixture, made before kickoff and graded after full time. Here's how they've done."), t.slice(0, 300));
-  assert.doesNotMatch(t, /published before kickoff/);
+// Operator decision D15: picks first published after kickoff count with their real grade, so the page
+// never says every pick was made, frozen or published before kickoff.
+test('intro: one pick per fixture, graded after full time — no "made before kickoff" (D15)', () => {
+  const html = renderRecord(REC, OPTS);
+  const lede = text(/<p class="t-b rec-intro__lede">[\s\S]*?<\/p>/.exec(html)[0]);
+  assert.equal(lede, "We recommend at most one pick per fixture and grade it after full time. Here's how they've done.");
+  const t = text(html);
+  assert.doesNotMatch(t, /made before kickoff|frozen before|before its matches kick off/i);
+  // the only "before kickoff" on the page is the qualified one in the footnote
+  assert.deepEqual(t.match(/[^.;]*before kickoff[^.;]*/gi), [' Most picks are published before kickoff']);
 });
 
 test('headline (spec §17.5): header row (title + period) -> the percentage hero -> "won of graded picks right" -> one caption without the %', () => {
@@ -375,13 +381,13 @@ test('months: none yet renders an explicit empty state, not an empty table', () 
 
 const footOf = (html) => /<ul class="rec-foot[^"]*"[^>]*>[\s\S]*?<\/ul>/.exec(html)?.[0] ?? null;
 
-test('footer: record start, updated stamp, the recent-figures line and the frozen-card commitment', () => {
+test('footer: record start, updated stamp, the recent-figures line and the receipt footnote', () => {
   const foot = footOf(renderRecord(REC, OPTS));
   assert.deepEqual(allWith(foot, '<li').map(text), [
     'Record starts August 2026.',
     'Updated 7 Oct 2026, 06:05 WAT.',
     'Recent figures can change slightly while final results are checked.',
-    "From Wed 7 Oct 2026, each day's card is frozen before its matches kick off.",
+    "From 7 October 2026, each day's card is published with a receipt code. Most picks are published before kickoff; a pick first published after kickoff is shown and counted with its real grade.",
   ]);
   // "Record starts" follows the oldest month by value, not by order.
   const r = rec((x) => { x.months.pop(); x.months.reverse(); });
@@ -391,19 +397,20 @@ test('footer: record start, updated stamp, the recent-figures line and the froze
   assert.equal(bare, 'Recent figures can change slightly while final results are checked.');
 });
 
-test('footnotes (spec §10): the frozen-card commitment dated from the oldest listed day; no repository, no link', () => {
+test('footnotes (spec §10, D15): the receipt footnote dated from the oldest listed day (spelled-out month); no repository, no link', () => {
   const html = renderRecord(REC, OPTS);
   const t = text(html);
   const foot = footOf(html);
-  assert.ok(foot.includes("<li>From Wed 7 Oct 2026, each day&#39;s card is frozen before its matches kick off.</li>"), foot);
+  assert.ok(foot.includes("<li>From 7 October 2026, each day&#39;s card is published with a receipt code. Most picks are published before kickoff; a pick first published after kickoff is shown and counted with its real grade.</li>"), foot);
   assert.doesNotMatch(foot, /<a\b|href=/, 'the footnotes link nowhere');
   assert.doesNotMatch(t, /github|reposit|committed|open source/i);
   assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
   assert.doesNotMatch(t, /Every pick is committed|before its day begins/);
-  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From Wed 30 Sep 2026, each day's card is frozen before its matches kick off\./);
+  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From 30 September 2026, each day's card is published with a receipt code\. Most picks are published before kickoff; a pick first published after kickoff is shown and counted with its real grade\./);
+  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2027-01-01'] })), /From 1 January 2027, each day's card is published with a receipt code\./, 'no leading zero, full month name');
   const none = text(renderRecord(REC, { ...OPTS, days: [] }));
-  assert.doesNotMatch(none, /frozen before its matches kick off/);
-  assert.doesNotMatch(none, /From \w{3} \d/);
+  assert.doesNotMatch(none, /published with a receipt code|before kickoff|after kickoff/);
+  assert.doesNotMatch(none, /From \d|From \w{3} \d/);
   assert.match(none, /Updated 7 Oct 2026, 06:05 WAT\./, 'the other footnotes stay');
 });
 
