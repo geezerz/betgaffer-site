@@ -48,7 +48,7 @@ against them** — they would be overwritten, and a card can't be edited after t
 | `late` | First seen within 10 minutes of kickoff (or after it); never has a pick |
 | `withdrawn` | The fixture's identity changed after publication; the row is kept, marked and left out of the accuracy figures |
 | `grade` | `won`, `lost`, `push`, `void`, `pending`, `withdrawn`, or `null` when there is no pick |
-| `picks_hash` | The receipt: a SHA-256 over every row's identity, pick, freeze time and withdrawn flag |
+| `picks_hash` | The receipt: a SHA-256 over every row's identity, pick, listing time (`frozen_at`) and withdrawn flag |
 | `prev_hash` | The previous day's `picks_hash` at the time of publishing |
 | `accuracy_rule` | A day-level field. `2`: every pick that is not withdrawn counts with its real grade. Absent (older files): a `pre_ko: false` pick was not counted |
 

@@ -100,4 +100,7 @@ test('README: says what is true about picks listed after kickoff (D15)', () => {
   assert.match(rowOf('pre_ko'), /counts with its real grade/);
   assert.match(rowOf('frozen_at'), /When this site listed the pick \(UTC\)/);
   assert.doesNotMatch(flat, /gets its first pick before kickoff|shows its listing time|first listed/);
+  // per-pick `frozen_at` is "when this site listed the pick" everywhere, the receipt row included
+  assert.match(rowOf('picks_hash'), /pick, listing time \(`frozen_at`\) and withdrawn flag/);
+  assert.doesNotMatch(flat, /freeze time|was frozen|is frozen/i);
 });

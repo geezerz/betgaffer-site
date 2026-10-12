@@ -313,11 +313,18 @@ test('count line with every row withdrawn', () => {
   assert.match(text(renderDay(day, opts())), /0 fixtures \(2 withdrawn\)/);
 });
 
-test('receipt line: frozen stamp, grades stamp, 12-hex receipt code as plain text (spec §10)', () => {
+// BRAND (2026-10-12): the card stamp (picks_frozen_at) is when the CARD was published, not when every
+// pick on it was frozen — picks listed afterwards carry their own time. It reads "Card published".
+test('receipt line: "Card published" stamp, grades stamp, 12-hex receipt code as plain text (spec §10)', () => {
   const html = renderDay(D08, opts());
   const line = /<p class="day-receipt mono">([\s\S]*?)<\/p>/.exec(html);
   assert.ok(line, 'the receipt line is rendered');
-  assert.equal(line[1], 'Picks frozen 7 Oct 2026, 23:15 WAT · grades as of 7 Oct 2026, 23:15 WAT · receipt <span class="mono">efd3e3a637cc</span>');
+  assert.equal(line[1], 'Card published 7 Oct 2026, 23:15 WAT · grades as of 7 Oct 2026, 23:15 WAT · receipt <span class="mono">efd3e3a637cc</span>');
+  for (const day of [D07, D08, EDGE, validateDay(readJson('./fixtures/rule2-day.json'), { expectDate: '2026-10-08' })]) {
+    const h = renderDay(day, opts());
+    assert.match(h, /<p class="day-receipt mono">Card published \d{1,2} \w{3} \d{4}, \d{2}:\d{2} WAT · grades as of /, day.lagos_day);
+    assert.doesNotMatch(h, /Picks frozen|picks frozen/, `${day.lagos_day}: the card stamp is never called a freeze time`);
+  }
   assert.doesNotMatch(line[1], /<a\b|href=/, 'the receipt links nowhere');
   assert.ok(!text(html).includes('sha256:'), 'the code is printed without its algorithm prefix');
   assert.ok(!text(html).includes('efd3e3a637ccf'), 'only the first 12 hex chars');

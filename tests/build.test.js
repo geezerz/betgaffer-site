@@ -909,6 +909,9 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
     assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/, 'hostile strings arrive escaped');
     assert.doesNotMatch(html, /<img/);
     assert.match(html, /href="\/day\/2026-10-05\/"/);
+    // BRAND (2026-10-12): an archived day's stamp reads "Card published", as on every other card.
+    assert.match(html, /<p class="day-receipt mono">Card published 5 Oct 2026, 23:15 WAT · grades as of /);
+    assert.doesNotMatch(html, /Picks frozen/);
   });
 
   test('an archived day gets the same phase rule (spec §17.2): data-phase per status, no Pending chip before kickoff', async () => {
@@ -1257,7 +1260,7 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
       for (const { rel, html } of await htmlFiles(w.out)) {
         pages++;
         const t = visibleText(html);
-        for (const re of [/frozen before/gi, /committed before/gi, /before its matches kick off/gi, /shows? its listing time/gi, /before (its |their )?kick-?off/gi]) {
+        for (const re of [/frozen before/gi, /committed before/gi, /before its matches kick off/gi, /shows? its listing time/gi, /picks frozen/gi, /before (its |their )?kick-?off/gi]) {
           for (const x of t.matchAll(re)) {
             const before = t.slice(Math.max(0, x.index - 40), x.index);
             if (/^before kick-?off$/i.test(x[0]) && / made $/.test(before)) continue;

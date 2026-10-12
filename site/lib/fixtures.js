@@ -419,7 +419,7 @@ function dayNav(prevDay, nextDay) {
  * Former isToday / isTomorrow options are ignored.
  * @param {string|null} [o.prevDay] 'YYYY-MM-DD' → link to /day/<d>/
  * @param {string|null} [o.nextDay] 'YYYY-MM-DD' → link to /day/<d>/
- * The receipt line is plain text — frozen stamp, grades stamp, 12-hex receipt code — with no link.
+ * The receipt line is plain text — "Card published" stamp, grades stamp, 12-hex receipt code — with no link.
  * @returns {string} HTML fragment
  */
 export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
@@ -435,7 +435,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
 
   const d = day.lagos_day;
   const longDate = fmtDayLong(d);
-  const frozen = fmtStamp(day.picks_frozen_at);
+  const published = fmtStamp(day.picks_frozen_at); // when the card was published, not when each pick was listed
   const gradedAt = fmtStamp(day.grades_as_of);
   const rows = kickoffOrder(day.fixtures);
   const n = day.fixtures.length;
@@ -461,7 +461,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
     + '</div>'
     + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures, rule), relDay: d })
     + '<p class="day-head__note">The ring counts this card’s own published picks. The graded record, every settled pick over time, is on <a href="/our-record/">Our Record</a>.</p>'
-    + `<p class="day-receipt mono">Picks frozen ${escHtml(frozen)} · grades as of ${escHtml(gradedAt)} · receipt `
+    + `<p class="day-receipt mono">Card published ${escHtml(published)} · grades as of ${escHtml(gradedAt)} · receipt `
     + `<span class="mono">${escHtml(code)}</span></p>`
     + '</header>';
 
