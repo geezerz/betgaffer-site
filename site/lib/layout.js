@@ -7,6 +7,7 @@
 
 import { escHtml, escAttr } from './esc.js';
 import { lagosToday } from './time.js';
+import { fmtInt } from './num.js';
 import { requireOperator } from '../config.js';
 import { rcNumber } from '../content/common.js';
 import { TOTAL_PLACES, variantFor } from './founding.js';
@@ -39,7 +40,7 @@ export const NOJS_CSS = '/assets/css/nojs.css';
 
 /** The founding Open Graph image (1200x630, generated once and committed) and its alt text. */
 export const OG_FOUNDING = '/assets/img/og-founding.png';
-const OG_ALT = Object.freeze({ [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${thousands(TOTAL_PLACES)} places.` });
+const OG_ALT = Object.freeze({ [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${fmtInt(TOTAL_PLACES)} places.` });
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 
@@ -94,7 +95,6 @@ function dataAttrs(mainData) {
 }
 
 /** 1000 -> '1,000' (deterministic: never the host locale). */
-function thousands(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); } // hoisted: OG_ALT uses it
 
 /**
  * Is this nav item the current page? An exact match, or — for a `section` item whose href ends in

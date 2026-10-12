@@ -1,6 +1,8 @@
 // The Founding Member Programme in numbers and words — the ONE source every page and test reads.
 // Authority: the operator-approved founding programme rules (2026-10-08). Change a number here only
 // together with those rules.
+import { fmtInt } from './num.js';
+
 export const TOTAL_PLACES = 1000;
 export const WAITLIST_PLACES = 500;
 export const LAUNCH_PLACES = 500;
@@ -27,9 +29,6 @@ export const BENEFITS = Object.freeze([
 /** The short summary line used on Features (spec §2). */
 export const SUMMARY = `${DISCOUNT_PCT}% off every subscription payment · double Credits · first look at new features · priority support`;
 
-/** 1000 -> '1,000' (deterministic: never the host locale). */
-const thousands = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
 /**
  * One run of card copy. `hl`: a key word (bold, accent colour). `offer` is derived, never typed: every
  * segment that prints a percentage sits in data-figure="offer" (the claim guard allows it nowhere else).
@@ -42,7 +41,7 @@ const H = (t) => seg(t, true);
 const variant = (heading, line) => Object.freeze({ heading: Object.freeze(heading), line: Object.freeze(line) });
 
 const OFF = `${DISCOUNT_PCT}% off`;
-const ALL = thousands(TOTAL_PLACES);
+const ALL = fmtInt(TOTAL_PLACES);
 
 /**
  * The founding card's ten copy variants (spec §16.5; variants 4 and 9 as corrected there). The build
@@ -56,7 +55,7 @@ export const VARIANTS = Object.freeze([
   variant([H(OFF), P(' for as long as you subscribe')],
     [P('Founding members save '), H(`${DISCOUNT_PCT}%`), P(' on every payment. There are only '), H(`${ALL} founding places`), P('.')]),
   variant([P('Reserve your '), H('founding place')],
-    [P("It's "), H('free'), P(' to join the waitlist. The first '), H(thousands(WAITLIST_PLACES)), P(' reserve a founding place with '), H(OFF), P(' every payment.')]),
+    [P("It's "), H('free'), P(' to join the waitlist. The first '), H(fmtInt(WAITLIST_PLACES)), P(' reserve a founding place with '), H(OFF), P(' every payment.')]),
   variant([P("Your plan's Credits, "), H('doubled')],
     [P('Founding members get '), H('double Credits'), P(' every month on any paid plan, and '), H(`${TOPUP_BONUS_PCT}% extra`), P(' on every top-up.')]),
   variant([P('See new features '), H('before everyone else')],
@@ -66,7 +65,7 @@ export const VARIANTS = Object.freeze([
   variant([P('Help when you need it, '), H('first')],
     [H('Priority support'), P(' on any paid plan, plus a founding-members '), H('WhatsApp community'), P(' with our team.')]),
   variant([P('Only '), H(`${ALL} founding places`)],
-    [H(thousands(WAITLIST_PLACES)), P(' for the waitlist and '), H(thousands(LAUNCH_PLACES)), P(' for the first subscribers at launch.')]),
+    [H(fmtInt(WAITLIST_PLACES)), P(' for the waitlist and '), H(fmtInt(LAUNCH_PLACES)), P(' for the first subscribers at launch.')]),
   variant([P('Founding benefits that '), H('stay with you')],
     [P('Stay subscribed and keep your '), H(OFF), P(', '), H('double Credits'), P(' and '), H('priority support'), P('.')]),
   variant([P('Get the '), H('founding member'), P(' badge')],

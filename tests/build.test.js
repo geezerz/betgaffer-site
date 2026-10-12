@@ -71,7 +71,7 @@ describe('build of the fixture artifact', () => {
     for (const f of ['day.js', 'stale.js', 'waitlist.js', 'predictions.js', 'balloon.js', 'banner.js', 'nav.js', 'early.js']) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js', f)), await readFile(join(REPO_ROOT, 'site/assets/js', f)), f);
     }
-    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'founding.js', 'hash.js', 'ring.js', 'search.js', 'time.js']);
+    assert.deepEqual([...ISOMORPHIC_LIB].sort(), ['balloon-model.js', 'esc.js', 'fixtures.js', 'founding.js', 'hash.js', 'num.js', 'ring.js', 'search.js', 'time.js']);
     for (const f of ISOMORPHIC_LIB) {
       assert.deepEqual(await readFile(join(ws.out, 'assets/js/lib', f)), await readFile(join(REPO_ROOT, 'site/lib', f)), f);
     }

@@ -15,6 +15,7 @@
 
 import { fmtPct } from './ring.js';
 import { fmtDayLong, isDate, lagosToday } from './time.js';
+import { fmtInt } from './num.js';
 
 export const DESKTOP_MIN = 1024;
 /** Each size remembers its own position: a desktop spot would strand the phone ring, and vice versa. */
@@ -122,7 +123,7 @@ function figure(a) {
   if (a.graded === 0) return null;
   const perfect = a.won === a.graded;
   const p = perfect ? null : fmtPct(a.pct);
-  return { pctText: p === '100' ? null : p, fracText: `${a.won} of ${a.graded}`, perfect };
+  return { pctText: p === '100' ? null : p, fracText: `${fmtInt(a.won)} of ${fmtInt(a.graded)}`, perfect };
 }
 
 /**

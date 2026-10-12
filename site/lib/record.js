@@ -21,16 +21,13 @@
 
 import { escHtml, escAttr } from './esc.js';
 import { isDate, isIsoZ, fmtDayLong, fmtStamp } from './time.js';
+import { fmtInt } from './num.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
   'September', 'October', 'November', 'December'];
 
 // ------------------------------------------------------------------ numbers
 
-/** 12154 -> '12,154' (no locale lookup: the build host's ICU must not change the page). */
-function int(n) {
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
 const pct2 = (v) => `${v.toFixed(2)}%`;
 /**
  * A grain's published pct for display. Only a perfect grain may reach 100, and it is never printed
@@ -43,7 +40,6 @@ const isPerfect = (g) => g.graded > 0 && g.won === g.graded;
 /** Nothing settled in the grain. */
 const isEmpty = (g) => g.graded === 0 || g.pct === null;
 
-/** '2026-10' -> 'October 2026'; anything else is shown as given (escaped by the caller). */
 /** '2026-10-08' -> '8 October 2026' (the receipt footnote's date: no weekday, the month spelled out). */
 function dateName(date) {
   if (!isDate(date)) throw new TypeError(`renderRecord: not a real YYYY-MM-DD date: ${String(date)}`);
@@ -51,6 +47,7 @@ function dateName(date) {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
+/** '2026-10' -> 'October 2026'; anything else is shown as given (escaped by the caller). */
 function monthName(period) {
   const m = /^(\d{4})-(\d{2})$/.exec(period);
   const i = m ? Number(m[2]) - 1 : -1;
@@ -76,8 +73,8 @@ function headline(rec) {
   } else {
     // Spec §17.5, top to bottom: the percentage (the hero), the count it comes from, one caption.
     // A perfect window never prints 100%: its hero says so in words.
-    const won = int(g.won);
-    const graded = int(g.graded);
+    const won = fmtInt(g.won);
+    const graded = fmtInt(g.graded);
     const hero = isPerfect(g)
       ? '<p class="rec-hero rec-hero--words rec-won" data-hero>Every pick right</p>'
       : `<p class="rec-hero rec-won" data-hero>${escHtml(pct2(shownPct(g)))}<span class="vh"> of picks right</span></p>`;
@@ -99,7 +96,7 @@ ${body}
 
 function stripFigure(g) {
   if (isEmpty(g)) return '<p class="rec-day__none">No picks settled</p>';
-  const frac = `<p class="rec-day__frac"><strong class="rec-won mono">${int(g.won)}</strong> of <span class="mono">${int(g.graded)}</span> right</p>`;
+  const frac = `<p class="rec-day__frac"><strong class="rec-won mono">${fmtInt(g.won)}</strong> of <span class="mono">${fmtInt(g.graded)}</span> right</p>`;
   // A perfect day says so in words, so no card or row looks like it is missing its value.
   if (isPerfect(g)) return `${frac}\n<p class="rec-day__pct rec-won">All right</p>`;
   return `${frac}\n<p class="rec-day__pct rec-won mono">${escHtml(pct2(shownPct(g)))}</p>`;
@@ -144,7 +141,7 @@ function monthRow(g, currentMonth) {
   // columns; a perfect month says "Every pick right" instead of a percentage (no bare 100%).
   const cells = isEmpty(g)
     ? '<td class="num" colspan="2" data-label="Right">No picks settled</td>'
-    : `<td class="num" data-label="Right"><span><strong class="rec-won">${int(g.won)}</strong> of ${int(g.graded)} right</span></td>
+    : `<td class="num" data-label="Right"><span><strong class="rec-won">${fmtInt(g.won)}</strong> of ${fmtInt(g.graded)} right</span></td>
 <td class="num" data-label="Accuracy"><strong class="rec-won">${isPerfect(g) ? 'Every pick right' : escHtml(pct2(shownPct(g)))}</strong></td>`;
   return `<tr data-figure="record-row" data-period="${escAttr(g.period)}">
 <th scope="row"><span class="rec-month">${escHtml(monthName(g.period))}</span>${chip}</th>
@@ -196,11 +193,11 @@ function footnotes(rec, listed) {
   // one after kickoff; it is then recorded with its listing time and counted with its real grade.
   // So nothing here says a card is frozen (listed) before its matches start.
   const oldestDay = [...listed].sort()[0];
-  const frozen = oldestDay === undefined
+  const receipt = oldestDay === undefined
     ? ''
     : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code. Every pick is made before kickoff; a pick this site listed after kickoff is recorded with its listing time and counted with its real grade.`)}</li>\n`;
   return `<ul class="rec-foot t-s" role="list">
-${starts}${updated}${recent}${frozen}</ul>`;
+${starts}${updated}${recent}${receipt}</ul>`;
 }
 
 /** opts.days -> Set of listed dates. Required: a forgotten list would silently unlink every day. */

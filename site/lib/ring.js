@@ -1,5 +1,5 @@
 // The accuracy ring (spec §4.3). ISOMORPHIC: imported by the build and served to the browser for
-// the archive, so it imports only ./esc.js and ./time.js.
+// the archive, so it imports only ./esc.js, ./time.js and ./num.js (the one number formatter).
 //
 // It counts ONE day file's own published picks (`accuracy` = won / lost / pushes / graded / pct
 // over the day's pre-kickoff, non-withdrawn, settled picks; graded = won + lost). The record is the
@@ -19,11 +19,11 @@
 
 import { escHtml, escAttr } from './esc.js';
 import { fmtDayLong, isDate } from './time.js';
+import { fmtInt, plural } from './num.js';
 
 const DEFAULT_LABEL = 'Published picks, settled so far';
 
 const isCount = (v) => Number.isInteger(v) && v >= 0;
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
 /** A published percentage as text, up to 2 decimals ('85.71', '85.7', '50'). */
 export function fmtPct(pct) {
@@ -100,7 +100,7 @@ export function ring(accuracy, { dayLabel, date, meanStatedPct, relDay } = {}) {
   const isHundred = pctText === '100';
   const m = statedPct(meanStatedPct);
   const showPct = !isHundred || m !== null;
-  const fraction = `${won} of ${graded} landed`;
+  const fraction = `${fmtInt(won)} of ${fmtInt(graded)} landed`;
 
   const statedLine = isHundred && m !== null
     ? `Settled so far. These picks were stated at an average ${m}%.`
@@ -118,7 +118,7 @@ export function ring(accuracy, { dayLabel, date, meanStatedPct, relDay } = {}) {
   return `<div class="ring" data-figure="ring"${rel} data-state="graded" role="img" aria-label="${escAttr(aria)}">`
     + '<span class="ring__body">'
     + `<span class="ring__label">${escHtml(label)}</span>`
-    + `<span class="ring__hero mono"><b>${escHtml(won)}</b> of <b>${escHtml(graded)}</b> <span class="ring__landed">landed</span></span>`
+    + `<span class="ring__hero mono"><b>${escHtml(fmtInt(won))}</b> of <b>${escHtml(fmtInt(graded))}</b> <span class="ring__landed">landed</span></span>`
     + (statedLine ? `<span class="ring__stated">${escHtml(statedLine)}</span>` : '')
     + metaHtml
     + '</span>'

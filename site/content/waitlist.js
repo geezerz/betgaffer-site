@@ -15,12 +15,10 @@
 //                                 puts under the header on every page except /waitlist/*
 
 import { escHtml } from '../lib/esc.js';
+import { fmtInt } from '../lib/num.js';
 import {
   BENEFITS, CLAIM_DAYS, DISCOUNT_PCT, GRACE_DAYS, LAUNCH_PLACES, TOTAL_PLACES, VARIANTS, WAITLIST_PLACES,
 } from '../lib/founding.js';
-
-/** 1000 -> '1,000' (deterministic: never the host locale). */
-const fmtInt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 export const META = Object.freeze({
   path: '/waitlist/',

@@ -88,8 +88,12 @@ test('README: says what is true about picks listed after kickoff (D15)', () => {
   const flat = readme.replace(/\s+/g, ' ');
   const rowOf = (k) => readme.split('\n').find((l) => l.startsWith(`| \`${k}\` |`));
   assert.doesNotMatch(flat, /committed before its kickoff|Every pick is committed before|frozen before kickoff/i);
-  assert.match(flat, /Every pick is made before kickoff/);
-  assert.match(flat, /made on the Bet Gaffer platform before kickoff/);
+  // BRAND 2026-10-12: one opening sentence, not two
+  assert.ok(readme.includes("- **Every pick is made on the Bet Gaffer platform before kickoff and carries the day's receipt.** Each row has"), 'the receipts bullet opens with the one approved sentence');
+  assert.doesNotMatch(flat, /Picks are made on the Bet Gaffer platform before kickoff\./);
+  // the legacy flag: its false sentence is gone and its row says to ignore it (Plan E4 deletes the row)
+  assert.doesNotMatch(flat, /10 minutes|carries no pick|never has a pick|`late: true`/);
+  assert.equal(rowOf('late'), '| `late` | Legacy flag, being removed; ignore |');
   assert.match(flat, /`frozen_at` \(UTC\), the moment this site listed the pick/);
   assert.match(flat, /`pre_ko` says whether that listing was before kickoff/);
   assert.match(flat, /`accuracy_rule: 2`\) every pick that is not withdrawn counts with its real grade, including one with `pre_ko: false`/);

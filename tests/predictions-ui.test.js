@@ -14,7 +14,7 @@ import { build } from '../site/build.mjs';
 import { renderDay } from '../site/lib/fixtures.js';
 import { foundingCard } from '../site/content/waitlist.js';
 import { fakeDocument, fire, FakeResizeObserver } from './fake-dom.js';
-import { REPO_ROOT, EDGE_DAY, testConfig, workspace, copyArtifact, addArchive, readJson } from './site-fixtures.js';
+import { REPO_ROOT, EDGE_DAY, testConfig, workspace, copyArtifact, addArchive, readJson, syntheticDay } from './site-fixtures.js';
 
 const NOW = Date.parse('2026-10-07T22:30:00Z');
 const EDGE = JSON.parse(readFileSync(EDGE_DAY, 'utf8'));
@@ -879,5 +879,43 @@ describe('built pages', () => {
     assert.ok(shown.includes(first));
     assert.equal(doc.querySelector('.bg-fd-card').hidden, false);
     assert.equal(doc.querySelector('[data-figure="ring"]').hidden, false);
+  });
+});
+
+// ------------------------------------------------------------------ thousands separators (BRAND 2026-10-12)
+
+describe('counts in the toolbar are written with thousands separators', () => {
+  const sub = (s) => dialog(s).querySelector('.bg-pick__sub') ?? dialog(s).querySelectorAll('p').find((p) => / on this card/.test(p.textContent));
+  const countOf = (s, name) => options(s).find((c) => optName(c) === name).parentNode.querySelector('.bg-pick__n').textContent;
+
+  for (const [rows, want] of [[1114, '1,114'], [12345, '12,345']]) {
+    test(`"Showing ${want} of ${want} fixtures", and the league's count in the dialog`, () => {
+      const s = setup({ day: syntheticDay({ rows, comps: 1, withdrawn: 3 }) });
+      type(s, 'home');
+      s.t.run();
+      assert.equal(status(s).textContent, `Showing ${want} of ${want} fixtures`);
+      fire(tool(s, 'leagues'), 'click');
+      assert.equal(countOf(s, 'League A'), want);
+    });
+  }
+
+  for (const [comps, want] of [[1005, '1,005'], [10050, '10,050']]) {
+    test(`"${want} competitions on this card"`, () => {
+      const s = setup({ day: syntheticDay({ rows: comps, comps }) });
+      fire(tool(s, 'leagues'), 'click');
+      assert.equal(sub(s).textContent, `${want} competitions on this card`);
+    });
+  }
+
+  test('"1,001 selected" in the dialog and on the Leagues button', () => {
+    const s = setup({ day: syntheticDay({ rows: 1005, comps: 1005 }) });
+    fire(tool(s, 'leagues'), 'click');
+    for (const cb of options(s).slice(0, 1001)) {
+      cb.checked = true;
+      fire(cb, 'change');
+    }
+    assert.equal(sub(s).textContent, '1,005 competitions on this card · 1,001 selected');
+    assert.equal(tool(s, 'leagues').textContent, 'Leagues · 1,001');
+    assert.equal(status(s).textContent, 'Showing 1,001 of 1,005 fixtures');
   });
 });

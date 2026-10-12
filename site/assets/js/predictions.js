@@ -15,6 +15,7 @@
 
 import { matcher, rowWords, words } from './lib/search.js';
 import { lagosToday } from './lib/time.js';
+import { fmtInt, plural } from './lib/num.js';
 
 export const STORAGE_KEY = 'bg.leagues';
 /**
@@ -41,7 +42,6 @@ export const TEXT = Object.freeze({
 });
 
 const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0); // code point: Node and every browser agree
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
 /** window.localStorage, or null where reading the property itself throws (blocked storage). */
 function defaultStorage() {
@@ -246,7 +246,7 @@ export function init(root = document, {
       const lab = el(doc, 'label', { class: 'bg-pick__opt' });
       const cb = el(doc, 'input', { type: 'checkbox' });
       cb.checked = state.selected.has(comp);
-      lab.append(cb, el(doc, 'span', { class: 'bg-pick__name' }, comp), el(doc, 'span', { class: 'bg-pick__n mono' }, String(counts.get(comp))));
+      lab.append(cb, el(doc, 'span', { class: 'bg-pick__name' }, comp), el(doc, 'span', { class: 'bg-pick__n mono' }, fmtInt(counts.get(comp))));
       li.append(lab);
       ul.append(li);
       cb.addEventListener('change', () => {
@@ -305,7 +305,7 @@ export function init(root = document, {
       sync() {
         for (const o of opts) if (o.cb.checked !== state.selected.has(o.comp)) o.cb.checked = state.selected.has(o.comp);
         const n = state.selected.size;
-        setText(sub, `${plural(comps.length, 'competition', 'competitions')} on this card${n > 0 ? ` · ${n} selected` : ''}`);
+        setText(sub, `${plural(comps.length, 'competition', 'competitions')} on this card${n > 0 ? ` · ${fmtInt(n)} selected` : ''}`);
       },
       open() {
         // No autofocus on a narrow screen: focusing the field would raise the keyboard over the list.
@@ -345,12 +345,12 @@ export function init(root = document, {
     const none = filtered && shown === 0;
     // The sentence stays visible in the sticky toolbar (on a phone the empty box is below the
     // fold), with Show all beside it; the box repeats it for sighted readers only (aria-hidden).
-    setText(status, !filtered ? '' : none ? TEXT.empty : `Showing ${counted} of ${plural(total, 'fixture', 'fixtures')}`);
+    setText(status, !filtered ? '' : none ? TEXT.empty : `Showing ${fmtInt(counted)} of ${plural(total, 'fixture', 'fixtures')}`);
     setHidden(empty, !none);
     setHidden(showAll, !filtered);
     if (leaguesBtn) {
       // The pill shows the number; the separator is for the accessible name ("Leagues · 3").
-      const n = sel.size > 0 ? String(sel.size) : '';
+      const n = sel.size > 0 ? fmtInt(sel.size) : '';
       if (leaguesCount.textContent !== (n === '' ? '' : ` · ${n}`)) {
         if (n === '') leaguesCount.replaceChildren();
         else leaguesCount.replaceChildren(el(doc, 'span', { class: 'vh' }, ' · '), n);

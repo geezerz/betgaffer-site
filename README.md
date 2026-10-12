@@ -8,13 +8,12 @@ cover, with at most one recommended pick per fixture. It is not a bookmaker and 
 
 ## What the receipts show
 
-- **Every pick is made before kickoff and carries the day's receipt.** Picks are made on the Bet
-  Gaffer platform before kickoff. Each row has `frozen_at` (UTC), the moment this site listed
-  the pick, and `pre_ko` says whether that listing was before kickoff. Under accuracy rule 2
-  (`accuracy_rule: 2`) every pick that is not withdrawn counts with its real grade, including one
-  with `pre_ko: false`. The receipt (`picks_hash`) proves that a pick did not change after
-  `frozen_at`; it does not by itself prove that the pick preceded kickoff. A fixture first seen less
-  than 10 minutes before kickoff carries no pick (`late: true`).
+- **Every pick is made on the Bet Gaffer platform before kickoff and carries the day's receipt.** Each row has
+  `frozen_at` (UTC), the moment this site listed the pick, and `pre_ko` says whether that listing
+  was before kickoff. Under accuracy rule 2 (`accuracy_rule: 2`) every pick that is not withdrawn
+  counts with its real grade, including one with `pre_ko: false`. The receipt (`picks_hash`) proves
+  that a pick did not change after `frozen_at`; it does not by itself prove that the pick preceded
+  kickoff.
 - **A published pick never changes.** Later updates add grades and display details (kickoff time,
   status, names); none of those is part of the receipt hash.
 - **The record figures come from the accuracy ledger**, which includes days before this repository
@@ -45,7 +44,7 @@ against them** — they would be overwritten, and a card can't be edited after t
 | `pick` | `{market, label, pct, price, price_est, why}` or `null`; `pct` is the stated probability in whole percent; `price` is a decimal price or `null`, `price_est: true` when it is an estimate |
 | `frozen_at` | When this site listed the pick (UTC); the pick itself was made on the platform before kickoff |
 | `pre_ko` | `true` if this site listed the pick before kickoff; `false` if it listed it after kickoff, or the kickoff later moved to before the listing. Under accuracy rule 2 a `pre_ko: false` pick counts with its real grade |
-| `late` | First seen within 10 minutes of kickoff (or after it); never has a pick |
+| `late` | Legacy flag, being removed; ignore |
 | `withdrawn` | The fixture's identity changed after publication; the row is kept, marked and left out of the accuracy figures |
 | `grade` | `won`, `lost`, `push`, `void`, `pending`, `withdrawn`, or `null` when there is no pick |
 | `picks_hash` | The receipt: a SHA-256 over every row's identity, pick, listing time (`frozen_at`) and withdrawn flag |

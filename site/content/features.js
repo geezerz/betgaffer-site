@@ -13,6 +13,7 @@
 
 import { escHtml } from '../lib/esc.js';
 import { isDate } from '../lib/time.js';
+import { fmtInt } from '../lib/num.js';
 import { SUMMARY, TOTAL_PLACES } from '../lib/founding.js';
 import { POSITIONING, identityCard, lastUpdated, operatorOf } from './common.js';
 
@@ -37,11 +38,6 @@ const AT_LAUNCH = 'At launch';
 const COMING_SOON = 'Coming soon';
 
 const isCount = (n) => Number.isSafeInteger(n) && n >= 0;
-
-/** 1146 -> '1,146' (deterministic; no locale data). */
-function fmtInt(n) {
-  return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
 
 /**
  * Markets per fixture from cfg.breadth, or null when absent or the day is empty (nothing claimed).

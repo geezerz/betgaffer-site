@@ -87,7 +87,7 @@ describe('ringModel', () => {
     const m = ringModel(acc(19999, 1, 99.995), { date: TODAY, nowMs: NOW });
     assert.equal(m.state, 'partial');
     assert.equal(m.pctText, null);
-    assert.equal(m.fracText, '19999 of 20000');
+    assert.equal(m.fracText, '19,999 of 20,000');
     assert.equal(m.arc, null);
     assert.doesNotMatch(m.aria, /%/);
   });
@@ -993,5 +993,65 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(src, /classList\.toggle\(\s*'ring-static',\s*!on\s*\)/, 'show(on) mirrors it');
     assert.match(src, /export function boot\(/);
     assert.match(src, /boot\(\s*\)/, 'the module start goes through boot()');
+  });
+});
+
+// ------------------------------------------------------------------ thousands separators (BRAND 2026-10-12)
+
+// The small ring is 64px wide. A fraction written with thousands separators ("1,131 of 1,308") is
+// wider than the ring at any readable size, so balloon.js writes a long fraction as two words and
+// the stylesheet stacks them in the small ring ("1,131 of" over "1,308"); the large ring keeps one
+// line. The text content is the same fraction either way.
+describe('balloon.js: a separated four- or five-digit fraction in the ring', () => {
+  const SHEET = readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8');
+  const ringOf = (today, width) => setup({ width, html: pageOf({ today, yesterday: null }) }).el;
+  const words = (el, cls) => el.querySelector(`.${cls}`).querySelectorAll('.bg-balloon__w').map((w) => w.textContent);
+
+  test('up to twelve characters: one run, as before', () => {
+    for (const [a, frac] of [[acc(24, 5, 82.76), '24 of 29'], [acc(240, 50, 82.76), '240 of 290'], [acc(999, 1, 99.9), '999 of 1,000']]) {
+      for (const width of [390, 1280]) {
+        const frac1 = ringOf(a, width).querySelector('.bg-balloon__frac');
+        assert.equal(frac1.textContent, frac);
+        assert.equal(frac1.querySelectorAll('.bg-balloon__w').length, 0, `${frac} at ${width}`);
+      }
+    }
+  });
+
+  test('a longer fraction is two words — "1,131 of" and "1,308" — and still reads as the fraction', () => {
+    for (const [a, first, second] of [[acc(1131, 177, 86.47), '1,131 of', '1,308'], [acc(10081, 2073, 82.94), '10,081 of', '12,154']]) {
+      for (const width of [390, 1280]) {
+        const el = ringOf(a, width);
+        assert.deepEqual(words(el, 'bg-balloon__frac'), [first, second], `${first} at ${width}`);
+        assert.equal(el.querySelector('.bg-balloon__frac').textContent, `${first} ${second}`);
+        assert.ok(el.getAttribute('aria-label').includes(`${first} ${second} landed`), el.getAttribute('aria-label'));
+      }
+    }
+  });
+
+  test('a perfect day: the fraction is the figure, split the same way, with "landed" / "so far" under it', () => {
+    for (const [a, first, second] of [[acc(1200, 0, 100), '1,200 of', '1,200'], [acc(12000, 0, 100), '12,000 of', '12,000']]) {
+      const el = ringOf(a, 390);
+      assert.deepEqual(words(el, 'bg-balloon__pct--frac'), [first, second]);
+      assert.deepEqual(words(el, 'bg-balloon__landed'), ['landed', 'so far']);
+      assert.equal(el.querySelector('.bg-balloon__pct--frac').textContent, `${first} ${second}`);
+    }
+  });
+
+  test('balloon.css stacks the words only in the small ring, at the long-fraction size', () => {
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\] \.bg-balloon__w\{ display:block; \}/);
+    assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\.bg-balloon__w/, 'the large ring keeps the fraction on one line');
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__frac,\s*\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__pct--frac\{ font-size:8px;/);
+    for (const a of [acc(1131, 177, 86.47), acc(10081, 2073, 82.94), acc(1200, 0, 100)]) assert.equal(ringOf(a, 390).getAttribute('data-long'), '');
+  });
+
+  test('a stacked fraction is marked (data-stacked) and the small ring steps its percentage down a size', () => {
+    // three lines are taller than two: at 13px the percentage's corners would touch the arc
+    for (const a of [acc(1131, 177, 86.47), acc(10081, 2073, 82.94), acc(1200, 0, 100)]) {
+      for (const width of [390, 1280]) assert.equal(ringOf(a, width).getAttribute('data-stacked'), '', `${a.won} at ${width}`);
+    }
+    for (const a of [acc(24, 5, 82.76), acc(240, 50, 82.76), acc(999, 1, 99.9)]) assert.equal(ringOf(a, 390).getAttribute('data-stacked'), null, String(a.won));
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct\{ font-size:12px; \}/);
+    assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct{') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:13px; }'), 'after the 13px rule, so it wins');
+    assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\[data-stacked\]/, 'the large ring is unchanged');
   });
 });

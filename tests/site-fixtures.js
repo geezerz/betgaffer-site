@@ -187,3 +187,77 @@ export async function htmlFiles(out) {
   const rels = Object.keys(snap).filter((r) => r.endsWith('.html')).sort();
   return Promise.all(rels.map(async (rel) => ({ rel, html: await readFile(join(out, rel), 'utf8') })));
 }
+
+// ------------------------------------------------------------------ large counts (thousands separators)
+
+const letters = (i) => { let s = ''; let n = i; do { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1; } while (n >= 0); return s; };
+
+/**
+ * A raw day of `rows` pick-less fixtures in `comps` competitions plus `withdrawn` withdrawn rows:
+ * large counts with nothing graded (so the ring needs no recount). Names carry letters only.
+ */
+export function syntheticDay({ rows, comps = 1, withdrawn = 0, day = '2026-10-06' }) {
+  const fixtures = [];
+  for (let i = 0; i < rows + withdrawn; i++) {
+    fixtures.push({
+      fx: 5000000 + i, api_fx: 7000000 + i, ko: `${day}T12:00:00Z`, comp: `League ${letters(i % comps)}`,
+      home: `Home ${letters(i)}`, away: `Away ${letters(i)}`, home_id: 100000 + i, away_id: 300000 + i, status: 'NS',
+      pick: null, frozen_at: null, pre_ko: true, withdrawn: i >= rows, grade: null,
+    });
+  }
+  return {
+    schema: 1, lagos_day: day, strategy: 'edge_reliability', accuracy_rule: 2,
+    picks_frozen_at: `${day}T00:00:00Z`, grades_as_of: `${day}T00:00:00Z`, prev_hash: null, picks_hash: `sha256:${'b'.repeat(64)}`,
+    counts: { fixtures: fixtures.length, priced: 0, recommended: 0, markets_per_fixture: 92 },
+    accuracy: { won: 0, lost: 0, pushes: 0, graded: 0, pct: null },
+    pick_source: { strategy: 'edge_reliability', fallback: 'none', ledger_match_rate: null, ledger_match_n: 0, ledger_match_matched: 0, ledger_match_served_n: 0, ledger_match_unserved: 0 },
+    fixtures,
+  };
+}
+
+/** The figures bigArtifact() publishes, for the tests to derive their expectations from. */
+export const BIG = Object.freeze({
+  times: 24, // the rule-2 fixture day, 24 times over, is the home card
+  d5: { day: '2026-10-05', fixtures: 1534, accuracy: { won: 1131, lost: 177, pushes: 50, graded: 1308, pct: 86.47 } },
+  d6: { day: '2026-10-06', fixtures: 12345, accuracy: { won: 10081, lost: 2073, pushes: 1234, graded: 12154, pct: 82.94 } },
+});
+
+/**
+ * An artifact whose every count runs to four or five digits: today (2026-10-08) is the rule-2 fixture
+ * day repeated BIG.times over (its picks_hash recomputed), and 2026-10-05 / 2026-10-06 are compacted
+ * days with the BIG.d5 / BIG.d6 figures. Returns the home day as written.
+ */
+export async function bigArtifact(root) {
+  await copyArtifact(root);
+  const r2 = await readJson(fileURLToPath(new URL('./fixtures/rule2-day.json', import.meta.url)));
+  const k = BIG.times;
+  const fixtures = [];
+  for (let i = 0; i < k; i++) for (const f of r2.fixtures) fixtures.push({ ...structuredClone(f), fx: f.fx + i * 10000000, api_fx: f.api_fx + i * 10000000 });
+  const a = r2.accuracy;
+  const ps = r2.pick_source;
+  const home = {
+    ...r2,
+    fixtures,
+    counts: { ...r2.counts, fixtures: fixtures.length, priced: r2.counts.priced * k, recommended: r2.counts.recommended * k },
+    accuracy: { won: a.won * k, lost: a.lost * k, pushes: a.pushes * k, graded: a.graded * k, pct: a.pct },
+    pick_source: { ...ps, ledger_match_n: ps.ledger_match_n * k, ledger_match_matched: ps.ledger_match_matched * k, ledger_match_served_n: ps.ledger_match_served_n * k, ledger_match_unserved: ps.ledger_match_unserved * k },
+  };
+  home.picks_hash = await picksHash(home.fixtures, nodeSha256);
+  await writeJson(join(root, 'days/2026-10-08.json'), home);
+  const index = await readJson(join(root, 'index.json'));
+  index.today = '2026-10-08';
+  Object.assign(index.days.find((d) => d.day === '2026-10-08'), { picks_hash: home.picks_hash, fixtures: fixtures.length, accuracy: home.accuracy });
+  for (const [n, d] of [['6', BIG.d6], ['5', BIG.d5]]) { // index.days is newest first
+    const min = {
+      schema: 1, lagos_day: d.day, compacted: true, strategy: 'edge_reliability', accuracy_rule: 2,
+      picks_frozen_at: '2026-10-04T22:15:00Z', grades_as_of: '2026-10-07T03:00:00Z', prev_hash: null,
+      picks_hash: `sha256:${n.repeat(64)}`,
+      counts: { fixtures: d.fixtures, priced: d.fixtures, recommended: d.accuracy.graded + d.accuracy.pushes, markets_per_fixture: 92 },
+      accuracy: d.accuracy,
+    };
+    await writeJson(join(root, 'days', `${d.day}.min.json`), min);
+    index.days.push({ day: d.day, compacted: true, picks_hash: min.picks_hash, fixtures: d.fixtures, accuracy: d.accuracy });
+  }
+  await writeJson(join(root, 'index.json'), index);
+  return home;
+}

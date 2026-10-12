@@ -27,6 +27,7 @@ import { receiptCode, renderDay } from './lib/fixtures.js';
 import { OG_FOUNDING, page } from './lib/layout.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
+import { fmtInt, plural } from './lib/num.js';
 import { fmtDayLong, lagosToday } from './lib/time.js';
 import { waitlistForm, waitlistResultMeta, waitlistResultPage, WAITLIST_RESULT_KINDS } from './lib/waitlist-form.js';
 import * as features from './content/features.js';
@@ -43,7 +44,7 @@ export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions
 /** Linked from <noscript> by layout.js (NOJS_CSS); copied as its own file, never concatenated. */
 const NOJS_CSS_FILE = 'nojs.css';
 /** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring, founding card). */
-export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js', 'founding.js']);
+export const ISOMORPHIC_LIB = Object.freeze(['esc.js', 'time.js', 'num.js', 'hash.js', 'ring.js', 'fixtures.js', 'search.js', 'balloon-model.js', 'founding.js']);
 /** Same-site browser entry modules. */
 const SCRIPT = Object.freeze({
   stale: '/assets/js/stale.js', day: '/assets/js/day.js', waitlist: '/assets/js/waitlist.js', predictions: '/assets/js/predictions.js',
@@ -67,7 +68,6 @@ export const HEADERS = `/*
   Cache-Control: public, max-age=31536000, immutable
 `;
 
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const DAY_MS = 86400000;
 
 /** 'YYYY-MM-DD' + n calendar days (UTC arithmetic on a date, never the host timezone). */
@@ -120,8 +120,6 @@ export function chooseDays(index) {
 
 const DOW_LONG = { Sun: 'Sunday', Mon: 'Monday', Tue: 'Tuesday', Wed: 'Wednesday', Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday' };
 const MON_LONG = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
-/** 12154 -> '12,154' (no locale lookup). */
-const int = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 /**
  * A day's accuracy as a pill percentage (spec §17.1): one decimal, rounded half up on the published
@@ -171,9 +169,9 @@ export function dayPills(listed, today, current, { onDayPage }) {
     let figure = '';
     let lead = ''; // a perfect day's name starts with its visible words (WCAG 2.5.3)
     if (d === tomorrow) {
-      fig = int(fixtures);
+      fig = fmtInt(fixtures);
       sub = fixtures === 1 ? 'fixture' : 'fixtures';
-      aria = `${int(fixtures)} ${sub}`;
+      aria = `${fmtInt(fixtures)} ${sub}`;
     } else if (a.graded === 0) {
       fig = '—';
       sub = 'No results yet';
@@ -182,7 +180,7 @@ export function dayPills(listed, today, current, { onDayPage }) {
       const pct = pillPct(a);
       fig = pct ?? 'All right';
       figCls = ' day-pill__fig--won';
-      sub = `${int(a.won)} of ${int(a.graded)}`;
+      sub = `${fmtInt(a.won)} of ${fmtInt(a.graded)}`;
       aria = `${sub} picks right${pct ? `, ${pct}` : ''}`;
       share = Math.round((a.won / a.graded) * 10000) / 100;
       if (pct) figure = ` data-figure="record-row" data-period="${escAttr(d)}"`;

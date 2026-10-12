@@ -171,9 +171,10 @@ test('the ring element holds no nested <div> (claim scanners match it as one ele
   assert.ok(html.trimEnd().endsWith('</div>'));
 });
 
-test('isomorphic: imports only ./esc.js and ./time.js, no node: / process / Buffer', () => {
+test('isomorphic: imports only ./esc.js, ./time.js and ./num.js (the one number formatter), no node: / process / Buffer', () => {
   const specs = [...SRC.matchAll(/^\s*import\s[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
-  for (const s of specs) assert.ok(['./esc.js', './time.js'].includes(s), `unexpected import ${s}`);
+  for (const s of specs) assert.ok(['./esc.js', './time.js', './num.js'].includes(s), `unexpected import ${s}`);
+  assert.ok(specs.includes('./num.js'), 'counts go through the one formatter');
   assert.ok(!/\bnode:/.test(SRC));
   assert.ok(!/\bprocess\b/.test(SRC));
   assert.ok(!/\bBuffer\b/.test(SRC));

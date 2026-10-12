@@ -6,6 +6,7 @@
 // Programme section (#founding), Credits and top-ups never refundable, no reply-time promise.
 
 import { escHtml } from '../lib/esc.js';
+import { fmtInt } from '../lib/num.js';
 import {
   BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS,
 } from '../lib/founding.js';
@@ -24,7 +25,6 @@ const GA = '<a href="https://www.gamblersanonymous.org" rel="noopener">Gamblers 
 const FCCPA = 'Federal Competition and Consumer Protection Act 2018';
 const COPY = String.fromCharCode(0xa9);
 
-const num = (v) => v.toLocaleString('en-US');
 /** Wraps each offer figure ("30% off", "20% extra") of escaped text in its data-figure="offer" span. */
 const offer = (html) => html.replace(/\d+% (?:off|extra)/g, (m) => `<span data-figure="offer">${m}</span>`);
 
@@ -34,14 +34,14 @@ const offer = (html) => html.replace(/\d+% (?:off|extra)/g, (m) => `<span data-f
  * benefit cards, word for word, followed by the rules that make them exact.
  */
 function founding() {
-  const total = num(TOTAL_PLACES);
-  const waitlist = num(WAITLIST_PLACES);
+  const total = fmtInt(TOTAL_PLACES);
+  const waitlist = fmtInt(WAITLIST_PLACES);
   const benefits = BENEFITS.map((b) => `<li><strong>${offer(escHtml(b.title))}.</strong> ${offer(escHtml(b.text))}</li>`).join('\n');
   return {
     id: 'founding',
     title: 'Founding Member Programme',
     now: `<p>Joining the founding waitlist reserves one of ${waitlist} waitlist places for the first ${waitlist} people to join. It costs nothing and creates no account. Founding status itself starts only when you start a paid subscription after launch.</p>`,
-    launch: `<p><strong>Places.</strong> There are ${total} founding places in total: ${waitlist} waitlist places and ${num(LAUNCH_PLACES)} launch places. The total is always ${total}.</p>
+    launch: `<p><strong>Places.</strong> There are ${total} founding places in total: ${waitlist} waitlist places and ${fmtInt(LAUNCH_PLACES)} launch places. The total is always ${total}.</p>
 <ul>
 <li>Waitlist places go to the first ${waitlist} people to join the founding waitlist (18 or over, one per person), in the order their sign-ups were received, after removing duplicates and addresses whose owners asked us to delete them. At launch we email each of them an invite. A paid subscription started within ${CLAIM_DAYS} days of the invite claims the place; subscribing before the invite arrives also claims it.</li>
 <li>People who join after the first ${waitlist} stay on the waitlist and are invited too, with a head start on one of the launch places.</li>

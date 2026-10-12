@@ -201,7 +201,8 @@ test('no-pick row', () => {
 
 test('pre_ko false on a picked row: marked, not counted', () => {
   const r = row(EDGE_HTML, 900011);
-  assert.match(text(r), /Kickoff was moved to a time before this pick was frozen — not counted in the ring\./);
+  assert.match(text(r), /Kickoff was moved to a time before this pick was listed — not counted in the ring\./);
+  assert.doesNotMatch(text(EDGE_HTML), /\bfrozen\b/i, 'no card says a pick was frozen (BRAND 2026-10-12)');
   assert.match(r, /data-uncounted/);
   // and only there
   for (const f of EDGE.fixtures.filter((x) => x.fx !== 900011)) {
@@ -596,7 +597,7 @@ test('"How this card was built": both fractions, no rate, no strategy key', () =
   assert.match(t, /At most one recommended pick per fixture, chosen from 92 priced markets\./);
   assert.ok(t.includes('Of the 129 fixtures checked against the graded record, the card showed a pick for 120, all of them the same pick the record grades, and no pick for 9.'), t);
   assert.doesNotMatch(t, /\blate\b|too late|first (listed|seen)|10 minutes|in time/i);
-  assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring\./);
+  assert.match(t, /The list shows every fixture we cover that day, with or without a pick\. Pushes are not counted; void picks, withdrawn picks and picks whose kickoff was moved to before they were listed are shown but not counted in the ring\./);
   assert.ok(!/Each competition/.test(t), 'no grouping left in the copy');
   assert.match(t, /Prices marked est\. are estimates: no market price was captured for them\./);
   assert.ok(!t.includes('%'));
@@ -701,10 +702,11 @@ test('rejects what it cannot render honestly', () => {
 
 // ---------------------------------------------------------------- module + stylesheet contract
 
-test('isomorphic: imports only ./esc.js, ./time.js, ./ring.js; no node: / process / Buffer', () => {
+test('isomorphic: imports only ./esc.js, ./time.js, ./ring.js, ./num.js (the one number formatter); no node: / process / Buffer', () => {
   const specs = [...SRC.matchAll(/^\s*import\s[^'"]*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
   assert.ok(specs.length > 0);
-  for (const s of specs) assert.ok(['./esc.js', './time.js', './ring.js'].includes(s), `unexpected import ${s}`);
+  for (const s of specs) assert.ok(['./esc.js', './time.js', './ring.js', './num.js'].includes(s), `unexpected import ${s}`);
+  assert.ok(specs.includes('./num.js'), 'counts go through the one formatter');
   assert.ok(!/\bnode:/.test(SRC));
   assert.ok(!/\bprocess\b/.test(SRC));
   assert.ok(!/\bBuffer\b/.test(SRC));

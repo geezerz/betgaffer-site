@@ -60,7 +60,17 @@ export function parse(html) {
   const root = { tag: '#root', attrs: {}, children: [], parent: null };
   let cur = root;
   let i = 0;
-  const line = (at) => html.slice(0, at).split('\n').length;
+  // The 1-based line of offset `at`: the newlines before it, counted incrementally (offsets only
+  // grow as the parse advances; re-splitting the document per element was quadratic on a big page).
+  let lineNo = 1;
+  let nextNl = html.indexOf('\n'); // the first newline not yet counted (-1: none left)
+  let counted = 0; // every newline before this offset is in lineNo
+  const line = (at) => {
+    if (at < counted) { lineNo = 1; nextNl = html.indexOf('\n'); }
+    while (nextNl !== -1 && nextNl < at) { lineNo += 1; nextNl = html.indexOf('\n', nextNl + 1); }
+    counted = at;
+    return lineNo;
+  };
   const pushText = (raw) => { if (raw) cur.children.push({ text: decode(raw), parent: cur }); };
   const inStack = (tag) => { for (let n = cur; n; n = n.parent) if (n.tag === tag) return true; return false; };
 
@@ -352,5 +362,71 @@ export function cspViolations(html) {
       if ((k === 'href' || k === 'src' || k === 'action') && /^\s*javascript:/i.test(v)) out.push(`javascript: URL on ${where(el)}`);
     }
   }
+  return out;
+}
+
+// ------------------------------------------------------------------ thousands separators (BRAND 2026-10-12)
+
+// Every count of four or more digits a visitor reads is written with thousands separators
+// (site/lib/num.js fmtInt). bareCounts() reports each run of four or more digits that is not.
+//
+// Scanned, one text node or attribute value at a time (so a number never borrows its excuse from a
+// neighbouring element): every text node under <body>, the <title>, the aria-label / title / alt /
+// placeholder of every element, and the content of the text <meta>s (TEXT_METAS). data-* attributes,
+// hrefs, datetime= and the machine <meta>s (theme-color, og:url, og:image:width...) are not text.
+//
+// A run is allowed only when, within its own node, it is exactly one of:
+//   year     exactly four digits, 1900-2099, straight after a month name or its three-letter form
+//            and one space ("Oct 2026", "8 October 2026"), after "© ", or after "Act " (a statute);
+//   reg      straight after "RC" or "RC " (the operator's company registration number);
+//   receipt  inside a token of exactly twelve lower-case hex characters (the receipt code).
+// Not scanned: the text of .fx__comp / .fx__team / .fx__selname / .fx__why — names and words the
+// publisher supplies ("1461 Trabzon FK", "Schalke 04"), which the site never formats.
+const NAME_CLASSES = new Set(['fx__comp', 'fx__team', 'fx__selname', 'fx__why']);
+const TEXT_METAS = new Set(['description', 'og:title', 'og:description', 'og:image:alt', 'twitter:title', 'twitter:description', 'twitter:image:alt']);
+const COUNT_ATTRS = ['aria-label', 'title', 'alt', 'placeholder'];
+const MONTH_BEFORE = new RegExp(`(?<![A-Za-z])(?:${MONTHS.join('|')}|${MONTHS.map((m) => m.slice(0, 3)).join('|')}) $`);
+const HEX12_RE = /(?<![0-9A-Za-z])[0-9a-f]{12}(?![0-9A-Za-z])/g;
+
+/** The bare runs of 4+ digits in one string: [{ run, context }]. */
+export function bareRuns(s) {
+  const out = [];
+  const receipts = [...s.matchAll(HEX12_RE)].map((m) => [m.index, m.index + 12]);
+  for (const m of s.matchAll(/\d{4,}/g)) {
+    const run = m[0];
+    const at = m.index;
+    const before = s.slice(0, at);
+    if (receipts.some(([a, b]) => at >= a && at + run.length <= b)) continue;
+    if (/RC ?$/.test(before)) continue;
+    const isYear = run.length === 4 && Number(run) >= 1900 && Number(run) <= 2099;
+    if (isYear && (MONTH_BEFORE.test(before) || /(?:©|\bAct) $/.test(before))) continue;
+    out.push({ run, context: s.slice(Math.max(0, at - 30), at + run.length + 20) });
+  }
+  return out;
+}
+
+/** Every bare count on a page: [] when clean, else one "<where>: <run> in <context>" per run. */
+export function bareCounts(html) {
+  const doc = parse(html);
+  const out = [];
+  const report = (where1, s) => { for (const r of bareRuns(s)) out.push(`${where1}: ${r.run} in ${JSON.stringify(r.context)}`); };
+  const classes = (el) => (el.attrs.class ?? '').split(/\s+/);
+  const walk = (n, inBody) => {
+    if (n.tag === undefined) {
+      if (inBody) report(`text in ${where(n.parent)}`, n.text);
+      return;
+    }
+    if (n.tag === 'title') { for (const c of n.children) report('<title>', c.text); return; }
+    if (n.tag === 'meta') {
+      const key = n.attrs.name ?? n.attrs.property;
+      if (TEXT_METAS.has(key)) report(`<meta ${key}>`, n.attrs.content ?? '');
+      return;
+    }
+    if (n.tag === 'script' || n.tag === 'style' || n.tag === 'template') return;
+    for (const a of COUNT_ATTRS) if (n.attrs[a] !== undefined) report(`${a}= on ${where(n)}`, n.attrs[a]);
+    if (classes(n).some((c) => NAME_CLASSES.has(c))) return;
+    for (const c of n.children) walk(c, inBody || n.tag === 'body');
+  };
+  walk(doc, false);
   return out;
 }

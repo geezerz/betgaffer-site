@@ -83,6 +83,22 @@ function span(doc, cls, text) {
   return e;
 }
 
+/**
+ * The "won of graded" fraction. Up to twelve characters it is one run. A longer one — the counts
+ * carry thousands separators: "1,131 of 1,308" — is written as two words, "1,131 of" and "1,308",
+ * which the small ring stacks (balloon.css: .bg-balloon__w is a block there) because the whole
+ * fraction is wider than a 64px ring at any readable size. The text content is unchanged.
+ */
+const FRAC_ONE_RUN = 12;
+const isStacked = (fracText) => typeof fracText === 'string' && fracText.length > FRAC_ONE_RUN && fracText.includes(' of ');
+function fracSpan(doc, cls, fracText) {
+  const cut = fracText.indexOf(' of ');
+  if (!isStacked(fracText)) return span(doc, cls, fracText);
+  const e = span(doc, cls, null);
+  e.append(span(doc, 'bg-balloon__w', fracText.slice(0, cut + 3)), ' ', span(doc, 'bg-balloon__w', fracText.slice(cut + 4)));
+  return e;
+}
+
 /** Show the day header's static ring again: the floating ring is not shown (spec §16.7). */
 function staticRing(doc) {
   try {
@@ -101,7 +117,7 @@ function content(doc, m, compact) {
     lines.push(span(doc, 'bg-balloon__none', m.label), span(doc, 'bg-balloon__label', m.dayText));
   } else if (m.state === 'perfect' || m.pctText === null) {
     // No percentage: the fraction is the figure.
-    lines.push(span(doc, 'bg-balloon__pct bg-balloon__pct--frac', m.fracText));
+    lines.push(fracSpan(doc, 'bg-balloon__pct bg-balloon__pct--frac', m.fracText));
     if (m.state === 'perfect') {
       const landed = span(doc, 'bg-balloon__landed', null);
       landed.append(span(doc, 'bg-balloon__w', 'landed'), ' ', span(doc, 'bg-balloon__w', 'so far'));
@@ -111,7 +127,7 @@ function content(doc, m, compact) {
   } else {
     lines.push(span(doc, 'bg-balloon__pct', `${m.pctText}%`));
     if (!compact) lines.push(span(doc, 'bg-balloon__label', m.dayText));
-    lines.push(span(doc, 'bg-balloon__frac', m.fracText));
+    lines.push(fracSpan(doc, 'bg-balloon__frac', m.fracText));
   }
   if (m.yday) {
     const prev = span(doc, 'bg-balloon__prev', null);
@@ -180,6 +196,10 @@ export function init({
     // "240 of 290" is wider than the small ring's chord at the usual size.
     if (m.fracText !== null && m.fracText.length > 8) el.setAttribute('data-long', '');
     else el.removeAttribute('data-long');
+    // A fraction written as two words (fracSpan) is stacked in the small ring; three lines are taller
+    // than two, so the stylesheet steps the percentage above them down a size to keep it off the arc.
+    if (isStacked(m.fracText)) el.setAttribute('data-stacked', '');
+    else el.removeAttribute('data-stacked');
     if (m.arc === null) {
       el.removeAttribute('data-arc');
       el.style.removeProperty('--pct');

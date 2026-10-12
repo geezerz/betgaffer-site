@@ -1,6 +1,6 @@
 // The day card body (spec §4, §5, §7). ISOMORPHIC: imported by the build for today/tomorrow and
 // served to the browser, where the archive stub renders a fetched day file with the same code.
-// Imports only ./esc.js, ./time.js and ./ring.js; no Node built-ins, no process, no Buffer.
+// Imports only ./esc.js, ./time.js, ./ring.js and ./num.js; no Node built-ins, no process, no Buffer.
 //
 // Input is a day file that passed data.js validateDay (the build) or day.js's shape check (the
 // browser). Anything this module cannot render honestly throws rather than guessing: a missing or
@@ -30,6 +30,7 @@
 import { escHtml, escAttr } from './esc.js';
 import { lagosParts, fmtDayLong, fmtStamp, isDate } from './time.js';
 import { ring } from './ring.js';
+import { fmtInt, plural } from './num.js';
 
 export const EST_TEXT = 'estimated price — no market price was captured';
 /** The empty toolbar slot predictions.js fills; hidden (and so absent) without JS (spec §5). */
@@ -61,14 +62,13 @@ const MSG = Object.freeze({
   withdrawnPick: 'This fixture changed after the pick was published, so the pick is not graded.',
   withdrawnBare: 'This fixture changed after it was published.',
   none: 'No recommendation.',
-  moved: 'Kickoff was moved to a time before this pick was frozen — not counted in the ring.',
+  moved: 'Kickoff was moved to a time before this pick was listed — not counted in the ring.',
   // Rule-2 days only (spec §16 amendments): the first line of "How this card was built".
   howRule2: "At most one recommended pick per fixture — the platform's card pick — graded after full time.",
 });
 
 const HASH_RE = /^sha256:[0-9a-f]{64}$/;
 
-const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
 /**
  * The receipt code a card prints: the first 12 hex characters after "sha256:" of its picks_hash.
@@ -364,14 +364,14 @@ function howBuilt(day, rule) {
     check = 'No fixture on this card has been checked against the graded record.';
   } else {
     let picked;
-    if (served === 0) picked = `the card showed no pick for ${unserved}`;
+    if (served === 0) picked = `the card showed no pick for ${fmtInt(unserved)}`;
     else {
       let same;
       if (served === 1) same = matched === 1 ? 'the same pick the record grades' : 'not the same pick the record grades';
       else if (matched === served) same = 'all of them the same pick the record grades';
       else if (matched === 0) same = 'none of them the same pick the record grades';
-      else same = `${matched} of them the same pick the record grades`;
-      picked = `the card showed a pick for ${served}, ${same}` + (unserved > 0 ? `, and no pick for ${unserved}` : '');
+      else same = `${fmtInt(matched)} of them the same pick the record grades`;
+      picked = `the card showed a pick for ${fmtInt(served)}, ${same}` + (unserved > 0 ? `, and no pick for ${fmtInt(unserved)}` : '');
     }
     check = `Of the ${plural(n, 'fixture', 'fixtures')} checked against the graded record, ${picked}.`;
   }
@@ -390,7 +390,7 @@ function howBuilt(day, rule) {
     + `<p>At most one recommended pick per fixture, chosen from ${escHtml(plural(markets, 'priced market', 'priced markets'))}.</p>`
     + `<p>${escHtml(check)}</p>`
     + '<p>The list shows every fixture we cover that day, with or without a pick. Pushes are not counted; '
-    + 'void picks, withdrawn picks and picks whose kickoff was moved to before they were frozen are shown but not counted in the ring.</p>'
+    + 'void picks, withdrawn picks and picks whose kickoff was moved to before they were listed are shown but not counted in the ring.</p>'
     + '<p>Prices marked est. are estimates: no market price was captured for them.</p>'
     + '</div></details>';
 }
@@ -447,7 +447,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const countLine = (active.length === 0
     ? '0 fixtures'
     : `${plural(active.length, 'fixture', 'fixtures')} in ${plural(comps, 'competition', 'competitions')}`)
-    + (k > 0 ? ` (${k} withdrawn)` : '');
+    + (k > 0 ? ` (${fmtInt(k)} withdrawn)` : '');
   // = stale.js relLabel(d, <not today or tomorrow>, 'ring'), asserted by tests/relabel.test.js.
   const ringLabel = `Picks published for ${longDate}, settled so far`;
   const code = receiptCode(day.picks_hash);
