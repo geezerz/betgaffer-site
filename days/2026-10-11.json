@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-11",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-10T21:10:02Z",
-    "grades_as_of": "2026-10-12T05:11:20Z",
+    "grades_as_of": "2026-10-12T09:11:04Z",
     "prev_hash": "sha256:d035625181a6c6b18d7e9a6838d7b4aac57fe4fcaf03ff36d9caa94b550458d6",
     "picks_hash": "sha256:e764a9b0cd2196788d040ea36caa470989ec010d1122258d82363219a9de68ff",
     "counts": {
@@ -14,10 +14,10 @@
     },
     "accuracy": {
         "won": 863,
-        "lost": 154,
+        "lost": 155,
         "pushes": 30,
-        "graded": 1017,
-        "pct": 84.86
+        "graded": 1018,
+        "pct": 84.77
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -6902,7 +6902,7 @@
             "away": "Scotland U19 W",
             "home_id": 1957,
             "away_id": 1925,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -6915,8 +6915,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 156882,

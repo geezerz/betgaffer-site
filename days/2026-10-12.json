@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-12",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-11T21:10:02Z",
-    "grades_as_of": "2026-10-12T07:10:02Z",
+    "grades_as_of": "2026-10-12T09:11:04Z",
     "prev_hash": "sha256:e764a9b0cd2196788d040ea36caa470989ec010d1122258d82363219a9de68ff",
     "picks_hash": "sha256:6305224d816be8b885d113782370a89e516794c6e58c764931c13a02f1300327",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 16,
+        "won": 17,
         "lost": 4,
         "pushes": 0,
-        "graded": 20,
-        "pct": 80.0
+        "graded": 21,
+        "pct": 80.95
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -729,7 +729,7 @@
             "away": "Jiangxi Liansheng",
             "home_id": 4633,
             "away_id": 4634,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -742,8 +742,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1552405,
@@ -754,7 +761,7 @@
             "away": "Shanghai Second",
             "home_id": 4476,
             "away_id": 4469,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -779,7 +786,7 @@
             "away": "Langfang Glory City",
             "home_id": 4472,
             "away_id": 4638,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -804,7 +811,7 @@
             "away": "Belgium U19 W",
             "home_id": 1878,
             "away_id": 1933,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -829,7 +836,7 @@
             "away": "Karbon Cherkasy",
             "home_id": 9288,
             "away_id": 9287,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -842,7 +849,7 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -879,7 +886,7 @@
             "away": "Poland U19 W",
             "home_id": 1921,
             "away_id": 1958,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",

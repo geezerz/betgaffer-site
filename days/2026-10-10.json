@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-10",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-09T21:10:02Z",
-    "grades_as_of": "2026-10-12T07:10:02Z",
+    "grades_as_of": "2026-10-12T09:11:04Z",
     "prev_hash": "sha256:426b39ad027e21633d9f4fcfc9551876ffa62de7679fe3e26d9f2045daceeaad",
     "picks_hash": "sha256:d035625181a6c6b18d7e9a6838d7b4aac57fe4fcaf03ff36d9caa94b550458d6",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 1141,
+        "won": 1142,
         "lost": 178,
         "pushes": 50,
-        "graded": 1319,
-        "pct": 86.5
+        "graded": 1320,
+        "pct": 86.52
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -352,7 +352,7 @@
             "away": "Japan W",
             "home_id": 1561,
             "away_id": 1456,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_2_5",
                 "label": "Over 2.5 Goals",
@@ -365,8 +365,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1547945,
