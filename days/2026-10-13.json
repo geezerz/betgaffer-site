@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-12T21:10:02Z",
-    "grades_as_of": "2026-10-13T22:15:02Z",
+    "grades_as_of": "2026-10-13T23:10:02Z",
     "prev_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
     "picks_hash": "sha256:f71606fdac4cca5ab8f9b3bd634eea483e7fbf5bddfd1436feb4a7ab4f722aaa",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 196,
+        "won": 197,
         "lost": 33,
         "pushes": 9,
-        "graded": 229,
-        "pct": 85.59
+        "graded": 230,
+        "pct": 85.65
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -8248,7 +8248,7 @@
             "away": "Flamengo RJ U17",
             "home_id": 2455,
             "away_id": 2444,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -8261,8 +8261,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1576247,
@@ -8298,7 +8305,7 @@
             "away": "Londrina",
             "home_id": 297,
             "away_id": 181,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
