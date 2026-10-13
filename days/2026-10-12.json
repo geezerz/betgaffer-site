@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-12",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-11T21:10:02Z",
-    "grades_as_of": "2026-10-13T01:10:02Z",
+    "grades_as_of": "2026-10-13T05:10:02Z",
     "prev_hash": "sha256:d640ff2770c8484f080c12573dc3081a1925a9f25069b3ddca06393206d9d64f",
-    "picks_hash": "sha256:901c8c40a08d5b343618242cadd88e8b3819c0ad363c8a6affc403d87da15ae8",
+    "picks_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
     "counts": {
         "fixtures": 212,
-        "priced": 199,
+        "priced": 198,
         "recommended": 205,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 160,
+        "won": 161,
         "lost": 26,
         "pushes": 6,
-        "graded": 186,
-        "pct": 86.02
+        "graded": 187,
+        "pct": 86.1
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -946,7 +946,7 @@
             "away": "Trostianets",
             "home_id": 3868,
             "away_id": 7400,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -959,8 +959,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 465386,
@@ -1691,8 +1698,8 @@
             "frozen_at": "2026-10-11T21:10:02Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "void",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
