@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-12T21:10:02Z",
-    "grades_as_of": "2026-10-14T03:10:02Z",
+    "grades_as_of": "2026-10-14T05:10:01Z",
     "prev_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
-    "picks_hash": "sha256:b053afe30ef710fc8e11cf303ffe14fc01161bacd02ed7c1b7aff61eea18245e",
+    "picks_hash": "sha256:bc14462ab690815864d53e5d2a14f11a78224171456e28bc20e60602bbc14be7",
     "counts": {
         "fixtures": 266,
-        "priced": 258,
+        "priced": 256,
         "recommended": 261,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 198,
+        "won": 199,
         "lost": 33,
         "pushes": 11,
-        "graded": 231,
-        "pct": 85.71
+        "graded": 232,
+        "pct": 85.78
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4965,7 +4965,7 @@
             "away": "ETSV Hamburg",
             "home_id": 9103,
             "away_id": 7300,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -4978,8 +4978,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704325,
@@ -6862,8 +6869,8 @@
             "frozen_at": "2026-10-12T21:10:02Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -8153,8 +8160,8 @@
             "frozen_at": "2026-10-12T21:10:02Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {

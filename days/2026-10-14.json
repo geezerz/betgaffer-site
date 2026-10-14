@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-13T21:10:02Z",
-    "grades_as_of": "2026-10-14T03:10:02Z",
-    "prev_hash": "sha256:b053afe30ef710fc8e11cf303ffe14fc01161bacd02ed7c1b7aff61eea18245e",
-    "picks_hash": "sha256:a2e2875347058388265c7eee5adf87b3f47414b047bde06d98bd1135ae679dac",
+    "grades_as_of": "2026-10-14T05:10:01Z",
+    "prev_hash": "sha256:bc14462ab690815864d53e5d2a14f11a78224171456e28bc20e60602bbc14be7",
+    "picks_hash": "sha256:b5a84e9a83ee47dff7f381dc2e4c24f8330cea18dd3664154f674e3aaf726235",
     "counts": {
         "fixtures": 218,
-        "priced": 216,
-        "recommended": 209,
+        "priced": 215,
+        "recommended": 210,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 6,
+        "won": 7,
         "lost": 1,
         "pushes": 0,
-        "graded": 7,
-        "pct": 85.71
+        "graded": 8,
+        "pct": 87.5
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -306,7 +306,7 @@
             "away": "Inter San Carlos",
             "home_id": 565949,
             "away_id": 565947,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -319,8 +319,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1576744,
@@ -331,7 +338,7 @@
             "away": "Erchim",
             "home_id": 921607,
             "away_id": 921609,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -606,7 +613,7 @@
             "away": "Rukh Vynnyky U19",
             "home_id": 1259,
             "away_id": 2211,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -619,7 +626,7 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -825,12 +832,19 @@
             "home_id": 7591,
             "away_id": 3658,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-14T05:10:01Z",
+            "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": null,
+            "grade": "pending",
             "score": null
         },
         {
@@ -4892,6 +4906,31 @@
             "score": null
         },
         {
+            "fx": 1309979,
+            "api_fx": 1560848,
+            "ko": "2026-10-14T19:00:00Z",
+            "comp": "Copa Venezuela (Venezuela)",
+            "home": "Bolívar",
+            "away": "Mineros de Guyana",
+            "home_id": 9156,
+            "away_id": 9157,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 84,
+                "price": 1.19,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-13T21:10:02Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1572441,
             "api_fx": 1635690,
             "ko": "2026-10-14T19:00:00Z",
@@ -5067,14 +5106,89 @@
             "score": null
         },
         {
-            "fx": 1309973,
-            "api_fx": 1560852,
-            "ko": "2026-10-14T20:00:00Z",
+            "fx": 1309976,
+            "api_fx": 1560845,
+            "ko": "2026-10-14T19:30:00Z",
             "comp": "Copa Venezuela (Venezuela)",
-            "home": "Monagas SC",
-            "away": "Dinamo de Puerto La Cruz",
-            "home_id": 7074,
-            "away_id": 9158,
+            "home": "Aragua FC",
+            "away": "Caracas FC",
+            "home_id": 9155,
+            "away_id": 8450,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 84,
+                "price": 1.19,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-13T21:10:02Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1309978,
+            "api_fx": 1560849,
+            "ko": "2026-10-14T19:30:00Z",
+            "comp": "Copa Venezuela (Venezuela)",
+            "home": "Atletico el Vigia FC",
+            "away": "Zamora FC",
+            "home_id": 8970,
+            "away_id": 6658,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 85,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-13T21:10:02Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1309980,
+            "api_fx": 1560847,
+            "ko": "2026-10-14T19:30:00Z",
+            "comp": "Copa Venezuela (Venezuela)",
+            "home": "Atletico Avila FC",
+            "away": "Anzoátegui FC",
+            "home_id": 9159,
+            "away_id": 9113,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 84,
+                "price": 1.19,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-13T21:10:02Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1309981,
+            "api_fx": 1560846,
+            "ko": "2026-10-14T19:30:00Z",
+            "comp": "Copa Venezuela (Venezuela)",
+            "home": "Club Atletico Barinas",
+            "away": "Real Frontera",
+            "home_id": 8971,
+            "away_id": 8972,
             "status": "NS",
             "pick": {
                 "market": "ah_home_plus_1",
@@ -5112,8 +5226,8 @@
             "frozen_at": "2026-10-13T21:10:02Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "pending",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5142,31 +5256,6 @@
             "score": null
         },
         {
-            "fx": 1309976,
-            "api_fx": 1560845,
-            "ko": "2026-10-14T20:00:00Z",
-            "comp": "Copa Venezuela (Venezuela)",
-            "home": "Aragua FC",
-            "away": "Caracas FC",
-            "home_id": 9155,
-            "away_id": 8450,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 84,
-                "price": 1.19,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-13T21:10:02Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 1309977,
             "api_fx": 1560854,
             "ko": "2026-10-14T20:00:00Z",
@@ -5181,106 +5270,6 @@
                 "label": "AH Home +1.5",
                 "pct": 90,
                 "price": 1.11,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-13T21:10:02Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1309978,
-            "api_fx": 1560849,
-            "ko": "2026-10-14T20:00:00Z",
-            "comp": "Copa Venezuela (Venezuela)",
-            "home": "Atletico el Vigia FC",
-            "away": "Zamora FC",
-            "home_id": 8970,
-            "away_id": 6658,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 85,
-                "price": 1.18,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-13T21:10:02Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1309979,
-            "api_fx": 1560848,
-            "ko": "2026-10-14T20:00:00Z",
-            "comp": "Copa Venezuela (Venezuela)",
-            "home": "Bolívar",
-            "away": "Mineros de Guyana",
-            "home_id": 9156,
-            "away_id": 9157,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 84,
-                "price": 1.19,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-13T21:10:02Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1309980,
-            "api_fx": 1560847,
-            "ko": "2026-10-14T20:00:00Z",
-            "comp": "Copa Venezuela (Venezuela)",
-            "home": "Atletico Avila FC",
-            "away": "Anzoátegui FC",
-            "home_id": 9159,
-            "away_id": 9113,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 84,
-                "price": 1.19,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-13T21:10:02Z",
-            "pre_ko": true,
-            "late": false,
-            "withdrawn": false,
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1309981,
-            "api_fx": 1560846,
-            "ko": "2026-10-14T20:00:00Z",
-            "comp": "Copa Venezuela (Venezuela)",
-            "home": "Club Atletico Barinas",
-            "away": "Real Frontera",
-            "home_id": 8971,
-            "away_id": 8972,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1",
-                "label": "AH Home +1",
-                "pct": 91,
-                "price": 1.1,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -5383,6 +5372,31 @@
                 "price": 1.21,
                 "price_est": false,
                 "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-13T21:10:02Z",
+            "pre_ko": true,
+            "late": false,
+            "withdrawn": false,
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1309973,
+            "api_fx": 1560852,
+            "ko": "2026-10-14T22:00:00Z",
+            "comp": "Copa Venezuela (Venezuela)",
+            "home": "Monagas SC",
+            "away": "Dinamo de Puerto La Cruz",
+            "home_id": 7074,
+            "away_id": 9158,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 91,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-13T21:10:02Z",
             "pre_ko": true,
