@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-13T21:10:02Z",
-    "grades_as_of": "2026-10-14T09:10:02Z",
+    "grades_as_of": "2026-10-14T11:10:02Z",
     "prev_hash": "sha256:bc14462ab690815864d53e5d2a14f11a78224171456e28bc20e60602bbc14be7",
-    "picks_hash": "sha256:b5a84e9a83ee47dff7f381dc2e4c24f8330cea18dd3664154f674e3aaf726235",
+    "picks_hash": "sha256:553c2f04568693966bf54dfee4e5dbb7ef91f2d88c6708235ebc184c2e8c6108",
     "counts": {
         "fixtures": 218,
         "priced": 215,
-        "recommended": 210,
+        "recommended": 211,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 8,
-        "lost": 1,
+        "won": 10,
+        "lost": 3,
         "pushes": 0,
-        "graded": 9,
-        "pct": 88.89
+        "graded": 13,
+        "pct": 76.92
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -370,7 +370,7 @@
             "away": "FC Seoul",
             "home_id": 8106,
             "away_id": 4580,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -383,8 +383,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1204563,
@@ -395,7 +402,7 @@
             "away": "Kolos Kovalivka U19",
             "home_id": 589168,
             "away_id": 8377,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -420,7 +427,7 @@
             "away": "Khovd Western",
             "home_id": 19061,
             "away_id": 921641,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -433,8 +440,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 8,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1576076,
@@ -445,7 +459,7 @@
             "away": "Dinamo Kirov",
             "home_id": 2704,
             "away_id": 7403,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -458,8 +472,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1204560,
@@ -470,7 +491,7 @@
             "away": "Karpaty Lviv U19",
             "home_id": 1250,
             "away_id": 589152,
-            "status": "PST",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -483,7 +504,7 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -495,7 +516,7 @@
             "away": "Borussia Dortmund U19",
             "home_id": 1369,
             "away_id": 1265,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -508,8 +529,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1572867,
@@ -520,7 +548,7 @@
             "away": "Urawa",
             "home_id": 4303,
             "away_id": 4293,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -545,7 +573,7 @@
             "away": "FC Astana",
             "home_id": 4561,
             "away_id": 733,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -570,7 +598,7 @@
             "away": "Lech Poznań U19",
             "home_id": 583267,
             "away_id": 2210,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -595,7 +623,7 @@
             "away": "Wda Świecie",
             "home_id": 4363,
             "away_id": 7761,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -645,7 +673,7 @@
             "away": "Obolon' Kyiv U19",
             "home_id": 589162,
             "away_id": 589157,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -670,7 +698,7 @@
             "away": "Oleksandria U19",
             "home_id": 589169,
             "away_id": 589158,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -695,7 +723,7 @@
             "away": "Livyi Bereh U19",
             "home_id": 589167,
             "away_id": 589161,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -720,7 +748,7 @@
             "away": "Legia Warszawa II",
             "home_id": 3115,
             "away_id": 3132,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -745,7 +773,7 @@
             "away": "Kawasaki Frontale",
             "home_id": 7418,
             "away_id": 4053,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -770,7 +798,7 @@
             "away": "Fagiano Okayama",
             "home_id": 7795,
             "away_id": 3873,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -795,7 +823,7 @@
             "away": "Avispa Fukuoka",
             "home_id": 7291,
             "away_id": 3765,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -820,13 +848,20 @@
             "away": "Shimizu S-pulse",
             "home_id": 3984,
             "away_id": 3861,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "2H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 81,
+                "price": 1.15,
+                "price_est": false,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-14T11:10:02Z",
             "pre_ko": false,
             "late": false,
             "withdrawn": false,
-            "grade": null,
+            "grade": "pending",
             "score": null
         },
         {
@@ -838,7 +873,7 @@
             "away": "Sanfrecce Hiroshima",
             "home_id": 7591,
             "away_id": 3658,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -863,7 +898,7 @@
             "away": "FC Tokyo",
             "home_id": 7292,
             "away_id": 7342,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -888,7 +923,7 @@
             "away": "Cerezo Osaka",
             "home_id": 7938,
             "away_id": 3982,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -913,7 +948,7 @@
             "away": "Port FC",
             "home_id": 7506,
             "away_id": 8258,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -938,7 +973,7 @@
             "away": "Jeonbuk Motors",
             "home_id": 4299,
             "away_id": 4218,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -963,7 +998,7 @@
             "away": "Mladost DG U19",
             "home_id": 1281,
             "away_id": 861346,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -988,7 +1023,7 @@
             "away": "Liverpool U19",
             "home_id": 808979,
             "away_id": 1266,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -1013,7 +1048,7 @@
             "away": "Veres Rivne U19",
             "home_id": 589153,
             "away_id": 589151,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -1038,7 +1073,7 @@
             "away": "Dinamo Stavropol",
             "home_id": 4036,
             "away_id": 7069,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -1088,7 +1123,7 @@
             "away": "Chiangmai United",
             "home_id": 784546,
             "away_id": 767254,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1113,7 +1148,7 @@
             "away": "Songkhla",
             "home_id": 767255,
             "away_id": 767253,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1138,7 +1173,7 @@
             "away": "AEK Athens U19",
             "home_id": 1259,
             "away_id": 808978,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1163,7 +1198,7 @@
             "away": "Como U19",
             "home_id": 1336,
             "away_id": 760178,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1188,7 +1223,7 @@
             "away": "Dinamo St. Petersburg",
             "home_id": 586088,
             "away_id": 4055,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",

@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-12T21:10:02Z",
-    "grades_as_of": "2026-10-14T09:10:02Z",
+    "grades_as_of": "2026-10-14T11:10:02Z",
     "prev_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
     "picks_hash": "sha256:bc14462ab690815864d53e5d2a14f11a78224171456e28bc20e60602bbc14be7",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 200,
+        "won": 201,
         "lost": 33,
         "pushes": 11,
-        "graded": 233,
-        "pct": 85.84
+        "graded": 234,
+        "pct": 85.9
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -8180,7 +8180,7 @@
             "away": "Jamaica W",
             "home_id": 1441,
             "away_id": 1482,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -8193,8 +8193,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1598553,

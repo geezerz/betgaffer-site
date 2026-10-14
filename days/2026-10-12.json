@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-12",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-11T21:10:02Z",
-    "grades_as_of": "2026-10-13T09:10:02Z",
+    "grades_as_of": "2026-10-14T11:10:02Z",
     "prev_hash": "sha256:d640ff2770c8484f080c12573dc3081a1925a9f25069b3ddca06393206d9d64f",
     "picks_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
     "counts": {
@@ -14,10 +14,10 @@
     },
     "accuracy": {
         "won": 161,
-        "lost": 26,
+        "lost": 27,
         "pushes": 6,
-        "graded": 187,
-        "pct": 86.1
+        "graded": 188,
+        "pct": 85.64
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -889,7 +889,7 @@
             "away": "Turkey U19 W",
             "home_id": 1918,
             "away_id": 1927,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -902,8 +902,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1596105,
@@ -2512,14 +2519,21 @@
             "away": "Greece U19 W",
             "home_id": 1931,
             "away_id": 1922,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
             "grade": null,
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 168990,
@@ -3170,14 +3184,21 @@
             "away": "Netherlands U19 W",
             "home_id": 1941,
             "away_id": 1924,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "late": true,
             "withdrawn": false,
             "grade": null,
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1551814,
