@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-13T21:10:02Z",
-    "grades_as_of": "2026-10-14T05:10:01Z",
+    "grades_as_of": "2026-10-14T07:10:02Z",
     "prev_hash": "sha256:bc14462ab690815864d53e5d2a14f11a78224171456e28bc20e60602bbc14be7",
     "picks_hash": "sha256:b5a84e9a83ee47dff7f381dc2e4c24f8330cea18dd3664154f674e3aaf726235",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 7,
+        "won": 8,
         "lost": 1,
         "pushes": 0,
-        "graded": 8,
-        "pct": 87.5
+        "graded": 9,
+        "pct": 88.89
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -338,7 +338,7 @@
             "away": "Erchim",
             "home_id": 921607,
             "away_id": 921609,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -351,8 +351,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1574353,
