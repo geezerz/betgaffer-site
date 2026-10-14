@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-12T21:10:02Z",
-    "grades_as_of": "2026-10-13T23:10:02Z",
+    "grades_as_of": "2026-10-14T01:10:02Z",
     "prev_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
-    "picks_hash": "sha256:f71606fdac4cca5ab8f9b3bd634eea483e7fbf5bddfd1436feb4a7ab4f722aaa",
+    "picks_hash": "sha256:b053afe30ef710fc8e11cf303ffe14fc01161bacd02ed7c1b7aff61eea18245e",
     "counts": {
         "fixtures": 266,
-        "priced": 259,
+        "priced": 258,
         "recommended": 261,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 197,
+        "won": 198,
         "lost": 33,
-        "pushes": 9,
-        "graded": 230,
-        "pct": 85.65
+        "pushes": 10,
+        "graded": 231,
+        "pct": 85.71
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -6140,8 +6140,8 @@
             "frozen_at": "2026-10-12T21:10:02Z",
             "pre_ko": true,
             "late": false,
-            "withdrawn": false,
-            "grade": "void",
+            "withdrawn": true,
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -8280,7 +8280,7 @@
             "away": "Colombia W",
             "home_id": 1508,
             "away_id": 1417,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -8293,8 +8293,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148118,
@@ -8305,7 +8312,7 @@
             "away": "Londrina",
             "home_id": 297,
             "away_id": 181,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -8318,8 +8325,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1501152,
