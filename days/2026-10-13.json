@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-12T21:10:02Z",
-    "grades_as_of": "2026-10-14T01:10:02Z",
+    "grades_as_of": "2026-10-14T03:10:02Z",
     "prev_hash": "sha256:f417e30344d31b80186edba20cbca820ff07512a872857118e73350871e44b0e",
     "picks_hash": "sha256:b053afe30ef710fc8e11cf303ffe14fc01161bacd02ed7c1b7aff61eea18245e",
     "counts": {
@@ -15,7 +15,7 @@
     "accuracy": {
         "won": 198,
         "lost": 33,
-        "pushes": 10,
+        "pushes": 11,
         "graded": 231,
         "pct": 85.71
     },
@@ -8344,7 +8344,7 @@
             "away": "Futebol Com Vida",
             "home_id": 873619,
             "away_id": 873690,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -8357,8 +8357,15 @@
             "pre_ko": true,
             "late": false,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
