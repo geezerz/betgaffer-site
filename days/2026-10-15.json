@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-15",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-14T21:10:02Z",
-    "grades_as_of": "2026-10-15T21:10:02Z",
+    "grades_as_of": "2026-10-15T22:15:01Z",
     "prev_hash": "sha256:8dc58cfd9bd2f6c76f35b5532b5a7a561fb2e51642779b481925ba6079f8ecad",
     "picks_hash": "sha256:64594e52f38283c32562d4b8be0a75eb689ddceb7f5a0e7720af537197ba607f",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 105,
+        "won": 108,
         "lost": 20,
         "pushes": 7,
-        "graded": 125,
-        "pct": 84.0
+        "graded": 128,
+        "pct": 84.38
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4794,7 +4794,7 @@
             "away": "Botafogo U20",
             "home_id": 2412,
             "away_id": 2432,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4807,8 +4807,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704340,
@@ -4819,7 +4826,7 @@
             "away": "Unión Santa Fe Res.",
             "home_id": 109,
             "away_id": 112,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -4832,8 +4839,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1572742,
@@ -4844,7 +4858,7 @@
             "away": "22 de Julio",
             "home_id": 152,
             "away_id": 9006,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4857,8 +4871,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 7,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 525932,
@@ -4869,7 +4890,7 @@
             "away": "Municipal",
             "home_id": 9236,
             "away_id": 9163,
-            "status": "1H",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -4894,7 +4915,7 @@
             "away": "Tigres FC",
             "home_id": 8601,
             "away_id": 565979,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4944,7 +4965,7 @@
             "away": "Ferro 2",
             "home_id": 90,
             "away_id": 121,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -4969,7 +4990,7 @@
             "away": "Belgrano Córdoba Res.",
             "home_id": 100,
             "away_id": 117,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4994,7 +5015,7 @@
             "away": "Ind. Yumbo",
             "home_id": 275,
             "away_id": 605494,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
