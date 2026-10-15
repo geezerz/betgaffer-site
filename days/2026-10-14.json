@@ -3,8 +3,8 @@
     "lagos_day": "2026-10-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-13T21:10:02Z",
-    "grades_as_of": "2026-10-15T01:10:02Z",
-    "prev_hash": "sha256:cc96609e60242e2b7b65690aa8a56f1119979434e0eb972919e85c2f036ef1f7",
+    "grades_as_of": "2026-10-15T05:10:02Z",
+    "prev_hash": "sha256:c4379b21e314a20673b8ed5bdb1bc28331aa701e3dbba9862e8b3a1bdb17ffd0",
     "picks_hash": "sha256:8dc58cfd9bd2f6c76f35b5532b5a7a561fb2e51642779b481925ba6079f8ecad",
     "counts": {
         "fixtures": 220,
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 164,
+        "won": 165,
         "lost": 25,
         "pushes": 5,
-        "graded": 189,
-        "pct": 86.77
+        "graded": 190,
+        "pct": 86.84
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4945,7 +4945,7 @@
             "away": "Schermbeck",
             "home_id": 3385,
             "away_id": 3724,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4957,8 +4957,15 @@
             "frozen_at": "2026-10-13T21:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1574348,
