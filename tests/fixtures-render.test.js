@@ -79,20 +79,24 @@ const STATES_HTML = renderDay(STATES_RAW, opts());
 
 const MIN = 60 * 1000;
 const HOUR = 60 * MIN;
+// The index's generated_at the ungradable rule is judged against (renewed by every publisher run),
+// days after the edge day's own grades_as_of (which stops moving once nothing on the day changes).
+const GEN = '2026-10-09T12:00:00Z';
+const isoAgo = (from, ms) => new Date(Date.parse(from) - ms).toISOString().replace('.000Z', 'Z');
 /**
  * The raw edge day with 900012 (a pending pick before kickoff) given `status` and a kickoff `agoMs`
- * before the day's grades_as_of; `state` null leaves the row without one (a file from before states).
+ * before GEN; `state` null leaves the row without one (a file from before states).
  */
 function finishedPending(raw, agoMs, { state = 'pick', status = 'FT' } = {}) {
   const day = structuredClone(raw);
   const f = day.fixtures.find((x) => x.fx === 900012);
   assert.ok(f.pick !== null && f.grade === 'pending' && f.withdrawn === false, 'premise: 900012 is a pending pick');
   f.status = status;
-  f.ko = new Date(Date.parse(day.grades_as_of) - agoMs).toISOString().replace('.000Z', 'Z');
+  f.ko = isoAgo(GEN, agoMs);
   if (state !== null) f.state = state;
   return day;
 }
-const UNGRADABLE_HTML = renderDay(finishedPending(EDGE_RAW, 48 * HOUR + MIN), opts());
+const UNGRADABLE_HTML = renderDay(finishedPending(EDGE_RAW, 48 * HOUR + MIN), opts({ generatedAt: GEN }));
 
 // ---------------------------------------------------------------- the crafted edge day is a real receipt
 
@@ -1331,17 +1335,16 @@ const WITHDRAWN_COPY = {
   identity: 'Withdrawn — match details changed',
   rescheduled: 'Withdrawn — match rescheduled',
 };
+const NOT_GRADED = 'This pick is not graded.';
 const FIXTURE_DAYS = () => [EDGE_RAW, D07_RAW, D08_RAW, readJson('./fixtures/rule2-day.json')];
-const DONE_STATUSES = new Set(PHASES.done);
-/** A pick still pending on a finished match more than 48 h after kickoff, as of the day's grades. */
-const isUngradable = (day, f) => f.withdrawn !== true && f.pick !== null && f.grade === 'pending'
-  && DONE_STATUSES.has(f.status) && Date.parse(day.grades_as_of) - Date.parse(f.ko) > 48 * HOUR;
+// Finished = the renderer's FINISHED (FT / AET / PEN): an awarded match or a walkover is graded void.
+const FINISHED_STATUSES = ['FT', 'AET', 'PEN'];
 
 test('R3b: explicit "pick" and "none" render exactly like the same rows without a state (raw and validated)', () => {
   for (const raw of FIXTURE_DAYS()) {
     assert.ok(!raw.fixtures.some((f) => 'state' in f), `premise: ${raw.lagos_day} has no states`);
-    assert.ok(!raw.fixtures.some((f) => isUngradable(raw, f)), `premise: ${raw.lagos_day} has no ungradable row`);
-    const ref = renderDay(raw, opts());
+    const o = opts({ generatedAt: GEN });
+    const ref = renderDay(raw, o);
     const day = structuredClone(raw);
     let picks = 0;
     let nones = 0;
@@ -1350,8 +1353,8 @@ test('R3b: explicit "pick" and "none" render exactly like the same rows without 
       if (f.pick !== null) { f.state = 'pick'; picks++; } else { f.state = 'none'; nones++; }
     }
     assert.ok(picks > 0 && nones > 0, `premise: ${raw.lagos_day} has picked and pick-less rows`);
-    assert.equal(renderDay(day, opts()), ref, `${raw.lagos_day}: raw`);
-    assert.equal(renderDay(validateDay(day, { expectDate: raw.lagos_day }), opts()), ref, `${raw.lagos_day}: validated`);
+    assert.equal(renderDay(day, o), ref, `${raw.lagos_day}: raw`);
+    assert.equal(renderDay(validateDay(day, { expectDate: raw.lagos_day }), o), ref, `${raw.lagos_day}: validated`);
   }
 });
 
@@ -1375,14 +1378,15 @@ test('R3b: "none" reads "No recommendation." — the same row as today', () => {
   assert.equal(text(pickBlock(row(STATES_HTML, 900010))), 'No recommendation.');
 });
 
-test('R3b: "withdrawn" reads "Withdrawn — {copy}" from the fixed list, picked or not; the pick stays struck', () => {
+test('R3b: "withdrawn" reads "Withdrawn — {copy}" from the fixed list; a withdrawn pick adds "This pick is not graded." and stays struck', () => {
   for (const [code, line] of Object.entries(WITHDRAWN_COPY)) {
     for (const fx of [900007, 900008]) {
       const html = renderDay(withStates(EDGE_RAW, new Map([[fx, { state: 'withdrawn', withdrawn_reason: code }]])), opts());
       const r = row(html, fx);
       const was = row(EDGE_HTML, fx);
+      const msg = /<p class="fx__msg">([^<]*)<\/p>/.exec(r)[1];
       assert.equal(stateOf(r), 'withdrawn', `${code} ${fx}`);
-      assert.ok(text(r).includes(line), `${code} ${fx}: ${text(r)}`);
+      assert.equal(decode(msg), fx === 900007 ? `${line}. ${NOT_GRADED}` : line, `${code} ${fx}`);
       assert.equal(text(r).split(line).length, 2, `${code} ${fx}: the line once`);
       assert.doesNotMatch(text(r), /This fixture changed after/, `${code} ${fx}: the reason replaces the generic sentence`);
       assert.ok(!r.replace(line, '').includes(code), `${code} ${fx}: the code itself is never printed`);
@@ -1419,37 +1423,62 @@ test('R3b ungradable: a finished pick still pending more than 48 h after kickoff
   assert.equal(t.split('get the statistics').length, 2, 'once');
 });
 
-test('R3b ungradable: the 48 h boundary — 47h59 and exactly 48 h no note, 48h01 the note', () => {
-  const note = (ago, o) => text(row(renderDay(finishedPending(EDGE_RAW, ago, o), opts()), 900012)).includes(UNGRADABLE);
+test('R3b ungradable: the 48 h boundary against generated_at — 47h59 and exactly 48 h no note, 48h01 the note', () => {
+  const note = (ago, o) => text(row(renderDay(finishedPending(EDGE_RAW, ago, o), opts({ generatedAt: GEN })), 900012)).includes(UNGRADABLE);
   assert.equal(note(47 * HOUR + 59 * MIN), false, '47h59');
   assert.equal(note(48 * HOUR), false, 'exactly 48 h');
   assert.equal(note(48 * HOUR + MIN), true, '48h01');
   assert.equal(note(30 * 24 * HOUR), true, 'a month');
-  // Every finished status (the renderer's done phase), and only those.
-  for (const status of PHASES.done) assert.equal(note(48 * HOUR + MIN, { status }), true, status);
-  for (const status of [...PHASES.live, ...PHASES.off, 'NS', 'TBD']) assert.equal(note(72 * HOUR, { status }), false, status);
+  // Finished = FT / AET / PEN only: an awarded match or a walkover is graded void, never ungradable.
+  for (const status of FINISHED_STATUSES) assert.equal(note(48 * HOUR + MIN, { status }), true, status);
+  for (const status of ['AWD', 'WO', ...PHASES.live, ...PHASES.off, 'NS', 'TBD']) assert.equal(note(72 * HOUR, { status }), false, status);
   // Validated (the build) agrees with raw (the archive).
   const day = finishedPending(EDGE_RAW, 48 * HOUR + MIN);
-  assert.equal(renderDay(validateDay(day, { expectDate: day.lagos_day }), opts()), renderDay(day, opts()));
+  assert.equal(renderDay(validateDay(day, { expectDate: day.lagos_day }), opts({ generatedAt: GEN })), renderDay(day, opts({ generatedAt: GEN })));
 });
 
-test('R3b ungradable: only on a pending "pick" row — never a settled grade, never a file published before states', () => {
+test('R3b ungradable: judged on generated_at (renewed every run), never on the day\'s frozen grades_as_of', () => {
+  // Kicked off an hour before the day's grades_as_of (which stopped moving), 50 h before generated_at.
+  const day = structuredClone(EDGE_RAW);
+  const f = day.fixtures.find((x) => x.fx === 900012);
+  Object.assign(f, { status: 'FT', ko: isoAgo(day.grades_as_of, HOUR) });
+  const fresh = new Date(Date.parse(f.ko) + 50 * HOUR).toISOString().replace('.000Z', 'Z');
+  assert.ok(Date.parse(day.grades_as_of) - Date.parse(f.ko) < 48 * HOUR, 'premise: young by grades_as_of');
+  assert.ok(text(row(renderDay(day, opts({ generatedAt: fresh })), 900012)).includes(UNGRADABLE), 'the note, by generated_at');
+  // Old by grades_as_of but young by generated_at: no note.
+  const old = structuredClone(EDGE_RAW);
+  const g = old.fixtures.find((x) => x.fx === 900012);
+  Object.assign(g, { status: 'FT', ko: isoAgo(old.grades_as_of, 72 * HOUR) });
+  const young = new Date(Date.parse(g.ko) + 47 * HOUR).toISOString().replace('.000Z', 'Z');
+  assert.ok(!text(row(renderDay(old, opts({ generatedAt: young })), 900012)).includes(UNGRADABLE));
+  // No generated_at: no note at all (never claimed without knowing when the data was current).
+  assert.doesNotMatch(renderDay(old, opts()), /statistics to settle/);
+  assert.doesNotMatch(renderDay(old, opts({ generatedAt: null })), /statistics to settle/);
+  // A malformed generated_at is refused, not guessed.
+  for (const bad of ['2026-10-09', '2026-10-09T12:00:00.000Z', 1, {}]) {
+    assert.throws(() => renderDay(old, opts({ generatedAt: bad })), TypeError, JSON.stringify(bad));
+  }
+});
+
+test('R3b ungradable: every pending pick, with or without a state — never a settled grade or a withdrawn row', () => {
   const ago = 72 * HOUR;
-  // Without a state (today's files) the row is exactly what it was.
+  const o = opts({ generatedAt: GEN });
+  // A row without a state (today's files) gets the note too (operator 2026-10-14).
   const bare = finishedPending(EDGE_RAW, ago, { state: null });
-  const bareHtml = renderDay(bare, opts());
-  assert.doesNotMatch(bareHtml, /statistics to settle/);
-  assert.equal(pickBlock(row(bareHtml, 900012)),
-    pickBlock(row(renderDay(finishedPending(EDGE_RAW, 47 * HOUR, { state: null }), opts()), 900012)), 'age changes nothing on a row without a state');
+  const bareRow = row(renderDay(bare, o), 900012);
+  assert.ok(text(bareRow).includes(UNGRADABLE));
+  assert.equal(pickBlock(bareRow), pickBlock(row(renderDay(finishedPending(EDGE_RAW, ago), o), 900012)), 'the same with state "pick"');
   // The same old finished row, settled: no note.
   const settled = finishedPending(EDGE_RAW, ago);
   settled.fixtures.find((x) => x.fx === 900012).grade = 'won';
   settled.accuracy = { won: 3, lost: 1, pushes: 1, graded: 4, pct: 75 };
-  assert.doesNotMatch(renderDay(settled, opts()), /statistics to settle/);
-  // A withdrawn row never carries the note, however old.
-  const w = finishedPending(EDGE_RAW, ago);
-  Object.assign(w.fixtures.find((x) => x.fx === 900012), { state: 'withdrawn', withdrawn_reason: 'identity', withdrawn: true, grade: 'withdrawn' });
-  assert.doesNotMatch(renderDay(w, opts()), /statistics to settle/);
+  assert.doesNotMatch(renderDay(settled, o), /statistics to settle/);
+  // A withdrawn row never carries the note, however old, with or without a state.
+  for (const patch of [{ state: 'withdrawn', withdrawn_reason: 'identity' }, {}]) {
+    const w = finishedPending(EDGE_RAW, ago, { state: null });
+    Object.assign(w.fixtures.find((x) => x.fx === 900012), { withdrawn: true, grade: 'withdrawn', ...patch });
+    assert.doesNotMatch(renderDay(w, o), /statistics to settle/);
+  }
 });
 
 test('R3b: the pre-decision "Pending" and the ungradable row render differently', () => {
@@ -1480,10 +1509,16 @@ test('R3b: an unknown state or reason, or a state its row contradicts, is refuse
     ['pick on a withdrawn row', 900007, { state: 'pick' }, /state/],
     ['none on a withdrawn row', 900008, { state: 'none' }, /state/],
     ['withdrawn on a live row', 900002, { state: 'withdrawn', withdrawn_reason: 'identity' }, /state/],
+    // A coming row cannot outlive its match: refused once the fixture is finished or settled without play.
+    ...['FT', 'AET', 'PEN', 'AWD', 'WO'].map((status) => [`coming on ${status}`, 900025, { state: 'coming', status }, /state/]),
   ];
   for (const [name, fx, patch, re] of bad) {
     const day = withStates(EDGE_RAW, new Map([[fx, patch]]));
     assert.throws(() => renderDay(day, opts()), re, name);
+  }
+  // Coming is still accepted while the match is to come, in play or off.
+  for (const status of ['NS', 'TBD', '1H', 'HT', 'PST', 'CANC', 'ABD', 'SUSP']) {
+    assert.doesNotThrow(() => renderDay(withStates(EDGE_RAW, new Map([[900025, { state: 'coming', status }]])), opts()), status);
   }
   // A null reason on a row that is not withdrawn gives no reason, and changes nothing.
   const ok = withStates(EDGE_RAW, new Map([[900002, { state: 'pick', withdrawn_reason: null }], [900010, { withdrawn_reason: null }]]));

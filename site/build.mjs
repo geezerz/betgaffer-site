@@ -241,7 +241,7 @@ ${strip}`;
     : '';
   const { prev, next } = neighbours(home);
   // The founding card is under the header (layout.page(), spec §16.5), not repeated in the day card.
-  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next });
+  const card = renderDay(days.get(home), { prevDay: prev, nextDay: next, generatedAt: index.generated_at });
   return `${notice}${tomorrowLine(tomorrow)}
 ${strip}
 ${card}`;
@@ -510,7 +510,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     const full = d === choice.home || d === choice.tomorrow;
     // The founding card is under the header (layout.page(), spec §16.5), not repeated in the day card.
     const body = full
-      ? renderDay(days.get(d), { prevDay: prev, nextDay: next })
+      ? renderDay(days.get(d), { prevDay: prev, nextDay: next, generatedAt: index.generated_at })
       : stubBody(entry, { prev, next });
     const isStubWithFetch = !full && !entry.compacted;
     add({

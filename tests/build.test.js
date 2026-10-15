@@ -973,6 +973,30 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
     await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond(bad) }), (e) => e.kind === 'render');
   });
 
+  test('plan R3b: a built card judges the ungradable note on index.generated_at, not the day\'s grades_as_of', async () => {
+    const w2 = await workspace();
+    try {
+      await copyArtifact(w2.root);
+      const index = await readJson(join(w2.root, 'index.json'));
+      const file = join(w2.root, 'days', `${index.today}.json`);
+      const day = await readJson(file);
+      // A pending pick, finished, kicked off 50 h before generated_at (status, ko and grade are outside the receipt).
+      const f = day.fixtures.find((x) => x.pick !== null && x.grade === 'pending' && x.withdrawn === false);
+      const ko = new Date(Date.parse(index.generated_at) - 50 * 3600e3).toISOString().replace('.000Z', 'Z');
+      Object.assign(f, { status: 'FT', ko });
+      day.grades_as_of = ko; // frozen at kickoff: by grades_as_of the pick is 0 h old
+      await writeJson(file, day);
+      await run(w2);
+      for (const page of ['index.html', `day/${index.today}/index.html`]) {
+        const html = await readFile(join(w2.out, page), 'utf8');
+        const li = new RegExp(`<li class="fx"[^>]*data-fx="${f.fx}"[^>]*>[\\s\\S]*?</li>`).exec(html)[0];
+        assert.match(li, /we can&#39;t get the statistics to settle this automatically/, page);
+      }
+    } finally {
+      await w2.cleanup();
+    }
+  });
+
   test('plan R3b: an archived day renders its card states (outside the receipt); an unknown state or reason is a render failure', async () => {
     const withStates = (patch) => {
       const f = structuredClone(edge);

@@ -831,6 +831,25 @@ describe('day.js enhances an archive card after rendering it', () => {
     assert.ok(tools.querySelector('input[type="search"]'));
   });
 
+  test('plan R3b: the archive judges the ungradable note on <main data-generated-at> (index generated_at)', async () => {
+    const html = await stubPage();
+    const gen = /<main[^>]*data-generated-at="([^"]+)"/.exec(html)[1];
+    // A pending pick on a finished match, kicked off 50 h before generated_at: outside the receipt.
+    const file = structuredClone(edge);
+    const f = file.fixtures.find((x) => x.pick !== null && x.grade === 'pending' && x.withdrawn === false);
+    Object.assign(f, { status: 'FT', ko: new Date(Date.parse(gen) - 50 * 3600e3).toISOString().replace('.000Z', 'Z') });
+    const doc = fakeDocument(html);
+    await dayjs.init({ doc, fetchImpl: respond(file), nowMs: NOW, enhance: () => {} });
+    const li = doc.getElementById(`fx-${f.fx}`);
+    assert.ok(li, 'the row rendered');
+    assert.match(li.textContent, /we can.t get the statistics to settle this automatically/);
+    // 47 h: no note.
+    Object.assign(f, { ko: new Date(Date.parse(gen) - 47 * 3600e3).toISOString().replace('.000Z', 'Z') });
+    const doc2 = fakeDocument(html);
+    await dayjs.init({ doc: doc2, fetchImpl: respond(file), nowMs: NOW, enhance: () => {} });
+    assert.doesNotMatch(doc2.getElementById(`fx-${f.fx}`).textContent, /statistics to settle/);
+  });
+
   test('a throwing enhancement never breaks the verified card; a failed load is not enhanced', async () => {
     const doc = fakeDocument(await stubPage());
     let calls = 0;

@@ -15,10 +15,12 @@
 //     metadata only);
 //   - a row without a pick says "No recommendation." under either rule; the publisher's old
 //     first-sight timing flag is never read (operator order 2026-10-09, Plan E1);
-//   - a row's optional card state (plan R3b, cardState): "coming" reads "Pending" with no market;
-//     "withdrawn" reads "Withdrawn — {reason}" from WITHDRAWN_COPY; a "pick" row still pending on a
-//     finished match more than 48 h after kickoff (as of grades_as_of) adds the ungradable note. A
-//     row without a state renders exactly as before;
+//   - a row's optional card state (plan R3b, cardState): "coming" reads "Pending" with no market
+//     (refused once the match is done); "withdrawn" reads "Withdrawn — {reason}" from WITHDRAWN_COPY,
+//     plus "This pick is not graded." when it has a pick. A row without a state renders as before;
+//   - any pick still pending on a FINISHED match more than 48 h after kickoff, judged against the
+//     index's generated_at (renewed every publisher run; a day's grades_as_of stops moving), adds the
+//     ungradable note. No generatedAt option, no note;
 //   - a finished row (FT / AET / PEN) shows its 90-minute score (what markets settle on), plus the
 //     a.e.t. result and the pens when present, if the file carries a well-formed score (checked
 //     here too: the archive renders raw fetched files); never on any other status;
@@ -32,7 +34,7 @@
 // a file is checked against exactly one rule, the one it declares.
 
 import { escHtml, escAttr } from './esc.js';
-import { lagosParts, fmtDayLong, fmtStamp, isDate } from './time.js';
+import { lagosParts, fmtDayLong, fmtStamp, isDate, isIsoZ } from './time.js';
 import { ring } from './ring.js';
 import { fmtInt, plural } from './num.js';
 
@@ -212,6 +214,8 @@ export function cardState(f) {
   if (!CARD_STATES.has(s)) throw new Error(`fx ${f.fx} state must be one of ${[...CARD_STATES].join('|')}, got ${JSON.stringify(s)}`);
   const withdrawn = f.withdrawn === true;
   const hasPick = f.pick !== null && f.pick !== undefined;
+  // A coming row cannot outlive its match: once it is done the card is a pick or none.
+  if (s === 'coming' && DONE.has(f.status)) throw new Error(`fx ${f.fx} state is "coming" but its match is done (${f.status})`);
   if ((s === 'withdrawn') !== withdrawn) throw new Error(`fx ${f.fx} state is "${s}" but its withdrawn flag is ${JSON.stringify(f.withdrawn)}`);
   if (!withdrawn && (s === 'pick') !== hasPick) throw new Error(`fx ${f.fx} state is "${s}" but the row ${hasPick ? 'has a pick' : 'has no pick'}`);
   if (s === 'withdrawn') {
@@ -251,9 +255,9 @@ function rowState(f) {
   return card === 'coming' ? 'coming' : 'nopick';
 }
 
-/** A "pick" row still pending on a finished match more than 48 h after kickoff, as of the day's grades. */
-const isUngradable = (f, state, phase, asOfMs) => f.state === 'pick' && state === 'pending' && phase === 'done'
-  && asOfMs - Date.parse(f.ko) > UNGRADABLE_AFTER_MS;
+/** A pick still pending on a finished (FT / AET / PEN) match more than 48 h after kickoff, as of nowMs (null: never). */
+const isUngradable = (f, state, nowMs) => nowMs !== null && state === 'pending' && FINISHED.has(f.status)
+  && nowMs - Date.parse(f.ko) > UNGRADABLE_AFTER_MS;
 
 // ------------------------------------------------------------------ row parts
 
@@ -332,13 +336,13 @@ function selHtml(p, struck) {
   return `<p class="fx__sel">${struck ? `<s>${inner}</s>` : inner}</p>`;
 }
 
-function outcome(f, state, rule, phase, asOfMs) {
+function outcome(f, state, rule, phase, nowMs) {
   const p = f.pick;
   if (state === 'withdrawn') {
     const chip = '<span class="bg-chip bg-chip--void fx__grade">Withdrawn</span>';
     const bare = p === null || p === undefined;
     // With a card state the reason comes from the fixed list (cardState checked the code).
-    const msg = f.state === 'withdrawn' ? `Withdrawn — ${WITHDRAWN_COPY[f.withdrawn_reason]}`
+    const msg = f.state === 'withdrawn' ? `Withdrawn — ${WITHDRAWN_COPY[f.withdrawn_reason]}${bare ? '' : '. This pick is not graded.'}`
       : bare ? MSG.withdrawnBare : MSG.withdrawnPick;
     if (bare) {
       return `<div class="fx__pick fx__pick--none"><p class="fx__pickhead">${chip}</p>`
@@ -365,11 +369,11 @@ function outcome(f, state, rule, phase, asOfMs) {
     + probHtml(p, false)
     + (p.why === null || p.why === undefined || p.why === '' ? '' : `<p class="fx__why">${escHtml(p.why)}</p>`)
     + (rule === 1 && f.pre_ko === false ? `<p class="fx__note">${escHtml(MSG.moved)}</p>` : '')
-    + (isUngradable(f, state, phase, asOfMs) ? `<p class="fx__note">${escHtml(MSG.ungradable)}</p>` : '')
+    + (isUngradable(f, state, nowMs) ? `<p class="fx__note">${escHtml(MSG.ungradable)}</p>` : '')
     + '</div>';
 }
 
-function fixtureRow(f, rule, asOfMs) {
+function fixtureRow(f, rule, nowMs) {
   if (!Number.isInteger(f.fx)) throw new TypeError('renderDay: a fixture has a non-integer fx');
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
   const state = rowState(f);
@@ -383,7 +387,7 @@ function fixtureRow(f, rule, asOfMs) {
     + (phase === null ? '' : ` data-phase="${phase}"`)
     + ` data-ko="${escAttr(f.ko)}" data-status="${escAttr(f.status)}"${uncounted}>`
     + `<p class="fx__comp">${escHtml(f.comp === '' ? 'Competition not named' : f.comp)}</p>`
-    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule, phase, asOfMs)
+    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule, phase, nowMs)
     + '</li>';
 }
 
@@ -485,16 +489,22 @@ function dayNav(prevDay, nextDay) {
  * Former isToday / isTomorrow options are ignored.
  * @param {string|null} [o.prevDay] 'YYYY-MM-DD' → link to /day/<d>/
  * @param {string|null} [o.nextDay] 'YYYY-MM-DD' → link to /day/<d>/
+ * @param {string|null} [o.generatedAt] the index's generated_at (ISO-Z): what the 48 h ungradable
+ *   note is judged against; null → no note. A malformed value throws.
  * The receipt line is plain text — "Card published" stamp, grades stamp, 12-hex receipt code — with no link.
  * @returns {string} HTML fragment
  */
-export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
+export function renderDay(day, { prevDay = null, nextDay = null, generatedAt = null } = {}) {
   if (day === null || typeof day !== 'object') throw new TypeError('renderDay: day must be an object');
   if (!isDate(day.lagos_day)) throw new TypeError('renderDay: day.lagos_day must be YYYY-MM-DD');
   if (!Array.isArray(day.fixtures)) throw new TypeError(`renderDay: ${day.lagos_day} has no fixtures array (a compacted day has no card)`);
   if (typeof day.picks_hash !== 'string' || !HASH_RE.test(day.picks_hash)) throw new TypeError('renderDay: picks_hash must be "sha256:" + 64 hex');
   const prev = optDate(prevDay, 'prevDay');
   const next = optDate(nextDay, 'nextDay');
+  if (generatedAt !== null && generatedAt !== undefined && !isIsoZ(generatedAt)) {
+    throw new TypeError(`renderDay: generatedAt must be a YYYY-MM-DDTHH:MM:SSZ instant or null, got ${JSON.stringify(generatedAt)}`);
+  }
+  const nowMs = generatedAt === null || generatedAt === undefined ? null : Date.parse(generatedAt);
   const rule = ruleOf(day);
   day.fixtures.forEach((f) => rowState(f)); // every row renderable (named errors) before the ring is checked
   checkAccuracyAgainstRows(day, rule);
@@ -503,7 +513,6 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const longDate = fmtDayLong(d);
   const published = fmtStamp(day.picks_frozen_at); // when the card was published, not when each pick was listed
   const gradedAt = fmtStamp(day.grades_as_of);
-  const asOfMs = Date.parse(day.grades_as_of); // validated by fmtStamp: what the ungradable note is judged against
   const rows = kickoffOrder(day.fixtures);
   const n = day.fixtures.length;
   // A withdrawn row is not a fixture on today's card; it stays listed (the receipt) and is
@@ -536,7 +545,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const body = n === 0
     ? `<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
     : DAY_TOOLS + dayBar(d, active.length)
-      + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule, asOfMs)).join('')}</ol>`;
+      + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule, nowMs)).join('')}</ol>`;
 
   return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day, rule)}${dayNav(prev, next)}</div>`;
 }

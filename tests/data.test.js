@@ -612,10 +612,11 @@ test('validateDay: card states are optional; kept on the copy only when publishe
     assert.equal(validateDay(x.d, { expectDate: '2026-10-07' }).fixtures[x.w].withdrawn_reason, code);
   }
   const c = clone(DAY07);
-  c.fixtures[unpicked(c)].state = 'coming';
+  const ns = c.fixtures.findIndex((f) => f.pick === null && f.status === 'NS'); // coming: the match is still to come
+  c.fixtures[ns].state = 'coming';
   c.fixtures[picked(c)].withdrawn_reason = null; // no reason to give: accepted and dropped
   const vc = validateDay(c, { expectDate: '2026-10-07' });
-  assert.equal(vc.fixtures[unpicked(c)].state, 'coming');
+  assert.equal(vc.fixtures[ns].state, 'coming');
   assert.ok(!('withdrawn_reason' in vc.fixtures[picked(c)]));
 });
 
@@ -634,6 +635,8 @@ test('validateDay refuses an unknown state or reason, and a state its row contra
     ['coming state with a pick', ({ d, p }) => { d.fixtures[p].state = 'coming'; }, /state/],
     ['withdrawn state, row not withdrawn', ({ d, p }) => { Object.assign(d.fixtures[p], { state: 'withdrawn', withdrawn_reason: 'identity' }); }, /state/],
     ['withdrawn row, pick state', ({ d, w }) => { d.fixtures[w].state = 'pick'; delete d.fixtures[w].withdrawn_reason; }, /state/],
+    // A coming row cannot outlive its match.
+    ...['FT', 'AET', 'PEN', 'AWD', 'WO'].map((status) => [`coming on ${status}`, ({ d, n }) => { Object.assign(d.fixtures[n], { state: 'coming', status }); }, /fixtures\[\d+\]\.state/]),
   ];
   for (const [name, mut, re] of cases) {
     const x = statesDay();

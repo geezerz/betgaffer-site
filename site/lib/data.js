@@ -4,6 +4,12 @@
 // contract does not name is dropped, so a field the publisher starts emitting tomorrow can never
 // reach a page by accident. Any violation throws, which fails the build and leaves the previous
 // deploy live (plan S2) — a stale page is better than a misrendered receipt.
+//
+// Card states (plan R3b) — the contract with the publisher: a row's `state` is optional (until
+// R3b-3) and, when present, one of coming | pick | none | withdrawn. When the publisher has no state
+// for a row it must OMIT the key: `state: null` is refused. `withdrawn_reason` is one of the fixed
+// codes (fixtures.js WITHDRAWN_COPY) and required with state "withdrawn"; on any other row it must
+// be absent or null (null is accepted and dropped). "coming" is refused once the match is done.
 
 import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';

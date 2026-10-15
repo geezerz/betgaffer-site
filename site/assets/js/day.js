@@ -21,7 +21,7 @@
 
 import { picksHash } from './lib/hash.js';
 import { renderDay } from './lib/fixtures.js';
-import { isDate } from './lib/time.js';
+import { isDate, isIsoZ } from './lib/time.js';
 import { relabel } from './stale.js';
 import { init as initToolbar } from './predictions.js';
 
@@ -90,7 +90,7 @@ function checkShape(file, day) {
  * Fetch, verify and render one archived day. Resolves to the card's HTML (escaped by renderDay);
  * rejects with a DayLoadError.
  */
-export async function loadDay({ src, day, hash, prev = null, next = null, fetchImpl = globalThis.fetch, sha256hex = webSha256hex }) {
+export async function loadDay({ src, day, hash, prev = null, next = null, generatedAt = null, fetchImpl = globalThis.fetch, sha256hex = webSha256hex }) {
   let file;
   try {
     const res = await fetchImpl(src, { credentials: 'same-origin', cache: 'no-cache', headers: { Accept: 'application/json' } });
@@ -115,7 +115,7 @@ export async function loadDay({ src, day, hash, prev = null, next = null, fetchI
     throw new DayLoadError('receipt', `${src}: picks_hash mismatch (recomputed ${recomputed}, file ${file.picks_hash}, index ${hash})`);
   }
   try {
-    return renderDay(file, { prevDay: prev, nextDay: next });
+    return renderDay(file, { prevDay: prev, nextDay: next, generatedAt });
   } catch (e) {
     throw new DayLoadError('render', `${src}: ${e.message}`);
   }
@@ -158,7 +158,10 @@ export async function init({
   root.append(status);
   let rendered = false;
   try {
-    root.innerHTML = await loadDay({ ...stub, fetchImpl, sha256hex }); // renderDay output: every value escaped
+    // <main data-generated-at>: the index's generated_at, which the 48 h ungradable note is judged
+    // against; malformed or absent -> no note (renderDay would refuse a malformed one).
+    const gen = doc.querySelector('main')?.dataset.generatedAt;
+    root.innerHTML = await loadDay({ ...stub, generatedAt: isIsoZ(gen) ? gen : null, fetchImpl, sha256hex }); // renderDay output: every value escaped
     relabel(root, nowMs);
     rendered = true;
   } catch (e) {
