@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-15",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-14T21:10:02Z",
-    "grades_as_of": "2026-10-14T23:10:03Z",
+    "grades_as_of": "2026-10-15T01:10:02Z",
     "prev_hash": "sha256:8dc58cfd9bd2f6c76f35b5532b5a7a561fb2e51642779b481925ba6079f8ecad",
-    "picks_hash": "sha256:ab63a263d860311bf9b17f3a57511a6438f2e55f99a72044392d78823c570f0a",
+    "picks_hash": "sha256:f8bb6e0caf9325d4305aebfcdb185ee4500c04d56ec48e1d79e2cc19a003f14a",
     "counts": {
         "fixtures": 160,
         "priced": 159,
-        "recommended": 151,
+        "recommended": 152,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 0,
-        "lost": 0,
+        "won": 3,
+        "lost": 1,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 4,
+        "pct": 75.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Charleston Battery",
             "home_id": 1725,
             "away_id": 1702,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -63,7 +63,7 @@
             "away": "Spokane Velocity",
             "home_id": 4279,
             "away_id": 4274,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -87,7 +87,7 @@
             "away": "Aurora",
             "home_id": 9115,
             "away_id": 9212,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -99,8 +99,15 @@
             "frozen_at": "2026-10-14T21:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138657,
@@ -111,7 +118,7 @@
             "away": "Escorpiones Belén",
             "home_id": 565945,
             "away_id": 565948,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -123,8 +130,15 @@
             "frozen_at": "2026-10-14T21:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1309974,
@@ -135,7 +149,7 @@
             "away": "Urena SC",
             "home_id": 5644,
             "away_id": 8968,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -147,8 +161,15 @@
             "frozen_at": "2026-10-14T21:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1605751,
@@ -159,7 +180,7 @@
             "away": "Diriangén",
             "home_id": 763936,
             "away_id": 605215,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -183,7 +204,7 @@
             "away": "Atlético Mineiro U20",
             "home_id": 757760,
             "away_id": 2419,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -195,8 +216,15 @@
             "frozen_at": "2026-10-14T21:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 145909,
@@ -231,7 +259,7 @@
             "away": "Orlando City SC",
             "home_id": 1680,
             "away_id": 1690,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -255,7 +283,7 @@
             "away": "Charlotte",
             "home_id": 1675,
             "away_id": 1683,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -279,7 +307,7 @@
             "away": "Atlanta United FC",
             "home_id": 1691,
             "away_id": 1692,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -303,7 +331,7 @@
             "away": "New York Red Bulls",
             "home_id": 1238,
             "away_id": 1682,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -327,7 +355,7 @@
             "away": "New England Revolution",
             "home_id": 1687,
             "away_id": 1689,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -351,7 +379,7 @@
             "away": "New York City FC",
             "home_id": 1684,
             "away_id": 1695,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -375,7 +403,7 @@
             "away": "Loudoun United",
             "home_id": 1742,
             "away_id": 1700,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -423,7 +451,7 @@
             "away": "Mount Pleasant Academy",
             "home_id": 651738,
             "away_id": 73702,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -447,7 +475,7 @@
             "away": "Albion FC",
             "home_id": 4118,
             "away_id": 4113,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -495,7 +523,7 @@
             "away": "Seattle Sounders",
             "home_id": 1679,
             "away_id": 1698,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -519,7 +547,7 @@
             "away": "Philadelphia Union",
             "home_id": 1685,
             "away_id": 1673,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -543,7 +571,7 @@
             "away": "Sporting Kansas City",
             "home_id": 1699,
             "away_id": 1693,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -567,7 +595,7 @@
             "away": "Vancouver Whitecaps",
             "home_id": 1726,
             "away_id": 1676,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -591,7 +619,7 @@
             "away": "Palmeiras",
             "home_id": 205,
             "away_id": 209,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -615,12 +643,19 @@
             "away": "Antigua GFC",
             "home_id": 9117,
             "away_id": 9235,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 82,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-15T01:10:02Z",
             "pre_ko": false,
             "withdrawn": false,
-            "grade": null,
+            "grade": "pending",
             "score": null
         },
         {
