@@ -13,6 +13,7 @@ import { pathToFileURL } from 'node:url';
 import { build } from '../site/build.mjs';
 import { renderDay } from '../site/lib/fixtures.js';
 import { foundingCard } from '../site/content/waitlist.js';
+import { findBanned } from '../site/lib/claims.js';
 import { fakeDocument, fire, FakeResizeObserver } from './fake-dom.js';
 import { REPO_ROOT, EDGE_DAY, testConfig, workspace, copyArtifact, addArchive, readJson, syntheticDay } from './site-fixtures.js';
 
@@ -936,5 +937,142 @@ describe('counts in the toolbar are written with thousands separators', () => {
     assert.equal(sub(s).textContent, '1,005 competitions on this card · 1,001 selected');
     assert.equal(tool(s, 'leagues').textContent, 'Leagues · 1,001');
     assert.equal(status(s).textContent, 'Showing 1,001 of 1,005 fixtures');
+  });
+});
+
+// ------------------------------------------------------------------ back to top (feat/back-to-top)
+
+describe('the "Back to top" button', () => {
+  /** A fake window: scroll position, viewport height, listeners, recorded scrollTo calls. */
+  function fakeWin({ y = 0, h = 800 } = {}) {
+    const w = { scrollY: y, innerHeight: h, listeners: {}, scrolls: [] };
+    w.addEventListener = (type, fn, opts) => { (w.listeners[type] ??= []).push({ fn, opts }); };
+    w.scrollTo = (o) => { w.scrolls.push(o); };
+    w.scroll = (to) => { w.scrollY = to; for (const l of w.listeners.scroll ?? []) l.fn(); };
+    return w;
+  }
+  function setupTop({ y = 0, reduce = false, html = pageOf() } = {}) {
+    const doc = fakeDocument(html);
+    const win = fakeWin({ y });
+    doc.defaultView = win;
+    const frames = [];
+    const raf = (fn) => { frames.push(fn); return frames.length; };
+    const media = (q) => reduce && /prefers-reduced-motion:\s*reduce/.test(q);
+    const r = pred.init(doc, { storage: memStorage(), raf, media, hasDialog: true });
+    const flush = () => { const all = frames.splice(0); for (const f of all) f(); return all.length; };
+    return { doc, win, r, flush, frames, btn: () => doc.querySelectorAll('button').filter((b) => b.className === 'bg-top') };
+  }
+
+  test('one button in <main>, type=button, starts hidden, named "Back to top", no style attribute', () => {
+    const s = setupTop();
+    assert.ok(s.r, 'premise: the toolbar initialised');
+    const [b, ...more] = s.btn();
+    assert.ok(b, 'the button exists');
+    assert.equal(more.length, 0);
+    assert.equal(b.type, 'button');
+    assert.equal(b.hidden, true, 'hidden until scrolled');
+    assert.equal(b.textContent, 'Back to top');
+    assert.equal(b.textContent, pred.TEXT.top);
+    assert.ok(s.doc.querySelector('main').contains(b));
+    assert.equal(b.hasAttribute('style'), false);
+    // A second enhancement attempt never adds a second button.
+    assert.equal(pred.backToTop(s.doc), null);
+    assert.equal(s.btn().length, 1);
+  });
+
+  test('no window (a test fake without defaultView): no button, the toolbar still works', () => {
+    const doc = fakeDocument(pageOf());
+    assert.ok(pred.init(doc, { storage: memStorage(), hasDialog: true }));
+    assert.equal(doc.querySelector('.bg-top'), null);
+  });
+
+  test('a passive scroll listener, throttled to one frame, reveals it past 1.5 viewports and hides it back', () => {
+    const s = setupTop();
+    const [b] = s.btn();
+    assert.equal(s.win.listeners.scroll.length, 1);
+    assert.equal(s.win.listeners.scroll[0].opts?.passive, true, 'passive');
+    s.flush();
+    s.win.scroll(1200); // exactly 1.5 x 800: not past it
+    s.win.scroll(1200);
+    assert.equal(s.flush(), 1, 'two scroll events, one frame');
+    assert.equal(b.hidden, true);
+    s.win.scroll(1201);
+    assert.equal(b.hidden, true, 'nothing changes before the frame');
+    s.flush();
+    assert.equal(b.hidden, false, 'shown past the threshold');
+    s.win.scroll(5000);
+    s.flush();
+    assert.equal(b.hidden, false);
+    s.win.scroll(0);
+    s.flush();
+    assert.equal(b.hidden, true, 'hidden back near the top');
+  });
+
+  test('a page loaded already scrolled down shows it after the first frame', () => {
+    const s = setupTop({ y: 4000 });
+    s.flush();
+    assert.equal(s.btn()[0].hidden, false);
+  });
+
+  test('click: smooth scroll to 0, then focus on <main> without a second scroll', () => {
+    const s = setupTop({ y: 4000 });
+    s.flush();
+    const main = s.doc.querySelector('main');
+    const focusArgs = [];
+    const f = main.focus.bind(main);
+    main.focus = (o) => { focusArgs.push(o); f(o); };
+    fire(s.btn()[0], 'click');
+    assert.deepEqual(s.win.scrolls, [{ top: 0, behavior: 'smooth' }]);
+    assert.equal(s.doc.activeElement, main);
+    assert.deepEqual(focusArgs, [{ preventScroll: true }]);
+  });
+
+  test('prefers-reduced-motion: an instant scroll (behavior auto)', () => {
+    const s = setupTop({ y: 4000, reduce: true });
+    s.flush();
+    fire(s.btn()[0], 'click');
+    assert.deepEqual(s.win.scrolls, [{ top: 0, behavior: 'auto' }]);
+    assert.equal(s.doc.activeElement, s.doc.querySelector('main'));
+  });
+
+  test('the built home page and a full day page get it; a stub gets it through day.js', async () => {
+    for (const rel of ['index.html', 'day/2026-10-07/index.html']) {
+      const s = setupTop({ html: await readFile(join(ws.out, rel), 'utf8') });
+      assert.ok(s.r, `${rel}: premise, the toolbar initialised`);
+      assert.equal(s.btn().length, 1, rel);
+      assert.equal(s.doc.querySelector('main').getAttribute('tabindex'), '-1', `${rel}: <main> is focusable`);
+    }
+    const edge = await readJson(join(ws.out, 'days/2026-10-06.json'));
+    const doc = fakeDocument(await readFile(join(ws.out, 'day/2026-10-06/index.html'), 'utf8'));
+    doc.defaultView = fakeWin();
+    await dayjs.init({ doc, fetchImpl: async () => ({ ok: true, status: 200, json: async () => edge }), nowMs: NOW });
+    assert.equal(doc.querySelectorAll('button').filter((b) => b.className === 'bg-top').length, 1, 'stub: one button');
+  });
+
+  test('its text passes the claims scanner', () => {
+    assert.deepEqual(findBanned(pred.TEXT.top), []);
+    assert.doesNotMatch(pred.TEXT.top, /\d{4}|\blate\b/i);
+  });
+
+  test('predictions.css: fixed bottom right inside the safe area, under the ring and the ☰ panel, 44px, focus ring, CSS chevron', () => {
+    const css = readFileSync(join(REPO_ROOT, 'site/assets/css/predictions.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const block = (sel) => [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+      .filter((m) => m[1].split(',').map((x) => x.trim()).includes(sel)).map((m) => m[2]).join(';');
+    const b = block('.bg-top');
+    assert.match(b, /position:\s*fixed/);
+    assert.match(b, /bottom:[^;]*safe-area-inset-bottom/);
+    assert.match(b, /right:[^;]*var\(--gutter\)[^;]*safe-area-inset-right/);
+    assert.doesNotMatch(b, /(^|;)\s*top:/, 'never at the top, where the ring starts');
+    const z = Number(/z-index:\s*(\d+)/.exec(b)?.[1]);
+    const ring = Number(/\.bg-balloon\{[^}]*z-index:\s*(\d+)/.exec(readFileSync(join(REPO_ROOT, 'site/assets/css/balloon.css'), 'utf8'))?.[1]);
+    const bar = Number(/\.bg-topbar\{[^}]*z-index:\s*(\d+)/.exec(readFileSync(join(REPO_ROOT, 'site/assets/css/base.css'), 'utf8'))?.[1]);
+    assert.ok(ring === 45 && bar === 50, `premise: ring ${ring}, topbar (holds the ☰ panel) ${bar}`);
+    assert.ok(z > 0 && z < ring && z < bar, `z-index ${z} is under the ring and the ☰ panel`);
+    assert.match(b, /min-height:\s*var\(--tap\)/);
+    assert.match(b, /min-width:\s*var\(--tap\)/);
+    assert.match(block('.bg-top[hidden]'), /display:\s*none/);
+    assert.match(block('.bg-top:focus-visible'), /outline:\s*2px solid var\(--accent/);
+    assert.match(block('.bg-top::before'), /content:\s*''/);
+    assert.match(css, /@media \(max-width:\s*599\.98px\)\s*\{[^@]*\.bg-top__label\s*\{[^}]*clip-path/, 'icon-only on phones, the name kept');
   });
 });

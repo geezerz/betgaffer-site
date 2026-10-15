@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Bet Gaffer — the predictions toolbar (spec §5): search, Leagues, the result
-   line, "Jump to now", the empty state and the Leagues dialog.
+   line, "Jump to now", the empty state, the Leagues dialog and "Back to top".
    Markup: site/assets/js/predictions.js (built client-side into the hidden
    [data-day-tools] slot fixtures.js renders). Colours, sizes: base.css. The look:
    compact pills on --surface-2, mono counts, quiet surfaces.
@@ -275,4 +275,41 @@ html.has-day-tools{
 @media (prefers-reduced-motion:no-preference){
   .bg-pick[open]{ animation:bg-pick-in .18s ease-out; }
   @keyframes bg-pick-in{ from{ transform:translateY(16px); opacity:0; } to{ transform:none; opacity:1; } }
+}
+
+/* ── 7. BACK TO TOP ───────────────────────────────────────────────────────────
+   predictions.js builds it (none without JS) and toggles [hidden] past 1.5
+   viewports. Fixed bottom right inside the gutter and the safe area: the ring
+   starts top right, and z-index 44 keeps it under the ring (45) and under the
+   header and its ☰ panel (50). Below 600px the label is screen-reader text and
+   the button is a 44px circle with the chevron alone.
+   ─────────────────────────────────────────────────────────────────────────── */
+.bg-top{
+  position:fixed; z-index:44;
+  right:calc(var(--gutter) + env(safe-area-inset-right, 0px));
+  bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-width:var(--tap); min-height:var(--tap); padding:0 16px 0 14px;
+  border-radius:var(--r-pill); border:1px solid var(--line-2);
+  background:var(--surface-3); color:var(--ink); cursor:pointer;
+  font-family:var(--font-mono); font-size:11.5px; font-weight:600; letter-spacing:.07em;
+  text-transform:uppercase; white-space:nowrap;
+  box-shadow:0 10px 28px -10px rgba(0,0,0,.75);
+  transition:border-color .14s ease, color .14s ease;
+}
+.bg-top[hidden]{ display:none; }
+/* The up chevron: two borders of a small square, turned. */
+.bg-top::before{
+  content:''; width:8px; height:8px; margin-top:4px;
+  border-top:2px solid currentColor; border-left:2px solid currentColor;
+  transform:rotate(45deg);
+}
+.bg-top:hover{ border-color:var(--accent); color:var(--accent); }
+.bg-top:focus-visible{ outline:2px solid var(--accent-hi); outline-offset:3px; }
+@media (max-width:599.98px){
+  .bg-top{ padding:0; }
+  .bg-top__label{
+    position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden;
+    clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap;
+  }
 }

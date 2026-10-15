@@ -1,5 +1,5 @@
-// The predictions toolbar (spec §5): search, the Leagues dialog, the result line, the empty state
-// and "Jump to now". Browser module, loaded on / and on full day pages; day.js calls init() after
+// The predictions toolbar (spec §5): search, the Leagues dialog, the result line, the empty state,
+// "Jump to now" and the floating "Back to top". Browser module, loaded on / and on full day pages; day.js calls init() after
 // it renders an archive day.
 //
 // Progressive enhancement: the static list is complete without JavaScript. Here the empty, hidden
@@ -39,7 +39,11 @@ export const TEXT = Object.freeze({
   pickNone: 'No competitions match your search.',
   clearAll: 'Clear all',
   done: 'Done',
+  top: 'Back to top',
 });
+
+/** "Back to top" shows once the page is scrolled more than this many viewport heights. */
+export const TOP_AFTER_VIEWPORTS = 1.5;
 
 const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0); // code point: Node and every browser agree
 
@@ -468,12 +472,52 @@ export function init(root = document, {
     }
   }
   measure();
+  backToTop(doc, { raf, media });
 
   return {
     rows: index.length,
     apply,
     get selected() { return [...state.selected]; },
   };
+}
+
+/**
+ * The floating "Back to top" button: built here, so without JavaScript there is none. Hidden until
+ * the page is scrolled past TOP_AFTER_VIEWPORTS; a click (Enter and Space on a <button> too) scrolls
+ * to the top, instantly under reduced motion, and moves focus to <main> (tabindex="-1", the skip
+ * link's target). preventScroll: focusing <main> would otherwise cut the smooth scroll short.
+ * Returns the button, or null with no window, no <main> or a button already there.
+ */
+export function backToTop(doc, {
+  win = doc?.defaultView,
+  raf = (fn) => win.requestAnimationFrame(fn),
+  media = defaultMedia,
+} = {}) {
+  const mainEl = doc?.querySelector('main');
+  if (!mainEl || !win || typeof win.addEventListener !== 'function' || doc.querySelector('.bg-top')) return null;
+  const btn = el(doc, 'button', { class: 'bg-top', type: 'button', hidden: true });
+  btn.append(el(doc, 'span', { class: 'bg-top__label' }, TEXT.top));
+  mainEl.append(btn);
+
+  let queued = false;
+  const update = () => {
+    queued = false;
+    setHidden(btn, !(win.scrollY > win.innerHeight * TOP_AFTER_VIEWPORTS));
+  };
+  // Throttled to one check per frame; the check is two reads and a no-op write while nothing changes.
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    raf(update);
+  };
+  win.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // a page restored mid-way down shows it without a scroll
+
+  btn.addEventListener('click', () => {
+    win.scrollTo({ top: 0, behavior: media('(prefers-reduced-motion: reduce)') ? 'auto' : 'smooth' });
+    mainEl.focus({ preventScroll: true });
+  });
+  return btn;
 }
 
 if (typeof document !== 'undefined') {
