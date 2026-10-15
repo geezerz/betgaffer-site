@@ -1076,3 +1076,17 @@ describe('the "Back to top" button', () => {
     assert.match(css, /@media \(max-width:\s*599\.98px\)\s*\{[^@]*\.bg-top__label\s*\{[^}]*clip-path/, 'icon-only on phones, the name kept');
   });
 });
+
+test('back to top: the fixture list leaves room after the last card for the button (BRAND)', () => {
+  const css = readFileSync(join(REPO_ROOT, 'site/assets/css/predictions.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const pad = /\.fx-list\{[^}]*padding-bottom:\s*([^;}]+)/.exec(css)?.[1] ?? '';
+  const btnBottom = /\.bg-top\{[^}]*bottom:\s*calc\((\d+)px/.exec(css)?.[1];
+  assert.ok(btnBottom, 'premise: the button sits a fixed offset above the bottom');
+  assert.match(pad, /var\(--tap\)/, 'covers the button height');
+  assert.match(pad, new RegExp(`${btnBottom}px`), 'covers the button offset');
+  assert.match(pad, /safe-area-inset-bottom/, 'covers the safe area');
+  // The later rule wins over fixtures.css's 10px (predictions.css is concatenated after it).
+  const order = readFileSync(join(REPO_ROOT, 'site/build.mjs'), 'utf8');
+  assert.ok(order.indexOf("'fixtures.css'") > -1 && order.indexOf("'fixtures.css'") < order.indexOf("'predictions.css'"), 'premise: predictions.css comes after fixtures.css');
+});
+
