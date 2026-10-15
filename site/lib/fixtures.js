@@ -15,6 +15,10 @@
 //     metadata only);
 //   - a row without a pick says "No recommendation." under either rule; the publisher's old
 //     first-sight timing flag is never read (operator order 2026-10-09, Plan E1);
+//   - a row's optional card state (plan R3b, cardState): "coming" reads "Pending" with no market;
+//     "withdrawn" reads "Withdrawn — {reason}" from WITHDRAWN_COPY; a "pick" row still pending on a
+//     finished match more than 48 h after kickoff (as of grades_as_of) adds the ungradable note. A
+//     row without a state renders exactly as before;
 //   - a finished row (FT / AET / PEN) shows its 90-minute score (what markets settle on), plus the
 //     a.e.t. result and the pens when present, if the file carries a well-formed score (checked
 //     here too: the archive renders raw fetched files); never on any other status;
@@ -58,10 +62,26 @@ const GRADES = Object.freeze({
   pending: { chip: 'Pending', mod: 'bg-chip--open' },
 });
 
+// The card states (plan R3b). A row may carry `state`; a file published before states has none and
+// renders exactly as before (cardState returns null).
+export const CARD_STATES = new Set(['coming', 'pick', 'none', 'withdrawn']);
+// A withdrawn row's reason code -> the words after "Withdrawn — ". Never free text from the file.
+export const WITHDRAWN_COPY = Object.freeze({
+  admin_data_error: 'data error',
+  admin_market_unavailable: 'market not available',
+  admin_match_status: 'match status uncertain',
+  identity: 'match details changed',
+  rescheduled: 'match rescheduled',
+});
+// A pick still pending this long after kickoff on a finished match cannot be settled automatically.
+const UNGRADABLE_AFTER_MS = 48 * 60 * 60 * 1000;
+
 const MSG = Object.freeze({
   withdrawnPick: 'This fixture changed after the pick was published, so the pick is not graded.',
   withdrawnBare: 'This fixture changed after it was published.',
   none: 'No recommendation.',
+  coming: 'Pending',
+  ungradable: "Pending — we can't get the statistics to settle this automatically. Please check your bookmaker for the result.",
   moved: 'Kickoff was moved to a time before this pick was listed — not counted in the ring.',
   // Rule-2 days only (spec §16 amendments): the first line of "How this card was built".
   howRule2: "At most one recommended pick per fixture — the platform's card pick — graded after full time.",
@@ -176,8 +196,43 @@ function checkAccuracyAgainstRows(day, rule) {
   }
 }
 
-/** The row's state: withdrawn | won | lost | push | void | pending | nopick. */
+/**
+ * The row's published card state (plan R3b), checked against the row: 'pick' exactly when the row has
+ * a pick and is not withdrawn; 'coming' / 'none' without a pick; 'withdrawn' exactly on a withdrawn
+ * row, with a known withdrawn_reason (any other row's reason is absent or null). Null when the row
+ * has no state (a file published before states). Throws an Error naming fx and the field otherwise.
+ */
+export function cardState(f) {
+  const reason = f.withdrawn_reason;
+  if (!Object.hasOwn(f, 'state')) {
+    if (reason !== undefined && reason !== null) throw new Error(`fx ${f.fx} has a withdrawn_reason but no state`);
+    return null;
+  }
+  const s = f.state;
+  if (!CARD_STATES.has(s)) throw new Error(`fx ${f.fx} state must be one of ${[...CARD_STATES].join('|')}, got ${JSON.stringify(s)}`);
+  const withdrawn = f.withdrawn === true;
+  const hasPick = f.pick !== null && f.pick !== undefined;
+  if ((s === 'withdrawn') !== withdrawn) throw new Error(`fx ${f.fx} state is "${s}" but its withdrawn flag is ${JSON.stringify(f.withdrawn)}`);
+  if (!withdrawn && (s === 'pick') !== hasPick) throw new Error(`fx ${f.fx} state is "${s}" but the row ${hasPick ? 'has a pick' : 'has no pick'}`);
+  if (s === 'withdrawn') {
+    // typeof first: Object.hasOwn would turn ['identity'] into the key 'identity'.
+    if (typeof reason !== 'string' || !Object.hasOwn(WITHDRAWN_COPY, reason)) {
+      throw new Error(`fx ${f.fx} withdrawn_reason must be one of ${Object.keys(WITHDRAWN_COPY).join('|')}, got ${JSON.stringify(reason)}`);
+    }
+  } else if (reason !== undefined && reason !== null) {
+    throw new Error(`fx ${f.fx} has a withdrawn_reason but its state is "${s}"`);
+  }
+  return s;
+}
+
+/** The row's state: withdrawn | won | lost | push | void | pending | nopick | coming. */
 function rowState(f) {
+  let card;
+  try {
+    card = cardState(f);
+  } catch (e) {
+    throw new Error(`renderDay: ${e.message}`);
+  }
   if (f.withdrawn === true) {
     if (f.grade !== 'withdrawn' && f.grade !== null) {
       throw new Error(`renderDay: fx ${f.fx} is withdrawn but its grade is ${JSON.stringify(f.grade)}`);
@@ -193,8 +248,12 @@ function rowState(f) {
   if (f.grade !== null && f.grade !== undefined) {
     throw new Error(`renderDay: fx ${f.fx} has no pick but grade ${JSON.stringify(f.grade)}`);
   }
-  return 'nopick';
+  return card === 'coming' ? 'coming' : 'nopick';
 }
+
+/** A "pick" row still pending on a finished match more than 48 h after kickoff, as of the day's grades. */
+const isUngradable = (f, state, phase, asOfMs) => f.state === 'pick' && state === 'pending' && phase === 'done'
+  && asOfMs - Date.parse(f.ko) > UNGRADABLE_AFTER_MS;
 
 // ------------------------------------------------------------------ row parts
 
@@ -273,20 +332,26 @@ function selHtml(p, struck) {
   return `<p class="fx__sel">${struck ? `<s>${inner}</s>` : inner}</p>`;
 }
 
-function outcome(f, state, rule, phase) {
+function outcome(f, state, rule, phase, asOfMs) {
   const p = f.pick;
   if (state === 'withdrawn') {
     const chip = '<span class="bg-chip bg-chip--void fx__grade">Withdrawn</span>';
-    if (p === null || p === undefined) {
+    const bare = p === null || p === undefined;
+    // With a card state the reason comes from the fixed list (cardState checked the code).
+    const msg = f.state === 'withdrawn' ? `Withdrawn — ${WITHDRAWN_COPY[f.withdrawn_reason]}`
+      : bare ? MSG.withdrawnBare : MSG.withdrawnPick;
+    if (bare) {
       return `<div class="fx__pick fx__pick--none"><p class="fx__pickhead">${chip}</p>`
-        + `<p class="fx__msg">${escHtml(MSG.withdrawnBare)}</p></div>`;
+        + `<p class="fx__msg">${escHtml(msg)}</p></div>`;
     }
     return '<div class="fx__pick fx__pick--struck">'
       + `<p class="fx__pickhead"><span class="fx__offcard">Withdrawn pick</span>${chip}</p>`
       + selHtml(p, true) + probHtml(p, true)
-      + `<p class="fx__msg">${escHtml(MSG.withdrawnPick)}</p></div>`;
+      + `<p class="fx__msg">${escHtml(msg)}</p></div>`;
   }
   if (state === 'nopick') return `<div class="fx__pick fx__pick--none"><p class="fx__msg">${escHtml(MSG.none)}</p></div>`;
+  // The pick is still to be decided: no market, price or probability yet.
+  if (state === 'coming') return `<div class="fx__pick fx__pick--none"><p class="fx__msg">${escHtml(MSG.coming)}</p></div>`;
 
   const g = GRADES[state];
   // Before kickoff (and on a match not played as listed) a pending pick has no chip: "Pending"
@@ -300,10 +365,11 @@ function outcome(f, state, rule, phase) {
     + probHtml(p, false)
     + (p.why === null || p.why === undefined || p.why === '' ? '' : `<p class="fx__why">${escHtml(p.why)}</p>`)
     + (rule === 1 && f.pre_ko === false ? `<p class="fx__note">${escHtml(MSG.moved)}</p>` : '')
+    + (isUngradable(f, state, phase, asOfMs) ? `<p class="fx__note">${escHtml(MSG.ungradable)}</p>` : '')
     + '</div>';
 }
 
-function fixtureRow(f, rule) {
+function fixtureRow(f, rule, asOfMs) {
   if (!Number.isInteger(f.fx)) throw new TypeError('renderDay: a fixture has a non-integer fx');
   const hm = lagosParts(f.ko).hm; // validates ko even when the time is not shown
   const state = rowState(f);
@@ -317,7 +383,7 @@ function fixtureRow(f, rule) {
     + (phase === null ? '' : ` data-phase="${phase}"`)
     + ` data-ko="${escAttr(f.ko)}" data-status="${escAttr(f.status)}"${uncounted}>`
     + `<p class="fx__comp">${escHtml(f.comp === '' ? 'Competition not named' : f.comp)}</p>`
-    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule, phase)
+    + timeSlot(f, hm) + teams(f) + outcome(f, state, rule, phase, asOfMs)
     + '</li>';
 }
 
@@ -437,6 +503,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const longDate = fmtDayLong(d);
   const published = fmtStamp(day.picks_frozen_at); // when the card was published, not when each pick was listed
   const gradedAt = fmtStamp(day.grades_as_of);
+  const asOfMs = Date.parse(day.grades_as_of); // validated by fmtStamp: what the ungradable note is judged against
   const rows = kickoffOrder(day.fixtures);
   const n = day.fixtures.length;
   // A withdrawn row is not a fixture on today's card; it stays listed (the receipt) and is
@@ -469,7 +536,7 @@ export function renderDay(day, { prevDay = null, nextDay = null } = {}) {
   const body = n === 0
     ? `<div class="bg-empty day-empty"><h2>No fixtures on this card</h2><p>${escHtml(`No fixtures were scheduled in the competitions we cover on ${longDate}.`)}</p></div>`
     : DAY_TOOLS + dayBar(d, active.length)
-      + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule)).join('')}</ol>`;
+      + `<ol class="fx-list" role="list" data-fx-list>${rows.map((f) => fixtureRow(f, rule, asOfMs)).join('')}</ol>`;
 
   return `<div class="day" data-day="${escAttr(d)}">${head}${body}${howBuilt(day, rule)}${dayNav(prev, next)}</div>`;
 }

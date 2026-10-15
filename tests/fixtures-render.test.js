@@ -7,6 +7,7 @@ import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT, ruleOf, i
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
 import { picksHash } from '../site/lib/hash.js';
 import { lagosParts } from '../site/lib/time.js';
+import { claimViolations, bareCounts } from './html-scan.js';
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
 const readJson = (p) => JSON.parse(readFileSync(here(p), 'utf8'));
@@ -59,6 +60,39 @@ function withStatus(day, statuses) {
 }
 
 const EDGE_HTML = renderDay(EDGE, opts({ prevDay: '2026-10-05', nextDay: '2026-10-07' }));
+
+// Plan R3b: the four card states. A copy of the RAW edge day (the archive renders raw files) with
+// `state` / `withdrawn_reason` set per row: Map fx -> { state, withdrawn_reason? }.
+function withStates(raw, states) {
+  const copy = structuredClone(raw);
+  for (const f of copy.fixtures) if (states.has(f.fx)) Object.assign(f, states.get(f.fx));
+  return copy;
+}
+const STATES_RAW = withStates(EDGE_RAW, new Map([
+  [900025, { state: 'coming' }], // NS, no pick
+  [900010, { state: 'none' }], // NS, no pick
+  [900002, { state: 'pick' }], // FT, lost
+  [900007, { state: 'withdrawn', withdrawn_reason: 'rescheduled' }], // withdrawn with its pick
+  [900008, { state: 'withdrawn', withdrawn_reason: 'admin_data_error' }], // withdrawn, no pick
+]));
+const STATES_HTML = renderDay(STATES_RAW, opts());
+
+const MIN = 60 * 1000;
+const HOUR = 60 * MIN;
+/**
+ * The raw edge day with 900012 (a pending pick before kickoff) given `status` and a kickoff `agoMs`
+ * before the day's grades_as_of; `state` null leaves the row without one (a file from before states).
+ */
+function finishedPending(raw, agoMs, { state = 'pick', status = 'FT' } = {}) {
+  const day = structuredClone(raw);
+  const f = day.fixtures.find((x) => x.fx === 900012);
+  assert.ok(f.pick !== null && f.grade === 'pending' && f.withdrawn === false, 'premise: 900012 is a pending pick');
+  f.status = status;
+  f.ko = new Date(Date.parse(day.grades_as_of) - agoMs).toISOString().replace('.000Z', 'Z');
+  if (state !== null) f.state = state;
+  return day;
+}
+const UNGRADABLE_HTML = renderDay(finishedPending(EDGE_RAW, 48 * HOUR + MIN), opts());
 
 // ---------------------------------------------------------------- the crafted edge day is a real receipt
 
@@ -717,7 +751,7 @@ test('fixtures.css exists and styles every class the renderer emits', () => {
   const css = readFileSync(CSS_PATH, 'utf8');
   assert.ok(!/@import/.test(css));
   const classes = new Set();
-  for (const m of (EDGE_HTML + renderDay(D07, opts({ isToday: true }))).matchAll(/class="([^"]+)"/g)) {
+  for (const m of (EDGE_HTML + renderDay(D07, opts({ isToday: true })) + STATES_HTML + UNGRADABLE_HTML).matchAll(/class="([^"]+)"/g)) {
     for (const c of m[1].split(/\s+/)) classes.add(c);
   }
   const base = readFileSync(here('../site/assets/css/base.css'), 'utf8');
@@ -1267,8 +1301,9 @@ test('fixtures CSS: the edge each row gets — neutral before kickoff and when o
     return best?.colour ?? null;
   };
   assert.equal(edgeOf({}), '--line', 'premise: the base row edge is the neutral --line');
-  const states = ['won', 'lost', 'push', 'void', 'pending', 'nopick'];
-  const DONE = { won: '--won', lost: '--lost', push: '--void', void: '--void', pending: '--hold', nopick: '--line' };
+  const states = ['won', 'lost', 'push', 'void', 'pending', 'nopick', 'coming'];
+  // A row still waiting for its pick (coming) stays as quiet as a row without one (plan R3b).
+  const DONE = { won: '--won', lost: '--lost', push: '--void', void: '--void', pending: '--hold', nopick: '--line', coming: '--line' };
   for (const state of states) {
     for (const phase of ['pre', 'off']) assert.equal(edgeOf({ 'data-state': state, 'data-phase': phase }), '--line', `${phase} ${state}`);
     assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'done' }), DONE[state], `done ${state}`);
@@ -1277,9 +1312,197 @@ test('fixtures CSS: the edge each row gets — neutral before kickoff and when o
     assert.equal(edgeOf({ 'data-state': state, 'data-phase': 'live' }), DONE[state], `live ${state}`);
   }
   assert.equal(edgeOf({ 'data-state': 'withdrawn' }), '--void', 'withdrawn keeps its own edge');
-  // Every state the renderer emits is covered above (derived from the edge day's rows).
-  for (const s of new Set([...EDGE_HTML.matchAll(/<li class="fx"[^>]*data-state="([^"]+)"/g)].map((m) => m[1]))) {
+  // Every state the renderer emits is covered above (derived from the edge day's rows, with and
+  // without card states).
+  for (const s of new Set([...(EDGE_HTML + STATES_HTML).matchAll(/<li class="fx"[^>]*data-state="([^"]+)"/g)].map((m) => m[1]))) {
     assert.ok(states.includes(s) || s === 'withdrawn', `state ${s} checked`);
   }
 });
 
+
+// ---------------------------------------------------------------- plan R3b: the four card states
+
+const PENDING = 'Pending';
+const UNGRADABLE = "Pending — we can't get the statistics to settle this automatically. Please check your bookmaker for the result.";
+const WITHDRAWN_COPY = {
+  admin_data_error: 'Withdrawn — data error',
+  admin_market_unavailable: 'Withdrawn — market not available',
+  admin_match_status: 'Withdrawn — match status uncertain',
+  identity: 'Withdrawn — match details changed',
+  rescheduled: 'Withdrawn — match rescheduled',
+};
+const FIXTURE_DAYS = () => [EDGE_RAW, D07_RAW, D08_RAW, readJson('./fixtures/rule2-day.json')];
+const DONE_STATUSES = new Set(PHASES.done);
+/** A pick still pending on a finished match more than 48 h after kickoff, as of the day's grades. */
+const isUngradable = (day, f) => f.withdrawn !== true && f.pick !== null && f.grade === 'pending'
+  && DONE_STATUSES.has(f.status) && Date.parse(day.grades_as_of) - Date.parse(f.ko) > 48 * HOUR;
+
+test('R3b: explicit "pick" and "none" render exactly like the same rows without a state (raw and validated)', () => {
+  for (const raw of FIXTURE_DAYS()) {
+    assert.ok(!raw.fixtures.some((f) => 'state' in f), `premise: ${raw.lagos_day} has no states`);
+    assert.ok(!raw.fixtures.some((f) => isUngradable(raw, f)), `premise: ${raw.lagos_day} has no ungradable row`);
+    const ref = renderDay(raw, opts());
+    const day = structuredClone(raw);
+    let picks = 0;
+    let nones = 0;
+    for (const f of day.fixtures) {
+      if (f.withdrawn) continue;
+      if (f.pick !== null) { f.state = 'pick'; picks++; } else { f.state = 'none'; nones++; }
+    }
+    assert.ok(picks > 0 && nones > 0, `premise: ${raw.lagos_day} has picked and pick-less rows`);
+    assert.equal(renderDay(day, opts()), ref, `${raw.lagos_day}: raw`);
+    assert.equal(renderDay(validateDay(day, { expectDate: raw.lagos_day }), opts()), ref, `${raw.lagos_day}: validated`);
+  }
+});
+
+test('R3b: "coming" reads "Pending" with no market, price, probability or grade; its own data-state', () => {
+  const r = row(STATES_HTML, 900025);
+  assert.equal(stateOf(r), 'coming');
+  assert.equal(text(pickBlock(r)), PENDING);
+  for (const cls of ['fx__sel', 'fx__selname', 'bg-odds', 'fx__prob', 'fx__grade', 'fx__why', 'bg-eyebrow']) {
+    assert.ok(!r.includes(cls), `no ${cls} on a coming row`);
+  }
+  assert.doesNotMatch(r, /data-figure|@ \d|%/);
+  assert.doesNotMatch(text(r), /No recommendation/);
+  assert.match(text(r), new RegExp(lagosParts(STATES_RAW.fixtures.find((f) => f.fx === 900025).ko).hm), 'the kickoff still shows');
+  // Without its state the same row is today's "No recommendation." row.
+  assert.equal(stateOf(row(EDGE_HTML, 900025)), 'nopick');
+  assert.match(text(row(EDGE_HTML, 900025)), /No recommendation\./);
+});
+
+test('R3b: "none" reads "No recommendation." — the same row as today', () => {
+  assert.equal(row(STATES_HTML, 900010), row(EDGE_HTML, 900010));
+  assert.equal(text(pickBlock(row(STATES_HTML, 900010))), 'No recommendation.');
+});
+
+test('R3b: "withdrawn" reads "Withdrawn — {copy}" from the fixed list, picked or not; the pick stays struck', () => {
+  for (const [code, line] of Object.entries(WITHDRAWN_COPY)) {
+    for (const fx of [900007, 900008]) {
+      const html = renderDay(withStates(EDGE_RAW, new Map([[fx, { state: 'withdrawn', withdrawn_reason: code }]])), opts());
+      const r = row(html, fx);
+      const was = row(EDGE_HTML, fx);
+      assert.equal(stateOf(r), 'withdrawn', `${code} ${fx}`);
+      assert.ok(text(r).includes(line), `${code} ${fx}: ${text(r)}`);
+      assert.equal(text(r).split(line).length, 2, `${code} ${fx}: the line once`);
+      assert.doesNotMatch(text(r), /This fixture changed after/, `${code} ${fx}: the reason replaces the generic sentence`);
+      assert.ok(!r.replace(line, '').includes(code), `${code} ${fx}: the code itself is never printed`);
+      if (fx === 900007) {
+        assert.match(r, /fx__pick--struck/);
+        assert.match(text(r), /Over 1\.5 Goals/);
+        assert.match(r, /<s>/);
+      }
+      // Apart from its reason line the row is today's withdrawn row.
+      const strip = (h) => h.replace(/<p class="fx__msg">[^<]*<\/p>/, '');
+      assert.equal(strip(r), strip(was), `${code} ${fx}`);
+    }
+  }
+});
+
+test('R3b: card states do not move the ring, the count line or the stated mean', () => {
+  const head = (h) => /<header class="day-head">[\s\S]*?<\/header>/.exec(h)[0];
+  const bar = (h) => /<p class="day-bar">[\s\S]*?<\/p>/.exec(h)[0];
+  assert.equal(head(STATES_HTML), head(EDGE_HTML));
+  assert.equal(bar(STATES_HTML), bar(EDGE_HTML));
+  assert.equal(head(UNGRADABLE_HTML), head(EDGE_HTML));
+  for (const rule of [1, 2]) assert.equal(meanStatedPct(STATES_RAW.fixtures, rule), meanStatedPct(EDGE_RAW.fixtures, rule));
+});
+
+test('R3b ungradable: a finished pick still pending more than 48 h after kickoff shows the pick and the sentence', () => {
+  const r = row(UNGRADABLE_HTML, 900012);
+  const t = text(r);
+  assert.equal(stateOf(r), 'pending');
+  assert.equal(phaseAttr(r), 'done');
+  assert.ok(t.includes(UNGRADABLE), t);
+  assert.match(t, /★ Recommended pick/);
+  assert.match(r, /class="fx__selname"/);
+  assert.match(r, /data-figure="pick-prob"/);
+  assert.equal(t.split('get the statistics').length, 2, 'once');
+});
+
+test('R3b ungradable: the 48 h boundary — 47h59 and exactly 48 h no note, 48h01 the note', () => {
+  const note = (ago, o) => text(row(renderDay(finishedPending(EDGE_RAW, ago, o), opts()), 900012)).includes(UNGRADABLE);
+  assert.equal(note(47 * HOUR + 59 * MIN), false, '47h59');
+  assert.equal(note(48 * HOUR), false, 'exactly 48 h');
+  assert.equal(note(48 * HOUR + MIN), true, '48h01');
+  assert.equal(note(30 * 24 * HOUR), true, 'a month');
+  // Every finished status (the renderer's done phase), and only those.
+  for (const status of PHASES.done) assert.equal(note(48 * HOUR + MIN, { status }), true, status);
+  for (const status of [...PHASES.live, ...PHASES.off, 'NS', 'TBD']) assert.equal(note(72 * HOUR, { status }), false, status);
+  // Validated (the build) agrees with raw (the archive).
+  const day = finishedPending(EDGE_RAW, 48 * HOUR + MIN);
+  assert.equal(renderDay(validateDay(day, { expectDate: day.lagos_day }), opts()), renderDay(day, opts()));
+});
+
+test('R3b ungradable: only on a pending "pick" row — never a settled grade, never a file published before states', () => {
+  const ago = 72 * HOUR;
+  // Without a state (today's files) the row is exactly what it was.
+  const bare = finishedPending(EDGE_RAW, ago, { state: null });
+  const bareHtml = renderDay(bare, opts());
+  assert.doesNotMatch(bareHtml, /statistics to settle/);
+  assert.equal(pickBlock(row(bareHtml, 900012)),
+    pickBlock(row(renderDay(finishedPending(EDGE_RAW, 47 * HOUR, { state: null }), opts()), 900012)), 'age changes nothing on a row without a state');
+  // The same old finished row, settled: no note.
+  const settled = finishedPending(EDGE_RAW, ago);
+  settled.fixtures.find((x) => x.fx === 900012).grade = 'won';
+  settled.accuracy = { won: 3, lost: 1, pushes: 1, graded: 4, pct: 75 };
+  assert.doesNotMatch(renderDay(settled, opts()), /statistics to settle/);
+  // A withdrawn row never carries the note, however old.
+  const w = finishedPending(EDGE_RAW, ago);
+  Object.assign(w.fixtures.find((x) => x.fx === 900012), { state: 'withdrawn', withdrawn_reason: 'identity', withdrawn: true, grade: 'withdrawn' });
+  assert.doesNotMatch(renderDay(w, opts()), /statistics to settle/);
+});
+
+test('R3b: the pre-decision "Pending" and the ungradable row render differently', () => {
+  const coming = pickBlock(row(STATES_HTML, 900025));
+  const ungradable = pickBlock(row(UNGRADABLE_HTML, 900012));
+  assert.notEqual(coming, ungradable);
+  assert.equal(text(coming), PENDING);
+  assert.doesNotMatch(coming, /fx__sel|data-figure/);
+  assert.ok(text(ungradable).includes(UNGRADABLE));
+  assert.match(ungradable, /fx__sel/);
+  assert.notEqual(stateOf(row(STATES_HTML, 900025)), stateOf(row(UNGRADABLE_HTML, 900012)));
+});
+
+test('R3b: an unknown state or reason, or a state its row contradicts, is refused (the archive renders raw files)', () => {
+  const bad = [
+    ['unknown state', 900025, { state: 'later' }, /state/],
+    ['null state', 900025, { state: null }, /state/],
+    ['unknown reason', 900007, { state: 'withdrawn', withdrawn_reason: 'other' }, /withdrawn_reason/],
+    ['free-text reason', 900007, { state: 'withdrawn', withdrawn_reason: 'The match moved' }, /withdrawn_reason/],
+    ['reason as an array', 900007, { state: 'withdrawn', withdrawn_reason: ['identity'] }, /withdrawn_reason/],
+    ['inherited key as reason', 900007, { state: 'withdrawn', withdrawn_reason: 'toString' }, /withdrawn_reason/],
+    ['withdrawn without a reason', 900008, { state: 'withdrawn' }, /withdrawn_reason/],
+    ['reason on a pick row', 900002, { state: 'pick', withdrawn_reason: 'identity' }, /withdrawn_reason/],
+    ['reason with no state', 900007, { withdrawn_reason: 'identity' }, /withdrawn_reason/],
+    ['pick without a pick', 900010, { state: 'pick' }, /state/],
+    ['none with a pick', 900002, { state: 'none' }, /state/],
+    ['coming with a pick', 900005, { state: 'coming' }, /state/],
+    ['pick on a withdrawn row', 900007, { state: 'pick' }, /state/],
+    ['none on a withdrawn row', 900008, { state: 'none' }, /state/],
+    ['withdrawn on a live row', 900002, { state: 'withdrawn', withdrawn_reason: 'identity' }, /state/],
+  ];
+  for (const [name, fx, patch, re] of bad) {
+    const day = withStates(EDGE_RAW, new Map([[fx, patch]]));
+    assert.throws(() => renderDay(day, opts()), re, name);
+  }
+  // A null reason on a row that is not withdrawn gives no reason, and changes nothing.
+  const ok = withStates(EDGE_RAW, new Map([[900002, { state: 'pick', withdrawn_reason: null }], [900010, { withdrawn_reason: null }]]));
+  assert.equal(renderDay(ok, opts()), renderDay(EDGE_RAW, opts()));
+});
+
+test('R3b: the states card stays inside the claim rules — no stray percentage, no banned or "late" wording, no bare counts', () => {
+  const doc = (body) => `<!doctype html><html><head><title>t</title></head><body>${body}</body></html>`;
+  for (const html of [STATES_HTML, UNGRADABLE_HTML]) {
+    assert.deepEqual(claimViolations(doc(html)), []);
+    assert.deepEqual(bareCounts(doc(html)), []);
+    assert.doesNotMatch(noTestNames(text(html)), /\blate\b|too late|first (listed|seen)|10 minutes/i);
+    assert.ok(!/style=|<style|<script/i.test(html));
+  }
+});
+
+test('R3b CSS: a coming row is styled like a no-pick row (quiet team names, neutral edge)', () => {
+  const top = topRules(readFileSync(CSS_PATH, 'utf8'));
+  const teamColour = (state) => bodyOf(top, `.fx[data-state="${state}"] .fx__team`);
+  assert.match(teamColour('nopick'), /color:var\(--ink-2\)/, 'premise');
+  assert.equal(teamColour('coming'), teamColour('nopick'));
+});

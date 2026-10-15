@@ -973,6 +973,22 @@ describe('the archive loader (built day.js) verifies the receipt before renderin
     await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond(bad) }), (e) => e.kind === 'render');
   });
 
+  test('plan R3b: an archived day renders its card states (outside the receipt); an unknown state or reason is a render failure', async () => {
+    const withStates = (patch) => {
+      const f = structuredClone(edge);
+      for (const [fx, p] of Object.entries(patch)) Object.assign(f.fixtures.find((x) => x.fx === Number(fx)), p);
+      return f;
+    };
+    const good = withStates({ 900025: { state: 'coming' }, 900007: { state: 'withdrawn', withdrawn_reason: 'admin_market_unavailable' } });
+    const html = await dayjs.loadDay({ ...stub(), fetchImpl: respond(good) });
+    const li = (fx) => new RegExp(`<li class="fx"[^>]*data-fx="${fx}"[^>]*>[\\s\\S]*?</li>`).exec(html)[0];
+    assert.match(li(900025), /data-state="coming"/);
+    assert.match(li(900025), /<p class="fx__msg">Pending<\/p>/);
+    assert.match(li(900007), /Withdrawn — market not available/);
+    await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond(withStates({ 900025: { state: 'soon' } })) }), (e) => e.kind === 'render');
+    await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond(withStates({ 900007: { state: 'withdrawn', withdrawn_reason: 'oops' } })) }), (e) => e.kind === 'render');
+  });
+
   test('a wrong-day, compacted or newer-schema file is refused', async () => {
     await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond({ ...edge, lagos_day: '2026-10-04' }) }), (e) => e.kind === 'render');
     await assert.rejects(dayjs.loadDay({ ...stub(), fetchImpl: respond({ ...edge, compacted: true }) }), (e) => e.kind === 'render');

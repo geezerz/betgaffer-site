@@ -581,3 +581,64 @@ test('loadSite: a rule-2 day loads and its index entry must match its accuracy',
   writeJson(join(dir, 'index.json'), idx);
   await assert.rejects(loadSite(dir, quiet), /accuracy mismatch 2026-10-08/);
 });
+
+// ---------------------------------------------------------------- plan R3b: card states (optional until R3b-3)
+
+/** DAY07 with one picked, one pick-less and one withdrawn-picked row given states. */
+function statesDay() {
+  const d = clone(DAY07);
+  const p = picked(d);
+  const n = unpicked(d);
+  const w = d.fixtures.findIndex((f, i) => i !== p && f.pick !== null);
+  Object.assign(d.fixtures[p], { state: 'pick' });
+  Object.assign(d.fixtures[n], { state: 'none' });
+  Object.assign(d.fixtures[w], { withdrawn: true, grade: 'withdrawn', state: 'withdrawn', withdrawn_reason: 'identity' });
+  return { d, p, n, w };
+}
+
+test('validateDay: card states are optional; kept on the copy only when published', () => {
+  const plain = validateDay(clone(DAY07), { expectDate: '2026-10-07' });
+  assert.ok(plain.fixtures.every((f) => !('state' in f) && !('withdrawn_reason' in f)), 'a file without states gains no keys');
+  const { d, p, n, w } = statesDay();
+  const v = validateDay(d, { expectDate: '2026-10-07' });
+  assert.equal(v.fixtures[p].state, 'pick');
+  assert.equal(v.fixtures[n].state, 'none');
+  assert.equal(v.fixtures[w].state, 'withdrawn');
+  assert.equal(v.fixtures[w].withdrawn_reason, 'identity');
+  assert.ok(!('withdrawn_reason' in v.fixtures[p]) && !('withdrawn_reason' in v.fixtures[n]));
+  for (const code of ['admin_data_error', 'admin_market_unavailable', 'admin_match_status', 'identity', 'rescheduled']) {
+    const x = statesDay();
+    x.d.fixtures[x.w].withdrawn_reason = code;
+    assert.equal(validateDay(x.d, { expectDate: '2026-10-07' }).fixtures[x.w].withdrawn_reason, code);
+  }
+  const c = clone(DAY07);
+  c.fixtures[unpicked(c)].state = 'coming';
+  c.fixtures[picked(c)].withdrawn_reason = null; // no reason to give: accepted and dropped
+  const vc = validateDay(c, { expectDate: '2026-10-07' });
+  assert.equal(vc.fixtures[unpicked(c)].state, 'coming');
+  assert.ok(!('withdrawn_reason' in vc.fixtures[picked(c)]));
+});
+
+test('validateDay refuses an unknown state or reason, and a state its row contradicts', () => {
+  const cases = [
+    ['unknown state', ({ d, n }) => { d.fixtures[n].state = 'soon'; }, /fixtures\[\d+\]\.state/],
+    ['null state', ({ d, n }) => { d.fixtures[n].state = null; }, /fixtures\[\d+\]\.state/],
+    ['unknown reason', ({ d, w }) => { d.fixtures[w].withdrawn_reason = 'admin_other'; }, /withdrawn_reason/],
+    ['free-text reason', ({ d, w }) => { d.fixtures[w].withdrawn_reason = 'Kickoff moved'; }, /withdrawn_reason/],
+    ['inherited key as reason', ({ d, w }) => { d.fixtures[w].withdrawn_reason = 'constructor'; }, /withdrawn_reason/],
+    ['withdrawn without a reason', ({ d, w }) => { delete d.fixtures[w].withdrawn_reason; }, /withdrawn_reason/],
+    ['reason on a pick row', ({ d, p }) => { d.fixtures[p].withdrawn_reason = 'identity'; }, /withdrawn_reason/],
+    ['reason without a state', ({ d, p }) => { delete d.fixtures[p].state; d.fixtures[p].withdrawn_reason = 'identity'; }, /withdrawn_reason/],
+    ['pick state, no pick', ({ d, n }) => { d.fixtures[n].state = 'pick'; }, /state/],
+    ['none state with a pick', ({ d, p }) => { d.fixtures[p].state = 'none'; }, /state/],
+    ['coming state with a pick', ({ d, p }) => { d.fixtures[p].state = 'coming'; }, /state/],
+    ['withdrawn state, row not withdrawn', ({ d, p }) => { Object.assign(d.fixtures[p], { state: 'withdrawn', withdrawn_reason: 'identity' }); }, /state/],
+    ['withdrawn row, pick state', ({ d, w }) => { d.fixtures[w].state = 'pick'; delete d.fixtures[w].withdrawn_reason; }, /state/],
+  ];
+  for (const [name, mut, re] of cases) {
+    const x = statesDay();
+    validateDay(clone(x.d), { expectDate: '2026-10-07' }); // premise: the unmutated day is valid
+    mut(x);
+    assert.throws(() => validateDay(x.d, { expectDate: '2026-10-07' }), re, name);
+  }
+});

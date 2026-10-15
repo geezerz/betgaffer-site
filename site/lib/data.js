@@ -10,6 +10,7 @@ import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { isDate, isIsoZ } from './time.js';
 import { picksHash } from './hash.js';
+import { cardState } from './fixtures.js';
 
 export const SCHEMA = 1;
 // The day file's accuracy rule (spec §16.6). Absent = 1: a pick counts only when it was published
@@ -353,6 +354,16 @@ function fixture(c, v, i) {
   }
   if (!f.withdrawn && f.grade === 'withdrawn') c.fail(`${p}grade`, 'is "withdrawn" on a row whose withdrawn flag is false');
   if (f.pick !== null && f.frozen_at === null) c.fail(`${p}frozen_at`, 'is null but the row carries a pick');
+  // The card state (plan R3b): optional until R3b-3. The renderer's own check, so the build and the
+  // archive refuse the same rows; kept on the copy only when published (today's files gain no key).
+  let state;
+  try {
+    state = cardState(v);
+  } catch (e) {
+    c.fail(`${p}${/withdrawn_reason/.test(e.message) ? 'withdrawn_reason' : 'state'}`, `is refused: ${e.message}`);
+  }
+  if (state !== null) f.state = state;
+  if (state === 'withdrawn') f.withdrawn_reason = v.withdrawn_reason;
   return f;
 }
 

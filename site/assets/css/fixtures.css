@@ -201,9 +201,10 @@
   align-self:center;
 }
 
-/* Rows without a recommendation stay quiet. */
+/* Rows without a recommendation (or still waiting for one) stay quiet. */
 .fx__pick--none{ grid-template-columns:minmax(0,1fr); }
-.fx[data-state="nopick"] .fx__team{ color:var(--ink-2); }
+.fx[data-state="nopick"] .fx__team,
+.fx[data-state="coming"] .fx__team{ color:var(--ink-2); }
 
 /* Withdrawn: the published pick stays visible, struck, and plainly not graded. */
 .fx__pick--struck s{ text-decoration-thickness:1px; text-decoration-color:var(--muted); }
