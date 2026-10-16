@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-15",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-14T21:10:02Z",
-    "grades_as_of": "2026-10-16T05:10:01Z",
+    "grades_as_of": "2026-10-16T13:10:02Z",
     "prev_hash": "sha256:8dc58cfd9bd2f6c76f35b5532b5a7a561fb2e51642779b481925ba6079f8ecad",
     "picks_hash": "sha256:624d1e010b283bb33b53ae41984b6e1e51b782ce7beb299ac4fba618cdf59c10",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 114,
+        "won": 115,
         "lost": 21,
         "pushes": 8,
-        "graded": 135,
-        "pct": 84.44
+        "graded": 136,
+        "pct": 84.56
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4981,7 +4981,7 @@
             "away": "Rancho Santana",
             "home_id": 763941,
             "away_id": 763939,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4994,8 +4994,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704328,
