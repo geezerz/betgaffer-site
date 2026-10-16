@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-17",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-16T21:10:01Z",
-    "grades_as_of": "2026-10-16T22:15:02Z",
+    "grades_as_of": "2026-10-16T23:10:02Z",
     "prev_hash": "sha256:b1605044c7b85c2babf2b6cce6a8eff69658d1575de16f49178940f2697d3ab5",
-    "picks_hash": "sha256:7c80142a1351cb0ff9e8f887cf05e85f04fc7481b025fd6e716756409eb60461",
+    "picks_hash": "sha256:09cbd89079967a4236bbdc90bf1f5e197fa222ef647e71a82efc0294680211a4",
     "counts": {
         "fixtures": 1653,
         "priced": 1627,
-        "recommended": 1575,
+        "recommended": 1578,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Internacional",
             "home_id": 278,
             "away_id": 218,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -89,7 +89,7 @@
             "away": "Sportivo Huracan",
             "home_id": 4551,
             "away_id": 4094,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -7527,12 +7527,19 @@
             "home_id": 9188,
             "away_id": 1065,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 81,
+                "price": 1.25,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-16T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -29744,12 +29751,19 @@
             "home_id": 875,
             "away_id": 1087,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 80,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-16T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -36968,12 +36982,19 @@
             "home_id": 2142,
             "away_id": 2149,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "under_3_5",
+                "label": "Under 3.5 Goals",
+                "pct": 80,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-16T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
