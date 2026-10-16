@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-15T21:10:02Z",
-    "grades_as_of": "2026-10-15T23:10:02Z",
+    "grades_as_of": "2026-10-16T01:10:01Z",
     "prev_hash": "sha256:64594e52f38283c32562d4b8be0a75eb689ddceb7f5a0e7720af537197ba607f",
-    "picks_hash": "sha256:f5288ca72db0208bb75090e7a6f5ea45ea3e5d78ca1f4f60570000c848295061",
+    "picks_hash": "sha256:781cbd74ad6789ac841e184666c8206c791d6c21f9db402f8073b06a65ab5037",
     "counts": {
         "fixtures": 380,
         "priced": 380,
-        "recommended": 364,
+        "recommended": 365,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 0,
+        "won": 3,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 3,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Gimnasia L.P.",
             "home_id": 234,
             "away_id": 236,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -64,7 +64,7 @@
             "away": "Orsomarso",
             "home_id": 8602,
             "away_id": 565976,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -77,8 +77,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1577367,
@@ -89,7 +96,7 @@
             "away": "Rentistas",
             "home_id": 4115,
             "away_id": 4091,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -102,8 +109,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1601431,
@@ -114,7 +128,7 @@
             "away": "Llaneros",
             "home_id": 250,
             "away_id": 288,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -127,8 +141,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1572234,
@@ -139,7 +160,7 @@
             "away": "Olancho",
             "home_id": 605235,
             "away_id": 301491,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -164,7 +185,7 @@
             "away": "Flamengo",
             "home_id": 237,
             "away_id": 208,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -189,7 +210,7 @@
             "away": "Inca Aruba",
             "home_id": 7246,
             "away_id": 9301,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -214,13 +235,20 @@
             "away": "Deportivo San Pedro",
             "home_id": 8984,
             "away_id": 9116,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 81,
+                "price": 1.24,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-16T01:10:01Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -232,7 +260,7 @@
             "away": "Real Cartagena",
             "home_id": 264,
             "away_id": 565975,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -257,7 +285,7 @@
             "away": "Jalapa",
             "home_id": 605213,
             "away_id": 763937,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
