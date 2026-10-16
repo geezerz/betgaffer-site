@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-17",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-16T21:10:01Z",
-    "grades_as_of": "2026-10-16T21:10:01Z",
+    "grades_as_of": "2026-10-16T22:15:02Z",
     "prev_hash": "sha256:b1605044c7b85c2babf2b6cce6a8eff69658d1575de16f49178940f2697d3ab5",
-    "picks_hash": "sha256:d3143af9f3a3499e84907eaa2bc2243f4dbd8f367853b0580ad6dfb7c05e1bc5",
+    "picks_hash": "sha256:7c80142a1351cb0ff9e8f887cf05e85f04fc7481b025fd6e716756409eb60461",
     "counts": {
         "fixtures": 1653,
         "priced": 1627,
-        "recommended": 1573,
+        "recommended": 1575,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -40276,12 +40276,19 @@
             "home_id": 217,
             "away_id": 189,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 82,
+                "price": 1.16,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-16T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -40737,12 +40744,19 @@
             "home_id": 216,
             "away_id": 209,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 85,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-16T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
