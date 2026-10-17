@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-15T21:10:02Z",
-    "grades_as_of": "2026-10-17T09:10:01Z",
+    "grades_as_of": "2026-10-17T11:10:02Z",
     "prev_hash": "sha256:624d1e010b283bb33b53ae41984b6e1e51b782ce7beb299ac4fba618cdf59c10",
     "picks_hash": "sha256:60e8f960665f3e2f27e626e19a1649f358f231c2abebee5fd64e4117aeff0e3d",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 277,
+        "won": 278,
         "lost": 45,
         "pushes": 11,
-        "graded": 322,
-        "pct": 86.02
+        "graded": 323,
+        "pct": 86.07
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -736,7 +736,7 @@
             "away": "Metal Kharkiv",
             "home_id": 2797,
             "away_id": 3974,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -749,8 +749,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 465391,
