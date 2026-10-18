@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-15T21:10:02Z",
-    "grades_as_of": "2026-10-17T19:10:02Z",
+    "grades_as_of": "2026-10-18T01:10:01Z",
     "prev_hash": "sha256:624d1e010b283bb33b53ae41984b6e1e51b782ce7beb299ac4fba618cdf59c10",
     "picks_hash": "sha256:37f51a35bcc0becc5e4e599ce7cbf4560de0e0a25865f0a9ef10c7b41d9e096a",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 277,
+        "won": 278,
         "lost": 45,
         "pushes": 11,
-        "graded": 322,
-        "pct": 86.02
+        "graded": 323,
+        "pct": 86.07
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -12063,7 +12063,7 @@
             "away": "Puebla U21",
             "home_id": 598855,
             "away_id": 598861,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -12076,8 +12076,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
