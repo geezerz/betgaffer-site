@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-18T21:10:01Z",
-    "grades_as_of": "2026-10-18T21:10:01Z",
+    "grades_as_of": "2026-10-18T22:15:02Z",
     "prev_hash": "sha256:f930a8e16f2488a3ea429833f641694a589699c8784f94b8e33f81933c14142a",
-    "picks_hash": "sha256:48309693c0149bcdfcfc7bfdeb88872cc041518b50c0fcb2c473f6c563fed705",
+    "picks_hash": "sha256:990204cf748fee8deba423eedb3e0e898857ebc40e17075ca5643172b7a4bfc9",
     "counts": {
         "fixtures": 207,
         "priced": 207,
-        "recommended": 196,
+        "recommended": 197,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -3691,12 +3691,19 @@
             "home_id": 7557,
             "away_id": 622832,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 88,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-18T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
