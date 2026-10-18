@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-18T21:10:01Z",
-    "grades_as_of": "2026-10-18T22:15:02Z",
+    "grades_as_of": "2026-10-18T23:10:01Z",
     "prev_hash": "sha256:f930a8e16f2488a3ea429833f641694a589699c8784f94b8e33f81933c14142a",
-    "picks_hash": "sha256:990204cf748fee8deba423eedb3e0e898857ebc40e17075ca5643172b7a4bfc9",
+    "picks_hash": "sha256:e5220299822f0f6edabac8301360f6a03f7f48bd61b02fcee090677b04d739a3",
     "counts": {
         "fixtures": 207,
         "priced": 207,
-        "recommended": 197,
+        "recommended": 198,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Seattle Reign FC W",
             "home_id": 1644,
             "away_id": 1647,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -64,7 +64,7 @@
             "away": "Juárez W",
             "home_id": 9322,
             "away_id": 9312,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -89,7 +89,7 @@
             "away": "Los Angeles FC II",
             "home_id": 1660,
             "away_id": 1735,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -114,13 +114,20 @@
             "away": "Uruguay Montevideo",
             "home_id": 4093,
             "away_id": 4089,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 84,
+                "price": 1.2,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-18T23:10:01Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -132,7 +139,7 @@
             "away": "Real Estelí",
             "home_id": 763938,
             "away_id": 605213,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -157,7 +164,7 @@
             "away": "New York RB II",
             "home_id": 1733,
             "away_id": 1707,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -182,7 +189,7 @@
             "away": "Santa Fe",
             "home_id": 288,
             "away_id": 252,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
