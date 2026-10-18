@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-17",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-16T21:10:01Z",
-    "grades_as_of": "2026-10-18T01:10:01Z",
+    "grades_as_of": "2026-10-18T03:10:01Z",
     "prev_hash": "sha256:37f51a35bcc0becc5e4e599ce7cbf4560de0e0a25865f0a9ef10c7b41d9e096a",
     "picks_hash": "sha256:b0711dde79ff58134dc5e096d3189a460eb14cedfe446d0c0a97acb38f0aa66c",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 1217,
+        "won": 1218,
         "lost": 199,
         "pushes": 46,
-        "graded": 1416,
-        "pct": 85.95
+        "graded": 1417,
+        "pct": 85.96
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -386,14 +386,21 @@
             "away": "LDU Quito W",
             "home_id": 2388,
             "away_id": 1052135,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1619710,
@@ -404,14 +411,21 @@
             "away": "Universidad de Chile W",
             "home_id": 1052136,
             "away_id": 1052137,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148573,
@@ -28758,7 +28772,7 @@
             "away": "Midlands Wanderers",
             "home_id": 680781,
             "away_id": 588435,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -28771,8 +28785,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1573751,
