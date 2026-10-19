@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-17",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-16T21:10:01Z",
-    "grades_as_of": "2026-10-18T19:10:01Z",
+    "grades_as_of": "2026-10-19T01:10:03Z",
     "prev_hash": "sha256:6171b5e528ed142d66ffeda40fcd58d143ddf172d187161841a0bc5a4f15882a",
-    "picks_hash": "sha256:4def8833b599ca6dd8d5fa67160fa1df79fa4363cf43effea75343be2b1d19ff",
+    "picks_hash": "sha256:c808934cb868921c65d046cc7236290ce7f8353a2c62b52b70f6f1016e9d4286",
     "counts": {
         "fixtures": 1718,
-        "priced": 1535,
+        "priced": 1534,
         "recommended": 1622,
         "markets_per_fixture": 92
     },
     "accuracy": {
-        "won": 1234,
-        "lost": 202,
-        "pushes": 46,
-        "graded": 1436,
-        "pct": 85.93
+        "won": 1235,
+        "lost": 203,
+        "pushes": 47,
+        "graded": 1438,
+        "pct": 85.88
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -13600,9 +13600,11 @@
             },
             "frozen_at": "2026-10-16T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -40130,7 +40132,7 @@
             "away": "SFC Minerva",
             "home_id": 775103,
             "away_id": 8766,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -40143,7 +40145,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -41028,7 +41030,7 @@
             "away": "VC Warriors",
             "home_id": 921068,
             "away_id": 921048,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -41041,8 +41043,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533728,
@@ -52103,7 +52112,7 @@
             "away": "Tesla",
             "home_id": 758101,
             "away_id": 758004,
-            "status": "NS",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -52116,8 +52125,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": 2,
+                "aet_away": 0,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1603237,
@@ -53074,7 +53090,7 @@
             "away": "Acatlan",
             "home_id": 760537,
             "away_id": 760513,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -53087,8 +53103,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385534,
@@ -53099,7 +53122,7 @@
             "away": "Racing de Veracruz 2",
             "home_id": 763142,
             "away_id": 763147,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -53113,7 +53136,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385535,
