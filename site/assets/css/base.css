@@ -335,6 +335,10 @@ a.bg-wordmark:hover{ color:#fff; }
 .bg-btn--primary{ background:var(--accent); color:var(--on-accent); }
 .bg-btn--primary:hover{ background:var(--accent-hi); color:var(--on-accent); transform:translateY(-1px); }
 .bg-btn--primary:active{ background:var(--accent-lo); transform:none; }
+/* The locked-feature glow (operator, 2026-10-16): same pulse as the fixtures page's Unlock button,
+   betgaffer's own accent. Global reduced-motion rule above already stops it. */
+@keyframes bg-btn-glow-pulse{ 0%,100%{ box-shadow:0 0 0 0 var(--accent-quiet); } 50%{ box-shadow:0 0 0 7px transparent; } }
+.bg-btn--glow{ animation:bg-btn-glow-pulse 1.8s ease-in-out infinite; }
 .bg-btn--ghost{ background:transparent; color:var(--ink); border-color:var(--line-2); }
 .bg-btn--ghost:hover{ border-color:var(--accent); color:var(--accent); }
 /* Narrow phones: a long label wraps onto two centred lines instead of overflowing the viewport. */

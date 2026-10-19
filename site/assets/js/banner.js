@@ -81,7 +81,7 @@ function segmentNode(doc, { t, hl, offer }) {
   return el;
 }
 
-/** Puts variant i's copy into the card; false (nothing changed) when the card lacks its copy slots. */
+/** Puts variant i's copy into the card (and moves the dots' "on" marker); false when the card lacks its copy slots. */
 function show(doc, card, i) {
   const heading = card.querySelector('[data-fd-heading]');
   const line = card.querySelector('[data-fd-line]');
@@ -90,6 +90,8 @@ function show(doc, card, i) {
   heading.replaceChildren(...v.heading.map((s) => segmentNode(doc, s)));
   line.replaceChildren(...v.line.map((s) => segmentNode(doc, s)));
   card.setAttribute('data-variant', String(i));
+  const dots = card.querySelector('[data-fd-dots]');
+  if (dots) dots.querySelectorAll('.bg-fd-card__dot').forEach((d, k) => d.classList.toggle('on', k === i));
   return true;
 }
 

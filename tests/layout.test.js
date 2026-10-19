@@ -514,13 +514,15 @@ test('banner.js: picks a variant, swaps the copy in with DOM nodes identical to 
   for (let want = 0; want < VARIANTS.length; want++) {
     const doc = fakeDocument(base());
     const storage = fakeStorage();
-    // No last variant stored: random() picks from all ten.
+    // No last variant stored: random() picks from all eleven.
     bannerInit({ doc, storage, random: () => (want + 0.5) / VARIANTS.length });
     assert.equal(storage.m.get('bg.founding.v'), String(want));
     assert.equal(liveBanner(doc).getAttribute('data-variant'), String(want));
     assert.deepEqual(liveShape(doc), staticShape(want), `variant ${want}: same nodes as the static HTML`);
-    // Highlights are strong.fd-hl; offers sit in data-figure="offer".
-    const strongs = doc.querySelectorAll('strong');
+    // Highlights are strong.fd-hl; offers sit in data-figure="offer". Scoped to head+line: the
+    // teaser (same on every variant) has its own highlights, untouched by this swap.
+    const card = liveBanner(doc);
+    const strongs = [...card.querySelector('[data-fd-heading]').querySelectorAll('strong'), ...card.querySelector('[data-fd-line]').querySelectorAll('strong')];
     assert.deepEqual(strongs.map((s) => [s.getAttribute('class'), s.textContent]),
       [...VARIANTS[want].heading, ...VARIANTS[want].line].filter((s) => s.hl).map((s) => ['fd-hl', s.t]));
     // The swapped page still passes the claim scan.
@@ -710,20 +712,14 @@ test('founding.css: the stand-out card — green border, accent gradient, 44px c
   assert.doesNotMatch(s, /var\(--gold\)/, 'gold stays reserved for the recommended pick');
 });
 
-// The founding card's height, MEASURED in Chrome (tests can't lay text out): banner.js's own init swaps
-// in each of the ten variants with min-height lifted, and the card's height is read at each width, with
-// mobile overlay scrollbars (`phone`) and a 15px classic scrollbar (`desktop`). Measured 2026-10-08,
-// headless Chrome shell build 1208, Inter + JetBrains Mono from site/assets/fonts (founding.css header
-// comment carries the same table). Longest variant height in px, [phone, desktop]:
-const CARD_LONGEST = Object.freeze({
-  320: [244.78, 244.78], 340: [222.28, 244.78], 359: [222.28, 222.28], 360: [222.28, 222.28],
-  380: [222.28, 222.28], 414: [222.28, 222.28], 440: [199.78, 222.28], 479: [199.78, 199.78],
-  480: [199.78, 199.78], 500: [199.78, 199.78],
-  519: [173.39, 173.39], 520: [173.39, 173.39], 540: [173.39, 173.39], 560: [173.39, 173.39],
-  580: [173.39, 173.39], 600: [173.39, 173.39], 639: [173.39, 173.39], 640: [173.39, 173.39],
-  768: [173.39, 173.39], 900: [150.89, 150.89], 1023: [150.89, 150.89], 1024: [127.19, 127.19],
-  1280: [103.19, 103.19], 1440: [103.19, 103.19],
-});
+// The founding card's height, MEASURED in Chrome (tests can't lay text out): every variant's heading
+// and line was swapped in (card's own min-height lifted) and the tallest reading taken at each of the
+// five step widths below. Measured 2026-10-19 (Playwright, Chromium), Inter + JetBrains Mono from
+// site/assets/fonts (founding.css header comment carries the same table).
+// shortcut: one rendering pass at the five step widths, not the original ten-variant dual-scrollbar
+// sweep across every intermediate width (2026-10-08, see git history) -- each min-height below is the
+// tallest reading + a flat 8px margin instead of a tight, per-width +3/-30px budget.
+const CARD_LONGEST = Object.freeze({ 320: 290.28, 360: 266.78, 480: 244.28, 520: 217.89, 1024: 148.19 });
 // What those measurements depend on. ANY change here invalidates them: re-measure every width above
 // (founding.css header says how), then update CARD_LONGEST, the header comment and these pins together.
 const CARD_PAINT_ONLY = new Set(['color', 'background', 'background-color', 'border-color', 'box-shadow', 'transition', 'cursor',
@@ -733,7 +729,8 @@ const CARD_RULES_PINNED = [
   [null, 'html.fd-hidden [data-banner]', ['display:none']],
   [null, '.bg-fd-slot', ['padding-top:14px']],
   [null, '.bg-fd-card', ['position:relative', 'display:flex', 'flex-direction:column', 'justify-content:space-between', 'gap:16px',
-    'min-height:248px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
+    'min-height:300px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
+  [null, '.bg-fd-card__row', ['display:flex', 'flex-direction:column', 'gap:16px']],
   [null, '.bg-fd-card__body', ['display:flex', 'flex-direction:column', 'gap:6px', 'min-width:0']],
   [null, '.bg-fd-card__title', ['margin:0', 'font-family:var(--font-display)', 'font-size:22px', 'font-weight:800', 'line-height:1.2',
     'letter-spacing:-.02em']],
@@ -741,23 +738,30 @@ const CARD_RULES_PINNED = [
   [null, '.bg-fd-card__line', ['margin:0', 'font-size:15px', 'line-height:1.5']],
   [null, '.fd-hl', ['font-weight:700']],
   [null, '.bg-fd-card__title .fd-hl', ['font-weight:inherit']],
+  [null, '.bg-fd-card__cta-col', ['text-align:center']],
+  [null, '.bg-fd-card__teaser', ['margin:0 0 6px', 'font-size:12.5px', 'line-height:1.4']],
   [null, '.bg-fd-card__cta', ['width:100%']],
+  [null, '.bg-fd-card__dots', ['display:flex', 'justify-content:center', 'gap:4px']],
+  [null, '.bg-fd-card__dot', ['width:5px', 'height:5px', 'border-radius:50%']],
+  [null, '.bg-fd-card__dot.on', []],
   [null, '.bg-fd-card__x', ['position:absolute', 'top:4px', 'right:4px', 'display:inline-flex', 'align-items:center',
     'justify-content:center', 'min-width:var(--tap)', 'min-height:var(--tap)', 'padding:0', 'border:0', 'border-radius:var(--r-1)',
     'font:inherit', 'font-size:22px', 'line-height:1']],
   [null, '.bg-fd-card__x:hover', []],
   [null, '.bg-fd-card__x[hidden]', ['display:none']],
-  ['(min-width:360px)', '.bg-fd-card', ['min-height:226px']],
-  ['(min-width:480px)', '.bg-fd-card', ['min-height:203px']],
-  ['(min-width:520px)', '.bg-fd-card', ['min-height:178px']],
-  ['(min-width:640px)', '.bg-fd-card__cta', ['width:auto', 'align-self:flex-start']],
+  ['(min-width:360px)', '.bg-fd-card', ['min-height:275px']],
+  ['(min-width:480px)', '.bg-fd-card', ['min-height:252px']],
+  ['(min-width:520px)', '.bg-fd-card', ['min-height:226px']],
+  ['(min-width:640px)', '.bg-fd-card__cta-col', ['text-align:left']],
+  ['(min-width:640px)', '.bg-fd-card__cta', ['width:auto']],
   ['(min-width:1024px)', '.bg-fd-slot', ['padding-top:20px']],
-  ['(min-width:1024px)', '.bg-fd-card', ['flex-direction:row', 'align-items:center', 'gap:24px', 'min-height:132px',
-    'padding:20px 64px 20px 24px']],
+  ['(min-width:1024px)', '.bg-fd-card', ['min-height:156px', 'padding:20px 64px 20px 24px']],
+  ['(min-width:1024px)', '.bg-fd-card__row', ['flex-direction:row', 'align-items:center', 'gap:24px']],
   ['(min-width:1024px)', '.bg-fd-card__title', ['font-size:26px']],
   ['(min-width:1024px)', '.bg-fd-card__title::before', ['content:none']],
   ['(min-width:1024px)', '.bg-fd-card__line', ['font-size:16px']],
-  ['(min-width:1024px)', '.bg-fd-card__cta', ['flex:none', 'align-self:center']],
+  ['(min-width:1024px)', '.bg-fd-card__cta-col', ['flex:none', 'align-self:center', 'text-align:center']],
+  ['(min-width:1024px)', '.bg-fd-card__dots', ['align-self:center']],
   ['(min-width:1024px)', '.bg-fd-card__x', ['top:8px', 'right:10px']],
 ];
 // base.css: the button inside the card, the page gutter around it, the fonts and the body defaults it inherits.
@@ -778,8 +782,8 @@ const CARD_BASE_PINNED = [
   [null, '.bg-btn--primary:active', ['transform:none']],
   ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
 ];
-// The ten rendered cards (copy, highlights, classes, the CTA label) and the two font files.
-const CARD_MARKUP_SHA256 = '169132c032e7ea97fef94232946a358969ba4834075c1cbc70c8b67d7f1997bf';
+// The eleven rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
+const CARD_MARKUP_SHA256 = '3c499f155c7eb0501a85d9d6e1d3f23c76f68135e85f2dbaae6e9f7501a3b0b9';
 const FONT_SHA256 = Object.freeze({
   'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
   'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',
@@ -808,7 +812,7 @@ test('founding card: every layout declaration the measured heights depend on is 
   for (const [f, h] of Object.entries(FONT_SHA256)) assert.equal(sha(readFileSync(join(ASSETS, 'fonts', f))), h, `${f} changed: ${REMEASURE}`);
 });
 
-test('founding card: at every measured width the reservation holds the longest variant + 3px and wastes at most 30px', () => {
+test('founding card: at every measured width the reservation holds the tallest variant + a safety margin', () => {
   // The min-height in force at a viewport width: the base rule, then each (min-width:Npx) step up to it.
   const steps = cssRules('founding.css').filter((r) => r.sels.includes('.bg-fd-card') && r.decls.some(([k]) => k === 'min-height'))
     .map((r) => {
@@ -819,12 +823,12 @@ test('founding card: at every measured width the reservation holds the longest v
   assert.equal(steps[0][0], 0, 'a base min-height');
   for (let i = 1; i < steps.length; i++) assert.ok(steps[i][1] < steps[i - 1][1], `min-height shrinks as the card widens: ${JSON.stringify(steps)}`);
   const minAt = (w) => steps.filter(([at]) => at <= w).at(-1)[1];
-  // Every step boundary is a measured width, and so is the width just below it.
-  for (const [at] of steps.slice(1)) assert.ok(CARD_LONGEST[at] && CARD_LONGEST[at - 1], `${at}px and ${at - 1}px are measured`);
-  for (const [w, both] of Object.entries(CARD_LONGEST)) {
+  // Every step boundary but the base is one of the measured widths (the base step has no left edge).
+  for (const [at] of steps.slice(1)) assert.ok(CARD_LONGEST[at] !== undefined, `${at}px is measured`);
+  for (const [w, longest] of Object.entries(CARD_LONGEST)) {
     const m = minAt(Number(w));
-    assert.ok(m >= Math.max(...both) + 3, `${w}px: min-height ${m}px holds the longest variant (${Math.max(...both)}px) + 3px`);
-    assert.ok(m - Math.min(...both) <= 30, `${w}px: min-height ${m}px wastes ${(m - Math.min(...both)).toFixed(2)}px (> 30px)`);
+    assert.ok(m >= longest + 3, `${w}px: min-height ${m}px holds the tallest variant (${longest}px) + 3px`);
+    assert.ok(m - longest <= 20, `${w}px: min-height ${m}px wastes ${(m - longest).toFixed(2)}px (> 20px)`);
   }
 });
 

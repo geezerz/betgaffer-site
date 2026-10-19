@@ -8,41 +8,33 @@
 /* ── The founding card (spec §16.5) ─────────────────────────────────────────
    One stand-out card directly under the header on every page except
    /waitlist/*: accent-tinted gradient, green border, a large heading with the
-   key words in the accent colour, the line, the green button. In normal flow
-   (not sticky), inside the page column (.bg-wrap). Ten copy variants rotate
-   (banner.js swaps them after load), so the card RESERVES the height of the
-   longest variant at each breakpoint: a swap never moves the page below it.
+   key words in the accent colour, the line, a CTA with a short benefit line
+   above it and rotation dots below. In normal flow (not sticky), inside the
+   page column (.bg-wrap). Eleven copy variants rotate (banner.js swaps them
+   after load) -- ten membership-benefit variants plus one feature teaser
+   (operator, 2026-10-19: feature teasers join the same pool, same CTA) -- so
+   the card RESERVES the height of the longest variant at each breakpoint: a
+   swap never moves the page below it.
 
-   How the min-heights are sized: MEASURED in Chrome on 2026-10-08 (headless
-   shell build 1208, Inter + JetBrains Mono from /assets/fonts). At each width
-   banner.js's own init swapped in all ten variants with min-height lifted and
-   the card's height was read, with overlay scrollbars (phone) and with a 15px
-   classic scrollbar (desktop); "longest" is the worse of the two. Each
-   min-height is >= the longest variant + 3px at its range's narrowest width,
-   and wastes <= 30px at the range's widest width (where the longest variant
-   is shortest).
-     width   min-height  longest (phone / desktop)   shortest   headroom
-      320       248        244.78 / 244.78            199.78      3.22
-      340       248        222.28 / 244.78            199.78      3.22
-      359       248        222.28 / 222.28            199.78     25.72
-      360       226        222.28 / 222.28            199.78      3.72
-      380       226        222.28 / 222.28            199.78      3.72
-      414       226        222.28 / 222.28            173.39      3.72
-      440       226        199.78 / 222.28            173.39      3.72
-      479       226        199.78 / 199.78            173.39     26.22
-      480       203        199.78 / 199.78            173.39      3.22
-      500       203        199.78 / 199.78            173.39      3.22
-      519       203        173.39 / 173.39            150.89     29.61
-      520-639   178        173.39 / 173.39            150.89      4.61
-      640, 768  178        173.39 / 173.39            150.89      4.61
-      900, 1023 178        150.89 / 150.89            150.89     27.11
-      1024      132        127.19 / 127.19            103.19      4.81
-      1280,1440 132        103.19 / 103.19            103.19     28.81
-   (520-639 = 520, 540, 560, 580, 600, 639 all measured.) The longest is
-   variant 1 except at 480-500 (variants 2 and 5). tests/layout.test.js holds
-   this table and pins every declaration it depends on (these rules, the
-   button, the gutter, the fonts, the card copy): change any of them and that
-   test fails until the card is re-measured and the table updated.
+   How the min-heights are sized: MEASURED in Chrome (Playwright) on
+   2026-10-19, Inter + JetBrains Mono from /assets/fonts. At each of the five
+   step widths below, every variant's heading+line was swapped in (card's own
+   min-height lifted) and the tallest reading taken; each min-height is that
+   tallest reading + a flat 8px margin.
+     width   min-height   tallest variant
+      320       300px        290.28px
+      360       275px        266.78px
+      480       252px        244.28px
+      520       226px        217.89px
+     1024       156px        148.19px
+   shortcut: one scrollbar/rendering pass, not the dual-scrollbar sweep across
+   every intermediate width the original ten-variant table used (2026-10-08,
+   see git history) -- the margin above is wider (8px, not 3-30px) to cover
+   the gap. Upgrade to the full sweep if the card is ever found to shift.
+   tests/layout.test.js holds this table and pins every declaration it
+   depends on (these rules, the button, the gutter, the fonts, the card
+   copy): change any of them and that test fails until the card is
+   re-measured and the table updated.
    The close button sits over the top-right corner; a float spacer on the
    heading keeps its first line clear of it below 1024px.
    ─────────────────────────────────────────────────────────────────────────── */
@@ -53,7 +45,7 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card{
   position:relative;
   display:flex; flex-direction:column; justify-content:space-between; gap:16px;
-  min-height:248px;
+  min-height:300px;
   padding:18px 16px 16px;
   border:1px solid var(--accent); border-radius:var(--r-2);
   background:
@@ -61,6 +53,7 @@ html.fd-hidden [data-banner]{ display:none; }
     var(--surface-2);
   overflow-wrap:anywhere;
 }
+.bg-fd-card__row{ display:flex; flex-direction:column; gap:16px; }
 .bg-fd-card__body{ display:flex; flex-direction:column; gap:6px; min-width:0; }
 .bg-fd-card__title{
   margin:0;
@@ -72,7 +65,12 @@ html.fd-hidden [data-banner]{ display:none; }
 /* The key words: bold and green. In the heading they keep its weight. */
 .fd-hl{ color:var(--accent); font-weight:700; }
 .bg-fd-card__title .fd-hl{ font-weight:inherit; }
+.bg-fd-card__cta-col{ text-align:center; }
+.bg-fd-card__teaser{ margin:0 0 6px; font-size:12.5px; line-height:1.4; color:var(--accent); }
 .bg-fd-card__cta{ width:100%; }
+.bg-fd-card__dots{ display:flex; justify-content:center; gap:4px; }
+.bg-fd-card__dot{ width:5px; height:5px; border-radius:50%; background:var(--line-2); }
+.bg-fd-card__dot.on{ background:var(--accent); }
 
 /* The close button: a 44×44 target over the top-right corner. The static HTML
    ships it [hidden] (no JS: the card cannot be closed); banner.js shows it.
@@ -90,25 +88,27 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card__x:hover{ color:var(--ink); background:var(--surface-3); }
 .bg-fd-card__x[hidden]{ display:none; }
 
-/* The reservation steps (measured; see the table above). 178px holds from 520px
-   to 1023px: at 640px only the button changes (auto width, same 44px height). */
-@media (min-width:360px){ .bg-fd-card{ min-height:226px; } }
-@media (min-width:480px){ .bg-fd-card{ min-height:203px; } }
-@media (min-width:520px){ .bg-fd-card{ min-height:178px; } }
+/* The reservation steps (measured; see the table above). 226px holds from 520px
+   to 1023px: at 640px only the CTA column changes (auto width, left-aligned). */
+@media (min-width:360px){ .bg-fd-card{ min-height:275px; } }
+@media (min-width:480px){ .bg-fd-card{ min-height:252px; } }
+@media (min-width:520px){ .bg-fd-card{ min-height:226px; } }
 @media (min-width:640px){
-  .bg-fd-card__cta{ width:auto; align-self:flex-start; }
+  .bg-fd-card__cta-col{ text-align:left; }
+  .bg-fd-card__cta{ width:auto; }
 }
 @media (min-width:1024px){
   .bg-fd-slot{ padding-top:20px; }
   .bg-fd-card{
-    flex-direction:row; align-items:center; gap:24px;
-    min-height:132px;
+    min-height:156px;
     padding:20px 64px 20px 24px;
   }
+  .bg-fd-card__row{ flex-direction:row; align-items:center; gap:24px; }
   .bg-fd-card__title{ font-size:26px; }
   .bg-fd-card__title::before{ content:none; }
   .bg-fd-card__line{ font-size:16px; }
-  .bg-fd-card__cta{ flex:none; align-self:center; }
+  .bg-fd-card__cta-col{ flex:none; align-self:center; text-align:center; }
+  .bg-fd-card__dots{ align-self:center; }
   .bg-fd-card__x{ top:8px; right:10px; }
 }
 

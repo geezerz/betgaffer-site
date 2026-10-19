@@ -33,6 +33,14 @@ test('the waitlist cap in config is the founding waitlist cap', () => {
   assert.equal(config.waitlist_places, F.WAITLIST_PLACES);
 });
 
+test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 2026-10-19)', () => {
+  assert.ok(Object.isFrozen(F.CTA_TEASER));
+  assert.equal(md(F.CTA_TEASER), '**30% off**, **double Credits**, early access.');
+  assert.equal(F.CTA_TEASER.filter((s) => s.offer).length, 1, 'only the percentage is tagged offer');
+});
+// md() (defined below, alongside SPEC_VARIANTS) is in scope here: test callbacks run after the whole
+// module's synchronous top level has already executed, so md is assigned by the time this one fires.
+
 test('benefits: six, in programme order, each with a title and one sentence', () => {
   assert.deepEqual(F.BENEFITS.map((b) => b.id), ['B1', 'B2', 'B3', 'B4', 'B5', 'B6']);
   for (const b of F.BENEFITS) {
@@ -50,7 +58,7 @@ test('plans are the operator-decided prices (2026-10-08)', () => {
     [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
 });
 
-// ── The founding card's ten copy variants (spec §16.5, variants 4 and 9 as corrected in the spec) ──
+// ── The founding card's eleven copy variants (spec §16.5, variants 4 and 9 as corrected in the spec) ──
 // Typed out from the spec table on purpose (never derived from founding.js): **bold** marks the words
 // the card highlights (bold, in the accent colour).
 const SPEC_VARIANTS = Object.freeze([
@@ -64,13 +72,14 @@ const SPEC_VARIANTS = Object.freeze([
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
   ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double Credits** and **priority support**.'],
   ['Get the **founding member** badge', 'A **founding badge**, **30% off** every payment and **double Credits** — for the first **1,000**.'],
+  ['Build a slip to **YOUR odds**', "Tell Gaffer the odds you want — it suggests a slip, you confirm before anything's added."],
 ]);
 /** Segments -> the spec's **markdown** form. */
 const md = (segs) => segs.map((s) => (s.hl ? `**${s.t}**` : s.t)).join('');
 
 describe('VARIANTS: the founding card copy (spec §16.5)', () => {
-  test('ten variants, each the spec heading and line, with the spec highlights', () => {
-    assert.equal(F.VARIANTS.length, 10);
+  test('eleven variants, each the spec heading and line, with the spec highlights', () => {
+    assert.equal(F.VARIANTS.length, 11);
     F.VARIANTS.forEach((v, i) => {
       assert.deepEqual(Object.keys(v).sort(), ['heading', 'line'], `variant ${i + 1}`);
       assert.equal(md(v.heading), SPEC_VARIANTS[i][0], `variant ${i + 1} heading`);

@@ -44,7 +44,7 @@ const OFF = `${DISCOUNT_PCT}% off`;
 const ALL = fmtInt(TOTAL_PLACES);
 
 /**
- * The founding card's ten copy variants (spec §16.5; variants 4 and 9 as corrected there). The build
+ * The founding card's eleven copy variants (spec §16.5; variants 4 and 9 as corrected there). The build
  * renders one per page (variantFor), banner.js swaps in another per page view. No time commitments,
  * nothing beyond the programme rules.
  * @type {readonly {heading: readonly {t: string, hl?: true, offer?: true}[], line: readonly {t: string, hl?: true, offer?: true}[]}[]}
@@ -70,7 +70,16 @@ export const VARIANTS = Object.freeze([
     [P('Stay subscribed and keep your '), H(OFF), P(', '), H('double Credits'), P(' and '), H('priority support'), P('.')]),
   variant([P('Get the '), H('founding member'), P(' badge')],
     [P('A '), H('founding badge'), P(', '), H(OFF), P(' every payment and '), H('double Credits'), P(' — for the first '), H(ALL), P('.')]),
+  // Feature teaser (operator, 2026-10-19): no live feature to try yet, so the CTA still reads as a
+  // founding-waitlist ask like every other variant — it just leads with what's coming instead of a
+  // membership perk. Joins the same rotation pool (operator: "features cards becomes part of the
+  // cards picked at random... still link to founding member registrations").
+  variant([P('Build a slip to '), H('YOUR odds')],
+    [P("Tell Gaffer the odds you want — it suggests a slip, you confirm before anything's added.")]),
 ]);
+
+/** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */
+export const CTA_TEASER = Object.freeze([H(OFF), P(', '), H('double Credits'), P(', early access.')]);
 
 /** FNV-1a, 32-bit, over UTF-16 code units: the same number in the build and in any browser. */
 export function pathHash(s) {

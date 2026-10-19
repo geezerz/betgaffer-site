@@ -109,8 +109,8 @@ describe('site/content/waitlist.js', () => {
     assert.doesNotThrow(() => waitlist.render(testConfig(), { waitlistHtml: waitlistForm({ places: false }) }));
   });
 
-  test('foundingCard(i): all ten variants render the stand-out card (spec §16.5)', () => {
-    assert.equal(F.VARIANTS.length, 10, 'premise: ten variants');
+  test('foundingCard(i): all eleven variants render the stand-out card (spec §16.5)', () => {
+    assert.equal(F.VARIANTS.length, 11, 'premise: eleven variants');
     for (const [i, v] of F.VARIANTS.entries()) {
       const html = waitlist.foundingCard(i);
       const doc = parse(html);
@@ -129,18 +129,33 @@ describe('site/content/waitlist.js', () => {
       assert.ok(line && has(line, 'bg-fd-card__line') && line.tag === 'p', `variant ${i}: the line`);
       assert.equal(textOf(head), v.heading.map((x) => x.t).join(''), `variant ${i} heading`);
       assert.equal(textOf(line), v.line.map((x) => x.t).join(''), `variant ${i} line`);
-      // Highlights: strong.fd-hl, one per hl segment, in order.
-      const strongs = findAll(slot, (n) => n.tag === 'strong');
+      // Highlights: strong.fd-hl, one per hl segment, in order. Scoped to head+line: the teaser
+      // (checked once, below, since it is the same on every variant) has its own highlights.
+      const strongs = [...findAll(head, (n) => n.tag === 'strong'), ...findAll(line, (n) => n.tag === 'strong')];
       assert.deepEqual(strongs.map((n) => [n.attrs.class, textOf(n)]),
         [...v.heading, ...v.line].filter((x) => x.hl).map((x) => ['fd-hl', x.t]), `variant ${i} highlights`);
-      // Offer figures: exactly the % segments.
-      assert.deepEqual(findAll(slot, (n) => n.attrs['data-figure'] === 'offer').map(textOf),
-        [...v.heading, ...v.line].filter((x) => x.offer).map((x) => x.t), `variant ${i} offers`);
+      // Offer figures: exactly the % segments (again scoped to head+line, the teaser has its own).
+      assert.deepEqual(
+        [...findAll(head, (n) => n.attrs['data-figure'] === 'offer'), ...findAll(line, (n) => n.attrs['data-figure'] === 'offer')].map(textOf),
+        [...v.heading, ...v.line].filter((x) => x.offer).map((x) => x.t), `variant ${i} offers`,
+      );
       assert.deepEqual(percentagesOutsideOffers(html), [], `variant ${i}`);
+      // The subtle teaser line under the CTA (operator, 2026-10-19): same on every variant.
+      const teaser = find(slot, (n) => has(n, 'bg-fd-card__teaser'));
+      assert.equal(teaser.tag, 'p', `variant ${i}: teaser`);
+      assert.equal(textOf(teaser), '30% off, double Credits, early access.', `variant ${i}`);
+      assert.deepEqual(findAll(teaser, (n) => n.tag === 'strong').map((n) => [n.attrs.class, textOf(n)]),
+        [['fd-hl', '30% off'], ['fd-hl', 'double Credits']], `variant ${i}: teaser highlights`);
+      assert.equal(find(teaser, (n) => n.attrs['data-figure'] === 'offer') && textOf(find(teaser, (n) => n.attrs['data-figure'] === 'offer')),
+        '30% off', `variant ${i}: teaser offer figure`);
+      // Rotation dots: one per variant, the current one marked "on".
+      const dots = findAll(slot, (n) => has(n, 'bg-fd-card__dot'));
+      assert.equal(dots.length, F.VARIANTS.length, `variant ${i}: one dot per variant`);
+      assert.deepEqual(dots.map((d) => has(d, 'on')), F.VARIANTS.map((_, k) => k === i), `variant ${i}: only its own dot is on`);
       // The button and the close control.
       const a = findAll(slot, (n) => n.tag === 'a');
       assert.deepEqual(a.map((n) => [n.attrs.href, textOf(n)]), [['/waitlist/', 'See the founding benefits']]);
-      assert.ok(has(a[0], 'bg-btn') && has(a[0], 'bg-btn--primary') && has(a[0], 'bg-fd-card__cta'));
+      assert.ok(has(a[0], 'bg-btn') && has(a[0], 'bg-btn--primary') && has(a[0], 'bg-btn--glow') && has(a[0], 'bg-fd-card__cta'));
       const x = findAll(slot, (n) => n.tag === 'button');
       assert.equal(x.length, 1);
       assert.equal(x[0].attrs.type, 'button');
@@ -171,7 +186,7 @@ describe('site/content/waitlist.js', () => {
   });
 
   test('foundingCard(i): anything but an index into VARIANTS throws', () => {
-    for (const bad of [undefined, null, -1, 10, 1.5, '3', NaN]) {
+    for (const bad of [undefined, null, -1, F.VARIANTS.length, 1.5, '3', NaN]) {
       assert.throws(() => waitlist.foundingCard(bad), RangeError, String(bad));
     }
   });
@@ -560,7 +575,7 @@ describe('/waitlist/ and the founding card in the built site', () => {
     const cardHtml = home.slice(home.indexOf('<aside class="bg-wrap bg-fd-slot"'), home.indexOf('</aside>', home.indexOf('<aside class="bg-wrap bg-fd-slot"')));
     assert.match(cardHtml, /bg-fd-card__cta/, 'premise: the card markup was found');
     const classes = new Set([...`${main(page)}${cardHtml}`.matchAll(/\bclass="([^"]+)"/g)].flatMap((m) => m[1].split(/\s+/)));
-    const fromBase = new Set(['bg-wrap', 'bg-page', 'vh', 'bg-btn', 'bg-btn--primary', 'bg-btn--ghost', 't-lbl', 't-lbl--quiet', 't-s', 't-b', 't-h', 't-d1', 't-d2', 'mono', 'stale']);
+    const fromBase = new Set(['bg-wrap', 'bg-page', 'vh', 'bg-btn', 'bg-btn--primary', 'bg-btn--ghost', 'bg-btn--glow', 't-lbl', 't-lbl--quiet', 't-s', 't-b', 't-h', 't-d1', 't-d2', 'mono', 'stale']);
     let checked = 0;
     for (const c of classes) {
       if (fromBase.has(c) || c.startsWith('bg-wl')) continue;
