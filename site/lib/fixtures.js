@@ -42,7 +42,10 @@ export const EST_TEXT = 'estimated price — no market price was captured';
 /** The empty toolbar slot predictions.js fills; hidden (and so absent) without JS (spec §5). */
 export const DAY_TOOLS = '<div class="day-tools" data-day-tools hidden></div>';
 
-const LIVE = new Set(['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT']);
+// Exported for predictions.js's "Jump to now": a row this status is genuinely in progress, not
+// just recorded NS at publish time (a static page's NS tag survives for up to 2h after a real
+// kickoff — see predictions.js's own JUMP_GRACE_MS note).
+export const LIVE = new Set(['1H', 'HT', '2H', 'ET', 'BT', 'P', 'LIVE', 'INT']);
 const STATUS_LABELS = Object.freeze({
   FT: 'FT', AET: 'AET', PEN: 'Pens', PST: 'Postponed', CANC: 'Cancelled', ABD: 'Abandoned',
   SUSP: 'Suspended', TBD: 'Time TBC', AWD: 'Awarded', WO: 'Walkover',
