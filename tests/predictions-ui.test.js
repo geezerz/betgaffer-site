@@ -647,7 +647,10 @@ describe('Jump to now', () => {
     assert.equal(jump.textContent, 'Jump to now');
     assert.equal(s.tools.querySelector('[role="status"]').contains(jump), false);
     fire(jump, 'click');
-    const target = s.doc.getElementById('fx-900010'); // the first NS row after 13:00Z (withdrawn rows skipped)
+    // fx-900005 (NS, ko 12:00Z) kicked off before 13:00Z but is within the 90-minute grace
+    // (JUMP_GRACE_MS) -- the operator's point: a match that started under 90 minutes ago is
+    // still "now", not something to skip past. fx-900010 (16:00Z) would have been the old target.
+    const target = s.doc.getElementById('fx-900005');
     // Instant, then re-aligned next frame: rows above grow as content-visibility renders them,
     // which made a smooth scroll stop short of its row.
     assert.deepEqual(target.scrolls, [{ block: 'start' }]);
@@ -662,26 +665,34 @@ describe('Jump to now', () => {
     const s = setup({ now: ON_DAY });
     s.clock.now = Date.parse('2026-10-06T17:00:00Z');
     fire(tool(s, 'jump'), 'click');
-    assert.equal(s.doc.getElementById('fx-900010').scrolls, undefined);
-    assert.equal(s.doc.getElementById('fx-900012').scrolls.length, 1);
+    // fx-900010 (NS, ko 16:00Z) kicked off an hour before 17:00Z -- within the 90-minute grace,
+    // so it is still the target; fx-900012 (18:00Z) is not reached.
+    assert.equal(s.doc.getElementById('fx-900010').scrolls.length, 1);
+    assert.equal(s.doc.getElementById('fx-900012').scrolls, undefined);
     type(s, 'parade');
     s.t.run();
     fire(tool(s, 'jump'), 'click');
-    assert.equal(s.doc.getElementById('fx-900025').scrolls.length, 1, 'Alpha hidden: the next visible one');
+    // "Status Parade" (the search match) also contains fx-900015, status HT at 19:00Z -- a
+    // genuinely in-progress match (LIVE set) now counts as "now" too, and it sorts ahead of the
+    // still-NS fx-900025 (20:00Z): Alpha hidden, the next ELIGIBLE visible one wins, not merely
+    // the next NS one.
+    assert.equal(s.doc.getElementById('fx-900015').scrolls.length, 1, 'Alpha hidden: the next eligible visible one (HT counts as live)');
+    assert.equal(s.doc.getElementById('fx-900025').scrolls, undefined);
   });
 
   test('reduced motion: the same instant scroll and re-alignment, never smooth', () => {
     const s = setup({ now: ON_DAY, reduced: true });
     fire(tool(s, 'jump'), 'click');
     s.flush();
-    assert.deepEqual(s.doc.getElementById('fx-900010').scrolls, [{ block: 'start' }, { block: 'start' }]);
+    assert.deepEqual(s.doc.getElementById('fx-900005').scrolls, [{ block: 'start' }, { block: 'start' }]);
   });
 
-  test('not shown on another day, or once nothing is left to start; a stale button hides itself', () => {
+  test('not shown on another day, or once every row is out of the 90-minute grace; a stale button hides itself', () => {
     assert.equal(tool(setup({ now: NEXT_DAY }), 'jump').hidden, true, 'not today');
-    assert.equal(tool(setup({ now: Date.parse('2026-10-06T20:30:00Z') }), 'jump').hidden, true, 'every NS row has kicked off');
+    // The last possible target is fx-900025 (NS, ko 20:00Z); its grace runs out at 21:30Z.
+    assert.equal(tool(setup({ now: Date.parse('2026-10-06T21:35:00Z') }), 'jump').hidden, true, 'every row is past its 90-minute grace');
     const s = setup({ now: ON_DAY });
-    s.clock.now = Date.parse('2026-10-06T21:00:00Z');
+    s.clock.now = Date.parse('2026-10-06T21:35:00Z');
     fire(tool(s, 'jump'), 'click');
     assert.equal(tool(s, 'jump').hidden, true);
     assert.equal(rows(s.doc).some((r) => r.scrolls), false);

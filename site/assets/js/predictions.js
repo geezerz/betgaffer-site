@@ -16,6 +16,7 @@
 import { matcher, rowWords, words } from './lib/search.js';
 import { lagosToday } from './lib/time.js';
 import { fmtInt, plural } from './lib/num.js';
+import { LIVE } from './lib/fixtures.js';
 
 export const STORAGE_KEY = 'bg.leagues';
 /**
@@ -146,7 +147,7 @@ function buildIndex(list) {
       comp,
       words: rowWords({ home: teams[0] ?? '', away: teams[1] ?? '', comp }),
       withdrawn: li.getAttribute('data-state') === 'withdrawn',
-      ns: li.getAttribute('data-status') === 'NS',
+      status: li.getAttribute('data-status') ?? '',
       ko: Date.parse(li.getAttribute('data-ko') ?? ''),
     };
   });
@@ -330,8 +331,16 @@ export function init(root = document, {
       return false;
     }
   };
-  // The index is in list order (kickoff order), so the first match is the next to start.
-  const nextUp = (t) => index.find((r) => !r.el.hidden && !r.withdrawn && r.ns && Number.isFinite(r.ko) && r.ko > t);
+  // A published page's NS tag is up to ~2h stale (the publisher's own cadence), so a row that
+  // kicked off minutes ago often still reads NS -- the old `r.ns` check skipped straight past it
+  // to whatever kicks off next, which could be hours away. A normal match plus stoppage time is
+  // over well within 90 minutes of kickoff (operator 2026-10-19), so a row within that grace --
+  // NS (hasn't started) or a genuinely in-progress status -- still counts as "now"; past the
+  // grace it does not, so a mis-tagged stuck-live row is never a permanent target.
+  const JUMP_GRACE_MS = 90 * 60 * 1000;
+  // The index is in list order (kickoff order), so the first match is the next (or current) one.
+  const nextUp = (t) => index.find((r) => !r.el.hidden && !r.withdrawn
+    && (r.status === 'NS' || LIVE.has(r.status)) && Number.isFinite(r.ko) && r.ko > t - JUMP_GRACE_MS);
 
   function apply() {
     const sel = state.selected;
