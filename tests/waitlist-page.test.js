@@ -287,9 +287,18 @@ describe('/waitlist/ and the founding card in the built site', () => {
     const form = find(doc, (n) => n.tag === 'form' && n.attrs['data-waitlist'] !== undefined);
     assert.equal(find(form, (n) => n.attrs['data-waitlist-places'] !== undefined), null, 'the form has no places line');
     const tiles = findAll(doc, (n) => has(n, 'bg-fd__tile'));
-    assert.equal(tiles.length, 2);
+    assert.equal(tiles.length, 3);
     assert.equal(textOf(tiles[0]), 'Waitlist places 500 places for the first 500 people to join the waitlist.');
     assert.equal(textOf(tiles[1]), `Launch places ${LAUNCH_TILE}`);
+    assert.equal(textOf(tiles[2]), 'Applications Approved first come, first served.', 'no number until JS has a real count');
+  });
+
+  test('applications tile: the count ships hidden (no safe static guess) and un-hides once JS has a real figure', () => {
+    const apps = find(doc, (n) => n.attrs['data-waitlist-applications'] !== undefined);
+    assert.ok(apps, 'the applications counter is on the page');
+    assert.equal(textOf(apps), '');
+    assert.ok(apps.attrs.hidden !== undefined, 'hidden until JS fills a real count');
+    assert.ok(has(apps, 'bg-fd__count') && has(apps, 'mono'));
   });
 
   test('the form: the shared waitlist form, button "Join the founding waitlist", the hidden "places taken" line above it', () => {

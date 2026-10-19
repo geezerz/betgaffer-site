@@ -45,6 +45,12 @@ test('isomorphic and locale-free: shipped to the browser, no imports, no Intl / 
   assert.doesNotMatch(SRC, /\bIntl\b|toLocaleString|navigator|\bnode:|\bprocess\b|\bBuffer\b/);
 });
 
+// site/assets/js/waitlist.js is the ONE documented exception: tests/waitlist.test.js imports it
+// directly from source (unlike predictions.js, whose own tests only import a BUILT copy), so it
+// cannot `import` the isomorphic num.js -- that path only exists post-build. Allowed ONLY here,
+// and only because the next test proves its copy is byte-for-byte the same formatter.
+const ALLOWED_DUPLICATE = 'site/assets/js/waitlist.js';
+
 test('ONE formatter: no other module groups digits, asks the locale, or keeps its own plural()', () => {
   const files = [];
   const walk = (dir) => {
@@ -59,7 +65,7 @@ test('ONE formatter: no other module groups digits, asks the locale, or keeps it
   assert.ok(files.includes('site/lib/fixtures.js') && files.includes('site/assets/js/predictions.js') && files.includes('site/build.mjs'), 'premise: the walk reaches the site');
   const hits = [];
   for (const rel of files) {
-    if (rel === 'site/lib/num.js') continue;
+    if (rel === 'site/lib/num.js' || rel === ALLOWED_DUPLICATE) continue;
     const code = stripComments(readFileSync(join(ROOT, rel), 'utf8'));
     // the digit-grouping lookahead (any spelling of "\B(?=(\d{3})+"), a locale call, or a local plural
     for (const [what, re] of [['groups digits itself', /\\d\{3\}\)\+/], ['asks the locale', /toLocaleString|Intl\.NumberFormat/], ['defines its own plural', /(?:const|let|var|function)\s+plural\b/]]) {
@@ -69,6 +75,16 @@ test('ONE formatter: no other module groups digits, asks the locale, or keeps it
   assert.deepEqual(hits, []);
   // premise: the grouping pattern is the one num.js uses, so the scan would see a copy of it
   assert.match(SRC, /\\d\{3\}\)\+/);
+});
+
+test('the one allowed duplicate (waitlist.js) groups digits identically to fmtInt, over the same case table', () => {
+  const code = stripComments(readFileSync(join(ROOT, ALLOWED_DUPLICATE), 'utf8'));
+  const m = code.match(/const fmtInt = \(n\) => (String\(n\)\.replace\([^;]+\));/);
+  assert.ok(m, 'waitlist.js must define fmtInt as a single expression this test can extract and run');
+  // eslint-disable-next-line no-new-func -- extracting and running the ALLOWED duplicate's own
+  // expression is the whole point: a hand-copied assertion could drift from the real source silently.
+  const dup = new Function('n', `return ${m[1]};`);
+  for (const n of [0, 7, 999, 1000, 1114, 9999, 10000, 1234567]) assert.equal(dup(n), fmtInt(n), String(n));
 });
 
 test('every module that prints counts imports the formatter', () => {

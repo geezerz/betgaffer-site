@@ -747,7 +747,7 @@ test('the Function never logs an email address or an IP', async () => {
 
 // ─── GET: places left (list-based) ──────────────────────────────────────────────────────────────
 
-test('GET places_left = max(0, 500 − number of e: keys), floored at 0, hardened', async () => {
+test('GET places_left = max(0, 500 − number of e: keys), floored at 0, hardened; applications is the same count, uncapped', async () => {
   for (const [n, left] of [[0, 500], [1, 499], [123, 377], [499, 1], [500, 0], [731, 0]]) {
     const kv = new FakeKV();
     seed(kv, n);
@@ -755,7 +755,7 @@ test('GET places_left = max(0, 500 − number of e: keys), floored at 0, hardene
     const res = await get(env(kv));
     assert.equal(res.status, 200);
     assertHardened(res);
-    assert.deepEqual(await res.json(), { places_left: left, cap: 500 }, `n=${n}`);
+    assert.deepEqual(await res.json(), { places_left: left, cap: 500, applications: n }, `n=${n}`);
     for (const op of kv.ops.filter((o) => o[0] === 'list')) {
       assert.equal(op[1], 'e:');
       assert.equal(op[2], 1000);
@@ -763,17 +763,17 @@ test('GET places_left = max(0, 500 − number of e: keys), floored at 0, hardene
   }
 });
 
-test('GET paginates only until 500 records are counted', async () => {
+test('GET paginates through every record -- applications is never capped at 500 (operator 2026-10-19)', async () => {
   let kv = new FakeKV();
   seed(kv, 731);
   kv.pageSize = 100;
-  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 0, cap: 500 });
-  assert.equal(kv.count('list'), 5, 'stops at the page that reaches 500');
+  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 0, cap: 500, applications: 731 });
+  assert.equal(kv.count('list'), 8, 'follows the cursor past 500, to list_complete');
 
   kv = new FakeKV();
   seed(kv, 123);
   kv.pageSize = 100;
-  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 377, cap: 500 });
+  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 377, cap: 500, applications: 123 });
   assert.equal(kv.count('list'), 2, 'follows the cursor to list_complete');
 });
 
@@ -782,17 +782,17 @@ test('GET is cached for 600 s via the Cache API, and the client still sees no-st
   const cache = installCache();
   const kv = new FakeKV();
   seed(kv, 10);
-  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 490, cap: 500 });
+  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 490, cap: 500, applications: 10 });
   seed(kv, 11);
   const lists = kv.count('list');
   mock.timers.tick(599 * 1000);
   const cached = await get(env(kv));
   assertHardened(cached);
-  assert.deepEqual(await cached.json(), { places_left: 490, cap: 500 });
+  assert.deepEqual(await cached.json(), { places_left: 490, cap: 500, applications: 10 });
   assert.equal(kv.count('list'), lists, 'served from cache without a KV list');
   assert.ok([...cache.entries.values()].some((e) => e.maxAge === 600));
   mock.timers.tick(2 * 1000);
-  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 489, cap: 500 });
+  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 489, cap: 500, applications: 11 });
 });
 
 test('GET: a KV list error → 503', async () => {
@@ -815,7 +815,7 @@ test('GET: a failed list is remembered for 60 s — 503 without re-listing, then
   await assertJson(await get(env(kv)), 503, MSG.down);
   assert.equal(kv.count('list'), 1, 'no re-list while the marker is live');
   mock.timers.tick(2 * 1000);
-  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 493, cap: 500 });
+  assert.deepEqual(await (await get(env(kv))).json(), { places_left: 493, cap: 500, applications: 7 });
   assert.equal(kv.count('list'), 2);
 });
 
@@ -995,6 +995,23 @@ test('placesUpdater: fills every counter, shows the "taken" line at 0, and never
   assert.deepEqual([tile.textContent, full.hidden], ['All 500 taken', false]);
   update(null);
   assert.equal(tile.textContent, 'All 500 taken');
+});
+
+test('placesUpdater: the applications tile un-hides on a real count, uncapped, independent of places_left', () => {
+  const el = (attrs = {}) => ({ attrs, hidden: true, textContent: '', getAttribute(n) { return Object.hasOwn(this.attrs, n) ? this.attrs[n] : null; } });
+  const apps = el({ 'data-waitlist-applications': '' });
+  const doc = { querySelectorAll: (s) => ({ '[data-waitlist-places]': [], '[data-waitlist-full]': [], '[data-waitlist-applications]': [apps] })[s] ?? [] };
+  const update = placesUpdater(doc);
+  update({ places_left: 500, cap: 500 }); // no `applications` field at all: left hidden, not a guess
+  assert.deepEqual([apps.textContent, apps.hidden], ['', true]);
+  update({ places_left: 500, cap: 500, applications: 0 });
+  assert.deepEqual([apps.textContent, apps.hidden], ['0 applications', false]); // un-hidden even at zero: it's a real count
+  update({ places_left: 0, cap: 500, applications: 1 });
+  assert.deepEqual([apps.textContent, apps.hidden], ['1 application', false]);
+  update({ places_left: 0, cap: 500, applications: 1247 });
+  assert.deepEqual([apps.textContent, apps.hidden], ['1,247 applications', false], 'uncapped, thousands-separated, past the 500 "all taken" state');
+  update({ places_left: 0, cap: 500, applications: -1 }); // not sane: last good value stays
+  assert.equal(apps.textContent, '1,247 applications');
 });
 
 test('messageFor: the server message when it is a sane string, else a status fallback', () => {

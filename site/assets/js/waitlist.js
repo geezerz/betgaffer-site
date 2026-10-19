@@ -1,6 +1,9 @@
 // Founding waitlist: progressive enhancement for form[data-waitlist] and the places counter (plan
-// Task 7; Plan A Task 4). Browser module, served alone (no imports). Without it the form still posts
-// and the Function answers with a 303 to a static result page.
+// Task 7; Plan A Task 4). Browser module, served alone (no imports) -- tests/waitlist.test.js
+// imports it directly from source (unlike predictions.js, which its own tests only import from a
+// built copy), so a real './lib/num.js' import would resolve against site/assets/js/lib/, which
+// exists only after a build. Without it the form still posts and the Function answers with a 303
+// to a static result page.
 //
 // The counter and the "places taken" line are looked up at DOCUMENT level: on /waitlist/ the counter
 // tile and the line sit outside the form. GET /api/waitlist is fetched at most once per page view.
@@ -21,12 +24,25 @@ const FALLBACK = Object.freeze({
   sending: 'Sending…',
 });
 
+// = site/lib/num.js fmtInt (this module is served alone and cannot import it -- see the header
+// comment; tests/num.test.js's ONE-formatter guard allowlists this exact duplicate, and
+// tests/waitlist.test.js asserts it produces identical output). Unlike places/cap (always <= 500
+// today), applications is uncapped and can run into four figures.
+const fmtInt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
 /** { left, cap } from a GET /api/waitlist payload, or null when the payload is not sane. */
 function sanePlaces(data) {
   if (!data || typeof data !== 'object') return null;
   const { places_left: left, cap } = data;
   if (!Number.isInteger(cap) || cap <= 0 || !Number.isInteger(left) || left < 0 || left > cap) return null;
   return { left, cap };
+}
+
+/** The real, uncapped applications total from a GET /api/waitlist payload, or null when not sane. */
+function saneApplications(data) {
+  if (!data || typeof data !== 'object') return null;
+  const { applications } = data;
+  return Number.isInteger(applications) && applications >= 0 ? applications : null;
 }
 
 /**
@@ -50,15 +66,28 @@ export function placesText(data, { long = false } = {}) {
 export function placesUpdater(doc) {
   const counters = [...doc.querySelectorAll('[data-waitlist-places]')];
   const fullLines = [...doc.querySelectorAll('[data-waitlist-full]')];
+  // The tile has no safe static number (unlike places/cap, which start at the real cap) -- it ships
+  // `hidden` and is only ever shown once a real count has arrived (operator 2026-10-19: "a true
+  // reflection", never a placeholder guess).
+  const appCounters = [...doc.querySelectorAll('[data-waitlist-applications]')];
   let full = false;
   return (data) => {
-    if (full) return;
-    const p = sanePlaces(data);
-    if (!p) return;
-    for (const el of counters) el.textContent = placesText(data, { long: el.getAttribute('data-waitlist-places') === 'long' });
-    if (p.left === 0) {
-      full = true;
-      for (const el of fullLines) el.hidden = false;
+    if (!full) {
+      const p = sanePlaces(data);
+      if (p) {
+        for (const el of counters) el.textContent = placesText(data, { long: el.getAttribute('data-waitlist-places') === 'long' });
+        if (p.left === 0) {
+          full = true;
+          for (const el of fullLines) el.hidden = false;
+        }
+      }
+    }
+    const apps = saneApplications(data);
+    if (apps !== null) {
+      for (const el of appCounters) {
+        el.textContent = `${fmtInt(apps)} ${apps === 1 ? 'application' : 'applications'}`;
+        el.hidden = false;
+      }
     }
   };
 }
