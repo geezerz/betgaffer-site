@@ -308,14 +308,19 @@ function kvDownSeconds(err) {
   return Math.max(1, 86400 - (nowS % 86400));
 }
 
-/** Records counted with list(), stopping as soon as CAP is reached. */
+/**
+ * Every `e:` record, counted with list(). Used for BOTH the waitlist places (capped at CAP) and the
+ * honest total number of applications (operator 2026-10-19: "a true reflection of how many people
+ * have applied" -- uncapped, since applications keep being accepted after the 500 founding places are
+ * gone). No early exit at CAP any more: MAX_LIST_PAGES (10 x LIST_PAGE = 10,000) is the only bound.
+ */
 async function countRecords(kv) {
   let count = 0;
   let cursor;
   for (let page = 0; page < MAX_LIST_PAGES; page += 1) {
     const r = await kv.list(cursor ? { prefix: 'e:', limit: LIST_PAGE, cursor } : { prefix: 'e:', limit: LIST_PAGE });
     count += Array.isArray(r && r.keys) ? r.keys.length : 0;
-    if (count >= CAP || !r || r.list_complete || !r.cursor) break;
+    if (!r || r.list_complete || !r.cursor) break;
     cursor = r.cursor;
   }
   return count;
@@ -417,8 +422,9 @@ export async function onRequestGet(context) {
   if (cache) {
     const v = await cacheRead(cache, key);
     if (v && v.down === true) return json(503, { ok: false, message: MESSAGES.down }); // recent list failure
-    if (v && Number.isInteger(v.places_left) && v.places_left >= 0 && v.places_left <= CAP && v.cap === CAP) {
-      return json(200, { places_left: v.places_left, cap: CAP });
+    if (v && Number.isInteger(v.places_left) && v.places_left >= 0 && v.places_left <= CAP && v.cap === CAP
+      && Number.isInteger(v.applications) && v.applications >= 0) {
+      return json(200, { places_left: v.places_left, cap: CAP, applications: v.applications });
     }
   }
 
@@ -431,7 +437,9 @@ export async function onRequestGet(context) {
     if (cache) await cacheWrite(context, cache, key, '{"down":true}', PLACES_FAIL_S);
     return json(503, { ok: false, message: MESSAGES.down });
   }
-  const payload = { places_left: Math.max(0, CAP - count), cap: CAP };
+  // `applications` is the SAME count, uncapped -- never derived from places_left, so a future
+  // rounding or cap change can't silently desync the two (operator 2026-10-19).
+  const payload = { places_left: Math.max(0, CAP - count), cap: CAP, applications: count };
   if (cache) await cacheWrite(context, cache, key, JSON.stringify(payload), PLACES_CACHE_S);
   return json(200, payload);
 }

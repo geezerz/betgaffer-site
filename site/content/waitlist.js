@@ -159,6 +159,11 @@ export function render(cfg, { waitlistHtml } = {}) {
 <p class="bg-fd__count mono">${escHtml(`${fmtInt(LAUNCH_PLACES)} places`)}</p>
 <p class="bg-fd__tile-note">for the first people to subscribe at launch.</p>
 </div>
+<div class="bg-fd__tile">
+<p class="t-lbl t-lbl--quiet">Applications</p>
+<p class="bg-fd__count mono" data-waitlist-applications hidden></p>
+<p class="bg-fd__tile-note">Approved first come, first served.</p>
+</div>
 </section>
 <section class="bg-fd__join" aria-labelledby="fd-join-h">
 <h2 class="vh" id="fd-join-h">Join the founding waitlist</h2>
