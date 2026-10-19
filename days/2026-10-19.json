@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-18T21:10:01Z",
-    "grades_as_of": "2026-10-19T05:10:03Z",
+    "grades_as_of": "2026-10-19T07:10:02Z",
     "prev_hash": "sha256:9351933ef4f63f480c5513ce241cc93d605a94f928e3da0e3e638f57afe26a1b",
     "picks_hash": "sha256:71969775a8c982bf0431a2f34e07599806f381701cb7fe198c42ba093be051cf",
     "counts": {
@@ -15,7 +15,7 @@
     "accuracy": {
         "won": 17,
         "lost": 2,
-        "pushes": 1,
+        "pushes": 2,
         "graded": 19,
         "pct": 89.47
     },
@@ -781,7 +781,7 @@
             "away": "Khovd Western",
             "home_id": 925215,
             "away_id": 921641,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -794,8 +794,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1166241,
