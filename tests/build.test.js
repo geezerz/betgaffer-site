@@ -11,7 +11,7 @@ import { pathToFileURL } from 'node:url';
 import { build, HEADERS, JSON_LD_CSP_HASH, CSS_ORDER, ISOMORPHIC_LIB, chooseDays, parseCli, loadConfig } from '../site/build.mjs';
 import { JSON_LD_CONTENT } from '../site/lib/layout.js';
 import realConfig from '../site/config.js';
-import { fmtDayLong, fmtStamp } from '../site/lib/time.js';
+import { fmtDayLong } from '../site/lib/time.js';
 import { nodeSha256 } from '../site/lib/data.js';
 import { PAGE_VARIANTS, VARIANTS, pathHash } from '../site/lib/founding.js';
 import * as privacy from '../site/content/privacy.js';
@@ -1125,13 +1125,13 @@ describe('staleNotice (built stale.js) at the Lagos-midnight boundaries', () => 
     assert.deepEqual(at('2026-10-08T23:00:00Z', { day: null, generatedAt: '2026-10-08T22:00:00Z' }), []);
   });
 
-  test('overdue: exactly 6 h old is fine; 6 h and 1 s is overdue, with the stamp (brand-approved copy, Plan E1)', () => {
+  test('overdue: exactly 6 h old is fine; 6 h and 1 s is overdue, a quiet refresh prompt (operator 2026-10-20: no timestamp, no "late")', () => {
     assert.deepEqual(at('2026-10-08T04:15:00Z', { day: null }), []);
     const n = at('2026-10-08T04:15:01Z', { day: null });
     assert.deepEqual(kinds(n), ['overdue']);
-    assert.equal(fmtStamp(GEN), '7 Oct 2026, 23:15 WAT', 'premise: the stamp format is unchanged');
-    assert.equal(n[0].text, 'Last updated 7 Oct 2026, 23:15 WAT. Updates usually run every 2 hours; this one is taking longer than usual.');
+    assert.equal(n[0].text, 'This page may be a little behind — refresh for the latest. Predictions update every 2 hours.');
     assert.doesNotMatch(n[0].text, /\blate\b/i);
+    assert.doesNotMatch(n[0].text, /\d{4}|WAT/, 'no timestamp: not useful to a visitor');
   });
 
   test('overdue and past midnight together give both notices, overdue first', () => {
