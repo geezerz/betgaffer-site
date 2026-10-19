@@ -7,7 +7,8 @@
 //     "Today…"/"Tomorrow…" (and, on the day pills only, "Yesterday") for the VISITOR's Lagos
 //     date on each page view, and again at the next Lagos midnight while the page stays open;
 //   - from <main data-generated-at data-day data-tomorrow data-view data-stale-after-hours>:
-//     the published data is older than the window -> "Last updated <stamp>. … taking longer than usual.";
+//     the published data is older than the window -> a quiet refresh prompt (operator 2026-10-20:
+//     no timestamp, no overdue framing -- neither is useful to a visitor, refreshing is);
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
 //     card is already published (the normal 00:00–00:10 window, not a failure) and is linked, or
 //     today's card has not been published yet.
@@ -17,7 +18,7 @@
 //
 // Imports resolve to /assets/js/lib/ (the build copies the isomorphic modules there).
 
-import { fmtDayLong, fmtStamp, isDate, isIsoZ, lagosToday } from './lib/time.js';
+import { fmtDayLong, isDate, isIsoZ, lagosToday } from './lib/time.js';
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -156,7 +157,7 @@ export function staleNotice({ nowMs, generatedAt, day, tomorrow, staleAfterHours
   const hours = typeof staleAfterHours === 'number' && Number.isFinite(staleAfterHours) && staleAfterHours > 0
     ? staleAfterHours : DEFAULT_STALE_HOURS;
   if (isIsoZ(generatedAt) && nowMs - Date.parse(generatedAt) > hours * HOUR_MS) {
-    out.push({ kind: 'overdue', text: `Last updated ${fmtStamp(generatedAt)}. Updates usually run every 2 hours; this one is taking longer than usual.` });
+    out.push({ kind: 'overdue', text: 'This page may be a little behind — refresh for the latest. Predictions update every 2 hours.' });
   }
   if (isDate(day)) {
     const visitor = lagosToday(nowMs);
