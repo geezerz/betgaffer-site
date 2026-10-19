@@ -192,6 +192,11 @@ for (const name of Object.keys(PAGES)) {
     assert.equal(META.path, `/${name}/`);
     assert.ok(typeof META.title === 'string' && META.title.length > 0);
     assert.ok(typeof META.description === 'string' && META.description.length > 20);
+    // SEO 2026-10-19: an upper bound too -- nothing previously stopped a description running well
+    // past what a search result actually shows (features.js's own description ran to 216 chars
+    // before this existed). ~155-160 is the common truncation point; 170 leaves a little room
+    // without being so loose the rule catches nothing.
+    assert.ok(META.description.length <= 170, `${name}: description is ${META.description.length} chars, past the ~155-160 a search result shows`);
     assert.deepEqual(findBanned(`${META.title} ${META.description}`), []);
     // These four pages carry no percentage in their meta tags at all. /waitlist/'s description states
     // the offer ("30% off") and is checked in tests/waitlist-page.test.js: offer percentages only.
