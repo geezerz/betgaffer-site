@@ -40,6 +40,18 @@ export const NOJS_CSS = '/assets/css/nojs.css';
 
 /** The founding Open Graph image (1200x630, generated once and committed) and its alt text. */
 export const OG_FOUNDING = '/assets/img/og-founding.png';
+/**
+ * JSON-LD (SEO 2026-10-19): the site's own identity only -- name and url, nothing per-page, so it
+ * never needs the claim/commitment guards the page's visible copy goes through. One fixed object,
+ * never built from `config`: site-wide identity, not per-page data (page() still takes a `config`
+ * for everything else; this is the one exception). Exported so build.mjs can pin the CSP script-src
+ * hash to this EXACT content (the shell's own no-inline-script rule, plan S4 Task 2, admits no
+ * exception without one) -- change this object and the pinned hash test fails until both are
+ * updated together.
+ */
+export const JSON_LD_SITE = Object.freeze({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bet Gaffer', url: 'https://betgaffer.com/' });
+/** The exact <script type="application/ld+json"> text content every page carries. */
+export const JSON_LD_CONTENT = JSON.stringify(JSON_LD_SITE).replace(/</g, '\\u003c');
 const OG_ALT = Object.freeze({ [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${fmtInt(TOTAL_PLACES)} places.` });
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
@@ -234,6 +246,12 @@ export function page({
 <meta property="og:image:height" content="${OG_HEIGHT}">
 <meta property="og:image:alt" content="${escAttr(ogAlt)}">
 `;
+  // Twitter Card: the same title/description/image as Open Graph above, never typed twice.
+  const twitterTags = `<meta name="twitter:card" content="${ogImage === undefined ? 'summary' : 'summary_large_image'}">
+<meta name="twitter:title" content="${escAttr(fullTitle)}">
+<meta name="twitter:description" content="${escAttr(description)}">
+${ogImage === undefined ? '' : `<meta name="twitter:image" content="${escAttr(config.origin + ogImage)}">\n<meta name="twitter:image:alt" content="${escAttr(ogAlt)}">\n`}`;
+  const jsonLd = `<script type="application/ld+json">${JSON_LD_CONTENT}</script>\n`;
 
   return `<!doctype html>
 <html lang="en-NG">
@@ -256,7 +274,7 @@ ${withBanner ? `<script src="${escAttr(EARLY_SCRIPT)}"></script>\n` : ''}<link r
 <meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">
 <meta property="og:title" content="${escAttr(fullTitle)}">
 <meta property="og:description" content="${escAttr(description)}">
-${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${scriptTags ? `${scriptTags}\n` : ''}</head>
+${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${twitterTags}${jsonLd}${scriptTags ? `${scriptTags}\n` : ''}</head>
 <body>
 ${header(path)}
 ${withBanner ? `${foundingCard(variantFor(path))}\n` : ''}<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>

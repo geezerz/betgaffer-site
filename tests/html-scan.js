@@ -352,7 +352,9 @@ export function cspViolations(html) {
   if (/<[^>]*\sstyle\s*=/i.test(html)) out.push('a style= attribute');
   const doc = parse(html);
   for (const el of findAll(doc, () => true)) {
-    if (el.tag === 'script') {
+    // JSON-LD is the one inline script the shell allows (layout.js's JSON_LD_CONTENT), CSP-pinned
+    // by its own exact-content hash (build.mjs); a dedicated test holds it to that one string.
+    if (el.tag === 'script' && el.attrs.type !== 'application/ld+json') {
       if (el.attrs.src === undefined) out.push(`inline <script> (line ${el.line})`);
       if (el.children.some((c) => c.text.trim() !== '')) out.push(`<script> with a body (line ${el.line})`);
     }

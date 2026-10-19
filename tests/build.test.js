@@ -8,7 +8,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { build, HEADERS, CSS_ORDER, ISOMORPHIC_LIB, chooseDays, parseCli, loadConfig } from '../site/build.mjs';
+import { build, HEADERS, JSON_LD_CSP_HASH, CSS_ORDER, ISOMORPHIC_LIB, chooseDays, parseCli, loadConfig } from '../site/build.mjs';
+import { JSON_LD_CONTENT } from '../site/lib/layout.js';
 import realConfig from '../site/config.js';
 import { fmtDayLong, fmtStamp } from '../site/lib/time.js';
 import { nodeSha256 } from '../site/lib/data.js';
@@ -110,7 +111,7 @@ describe('build of the fixture artifact', () => {
     assert.equal(h, HEADERS);
     assert.equal(HEADERS, [
       '/*',
-      "  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'",
+      `  Content-Security-Policy: default-src 'self'; script-src 'self' ${JSON_LD_CSP_HASH} https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'`,
       '  X-Content-Type-Options: nosniff',
       '  Referrer-Policy: strict-origin-when-cross-origin',
       '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
@@ -136,6 +137,9 @@ describe('build of the fixture artifact', () => {
       const doc = parse(html);
       const head = find(doc, (n) => n.tag === 'head');
       for (const s of findAll(doc, (n) => n.tag === 'script')) {
+        // The one inline script (JSON-LD, CSP-pinned by content hash) carries no src and isn't a
+        // module; covered on its own by the dedicated JSON-LD test below.
+        if (s.attrs.type === 'application/ld+json') continue;
         // Modules only — except the founding card's first-paint guard: classic, synchronous, in <head>.
         if (s.attrs.src === '/assets/js/early.js') {
           assert.equal(s.attrs.type, undefined, `${rel}: early.js is a classic script`);
@@ -423,6 +427,30 @@ describe('build of the fixture artifact', () => {
     for (const rel of ['index.html', 'our-record/index.html', 'features/index.html', 'privacy/index.html']) {
       assert.doesNotMatch(await read(ws, rel), /name="robots"/, rel);
     }
+  });
+
+  test('every page carries the one approved inline script (JSON-LD), byte-identical, nothing else', async () => {
+    for (const { rel, html } of await htmlFiles(ws.out)) {
+      const scripts = findAll(parse(html), (n) => n.tag === 'script' && n.attrs.type === 'application/ld+json');
+      assert.equal(scripts.length, 1, rel);
+      // script is a RAW element (html-scan.js): its text sits as a raw, undecoded child, not
+      // reachable through textOf (which hides script/style content -- it answers "visible text").
+      assert.equal(scripts[0].children[0]?.text, JSON_LD_CONTENT, rel);
+    }
+  });
+
+  test('sitemap.xml lists every indexable page (never a noindex one); robots.txt points at it', async () => {
+    const sitemap = await read(ws, 'sitemap.xml');
+    assert.match(sitemap, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">\n/);
+    assert.match(sitemap, /<url><loc>https:\/\/betgaffer\.com\/<\/loc><\/url>/, 'home');
+    assert.match(sitemap, /<url><loc>https:\/\/betgaffer\.com\/day\/2026-10-07\/<\/loc><\/url>/, 'a day page');
+    for (const noindexed of ['/waitlist/thanks/', '/waitlist/invalid/', '/waitlist/slow-down/', '/waitlist/unavailable/', '/404.html']) {
+      assert.doesNotMatch(sitemap, new RegExp(`<loc>https://betgaffer\\.com${noindexed}</loc>`), noindexed);
+    }
+    const locCount = (sitemap.match(/<loc>/g) || []).length;
+    assert.equal(locCount, PAGE_ROUTES.length - 5, 'every route but the 404 and the four noindex result pages');
+    const robots = await read(ws, 'robots.txt');
+    assert.equal(robots, 'User-agent: *\nAllow: /\nSitemap: https://betgaffer.com/sitemap.xml\n');
   });
 
   test('/day/<today>/ names / as its canonical URL (same card); other days name themselves', async () => {

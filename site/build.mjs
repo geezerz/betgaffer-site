@@ -15,6 +15,7 @@
 //
 // Tests import build(); nothing here spawns a process.
 
+import { createHash } from 'node:crypto';
 import { copyFile, lstat, mkdir, open, readFile, readdir, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -24,7 +25,7 @@ import { requireOperator } from './config.js';
 import { loadSite } from './lib/data.js';
 import { escAttr, escHtml } from './lib/esc.js';
 import { receiptCode, renderDay } from './lib/fixtures.js';
-import { OG_FOUNDING, page } from './lib/layout.js';
+import { JSON_LD_CONTENT, OG_FOUNDING, page } from './lib/layout.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
 import { fmtInt, plural } from './lib/num.js';
@@ -53,9 +54,14 @@ const SCRIPT = Object.freeze({
 /** The predictions toolbar loads where a day card has its toolbar slot (a zero-fixture day has none). */
 const hasDayTools = (body) => /\bdata-day-tools[\s>]/.test(body);
 
+/** CSP hash-source for the one approved inline script (JSON-LD, layout.js's JSON_LD_CONTENT) --
+ *  the shell's no-inline-script rule (plan S4 Task 2) stands; this is a pinned, reviewable
+ *  exception for exactly that content, never 'unsafe-inline'. */
+export const JSON_LD_CSP_HASH = `'sha256-${createHash('sha256').update(JSON_LD_CONTENT, 'utf8').digest('base64')}'`;
+
 /** dist/_headers (Cloudflare Pages), exactly as the plan states it. */
 export const HEADERS = `/*
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' ${JSON_LD_CSP_HASH} https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
@@ -420,6 +426,8 @@ async function filesIn(dir) {
 }
 
 const routeFile = (path) => (path.endsWith('/') ? `${path.slice(1)}index.html` : path.slice(1));
+/** layout.js's own noindex tag (page()): the one source of truth a page is excluded from sitemap.xml. */
+const NOINDEX_META = /<meta name="robots" content="noindex">/;
 
 // ------------------------------------------------------------------ build
 
@@ -594,6 +602,14 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   copies.push([join(assets, 'css', NOJS_CSS_FILE), `assets/css/${NOJS_CSS_FILE}`]);
   const css = (await Promise.all(CSS_ORDER.map(async (f) => `/* site/assets/css/${f} */\n${await readFile(join(assets, 'css', f), 'utf8')}`))).join('\n');
 
+  // sitemap.xml / robots.txt (SEO 2026-10-19): every rendered page that is NOT noindex (the page()
+  // meta tag already written into its own html is the one source of truth here, so a page can
+  // never drift out of sync with its sitemap listing).
+  const sitemapUrls = [...pages].filter(([, html]) => !NOINDEX_META.test(html)).map(([path]) => config.origin + path);
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
+    + sitemapUrls.map((u) => `  <url><loc>${escHtml(u)}</loc></url>`).join('\n') + '\n</urlset>\n';
+  const robots = `User-agent: *\nAllow: /\nSitemap: ${config.origin}/sitemap.xml\n`;
+
   // 7–8. Write <out>.tmp, then swap.
   await rmrf(tmp);
   let fileCount = 0;
@@ -606,6 +622,8 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     };
     for (const [path, html] of pages) await write(routeFile(path), html);
     await write('assets/css/site.css', css);
+    await write('sitemap.xml', sitemap);
+    await write('robots.txt', robots);
     await write('_headers', HEADERS);
     await write(MARKER, MARKER_TEXT);
     for (const [from, rel] of copies) {

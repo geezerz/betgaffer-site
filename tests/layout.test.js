@@ -160,10 +160,12 @@ function assertCspClean(html) {
   assert.doesNotMatch(html, /<style[\s>]/i, 'no <style> element');
   assert.doesNotMatch(html, /\sstyle\s*=/i, 'no style= attribute');
   assert.doesNotMatch(html, /\son[a-z]+\s*=/i, 'no inline event handler');
-  const opens = html.match(/<script\b[^>]*>/gi) || [];
+  // The one inline script the shell allows: JSON-LD, CSP-pinned by its own content hash
+  // (build.mjs). Everything else still must carry a src and an empty body.
+  const opens = (html.match(/<script\b[^>]*>/gi) || []).filter((tag) => !/\stype="application\/ld\+json"/.test(tag));
   for (const tag of opens) assert.match(tag, /\ssrc="[^"]+"/, `script without src: ${tag}`);
-  // Every script element is empty: the opening tag is immediately followed by its close.
-  const all = html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) || [];
+  // Every non-JSON-LD script element is empty: the opening tag is immediately followed by its close.
+  const all = (html.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) || []).filter((el) => !/\stype="application\/ld\+json"/.test(el));
   assert.equal(all.length, opens.length);
   for (const el of all) assert.match(el, /^<script\b[^>]*><\/script>$/i, `script has a body: ${el}`);
 }
@@ -188,7 +190,7 @@ test('scripts render as external module scripts only', () => {
   assertCspClean(html);
   assert.match(html, /<script type="module" src="\/assets\/js\/stale.js"><\/script>/);
   assert.match(html, /<script type="module" src="\/assets\/js\/day.js"><\/script>/);
-  assert.equal((html.match(/<script\b/g) || []).length, 3, 'nav.js + the two asked for');
+  assert.equal((html.match(/<script\b/g) || []).length, 4, 'the JSON-LD script + nav.js + the two asked for');
 });
 
 test('script sources must be same-origin root-relative paths', () => {
@@ -389,7 +391,7 @@ test('early.js: the ONLY classic script — synchronous, in <head> before the st
     const doc = parse(html);
     const head = find(doc, (n) => n.tag === 'head');
     const scripts = findAll(doc, (n) => n.tag === 'script');
-    const classic = scripts.filter((s) => s.attrs.type !== 'module');
+    const classic = scripts.filter((s) => s.attrs.type !== 'module' && s.attrs.type !== 'application/ld+json');
     assert.deepEqual(classic.map((s) => s.attrs.src), [EARLY], 'one classic script: early.js');
     const early = classic[0];
     assert.ok(findAll(head, (n) => n === early).length === 1, 'in <head>');
@@ -400,7 +402,7 @@ test('early.js: the ONLY classic script — synchronous, in <head> before the st
   }
   const none = base({ banner: false, scripts: ['/assets/js/waitlist.js'] });
   assert.doesNotMatch(none, /early\.js/, 'no card, no early.js (it would be a render-blocking request for nothing)');
-  assert.equal(findAll(parse(none), (n) => n.tag === 'script' && n.attrs.type !== 'module').length, 0);
+  assert.equal(findAll(parse(none), (n) => n.tag === 'script' && n.attrs.type !== 'module' && n.attrs.type !== 'application/ld+json').length, 0);
 });
 
 /** Runs the shipped early.js as the browser would (a classic script, its own global), against `storage`. */
