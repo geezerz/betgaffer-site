@@ -269,7 +269,20 @@ describe('build of the fixture artifact', () => {
 
   test('Our Record\'s description names no status (spec §7: the record prints none)', async () => {
     const meta = find(parse(await read(ws, 'our-record/index.html')), (n) => n.tag === 'meta' && n.attrs.name === 'description');
-    assert.equal(meta.attrs.content, 'Every graded Bet Gaffer card pick: each figure with its count and its period.');
+    const content = meta.attrs.content;
+    // SEO 2026-10-19: no longer a fixed literal -- it states the real 30-day "X of Y" figure
+    // (the exact sentence record.js's own rec-hero__cap already shows in the page body) when one
+    // exists, falling back to the generic sentence when nothing is settled yet. Either way it
+    // must never name a status word (spec §7's actual rule, not the string that used to stand in
+    // for it).
+    assert.doesNotMatch(content, /\b(live|provisional|settling|in progress)\b/i, 'must name no status');
+    assert.match(content, /^(Every graded Bet Gaffer card pick: each figure with its count and its period\.|Our recommended Bet Gaffer picks were right [\d,]+ times out of [\d,]+ in the last 30 days: every graded pick, with its count and its period\.)$/);
+  });
+
+  test('home page <title> names the day actually showing, not a static string every day (SEO 2026-10-19)', async () => {
+    const title = find(parse(await read(ws, 'index.html')), (n) => n.tag === 'title').children[0].text;
+    assert.match(title, /^Football predictions for /, 'must be the date-specific form when a card is showing');
+    assert.doesNotMatch(title, /^Football predictions$/, 'the old static form, same on every build');
   });
 
   test('every page links the apple-touch-icon and prints the RC number once', async () => {

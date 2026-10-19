@@ -253,8 +253,9 @@ function stubBody(entry, { prev, next }) {
   const head = '<header class="day-head">'
     + '<div class="day-head__title">'
     + `<p class="t-lbl day-head__rel" data-rel-day="${escAttr(d)}" data-rel="eyebrow" hidden></p>`
-    + '<h1 class="t-d1">Football predictions</h1>'
-    + `<p class="day-head__date">${escHtml(long)}</p>`
+    // Same SEO fix as the full card's own header (fixtures.js): a unique, date-specific <h1>.
+    + `<h1 class="t-d1">Football predictions<span class="vh"> — ${escHtml(long)}</span></h1>`
+    + `<p class="day-head__date" aria-hidden="true">${escHtml(long)}</p>`
     + `<p class="day-head__count mono">${escHtml(`${plural(entry.fixtures, 'fixture', 'fixtures')} listed`)}</p>`
     + '</div>'
     + ring(entry.accuracy, { dayLabel: `Picks published for ${long}, settled so far`, date: d, relDay: d })
@@ -489,7 +490,10 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const home = homeBody({ index, choice, days, neighbours });
   add({
     path: '/',
-    title: 'Football predictions',
+    // Date-specific when a card is actually showing (choice.home), same template the day pages
+    // use -- a static title regardless of content is the generic-title mistake this exists to
+    // avoid (SEO 2026-10-19). Falls back to the generic form in the empty states (no card at all).
+    title: choice.home ? `Football predictions for ${fmtDayLong(choice.home)}` : 'Football predictions',
     description: 'The day’s football in the competitions Bet Gaffer covers: at most one recommended pick per fixture, '
       + 'with its probability, graded in public after full time.',
     body: home,
@@ -531,10 +535,19 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     });
   }
 
+  // SEO 2026-10-19: the same "X of Y" headline sentence the page body already states
+  // (record.js's own rec-hero__cap wording, data-claim="headline"), not a bare percentage --
+  // the page's own figure-licensing rule applies here too even though no test enforces it on
+  // meta text. Falls back to the generic sentence when there is nothing settled yet to state.
+  const last30 = index && index.record ? index.record.last_30 : null;
+  const recordDescription = last30 && last30.graded > 0
+    ? `Our recommended Bet Gaffer picks were right ${fmtInt(last30.won)} times out of ${fmtInt(last30.graded)} `
+      + `in the last 30 days: every graded pick, with its count and its period.`
+    : 'Every graded Bet Gaffer card pick: each figure with its count and its period.';
   add({
     path: '/our-record/',
     title: 'Our Record',
-    description: 'Every graded Bet Gaffer card pick: each figure with its count and its period.',
+    description: recordDescription,
     body: renderRecord(index ? index.record : null, { today, days: listedAsc }),
     scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the stale-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },

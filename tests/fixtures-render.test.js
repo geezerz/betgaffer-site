@@ -345,6 +345,16 @@ test('day header: title, long date, fixtures in competitions (never "recommended
   assert.ok(!/\(0 withdrawn\)|withdrawn\)/.test(text(renderDay(D08, opts()))), 'no withdrawn suffix when k = 0');
 });
 
+test('day header: the <h1> itself carries the date, not just a sibling paragraph (SEO 2026-10-19)', () => {
+  const html = renderDay(D08, opts({ isTomorrow: true }));
+  const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)[1];
+  assert.match(h1, /Football predictions/);
+  assert.match(h1, /Thu 8 Oct 2026/, 'the h1 itself must be date-specific, not identical on every day');
+  // The sibling date paragraph still exists for sighted readers (unchanged visually) but no
+  // longer duplicates the date for assistive tech, now that the h1 states it.
+  assert.match(html, /<p class="day-head__date" aria-hidden="true">/);
+});
+
 test('count line with every row withdrawn', () => {
   const day = structuredClone(EDGE);
   day.fixtures = day.fixtures.filter((f) => f.withdrawn);

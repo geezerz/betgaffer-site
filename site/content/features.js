@@ -22,8 +22,10 @@ export const LAST_UPDATED = '2026-10-08';
 export const META = Object.freeze({
   path: '/features/',
   title: 'Features',
-  description: 'What Bet Gaffer does, from the simplest tool to the most advanced: every match by kickoff, one '
-    + 'recommended pick per fixture, probabilities for every market we price, the Lab and Credits, and how the plans are priced.',
+  // SEO 2026-10-19: trimmed from 216 to ~155 chars -- the original ran well past the ~155-160
+  // chars most search results actually show, so its final clause (plan pricing) was being cut.
+  description: 'What Bet Gaffer does: every match by kickoff, one recommended pick per fixture, probabilities '
+    + 'for every market we price, the Lab, Credits and pricing.',
 });
 
 export const INTRO = "Bet Gaffer is football match intelligence for sport investors. Here's what it does, from the "

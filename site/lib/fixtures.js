@@ -531,8 +531,11 @@ export function renderDay(day, { prevDay = null, nextDay = null, generatedAt = n
   const head = '<header class="day-head">'
     + '<div class="day-head__title">'
     + `<p class="t-lbl day-head__rel" data-rel-day="${escAttr(d)}" data-rel="eyebrow" hidden></p>`
-    + '<h1 class="t-d1">Football predictions</h1>'
-    + `<p class="day-head__date">${escHtml(longDate)}</p>`
+    // Visually unchanged (the sibling <p> already shows the date) -- the visually-hidden suffix
+    // gives this page's one <h1> unique, date-specific text for search engines and screen
+    // readers, instead of the same literal "Football predictions" on every day (SEO 2026-10-19).
+    + `<h1 class="t-d1">Football predictions<span class="vh"> — ${escHtml(longDate)}</span></h1>`
+    + `<p class="day-head__date" aria-hidden="true">${escHtml(longDate)}</p>`
     + `<p class="day-head__count mono">${escHtml(countLine)}</p>`
     + '</div>'
     + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures, rule), relDay: d })
