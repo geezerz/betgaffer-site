@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-18T21:10:01Z",
-    "grades_as_of": "2026-10-20T03:10:02Z",
-    "prev_hash": "sha256:9351933ef4f63f480c5513ce241cc93d605a94f928e3da0e3e638f57afe26a1b",
-    "picks_hash": "sha256:7b61a6783b99fa48b3f7896d099234fa51a8bdd02e209bb2fa7eaef808cc6ac9",
+    "grades_as_of": "2026-10-20T05:10:01Z",
+    "prev_hash": "sha256:03d078ad1c2ff9c90be3fbfca5e7a983f12b9434e917fb651d7e5d2b2fe5bed9",
+    "picks_hash": "sha256:6d6d069afee8cd1a8b1d038eae76d78041014ef56c1399460e2d3d7d79f41c87",
     "counts": {
-        "fixtures": 207,
-        "priced": 202,
-        "recommended": 201,
+        "fixtures": 208,
+        "priced": 201,
+        "recommended": 202,
         "markets_per_fixture": 92
     },
     "accuracy": {
@@ -1662,9 +1662,11 @@
             },
             "frozen_at": "2026-10-18T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1793,9 +1795,11 @@
             },
             "frozen_at": "2026-10-18T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3304,7 +3308,7 @@
             "away": "Al Kholood",
             "home_id": 7818,
             "away_id": 7708,
-            "status": "TBD",
+            "status": "PST",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3474,6 +3478,38 @@
             "score": {
                 "home": 1,
                 "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
+        {
+            "fx": 1408173,
+            "api_fx": 1572703,
+            "ko": "2026-10-19T15:45:00Z",
+            "comp": "Segunda División RFEF - Group 3 (Spain)",
+            "home": "Peña Deportiva",
+            "away": "Ucam Murcia",
+            "home_id": 6635,
+            "away_id": 6413,
+            "status": "FT",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 82,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-20T05:10:01Z",
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": {
+                "home": 0,
+                "away": 1,
                 "aet_home": null,
                 "aet_away": null,
                 "pen_home": null,
