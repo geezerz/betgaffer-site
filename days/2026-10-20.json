@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-20",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-19T21:10:02Z",
-    "grades_as_of": "2026-10-20T17:10:02Z",
+    "grades_as_of": "2026-10-20T19:10:02Z",
     "prev_hash": "sha256:6d6d069afee8cd1a8b1d038eae76d78041014ef56c1399460e2d3d7d79f41c87",
-    "picks_hash": "sha256:36bd3d81a9c513811ef46b54b97e69ba5094864376703f72de6babd50d58c6d6",
+    "picks_hash": "sha256:1578ccb482a9b7636520740f6b4a5a2325104d97b519e689dd36fb872e67d280",
     "counts": {
-        "fixtures": 223,
-        "priced": 223,
-        "recommended": 223,
+        "fixtures": 224,
+        "priced": 220,
+        "recommended": 224,
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 59,
-        "lost": 15,
+        "won": 69,
+        "lost": 19,
         "pushes": 2,
-        "graded": 74,
-        "pct": 79.73
+        "graded": 88,
+        "pct": 78.41
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -562,7 +562,7 @@
             "away": "Atlet",
             "home_id": 3739,
             "away_id": 9294,
-            "status": "SUSP",
+            "status": "PST",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -1238,9 +1238,11 @@
             },
             "frozen_at": "2026-10-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1269,38 +1271,6 @@
             "score": {
                 "home": 1,
                 "away": 3,
-                "aet_home": null,
-                "aet_away": null,
-                "pen_home": null,
-                "pen_away": null
-            }
-        },
-        {
-            "fx": 1283813,
-            "api_fx": 1619169,
-            "ko": "2026-10-20T12:00:00Z",
-            "comp": "Professional Development League (England)",
-            "home": "Fleetwood Town U21",
-            "away": "Barnsley U21",
-            "home_id": 7814,
-            "away_id": 8715,
-            "status": "FT",
-            "pick": {
-                "market": "over_1_5",
-                "label": "Over 1.5 Goals",
-                "pct": 88,
-                "price": 1.13,
-                "price_est": true,
-                "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-10-19T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "won",
-            "score": {
-                "home": 2,
-                "away": 2,
                 "aet_home": null,
                 "aet_away": null,
                 "pen_home": null,
@@ -1660,6 +1630,38 @@
             }
         },
         {
+            "fx": 1283813,
+            "api_fx": 1619169,
+            "ko": "2026-10-20T13:00:00Z",
+            "comp": "Professional Development League (England)",
+            "home": "Fleetwood Town U21",
+            "away": "Barnsley U21",
+            "home_id": 7814,
+            "away_id": 8715,
+            "status": "FT",
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-19T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
+        {
             "fx": 1283814,
             "api_fx": 1619172,
             "ko": "2026-10-20T13:00:00Z",
@@ -1711,9 +1713,11 @@
             },
             "frozen_at": "2026-10-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1793,9 +1797,11 @@
             },
             "frozen_at": "2026-10-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1960,7 +1966,7 @@
             "away": "AS New Soger",
             "home_id": 752251,
             "away_id": 1064001,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -1973,8 +1979,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1627431,
@@ -2155,6 +2168,38 @@
             "score": {
                 "home": 1,
                 "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
+        {
+            "fx": 1174015,
+            "api_fx": 1608695,
+            "ko": "2026-10-20T13:30:00Z",
+            "comp": "Serie C - Girone B (Italy)",
+            "home": "Pineto",
+            "away": "Reggiana",
+            "home_id": 8944,
+            "away_id": 5419,
+            "status": "FT",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 86,
+                "price": 1.17,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-20T19:10:02Z",
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
                 "aet_home": null,
                 "aet_away": null,
                 "pen_home": null,
@@ -2579,7 +2624,7 @@
             "away": "Étoile du Congo",
             "home_id": 752191,
             "away_id": 1064007,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -2592,8 +2637,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1196906,
@@ -2679,34 +2731,11 @@
             },
             "frozen_at": "2026-10-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
-            "score": null
-        },
-        {
-            "fx": 407658,
-            "api_fx": 1612263,
-            "ko": "2026-10-20T15:00:00Z",
-            "comp": "Premier League (Egypt)",
-            "home": "Wadi Degla",
-            "away": "National Bank of Egypt",
-            "home_id": 50545,
-            "away_id": 50521,
-            "status": "1H",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 92,
-                "price": 1.1,
-                "price_est": false,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-19T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -2750,7 +2779,7 @@
             "away": "Queretaro U21",
             "home_id": 598857,
             "away_id": 598866,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -2763,8 +2792,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1217896,
@@ -2800,7 +2836,7 @@
             "away": "Atlante U21",
             "home_id": 7725,
             "away_id": 598854,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -2813,8 +2849,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1217898,
@@ -2978,7 +3021,7 @@
             "away": "Al-Qadisiyah FC",
             "home_id": 8260,
             "away_id": 8703,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -2991,8 +3034,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302486,
@@ -3003,7 +3053,7 @@
             "away": "Al Bukayriyah",
             "home_id": 586375,
             "away_id": 600058,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3016,8 +3066,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1599923,
@@ -3028,7 +3085,7 @@
             "away": "HNK Rijeka",
             "home_id": 6341,
             "away_id": 756,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3041,8 +3098,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1597642,
@@ -3053,7 +3117,7 @@
             "away": "Slavia Praha",
             "home_id": 667,
             "away_id": 550,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -3066,8 +3130,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1597643,
@@ -3078,7 +3149,7 @@
             "away": "Borussia Dortmund",
             "home_id": 874,
             "away_id": 564,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3091,8 +3162,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302487,
@@ -3103,7 +3181,7 @@
             "away": "Al-Adalah",
             "home_id": 8430,
             "away_id": 278571,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3116,8 +3194,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148538,
@@ -3128,7 +3213,7 @@
             "away": "Orebro SK",
             "home_id": 4567,
             "away_id": 3786,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -3136,6 +3221,38 @@
                 "price": 1.22,
                 "price_est": false,
                 "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-19T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
+        {
+            "fx": 407658,
+            "api_fx": 1612263,
+            "ko": "2026-10-20T17:00:00Z",
+            "comp": "Premier League (Egypt)",
+            "home": "Wadi Degla",
+            "away": "National Bank of Egypt",
+            "home_id": 50545,
+            "away_id": 50521,
+            "status": "2H",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 92,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-19T21:10:02Z",
             "pre_ko": true,
@@ -3153,7 +3270,7 @@
             "away": "Pyramids FC",
             "home_id": 50511,
             "away_id": 7820,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -3167,7 +3284,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 671365,
@@ -3178,7 +3302,7 @@
             "away": "Brøndby W",
             "home_id": 640,
             "away_id": 598,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3191,8 +3315,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1429167,
@@ -3203,7 +3334,7 @@
             "away": "Crevillente",
             "home_id": 6573,
             "away_id": 8796,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3216,8 +3347,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 692939,
@@ -3280,7 +3418,7 @@
             "away": "Al Qadsia",
             "home_id": 19441,
             "away_id": 6852,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3305,7 +3443,7 @@
             "away": "Tevragh-Zeïne",
             "home_id": 1066114,
             "away_id": 1066115,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -3330,7 +3468,7 @@
             "away": "Banfield Res.",
             "home_id": 99,
             "away_id": 114,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3355,7 +3493,7 @@
             "away": "Rosario Central Res.",
             "home_id": 95,
             "away_id": 89,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3380,7 +3518,7 @@
             "away": "Atl. Rafaela 2",
             "home_id": 93,
             "away_id": 124,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -3405,7 +3543,7 @@
             "away": "Independiente Res.",
             "home_id": 123,
             "away_id": 103,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -3430,7 +3568,7 @@
             "away": "Platense Res.",
             "home_id": 92,
             "away_id": 108,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -3455,7 +3593,7 @@
             "away": "Tigre Res.",
             "home_id": 110,
             "away_id": 105,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3480,7 +3618,7 @@
             "away": "Al-Ittihad FC",
             "home_id": 5220,
             "away_id": 5381,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3505,7 +3643,7 @@
             "away": "NEOM",
             "home_id": 6527,
             "away_id": 4084,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3530,7 +3668,7 @@
             "away": "Nottingham Forest U21",
             "home_id": 3896,
             "away_id": 8225,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3555,7 +3693,7 @@
             "away": "Middlesbrough U21",
             "home_id": 3610,
             "away_id": 303689,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -3580,7 +3718,7 @@
             "away": "Sheffield United U21",
             "home_id": 3909,
             "away_id": 8219,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3593,7 +3731,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -3605,7 +3743,7 @@
             "away": "Serrano RJ",
             "home_id": 711086,
             "away_id": 711066,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -3630,7 +3768,7 @@
             "away": "Íbis",
             "home_id": 1051055,
             "away_id": 1051056,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3705,7 +3843,7 @@
             "away": "Germany U17 W",
             "home_id": 1885,
             "away_id": 1864,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3730,7 +3868,7 @@
             "away": "Puerto Rico W U17",
             "home_id": 1052145,
             "away_id": 1052147,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3780,7 +3918,7 @@
             "away": "Gosport Borough",
             "home_id": 4362,
             "away_id": 6571,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3805,7 +3943,7 @@
             "away": "Newport County",
             "home_id": 28,
             "away_id": 3207,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -3830,7 +3968,7 @@
             "away": "Salford City",
             "home_id": 3326,
             "away_id": 4410,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -3855,7 +3993,7 @@
             "away": "Tranmere",
             "home_id": 3492,
             "away_id": 4388,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -3880,7 +4018,7 @@
             "away": "Grimsby",
             "home_id": 3913,
             "away_id": 3596,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3905,7 +4043,7 @@
             "away": "Oldham",
             "home_id": 3641,
             "away_id": 5366,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -3930,7 +4068,7 @@
             "away": "Colchester",
             "home_id": 3602,
             "away_id": 3586,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -3955,7 +4093,7 @@
             "away": "Shrewsbury",
             "home_id": 5957,
             "away_id": 3912,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3980,7 +4118,7 @@
             "away": "Crewe",
             "home_id": 4396,
             "away_id": 3636,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4005,7 +4143,7 @@
             "away": "Swindon Town",
             "home_id": 3335,
             "away_id": 3044,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4030,7 +4168,7 @@
             "away": "Fleetwood Town",
             "home_id": 3887,
             "away_id": 3504,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4055,7 +4193,7 @@
             "away": "Accrington ST",
             "home_id": 3609,
             "away_id": 3603,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4080,7 +4218,7 @@
             "away": "Peterborough",
             "home_id": 12,
             "away_id": 18,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4105,7 +4243,7 @@
             "away": "Bradford",
             "home_id": 3593,
             "away_id": 3213,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -4130,7 +4268,7 @@
             "away": "Mansfield Town",
             "home_id": 4392,
             "away_id": 4389,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -4155,7 +4293,7 @@
             "away": "Wigan",
             "home_id": 38,
             "away_id": 27,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4180,7 +4318,7 @@
             "away": "Stockport County",
             "home_id": 3891,
             "away_id": 4062,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -4205,7 +4343,7 @@
             "away": "Milton Keynes Dons",
             "home_id": 6,
             "away_id": 3444,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4230,7 +4368,7 @@
             "away": "Barnsley",
             "home_id": 17,
             "away_id": 4,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4255,7 +4393,7 @@
             "away": "Plymouth",
             "home_id": 4313,
             "away_id": 33,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4280,7 +4418,7 @@
             "away": "Wycombe",
             "home_id": 3542,
             "away_id": 3768,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4305,7 +4443,7 @@
             "away": "Sheffield Wednesday",
             "home_id": 3190,
             "away_id": 31,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -4330,7 +4468,7 @@
             "away": "Leicester",
             "home_id": 4083,
             "away_id": 34,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4355,7 +4493,7 @@
             "away": "Partick",
             "home_id": 3202,
             "away_id": 2747,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4380,7 +4518,7 @@
             "away": "Portsmouth",
             "home_id": 47,
             "away_id": 37,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4430,7 +4568,7 @@
             "away": "Horsham",
             "home_id": 3336,
             "away_id": 3450,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4530,7 +4668,7 @@
             "away": "Dartford",
             "home_id": 3947,
             "away_id": 2979,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4555,7 +4693,7 @@
             "away": "Stanway Rovers",
             "home_id": 5238,
             "away_id": 54592,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4580,7 +4718,7 @@
             "away": "Eastbourne Borough",
             "home_id": 6122,
             "away_id": 4391,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4630,7 +4768,7 @@
             "away": "Carshalton Athletic",
             "home_id": 6577,
             "away_id": 3809,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -4655,7 +4793,7 @@
             "away": "Chatham Town",
             "home_id": 5402,
             "away_id": 3853,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4705,7 +4843,7 @@
             "away": "Cleethorpes Town",
             "home_id": 3607,
             "away_id": 3595,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4730,7 +4868,7 @@
             "away": "Bracknell Town",
             "home_id": 5353,
             "away_id": 3849,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4755,7 +4893,7 @@
             "away": "Malvern Town",
             "home_id": 6626,
             "away_id": 3763,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4780,7 +4918,7 @@
             "away": "Evesham United",
             "home_id": 3625,
             "away_id": 3343,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4805,7 +4943,7 @@
             "away": "Berkhamsted",
             "home_id": 5351,
             "away_id": 3626,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -4830,7 +4968,7 @@
             "away": "Hanwell Town",
             "home_id": 3598,
             "away_id": 5349,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4843,7 +4981,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -4855,7 +4993,7 @@
             "away": "Sholing",
             "home_id": 3637,
             "away_id": 3627,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -4880,7 +5018,7 @@
             "away": "Havant & Wville",
             "home_id": 3914,
             "away_id": 5231,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4905,7 +5043,7 @@
             "away": "Chippenham Town",
             "home_id": 3950,
             "away_id": 3748,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -4930,7 +5068,7 @@
             "away": "Stamford",
             "home_id": 3334,
             "away_id": 6049,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5005,7 +5143,7 @@
             "away": "Leighton Town",
             "home_id": 6432,
             "away_id": 5980,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5030,7 +5168,7 @@
             "away": "Bishop's Stortford",
             "home_id": 5415,
             "away_id": 3807,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5055,7 +5193,7 @@
             "away": "Leamington",
             "home_id": 5679,
             "away_id": 3640,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5080,7 +5218,7 @@
             "away": "Leiston",
             "home_id": 6366,
             "away_id": 3746,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5105,7 +5243,7 @@
             "away": "Halesowen Town",
             "home_id": 8202,
             "away_id": 4400,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5130,7 +5268,7 @@
             "away": "Bury Town",
             "home_id": 3900,
             "away_id": 3761,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5155,7 +5293,7 @@
             "away": "Linfield",
             "home_id": 709,
             "away_id": 510,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5180,7 +5318,7 @@
             "away": "Leatherhead",
             "home_id": 3620,
             "away_id": 3803,
-            "status": "NS",
+            "status": "TBD",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5193,7 +5331,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5205,7 +5343,7 @@
             "away": "Chesham United",
             "home_id": 3324,
             "away_id": 5148,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5230,7 +5368,7 @@
             "away": "Bury",
             "home_id": 3608,
             "away_id": 3613,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5255,7 +5393,7 @@
             "away": "Spalding United",
             "home_id": 3629,
             "away_id": 4403,
-            "status": "NS",
+            "status": "TBD",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5268,7 +5406,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5280,7 +5418,7 @@
             "away": "Bedford Town",
             "home_id": 3910,
             "away_id": 3342,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5305,7 +5443,7 @@
             "away": "Gateshead",
             "home_id": 3911,
             "away_id": 3332,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5330,7 +5468,7 @@
             "away": "Altrincham",
             "home_id": 3212,
             "away_id": 3615,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5355,7 +5493,7 @@
             "away": "Barrow",
             "home_id": 3639,
             "away_id": 3605,
-            "status": "NS",
+            "status": "TBD",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5368,7 +5506,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5380,7 +5518,7 @@
             "away": "Macclesfield",
             "home_id": 8213,
             "away_id": 3194,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5405,7 +5543,7 @@
             "away": "Aldershot Town",
             "home_id": 7771,
             "away_id": 3215,
-            "status": "NS",
+            "status": "TBD",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5418,7 +5556,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5430,7 +5568,7 @@
             "away": "Chorley",
             "home_id": 3762,
             "away_id": 3612,
-            "status": "NS",
+            "status": "TBD",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5443,7 +5581,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5455,7 +5593,7 @@
             "away": "Queen's University",
             "home_id": 3648,
             "away_id": 3485,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5480,7 +5618,7 @@
             "away": "Moyola Park",
             "home_id": 3152,
             "away_id": 3551,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5505,7 +5643,7 @@
             "away": "Cliftonville FC",
             "home_id": 3196,
             "away_id": 917,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5530,7 +5668,7 @@
             "away": "Newry City AFC",
             "home_id": 4380,
             "away_id": 6300,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5555,7 +5693,7 @@
             "away": "Loughgall",
             "home_id": 3614,
             "away_id": 3181,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5580,7 +5718,7 @@
             "away": "Limavady United",
             "home_id": 3337,
             "away_id": 2977,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5630,7 +5768,7 @@
             "away": "Dungannon Swifts",
             "home_id": 3155,
             "away_id": 1095,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5655,7 +5793,7 @@
             "away": "Ballymena United",
             "home_id": 3156,
             "away_id": 3056,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5705,7 +5843,7 @@
             "away": "Glenavon FC",
             "home_id": 3057,
             "away_id": 4056,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5730,7 +5868,7 @@
             "away": "Port Vale",
             "home_id": 3892,
             "away_id": 3875,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -5780,7 +5918,7 @@
             "away": "Villarreal",
             "home_id": 50,
             "away_id": 560,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5805,7 +5943,7 @@
             "away": "AEK Athens FC",
             "home_id": 54,
             "away_id": 768,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_score_2h",
                 "label": "Home Scores 2nd Half",
@@ -5830,7 +5968,7 @@
             "away": "Barcelona",
             "home_id": 574,
             "away_id": 558,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5855,7 +5993,7 @@
             "away": "Atletico Madrid",
             "home_id": 859,
             "away_id": 571,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5880,7 +6018,7 @@
             "away": "PSV Eindhoven",
             "home_id": 572,
             "away_id": 541,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5905,7 +6043,7 @@
             "away": "Bodo/Glimt",
             "home_id": 675,
             "away_id": 517,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -5930,7 +6068,7 @@
             "away": "Slovan Bratislava",
             "home_id": 793,
             "away_id": 521,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
