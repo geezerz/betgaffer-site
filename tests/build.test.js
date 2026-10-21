@@ -9,7 +9,9 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { build, HEADERS, JSON_LD_CSP_HASH, CSS_ORDER, ISOMORPHIC_LIB, chooseDays, parseCli, loadConfig } from '../site/build.mjs';
-import { JSON_LD_CONTENT } from '../site/lib/layout.js';
+import {
+  JSON_LD_CONTENT, OG_DAY, OG_DEFAULT, OG_DIMENSIONS, OG_FEATURES, OG_HOME, OG_RECORD,
+} from '../site/lib/layout.js';
 import realConfig from '../site/config.js';
 import { fmtDayLong } from '../site/lib/time.js';
 import { nodeSha256 } from '../site/lib/data.js';
@@ -451,6 +453,26 @@ describe('build of the fixture artifact', () => {
     assert.equal(locCount, PAGE_ROUTES.length - 5, 'every route but the 404 and the four noindex result pages');
     const robots = await read(ws, 'robots.txt');
     assert.equal(robots, 'User-agent: *\nAllow: /\nSitemap: https://betgaffer.com/sitemap.xml\n');
+  });
+
+  test('each page family carries its own og:image, true to the real file\'s pixel size, mirrored in twitter:image', async () => {
+    const meta = (html, k, v) => find(parse(html), (n) => n.tag === 'meta' && n.attrs[k] === v)?.attrs.content;
+    const cases = [
+      ['index.html', OG_HOME], ['day/2026-10-07/index.html', OG_DAY], ['our-record/index.html', OG_RECORD],
+      ['features/index.html', OG_FEATURES], ['privacy/index.html', OG_DEFAULT], ['terms/index.html', OG_DEFAULT],
+      ['refunds/index.html', OG_DEFAULT],
+    ];
+    for (const [rel, img] of cases) {
+      const html = await read(ws, rel);
+      const { width, height } = OG_DIMENSIONS[img];
+      assert.equal(meta(html, 'property', 'og:image'), `https://betgaffer.com${img}`, rel);
+      assert.equal(meta(html, 'property', 'og:image:width'), String(width), rel);
+      assert.equal(meta(html, 'property', 'og:image:height'), String(height), rel);
+      assert.ok(meta(html, 'property', 'og:image:alt'), rel);
+      assert.equal(meta(html, 'name', 'twitter:card'), 'summary_large_image', rel);
+      assert.equal(meta(html, 'name', 'twitter:image'), `https://betgaffer.com${img}`, rel);
+      assert.ok(existsSync(join(REPO_ROOT, 'site', img)), `${img} ships`);
+    }
   });
 
   test('/day/<today>/ names / as its canonical URL (same card); other days name themselves', async () => {
