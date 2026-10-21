@@ -762,7 +762,8 @@ const CARD_RULES_PINNED = [
   ['(min-width:1024px)', '.bg-fd-card__title', ['font-size:26px']],
   ['(min-width:1024px)', '.bg-fd-card__title::before', ['content:none']],
   ['(min-width:1024px)', '.bg-fd-card__line', ['font-size:16px']],
-  ['(min-width:1024px)', '.bg-fd-card__cta-col', ['flex:none', 'align-self:center', 'text-align:center']],
+  ['(min-width:1024px)', '.bg-fd-card__body', ['flex:1']],
+  ['(min-width:1024px)', '.bg-fd-card__cta-col', ['flex:0 0 30%', 'align-self:center', 'text-align:center']],
   ['(min-width:1024px)', '.bg-fd-card__dots', ['align-self:center']],
   ['(min-width:1024px)', '.bg-fd-card__x', ['top:8px', 'right:10px']],
 ];

@@ -25,7 +25,9 @@ import { requireOperator } from './config.js';
 import { loadSite } from './lib/data.js';
 import { escAttr, escHtml } from './lib/esc.js';
 import { receiptCode, renderDay } from './lib/fixtures.js';
-import { JSON_LD_CONTENT, OG_FOUNDING, page } from './lib/layout.js';
+import {
+  JSON_LD_CONTENT, OG_DAY, OG_DEFAULT, OG_FEATURES, OG_FOUNDING, OG_HOME, OG_RECORD, page,
+} from './lib/layout.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
 import { fmtInt, plural } from './lib/num.js';
@@ -514,6 +516,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
       staleAfterHours,
       ...(choice.home ? ringData(days.get(choice.home).accuracy, choice.home, listed) : {}),
     },
+    ogImage: OG_HOME,
   });
 
   for (const entry of listed) {
@@ -540,6 +543,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
         // The same figures as the page's static ring: a full card's day file, a stub's index entry.
         ...ringData(full ? days.get(d).accuracy : entry.accuracy, d, listed),
       },
+      ogImage: OG_DAY,
     });
   }
 
@@ -559,11 +563,12 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     body: renderRecord(index ? index.record : null, { today, days: listedAsc }),
     scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the stale-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
+    ogImage: OG_RECORD,
   });
 
   const breadth = choice.home ? breadthOf(days.get(choice.home), choice.home) : undefined;
-  add({ ...features.META, body: features.render({ ...config, breadth }) });
-  for (const mod of [privacy, terms, refunds]) add({ ...mod.META, body: mod.render(config) });
+  add({ ...features.META, body: features.render({ ...config, breadth }), ogImage: OG_FEATURES });
+  for (const mod of [privacy, terms, refunds]) add({ ...mod.META, body: mod.render(config), ogImage: OG_DEFAULT });
 
   // The founding page (spec §3): no founding card (it IS the founding page), the founding OG image, and a
   // form without its own places line — the counter tile above it is the page's one counter.

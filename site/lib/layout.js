@@ -40,6 +40,20 @@ export const NOJS_CSS = '/assets/css/nojs.css';
 
 /** The founding Open Graph image (1200x630, generated once and committed) and its alt text. */
 export const OG_FOUNDING = '/assets/img/og-founding.png';
+/** Social-preview images (SEO 2026-10-20), one per page family; dimensions are each image's real
+ *  pixel size (never 1200x630 by assumption -- page() takes ogImageWidth/ogImageHeight per image). */
+export const OG_HOME = '/assets/img/og-home.jpg';
+export const OG_DAY = '/assets/img/og-day.jpg';
+export const OG_RECORD = '/assets/img/og-record.jpg';
+export const OG_FEATURES = '/assets/img/og-features.jpg';
+export const OG_DEFAULT = '/assets/img/og-default.jpg';
+export const OG_DIMENSIONS = Object.freeze({
+  [OG_HOME]: Object.freeze({ width: 1424, height: 752 }),
+  [OG_DAY]: Object.freeze({ width: 1584, height: 672 }),
+  [OG_RECORD]: Object.freeze({ width: 1584, height: 672 }),
+  [OG_FEATURES]: Object.freeze({ width: 1584, height: 672 }),
+  [OG_DEFAULT]: Object.freeze({ width: 1584, height: 672 }),
+});
 /**
  * JSON-LD (SEO 2026-10-19): the site's own identity only -- name and url, nothing per-page, so it
  * never needs the claim/commitment guards the page's visible copy goes through. One fixed object,
@@ -52,7 +66,14 @@ export const OG_FOUNDING = '/assets/img/og-founding.png';
 export const JSON_LD_SITE = Object.freeze({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bet Gaffer', url: 'https://betgaffer.com/' });
 /** The exact <script type="application/ld+json"> text content every page carries. */
 export const JSON_LD_CONTENT = JSON.stringify(JSON_LD_SITE).replace(/</g, '\\u003c');
-const OG_ALT = Object.freeze({ [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${fmtInt(TOTAL_PLACES)} places.` });
+const OG_ALT = Object.freeze({
+  [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${fmtInt(TOTAL_PLACES)} places.`,
+  [OG_HOME]: 'Bet Gaffer: football match predictions, probability by probability.',
+  [OG_DAY]: "Bet Gaffer: today's recommended picks, each with its probability.",
+  [OG_RECORD]: 'Bet Gaffer: Our Record, graded pick accuracy over time.',
+  [OG_FEATURES]: 'Bet Gaffer: tools for checking and tracking your slips.',
+  [OG_DEFAULT]: 'Bet Gaffer.',
+});
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 
@@ -195,14 +216,17 @@ function footer(op, year) {
  *                                path hash for dated ones), so different pages carry different copy
  *                                without JS; true also loads early.js (classic, in <head>) and
  *                                banner.js as the first module script
- * @param {string} [o.ogImage]    site path of a 1200x630 PNG/JPEG -> og:image (absolute, from
- *                                config.origin) + og:image:width/height/alt
+ * @param {string} [o.ogImage]    site path of a PNG/JPEG -> og:image (absolute, from config.origin)
+ *                                + og:image:width/height/alt
  * @param {string} [o.ogImageAlt] og:image:alt; defaults to the known alt of OG_FOUNDING, required
  *                                for any other image
+ * @param {number} [o.ogImageWidth]  the image's real pixel width; defaults to OG_DIMENSIONS[ogImage],
+ *                                 else 1200 (OG_FOUNDING's own); required for any other image
+ * @param {number} [o.ogImageHeight] as ogImageWidth, default 630
  */
 export function page({
   path, title, description, body, scripts = [], noindex = false, mainData = {},
-  config, year, canonicalPath, banner: withBanner = true, ogImage, ogImageAlt,
+  config, year, canonicalPath, banner: withBanner = true, ogImage, ogImageAlt, ogImageWidth, ogImageHeight,
 } = {}) {
   if (config === null || typeof config !== 'object' || Array.isArray(config)) {
     throw new TypeError('page: config is required (pass the site config object explicitly)');
@@ -226,6 +250,12 @@ export function page({
     if (!OG_IMAGE_RE.test(ogImage)) throw new TypeError(`page: ogImage must be a .png or .jpg path, got ${JSON.stringify(ogImage)}`);
     ogAlt = ogImageAlt ?? (Object.hasOwn(OG_ALT, ogImage) ? OG_ALT[ogImage] : undefined);
     if (!nonEmpty(ogAlt)) throw new TypeError(`page: ogImageAlt is required for ${ogImage}`);
+    const known = OG_DIMENSIONS[ogImage];
+    ogImageWidth ??= known?.width ?? OG_WIDTH;
+    ogImageHeight ??= known?.height ?? OG_HEIGHT;
+    for (const [k, v] of [['ogImageWidth', ogImageWidth], ['ogImageHeight', ogImageHeight]]) {
+      if (!Number.isInteger(v) || v <= 0) throw new TypeError(`page: ${k} must be a positive integer, got ${JSON.stringify(v)}`);
+    }
   }
   // Throws naming every missing operator field (plan S8), then every malformed contact_email,
   // privacy_email, repo or origin. The emails and origin land in href attributes below; repo is
@@ -242,8 +272,8 @@ export function page({
   const allScripts = [...(withBanner ? [BANNER_SCRIPT] : []), NAV_SCRIPT, ...own];
   const scriptTags = allScripts.map((s) => `<script type="module" src="${escAttr(s)}"></script>`).join('\n');
   const ogImageTags = ogImage === undefined ? '' : `<meta property="og:image" content="${escAttr(config.origin + ogImage)}">
-<meta property="og:image:width" content="${OG_WIDTH}">
-<meta property="og:image:height" content="${OG_HEIGHT}">
+<meta property="og:image:width" content="${ogImageWidth}">
+<meta property="og:image:height" content="${ogImageHeight}">
 <meta property="og:image:alt" content="${escAttr(ogAlt)}">
 `;
   // Twitter Card: the same title/description/image as Open Graph above, never typed twice.

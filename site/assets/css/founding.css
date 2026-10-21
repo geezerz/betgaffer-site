@@ -107,7 +107,10 @@ html.fd-hidden [data-banner]{ display:none; }
   .bg-fd-card__title{ font-size:26px; }
   .bg-fd-card__title::before{ content:none; }
   .bg-fd-card__line{ font-size:16px; }
-  .bg-fd-card__cta-col{ flex:none; align-self:center; text-align:center; }
+  .bg-fd-card__body{ flex:1; }
+  /* 30% of the row's width regardless of how short the content is (operator 2026-10-20: a short
+     line left acres of empty space on the right instead of the CTA sitting there). */
+  .bg-fd-card__cta-col{ flex:0 0 30%; align-self:center; text-align:center; }
   .bg-fd-card__dots{ align-self:center; }
   .bg-fd-card__x{ top:8px; right:10px; }
 }
