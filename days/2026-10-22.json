@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-22",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-21T21:10:02Z",
-    "grades_as_of": "2026-10-21T21:10:02Z",
+    "grades_as_of": "2026-10-21T22:15:02Z",
     "prev_hash": "sha256:dfb526da8869b3d7d6008f766583f4a1525b424998265fdfe29ae2e405dd4877",
-    "picks_hash": "sha256:5859cc55ff6b29cb0376286b9375e7d9e82462f0e3fb4cfe3dceb11603894035",
+    "picks_hash": "sha256:0485a2a821ace60162496d6bc5268b6fa4496dd311cb07d08289c67ce85c94e1",
     "counts": {
         "fixtures": 168,
         "priced": 168,
-        "recommended": 155,
+        "recommended": 157,
         "markets_per_fixture": 90
     },
     "accuracy": {
@@ -2416,12 +2416,19 @@
             "home_id": 562803,
             "away_id": 562806,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 81,
+                "price": 1.27,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-21T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2684,12 +2691,19 @@
             "home_id": 557,
             "away_id": 794,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 85,
+                "price": 1.22,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-21T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {

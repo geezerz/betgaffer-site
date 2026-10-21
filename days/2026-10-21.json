@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-20T21:10:02Z",
-    "grades_as_of": "2026-10-21T21:10:02Z",
+    "grades_as_of": "2026-10-21T22:15:02Z",
     "prev_hash": "sha256:08e91999d283166689dcde519bfe50be70ca24566ec0b67264ebded7076a0f50",
     "picks_hash": "sha256:dfb526da8869b3d7d6008f766583f4a1525b424998265fdfe29ae2e405dd4877",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 162,
+        "won": 164,
         "lost": 16,
         "pushes": 2,
-        "graded": 178,
-        "pct": 91.01
+        "graded": 180,
+        "pct": 91.11
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -7121,7 +7121,7 @@
             "away": "Crusaders FC",
             "home_id": 3224,
             "away_id": 909,
-            "status": "ET",
+            "status": "AET",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -7134,8 +7134,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": 5,
+                "aet_away": 2,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 182531,
@@ -7491,7 +7498,7 @@
             "away": "União TO U20",
             "home_id": 2410,
             "away_id": 757755,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -7504,8 +7511,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 7,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1597953,
@@ -7749,7 +7763,7 @@
             "away": "Municipal",
             "home_id": 8983,
             "away_id": 9163,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -7799,7 +7813,7 @@
             "away": "Caracas FC",
             "home_id": 7910,
             "away_id": 8450,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7849,7 +7863,7 @@
             "away": "Vélez Sársfield Res.",
             "home_id": 113,
             "away_id": 98,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7874,7 +7888,7 @@
             "away": "Antofagasta",
             "home_id": 7260,
             "away_id": 4596,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -7887,7 +7901,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -7899,7 +7913,7 @@
             "away": "Atletico-MG",
             "home_id": 4647,
             "away_id": 206,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -7924,7 +7938,7 @@
             "away": "Monagas SC",
             "home_id": 7191,
             "away_id": 7074,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -7949,7 +7963,7 @@
             "away": "Aragua FC",
             "home_id": 7391,
             "away_id": 9155,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
