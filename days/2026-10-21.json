@@ -3,12 +3,12 @@
     "lagos_day": "2026-10-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-20T21:10:02Z",
-    "grades_as_of": "2026-10-22T01:10:03Z",
-    "prev_hash": "sha256:08e91999d283166689dcde519bfe50be70ca24566ec0b67264ebded7076a0f50",
-    "picks_hash": "sha256:dfb526da8869b3d7d6008f766583f4a1525b424998265fdfe29ae2e405dd4877",
+    "grades_as_of": "2026-10-22T05:10:02Z",
+    "prev_hash": "sha256:a6a090a2f845e6fa82ffaa0befc132ea45999a09429d156ee1b608a414eff71e",
+    "picks_hash": "sha256:c501d33c1cceb9f55aa4bbce753713b63ac62353253940769ed90e6c08bfb9db",
     "counts": {
         "fixtures": 270,
-        "priced": 252,
+        "priced": 249,
         "recommended": 260,
         "markets_per_fixture": 90
     },
@@ -75,9 +75,11 @@
             },
             "frozen_at": "2026-10-20T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -7648,9 +7650,11 @@
             },
             "frozen_at": "2026-10-20T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -7737,9 +7741,11 @@
             },
             "frozen_at": "2026-10-20T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -8012,7 +8018,7 @@
             "away": "Matagalpa",
             "home_id": 763941,
             "away_id": 763940,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -8025,7 +8031,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
