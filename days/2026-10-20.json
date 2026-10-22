@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-20",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-19T21:10:02Z",
-    "grades_as_of": "2026-10-22T01:10:03Z",
+    "grades_as_of": "2026-10-22T03:10:02Z",
     "prev_hash": "sha256:6d6d069afee8cd1a8b1d038eae76d78041014ef56c1399460e2d3d7d79f41c87",
     "picks_hash": "sha256:08e91999d283166689dcde519bfe50be70ca24566ec0b67264ebded7076a0f50",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 160,
+        "won": 161,
         "lost": 36,
         "pushes": 3,
-        "graded": 196,
-        "pct": 81.63
+        "graded": 197,
+        "pct": 81.73
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3928,7 +3928,7 @@
             "away": "Facilnet",
             "home_id": 1051065,
             "away_id": 1051066,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3941,8 +3941,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1628730,
