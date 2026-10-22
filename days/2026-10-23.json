@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-22T21:11:02Z",
-    "grades_as_of": "2026-10-22T22:15:02Z",
+    "grades_as_of": "2026-10-22T23:10:03Z",
     "prev_hash": "sha256:63c5d5516a416c9df6d652ce4e69dd7e72753d646d1ed51664ec907dee2e6e79",
-    "picks_hash": "sha256:8eeea3c3c4bb1133b6f0aafdec82120ecf3718f2bdd28a2653dad8cee6632dcd",
+    "picks_hash": "sha256:75b1bf416bd74bda8f8ce12e35afd404c4888a06865106bedbc531bae0664e17",
     "counts": {
         "fixtures": 442,
         "priced": 441,
-        "recommended": 425,
+        "recommended": 428,
         "markets_per_fixture": 90
     },
     "accuracy": {
@@ -39,13 +39,20 @@
             "away": "Club Sando",
             "home_id": 73702,
             "away_id": 651738,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 81,
+                "price": 1.24,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-10-22T23:10:03Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -57,7 +64,7 @@
             "away": "Central SC",
             "home_id": 8411,
             "away_id": 4755,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4780,12 +4787,19 @@
             "home_id": 74283,
             "away_id": 19050,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 82,
+                "price": 1.13,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-22T23:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -6141,12 +6155,19 @@
             "home_id": 8235,
             "away_id": 4610,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 81,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-22T23:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
