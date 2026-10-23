@@ -1,21 +1,34 @@
 {
     "schema": 1,
-    "generated_at": "2026-10-23T19:10:01Z",
-    "today": "2026-10-23",
-    "newest_day": "2026-10-23",
+    "generated_at": "2026-10-23T23:49:02Z",
+    "today": "2026-10-24",
+    "newest_day": "2026-10-24",
     "strategy": "edge_reliability",
     "days": [
         {
+            "day": "2026-10-24",
+            "compacted": false,
+            "picks_hash": "sha256:412eef9eac0dc5caafeecbe82665f1e98639b487cf41e41225a74e75dce02e04",
+            "fixtures": 1705,
+            "accuracy": {
+                "won": 0,
+                "lost": 0,
+                "pushes": 0,
+                "graded": 0,
+                "pct": null
+            }
+        },
+        {
             "day": "2026-10-23",
             "compacted": false,
-            "picks_hash": "sha256:0400806eaff6b797de9ad878ade124f86160b947d491a3e99c16eb3c795f5268",
+            "picks_hash": "sha256:1cb85f361ec6f8a6bc617711e2fc637bea97556673160bfeeafd2f045daa90d0",
             "fixtures": 445,
             "accuracy": {
-                "won": 198,
-                "lost": 29,
-                "pushes": 7,
-                "graded": 227,
-                "pct": 87.22
+                "won": 320,
+                "lost": 53,
+                "pushes": 10,
+                "graded": 373,
+                "pct": 85.79
             }
         },
         {
@@ -226,31 +239,42 @@
             "max_odds": 1.8,
             "effective_since_date": "2026-10-24"
         },
-        "as_of": "2026-10-23T19:10:01Z",
+        "as_of": "2026-10-23T23:49:02Z",
         "last_30": {
-            "period": "2026-09-24..2026-10-23",
-            "won": 10647,
-            "lost": 1781,
+            "period": "2026-09-25..2026-10-24",
+            "won": 10707,
+            "lost": 1792,
             "pushes": 444,
-            "graded": 12428,
-            "finished_fixtures": 13656,
-            "pct": 85.67,
-            "coverage": 0.9101,
+            "graded": 12499,
+            "finished_fixtures": 13564,
+            "pct": 85.66,
+            "coverage": 0.9215,
             "status_days": {
-                "live": 23,
-                "provisional": 7
+                "live": 24,
+                "provisional": 6
             }
         },
         "last_7": [
             {
+                "period": "2026-10-24",
+                "won": 0,
+                "lost": 0,
+                "pushes": 0,
+                "graded": 0,
+                "finished_fixtures": 2,
+                "pct": null,
+                "coverage": 0.0,
+                "status": "live"
+            },
+            {
                 "period": "2026-10-23",
-                "won": 198,
-                "lost": 29,
-                "pushes": 7,
-                "graded": 227,
+                "won": 320,
+                "lost": 53,
+                "pushes": 10,
+                "graded": 373,
                 "finished_fixtures": 237,
-                "pct": 87.22,
-                "coverage": 0.9578,
+                "pct": 85.79,
+                "coverage": 1.5738,
                 "status": "live"
             },
             {
@@ -307,29 +331,18 @@
                 "pct": 85.89,
                 "coverage": 0.9504,
                 "status": "live"
-            },
-            {
-                "period": "2026-10-17",
-                "won": 1236,
-                "lost": 203,
-                "pushes": 47,
-                "graded": 1439,
-                "finished_fixtures": 1566,
-                "pct": 85.89,
-                "coverage": 0.9189,
-                "status": "live"
             }
         ],
         "months": [
             {
                 "period": "2026-10",
-                "won": 8542,
-                "lost": 1419,
-                "pushes": 342,
-                "graded": 9961,
-                "finished_fixtures": 10889,
-                "pct": 85.75,
-                "coverage": 0.9148,
+                "won": 8664,
+                "lost": 1443,
+                "pushes": 345,
+                "graded": 10107,
+                "finished_fixtures": 10891,
+                "pct": 85.72,
+                "coverage": 0.928,
                 "status": "live"
             },
             {
