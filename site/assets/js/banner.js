@@ -20,7 +20,7 @@
 // Storage that is missing, blocked or full never breaks the page: the card then shows, rotates
 // without memory, and a click still removes it for this page view.
 
-import { VARIANTS } from './lib/founding.js';
+import { isNear, VARIANTS } from './lib/founding.js';
 
 export const STORAGE_KEY = 'bg.founding.banner';
 export const HIDDEN_VALUE = 'hidden';
@@ -81,7 +81,7 @@ function segmentNode(doc, { t, hl, offer }) {
   return el;
 }
 
-/** Puts variant i's copy into the card (and moves the dots' "on" marker); false when the card lacks its copy slots. */
+/** Puts variant i's copy into the card (and moves the dots' "on"/"near" state); false when the card lacks its copy slots. */
 function show(doc, card, i) {
   const heading = card.querySelector('[data-fd-heading]');
   const line = card.querySelector('[data-fd-line]');
@@ -91,18 +91,33 @@ function show(doc, card, i) {
   line.replaceChildren(...v.line.map((s) => segmentNode(doc, s)));
   card.setAttribute('data-variant', String(i));
   const dots = card.querySelector('[data-fd-dots]');
-  if (dots) dots.querySelectorAll('.bg-fd-card__dot').forEach((d, k) => d.classList.toggle('on', k === i));
+  if (dots) {
+    dots.querySelectorAll('.bg-fd-card__dot').forEach((d, k) => {
+      d.classList.toggle('on', k === i);
+      d.classList.toggle('near', isNear(k, i, VARIANTS.length));
+      d.setAttribute('aria-pressed', k === i ? 'true' : 'false');
+    });
+  }
   return true;
+}
+
+/** Remembers variant i as the last shown; blocked or full storage never breaks the swap itself. */
+function remember(storage, i) {
+  try {
+    if (storage !== null) storage.setItem(VARIANT_KEY, String(i));
+  } catch {
+    // Not remembered: the next view (or rotate()'s own exclusion) may repeat this one.
+  }
 }
 
 function rotate(doc, card, storage, random) {
   const i = pickVariant(lastShown(storage), VARIANTS.length, random);
-  if (!show(doc, card, i)) return;
-  try {
-    if (storage !== null) storage.setItem(VARIANT_KEY, String(i));
-  } catch {
-    // Not remembered (blocked or full storage): the next view may repeat this one.
-  }
+  if (show(doc, card, i)) remember(storage, i);
+}
+
+/** A dot click: show that variant and remember it, same as a reroll, triggered by the visitor. */
+function goTo(doc, card, storage, i) {
+  if (show(doc, card, i)) remember(storage, i);
 }
 
 /** <html> gets HIDDEN_CLASS (as early.js sets it), so nothing re-shows a dismissed card. */
@@ -124,6 +139,12 @@ export function init({ doc = document, storage = defaultStorage(), random = Math
     rotate(doc, card, storage, random);
   } catch {
     // The static variant stays; the close button below must still work.
+  }
+  const dots = card.querySelector('[data-fd-dots]');
+  if (dots) {
+    dots.querySelectorAll('.bg-fd-card__dot').forEach((btn, i) => {
+      btn.addEventListener('click', () => goTo(doc, card, storage, i));
+    });
   }
   const close = card.querySelector('[data-banner-close]');
   if (!close) return;

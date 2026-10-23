@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 import { page, NAV, OG_FOUNDING, navCurrent } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
-import { VARIANTS, variantFor } from '../site/lib/founding.js';
+import { isNear, VARIANTS, variantFor } from '../site/lib/founding.js';
 import { foundingCard } from '../site/content/waitlist.js';
 import { parse, find, findAll, textOf, claimViolations } from './html-scan.js';
 import { fakeDocument, serialize } from './fake-dom.js';
@@ -355,7 +355,8 @@ test('the card passes the claim scan on a page; a % outside its offer figure is 
 });
 
 test('the close button is hidden in the static HTML (no JS: the card shows and cannot be closed)', () => {
-  const buttons = findAll(slotOf(base()), (n) => n.tag === 'button');
+  // Scoped past the dots: carousel buttons too, same tag, a different control.
+  const buttons = findAll(slotOf(base()), (n) => n.tag === 'button' && !(n.attrs.class ?? '').split(/\s+/).includes('bg-fd-card__dot'));
   assert.equal(buttons.length, 1);
   const [b] = buttons;
   assert.equal(b.attrs.type, 'button');
@@ -530,6 +531,22 @@ test('banner.js: picks a variant, swaps the copy in with DOM nodes identical to 
     // The swapped page still passes the claim scan.
     assert.deepEqual(claimViolations(`<!doctype html><html><head><title>t</title></head>${serialize(doc.body)}</html>`), [], `variant ${want}`);
   }
+});
+
+test('banner.js: clicking a dot shows that variant, moves "on"/"near"/aria-pressed, and remembers it', () => {
+  const doc = fakeDocument(base());
+  const storage = fakeStorage();
+  bannerInit({ doc, storage, random: () => 0 }); // lands on variant 0
+  const card = liveBanner(doc);
+  const dots = card.querySelectorAll('.bg-fd-card__dot');
+  assert.equal(dots.length, VARIANTS.length);
+  dots[3].listeners.click[0]();
+  assert.deepEqual(liveShape(doc), staticShape(3), 'variant 3: same nodes as the static HTML');
+  assert.equal(card.getAttribute('data-variant'), '3');
+  assert.deepEqual(dots.map((d) => d.classList.contains('on')), VARIANTS.map((_, k) => k === 3));
+  assert.deepEqual(dots.map((d) => d.getAttribute('aria-pressed')), VARIANTS.map((_, k) => String(k === 3)));
+  assert.deepEqual(dots.map((d) => d.classList.contains('near')), VARIANTS.map((_, k) => isNear(k, 3, VARIANTS.length)));
+  assert.equal(storage.m.get('bg.founding.v'), '3');
 });
 
 test('banner.js: never shows the previous page view\'s variant, whatever random() returns', () => {
@@ -721,7 +738,7 @@ test('founding.css: the stand-out card — green border, accent gradient, 44px c
 // shortcut: one rendering pass at the five step widths, not the original ten-variant dual-scrollbar
 // sweep across every intermediate width (2026-10-08, see git history) -- each min-height below is the
 // tallest reading + a flat 8px margin instead of a tight, per-width +3/-30px budget.
-const CARD_LONGEST = Object.freeze({ 320: 290.28, 360: 266.78, 480: 244.28, 520: 217.89, 1024: 148.19 });
+const CARD_LONGEST = Object.freeze({ 320: 308.28, 360: 284.78, 480: 262.28, 520: 235.89, 1024: 167.19 });
 // What those measurements depend on. ANY change here invalidates them: re-measure every width above
 // (founding.css header says how), then update CARD_LONGEST, the header comment and these pins together.
 const CARD_PAINT_ONLY = new Set(['color', 'background', 'background-color', 'border-color', 'box-shadow', 'transition', 'cursor',
@@ -731,7 +748,7 @@ const CARD_RULES_PINNED = [
   [null, 'html.fd-hidden [data-banner]', ['display:none']],
   [null, '.bg-fd-slot', ['padding-top:14px']],
   [null, '.bg-fd-card', ['position:relative', 'display:flex', 'flex-direction:column', 'justify-content:space-between', 'gap:16px',
-    'min-height:300px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
+    'min-height:317px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
   [null, '.bg-fd-card__row', ['display:flex', 'flex-direction:column', 'gap:16px']],
   [null, '.bg-fd-card__body', ['display:flex', 'flex-direction:column', 'gap:6px', 'min-width:0']],
   [null, '.bg-fd-card__title', ['margin:0', 'font-family:var(--font-display)', 'font-size:22px', 'font-weight:800', 'line-height:1.2',
@@ -743,28 +760,30 @@ const CARD_RULES_PINNED = [
   [null, '.bg-fd-card__cta-col', ['text-align:center']],
   [null, '.bg-fd-card__teaser', ['margin:0 0 6px', 'font-size:12.5px', 'line-height:1.4']],
   [null, '.bg-fd-card__cta', ['width:100%']],
-  [null, '.bg-fd-card__dots', ['display:flex', 'justify-content:center', 'gap:4px']],
-  [null, '.bg-fd-card__dot', ['width:5px', 'height:5px', 'border-radius:50%']],
+  [null, '.bg-fd-card__dots', ['display:flex', 'justify-content:center', 'align-items:center', 'gap:2px']],
+  [null, '.bg-fd-card__dot', ['box-sizing:content-box', 'width:5px', 'height:5px', 'padding:9px', 'border:0', 'border-radius:50%', 'background-clip:content-box']],
   [null, '.bg-fd-card__dot.on', []],
+  [null, '.bg-fd-card__dot:not(.near)', ['display:none']],
   [null, '.bg-fd-card__x', ['position:absolute', 'top:4px', 'right:4px', 'display:inline-flex', 'align-items:center',
     'justify-content:center', 'min-width:var(--tap)', 'min-height:var(--tap)', 'padding:0', 'border:0', 'border-radius:var(--r-1)',
     'font:inherit', 'font-size:22px', 'line-height:1']],
   [null, '.bg-fd-card__x:hover', []],
   [null, '.bg-fd-card__x[hidden]', ['display:none']],
-  ['(min-width:360px)', '.bg-fd-card', ['min-height:275px']],
-  ['(min-width:480px)', '.bg-fd-card', ['min-height:252px']],
-  ['(min-width:520px)', '.bg-fd-card', ['min-height:226px']],
-  ['(min-width:640px)', '.bg-fd-card__cta-col', ['text-align:left']],
+  ['(min-width:360px)', '.bg-fd-card', ['min-height:293px']],
+  ['(min-width:480px)', '.bg-fd-card', ['min-height:271px']],
+  ['(min-width:520px)', '.bg-fd-card', ['min-height:244px']],
   ['(min-width:640px)', '.bg-fd-card__cta', ['width:auto']],
   ['(min-width:1024px)', '.bg-fd-slot', ['padding-top:20px']],
-  ['(min-width:1024px)', '.bg-fd-card', ['min-height:156px', 'padding:20px 64px 20px 24px']],
+  ['(min-width:1024px)', '.bg-fd-card', ['min-height:176px', 'padding:20px 64px 20px 24px']],
   ['(min-width:1024px)', '.bg-fd-card__row', ['flex-direction:row', 'align-items:center', 'gap:24px']],
   ['(min-width:1024px)', '.bg-fd-card__title', ['font-size:26px']],
   ['(min-width:1024px)', '.bg-fd-card__title::before', ['content:none']],
   ['(min-width:1024px)', '.bg-fd-card__line', ['font-size:16px']],
   ['(min-width:1024px)', '.bg-fd-card__body', ['flex:1']],
   ['(min-width:1024px)', '.bg-fd-card__cta-col', ['flex:0 0 30%', 'align-self:center', 'text-align:center']],
-  ['(min-width:1024px)', '.bg-fd-card__dots', ['align-self:center']],
+  ['(min-width:1024px)', '.bg-fd-card__dots', ['align-self:center', 'gap:5px']],
+  ['(min-width:1024px)', '.bg-fd-card__dot', ['width:8px', 'height:8px', 'padding:8px']],
+  ['(min-width:1024px)', '.bg-fd-card__dot:not(.near)', ['display:inline-block']],
   ['(min-width:1024px)', '.bg-fd-card__x', ['top:8px', 'right:10px']],
 ];
 // base.css: the button inside the card, the page gutter around it, the fonts and the body defaults it inherits.
@@ -786,7 +805,7 @@ const CARD_BASE_PINNED = [
   ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
 ];
 // The eleven rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
-const CARD_MARKUP_SHA256 = '3c499f155c7eb0501a85d9d6e1d3f23c76f68135e85f2dbaae6e9f7501a3b0b9';
+const CARD_MARKUP_SHA256 = '8580e2170355896d061f55efefb38c04cc5495cda67e2c262ef35ca6fecd17dc';
 const FONT_SHA256 = Object.freeze({
   'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
   'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',

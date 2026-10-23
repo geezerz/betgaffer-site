@@ -148,15 +148,25 @@ describe('site/content/waitlist.js', () => {
         [['fd-hl', '30% off'], ['fd-hl', 'double Credits']], `variant ${i}: teaser highlights`);
       assert.equal(find(teaser, (n) => n.attrs['data-figure'] === 'offer') && textOf(find(teaser, (n) => n.attrs['data-figure'] === 'offer')),
         '30% off', `variant ${i}: teaser offer figure`);
-      // Rotation dots: one per variant, the current one marked "on".
-      const dots = findAll(slot, (n) => has(n, 'bg-fd-card__dot'));
+      // Rotation dots: one clickable button per variant, the current one marked "on"/pressed,
+      // and only the ones within one step of it (circularly) are "near" (shown on a phone).
+      const dotsWrap = find(slot, (n) => n.attrs['data-fd-dots'] !== undefined);
+      assert.equal(dotsWrap.attrs.role, 'group', `variant ${i}`);
+      const dots = findAll(dotsWrap, (n) => n.tag === 'button');
       assert.equal(dots.length, F.VARIANTS.length, `variant ${i}: one dot per variant`);
-      assert.deepEqual(dots.map((d) => has(d, 'on')), F.VARIANTS.map((_, k) => k === i), `variant ${i}: only its own dot is on`);
+      dots.forEach((d, k) => {
+        assert.equal(d.attrs.type, 'button', `variant ${i} dot ${k}`);
+        assert.equal(d.attrs['aria-label'], `Show message ${k + 1} of ${F.VARIANTS.length}`, `variant ${i} dot ${k}`);
+        assert.equal(d.attrs['aria-pressed'], k === i ? 'true' : 'false', `variant ${i} dot ${k}`);
+        assert.equal(has(d, 'on'), k === i, `variant ${i} dot ${k}: on`);
+        assert.equal(has(d, 'near'), F.isNear(k, i, F.VARIANTS.length), `variant ${i} dot ${k}: near`);
+      });
       // The button and the close control.
       const a = findAll(slot, (n) => n.tag === 'a');
       assert.deepEqual(a.map((n) => [n.attrs.href, textOf(n)]), [['/waitlist/', 'See the founding benefits']]);
       assert.ok(has(a[0], 'bg-btn') && has(a[0], 'bg-btn--primary') && has(a[0], 'bg-btn--glow') && has(a[0], 'bg-fd-card__cta'));
-      const x = findAll(slot, (n) => n.tag === 'button');
+      // Scoped past the dots: carousel buttons too, same tag, a different control (checked below).
+      const x = findAll(slot, (n) => n.tag === 'button' && !has(n, 'bg-fd-card__dot'));
       assert.equal(x.length, 1);
       assert.equal(x[0].attrs.type, 'button');
       assert.ok(x[0].attrs['data-banner-close'] !== undefined, 'data-banner-close');

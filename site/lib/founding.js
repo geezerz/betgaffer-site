@@ -81,6 +81,17 @@ export const VARIANTS = Object.freeze([
 /** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */
 export const CTA_TEASER = Object.freeze([H(OFF), P(', '), H('double Credits'), P(', early access.')]);
 
+/**
+ * The carousel dots (operator 2026-10-23): on a phone only the previous/current/next dot shows
+ * (founding.css hides the rest below 1024px) -- true whenever k is i itself or one step away,
+ * circularly (so the window wraps at both ends of the n variants). Shared by the build (the dot's
+ * initial "near" class) and banner.js (kept in sync on every rotate/click).
+ */
+export function isNear(k, i, n) {
+  const d = Math.abs(k - i);
+  return d === 0 || d === 1 || d === n - 1;
+}
+
 /** FNV-1a, 32-bit, over UTF-16 code units: the same number in the build and in any browser. */
 export function pathHash(s) {
   let h = 0x811c9dc5;

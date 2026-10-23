@@ -232,15 +232,28 @@ describe('stale.js init on built pages (fake DOM)', () => {
     assert.equal(c.querySelector('[data-rel="record"]').hidden, true);
   });
 
-  test('an open page relabels itself at the next Lagos midnight', async () => {
+  test('an open page relabels itself at the next Lagos midnight, and re-checks staleness after 3h open', async () => {
     const doc = fakeDocument(await page('index.html'));
     const timers = [];
     stale.init({ doc, nowMs: BEFORE_MIDNIGHT, raf: sync, setTimer: (fn, ms) => timers.push([fn, ms]), now: () => MIDNIGHT });
-    assert.equal(timers.length, 1);
-    assert.ok(timers[0][1] >= 1000 && timers[0][1] < 5000, `scheduled ${timers[0][1]} ms ahead`);
+    assert.equal(timers.length, 2, 'the midnight relabel, then the tab-open-3h recheck');
+    assert.ok(timers[0][1] >= 1000 && timers[0][1] < 5000, `midnight timer scheduled ${timers[0][1]} ms ahead`);
+    assert.equal(timers[1][1], stale.TAB_OPEN_HOURS * 60 * 60 * 1000, 'the tab-open timer is exactly TAB_OPEN_HOURS');
     timers[0][0]();
     assert.equal(doc.querySelector('[data-rel="eyebrow"]').hidden, true);
     assert.equal(doc.querySelector('[data-rel="next"]').textContent, "Today's card is published:");
+  });
+
+  test('a tab left open 3h gets the overdue notice even while generatedAt is still well inside the 6h window', async () => {
+    const THREE_H = stale.TAB_OPEN_HOURS * 60 * 60 * 1000;
+    const doc = fakeDocument(await page('index.html'));
+    const timers = [];
+    stale.init({ doc, nowMs: NOW, raf: sync, setTimer: (fn, ms) => timers.push([fn, ms]), now: () => NOW + THREE_H });
+    const region = doc.querySelector('.stale');
+    assert.equal(region.hidden, true, 'premise: not overdue at page load (generatedAt is ~15 minutes old)');
+    timers.find(([, ms]) => ms === THREE_H)[0]();
+    assert.equal(region.hidden, false, 'the deferred re-check (3h later per `now`) shows the notice');
+    assert.match(region.textContent, /refresh for the latest/);
   });
 });
 

@@ -7,8 +7,11 @@
 //     "Today…"/"Tomorrow…" (and, on the day pills only, "Yesterday") for the VISITOR's Lagos
 //     date on each page view, and again at the next Lagos midnight while the page stays open;
 //   - from <main data-generated-at data-day data-tomorrow data-view data-stale-after-hours>:
-//     the published data is older than the window -> a quiet refresh prompt (operator 2026-10-20:
-//     no timestamp, no overdue framing -- neither is useful to a visitor, refreshing is);
+//     the published data is older than the window, OR the tab has been open TAB_OPEN_HOURS
+//     (checked once, at init and again after that timer -- operator 2026-10-23: new graded
+//     results may have shipped while the tab sat open, even if generatedAt looked fine at first
+//     paint) -> the same quiet refresh prompt (operator 2026-10-20: no timestamp, no overdue
+//     framing -- neither is useful to a visitor, refreshing is);
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
 //     card is already published (the normal 00:00–00:10 window, not a failure) and is linked, or
 //     today's card has not been published yet.
@@ -24,6 +27,8 @@ const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 const LAGOS_OFFSET_MS = HOUR_MS; // UTC+1 all year (lib/time.js)
 export const DEFAULT_STALE_HOURS = 6;
+/** A tab open this long gets the overdue notice regardless of generatedAt (operator 2026-10-23). */
+export const TAB_OPEN_HOURS = 3;
 
 function shiftDate(date, n) {
   const [y, m, d] = date.split('-').map(Number);
@@ -150,13 +155,21 @@ export function relabel(root, nowMs) {
  * @param {string|null} [o.day]         the shown day; pass it ONLY on the home page
  * @param {string|null} [o.tomorrow]    the published tomorrow date, when listed
  * @param {number} [o.staleAfterHours]  window; not a positive finite number -> 6
+ * @param {number} [o.openedAtMs]       when this page view started (epoch ms); past TAB_OPEN_HOURS
+ *                                      old, the same overdue notice fires even when generatedAt
+ *                                      itself is still fresh (operator 2026-10-23: a tab left open
+ *                                      for hours is showing graded results that have since moved on)
  */
-export function staleNotice({ nowMs, generatedAt, day, tomorrow, staleAfterHours } = {}) {
+export function staleNotice({
+  nowMs, generatedAt, day, tomorrow, staleAfterHours, openedAtMs,
+} = {}) {
   if (typeof nowMs !== 'number' || !Number.isFinite(nowMs)) return [];
   const out = [];
   const hours = typeof staleAfterHours === 'number' && Number.isFinite(staleAfterHours) && staleAfterHours > 0
     ? staleAfterHours : DEFAULT_STALE_HOURS;
-  if (isIsoZ(generatedAt) && nowMs - Date.parse(generatedAt) > hours * HOUR_MS) {
+  const dataOverdue = isIsoZ(generatedAt) && nowMs - Date.parse(generatedAt) > hours * HOUR_MS;
+  const tabStale = typeof openedAtMs === 'number' && Number.isFinite(openedAtMs) && nowMs - openedAtMs >= TAB_OPEN_HOURS * HOUR_MS;
+  if (dataOverdue || tabStale) {
     out.push({ kind: 'overdue', text: 'This page may be a little behind — refresh for the latest. Predictions update every 2 hours.' });
   }
   if (isDate(day)) {
@@ -217,14 +230,20 @@ export function init({
   const region = main ? main.querySelector('.stale') : null;
   if (!main || !region) return;
   const d = main.dataset;
-  const notices = staleNotice({
-    nowMs,
+  const base = {
     generatedAt: d.generatedAt,
     day: d.view === 'home' ? d.day : null,
     tomorrow: d.tomorrow,
     staleAfterHours: Number(d.staleAfterHours),
-  });
+    openedAtMs: nowMs,
+  };
+  const notices = staleNotice({ ...base, nowMs });
   if (notices.length > 0) show(doc, region, notices, raf);
+  // A tab left open this long: re-check once, even when nothing was wrong at first paint.
+  setTimer(() => {
+    const again = staleNotice({ ...base, nowMs: now() });
+    if (again.length > 0) show(doc, region, again, raf);
+  }, TAB_OPEN_HOURS * HOUR_MS);
 }
 
 if (typeof document !== 'undefined') {

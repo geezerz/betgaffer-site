@@ -38,6 +38,17 @@ test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 
   assert.equal(md(F.CTA_TEASER), '**30% off**, **double Credits**, early access.');
   assert.equal(F.CTA_TEASER.filter((s) => s.offer).length, 1, 'only the percentage is tagged offer');
 });
+
+test('isNear: itself and one step away, circularly (the phone carousel window, operator 2026-10-23)', () => {
+  // n=11 (the real VARIANTS count): the middle of the pool, and both wrapped ends.
+  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 5, 11)), [4, 5, 6]);
+  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 0, 11)), [0, 1, 10], 'wraps at the low end');
+  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 10, 11)), [0, 9, 10], 'wraps at the high end');
+  // Small n: every dot ends up within one step of any other, so every dot is near.
+  for (const n of [1, 2, 3]) {
+    for (let i = 0; i < n; i++) assert.deepEqual([...Array(n).keys()].filter((k) => F.isNear(k, i, n)), [...Array(n).keys()], `n=${n} i=${i}`);
+  }
+});
 // md() (defined below, alongside SPEC_VARIANTS) is in scope here: test callbacks run after the whole
 // module's synchronous top level has already executed, so md is assigned by the time this one fires.
 

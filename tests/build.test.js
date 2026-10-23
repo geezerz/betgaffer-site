@@ -1160,6 +1160,14 @@ describe('staleNotice (built stale.js) at the Lagos-midnight boundaries', () => 
     assert.deepEqual(kinds(at('2026-10-08T05:00:00Z')), ['overdue', 'tomorrow']);
   });
 
+  test('a tab open TAB_OPEN_HOURS is overdue even when generatedAt is fresh; one notice, not two', () => {
+    const fresh = { generatedAt: '2026-10-07T22:50:00Z', day: null }; // 10 minutes old at nowMs
+    assert.deepEqual(at('2026-10-07T23:00:00Z', { ...fresh, openedAtMs: Date.parse('2026-10-07T20:00:01Z') }), []);
+    const n = at('2026-10-07T23:00:00Z', { ...fresh, openedAtMs: Date.parse('2026-10-07T20:00:00Z') });
+    assert.deepEqual(kinds(n), ['overdue']);
+    assert.equal(n.length, 1, 'generatedAt also being fine never doubles the notice');
+  });
+
   test('a configured window is honoured; a missing or nonsense one falls back to 6 h', () => {
     assert.deepEqual(kinds(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: 1 })), ['overdue']);
     assert.deepEqual(at('2026-10-07T23:15:01Z', { day: null, staleAfterHours: NaN }), []);

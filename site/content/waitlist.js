@@ -17,7 +17,7 @@
 import { escHtml } from '../lib/esc.js';
 import { fmtInt } from '../lib/num.js';
 import {
-  BENEFITS, CLAIM_DAYS, CTA_TEASER, DISCOUNT_PCT, GRACE_DAYS, LAUNCH_PLACES, TOTAL_PLACES, VARIANTS, WAITLIST_PLACES,
+  BENEFITS, CLAIM_DAYS, CTA_TEASER, DISCOUNT_PCT, GRACE_DAYS, isNear, LAUNCH_PLACES, TOTAL_PLACES, VARIANTS, WAITLIST_PLACES,
 } from '../lib/founding.js';
 
 export const META = Object.freeze({
@@ -213,7 +213,10 @@ export function foundingCard(variantIndex) {
     throw new RangeError(`foundingCard: variantIndex must be an integer 0-${VARIANTS.length - 1}, got ${String(variantIndex)}`);
   }
   const v = VARIANTS[variantIndex];
-  const dots = VARIANTS.map((_, i) => `<span class="bg-fd-card__dot${i === variantIndex ? ' on' : ''}"></span>`).join('');
+  const dots = VARIANTS.map((_, i) => {
+    const cls = ['bg-fd-card__dot', i === variantIndex ? ' on' : '', isNear(i, variantIndex, VARIANTS.length) ? ' near' : ''].join('');
+    return `<button type="button" class="${cls}" aria-label="Show message ${i + 1} of ${VARIANTS.length}" aria-pressed="${i === variantIndex ? 'true' : 'false'}"></button>`;
+  }).join('');
   return `<aside class="bg-wrap bg-fd-slot" aria-label="Founding members" data-banner data-variant="${variantIndex}">
 <div class="bg-fd-card">
 <div class="bg-fd-card__row">
@@ -226,7 +229,7 @@ export function foundingCard(variantIndex) {
 <a class="bg-btn bg-btn--primary bg-btn--glow bg-fd-card__cta" href="/waitlist/">See the founding benefits</a>
 </div>
 </div>
-<div class="bg-fd-card__dots" data-fd-dots aria-hidden="true">${dots}</div>
+<div class="bg-fd-card__dots" data-fd-dots role="group" aria-label="Choose a message">${dots}</div>
 <button type="button" class="bg-fd-card__x" data-banner-close aria-label="Hide the founding card" hidden>×</button>
 </div>
 </aside>`;

@@ -17,16 +17,18 @@
    swap never moves the page below it.
 
    How the min-heights are sized: MEASURED in Chrome (Playwright) on
-   2026-10-19, Inter + JetBrains Mono from /assets/fonts. At each of the five
-   step widths below, every variant's heading+line was swapped in (card's own
-   min-height lifted) and the tallest reading taken; each min-height is that
-   tallest reading + a flat 8px margin.
+   2026-10-23 (re-measured for the clickable dots, which grew from a 5px
+   decoration to a real tap target), Inter + JetBrains Mono from
+   /assets/fonts. At each of the five step widths below, every variant's
+   heading+line was swapped in (card's own min-height lifted) and the
+   tallest reading taken; each min-height is that tallest reading + a flat
+   8px margin.
      width   min-height   tallest variant
-      320       300px        290.28px
-      360       275px        266.78px
-      480       252px        244.28px
-      520       226px        217.89px
-     1024       156px        148.19px
+      320       317px        308.28px
+      360       293px        284.78px
+      480       271px        262.28px
+      520       244px        235.89px
+     1024       176px        167.19px
    shortcut: one scrollbar/rendering pass, not the dual-scrollbar sweep across
    every intermediate width the original ten-variant table used (2026-10-08,
    see git history) -- the margin above is wider (8px, not 3-30px) to cover
@@ -45,7 +47,7 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card{
   position:relative;
   display:flex; flex-direction:column; justify-content:space-between; gap:16px;
-  min-height:300px;
+  min-height:317px;
   padding:18px 16px 16px;
   border:1px solid var(--accent); border-radius:var(--r-2);
   background:
@@ -68,9 +70,21 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card__cta-col{ text-align:center; }
 .bg-fd-card__teaser{ margin:0 0 6px; font-size:12.5px; line-height:1.4; color:var(--accent); }
 .bg-fd-card__cta{ width:100%; }
-.bg-fd-card__dots{ display:flex; justify-content:center; gap:4px; }
-.bg-fd-card__dot{ width:5px; height:5px; border-radius:50%; background:var(--line-2); }
-.bg-fd-card__dot.on{ background:var(--accent); }
+.bg-fd-card__dots{ display:flex; justify-content:center; align-items:center; gap:2px; }
+/* The visible dot is the small content box; the padding is an invisible, easier-to-tap area
+   around it (background-clip:content-box keeps the padding transparent). box-sizing:content-box
+   overrides the sitewide border-box reset -- with it, padding would eat the whole 5px width and
+   leave nothing to paint. Phone shows only the current dot's neighbours (founding.css below);
+   desktop shows every dot, slightly bigger (operator 2026-10-23: dots are now a clickable
+   carousel, not decoration). */
+.bg-fd-card__dot{
+  box-sizing:content-box;
+  width:5px; height:5px; padding:9px;
+  border:0; border-radius:50%; background-color:var(--line-2); background-clip:content-box;
+  cursor:pointer;
+}
+.bg-fd-card__dot.on{ background-color:var(--accent); }
+.bg-fd-card__dot:not(.near){ display:none; }
 
 /* The close button: a 44×44 target over the top-right corner. The static HTML
    ships it [hidden] (no JS: the card cannot be closed); banner.js shows it.
@@ -88,19 +102,18 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card__x:hover{ color:var(--ink); background:var(--surface-3); }
 .bg-fd-card__x[hidden]{ display:none; }
 
-/* The reservation steps (measured; see the table above). 226px holds from 520px
-   to 1023px: at 640px only the CTA column changes (auto width, left-aligned). */
-@media (min-width:360px){ .bg-fd-card{ min-height:275px; } }
-@media (min-width:480px){ .bg-fd-card{ min-height:252px; } }
-@media (min-width:520px){ .bg-fd-card{ min-height:226px; } }
+/* The reservation steps (measured; see the table above). 244px holds from 520px
+   to 1023px: at 640px only the button's own width changes (auto, still centered). */
+@media (min-width:360px){ .bg-fd-card{ min-height:293px; } }
+@media (min-width:480px){ .bg-fd-card{ min-height:271px; } }
+@media (min-width:520px){ .bg-fd-card{ min-height:244px; } }
 @media (min-width:640px){
-  .bg-fd-card__cta-col{ text-align:left; }
   .bg-fd-card__cta{ width:auto; }
 }
 @media (min-width:1024px){
   .bg-fd-slot{ padding-top:20px; }
   .bg-fd-card{
-    min-height:156px;
+    min-height:176px;
     padding:20px 64px 20px 24px;
   }
   .bg-fd-card__row{ flex-direction:row; align-items:center; gap:24px; }
@@ -111,7 +124,9 @@ html.fd-hidden [data-banner]{ display:none; }
   /* 30% of the row's width regardless of how short the content is (operator 2026-10-20: a short
      line left acres of empty space on the right instead of the CTA sitting there). */
   .bg-fd-card__cta-col{ flex:0 0 30%; align-self:center; text-align:center; }
-  .bg-fd-card__dots{ align-self:center; }
+  .bg-fd-card__dots{ align-self:center; gap:5px; }
+  .bg-fd-card__dot{ width:8px; height:8px; padding:8px; }
+  .bg-fd-card__dot:not(.near){ display:inline-block; }
   .bg-fd-card__x{ top:8px; right:10px; }
 }
 
