@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-22T21:11:02Z",
-    "grades_as_of": "2026-10-23T03:10:02Z",
+    "grades_as_of": "2026-10-23T05:10:02Z",
     "prev_hash": "sha256:63c5d5516a416c9df6d652ce4e69dd7e72753d646d1ed51664ec907dee2e6e79",
-    "picks_hash": "sha256:c6868f56aff07e2dfa2ecb35faa96c7442478c07bc46c72587c49d92534c61f9",
+    "picks_hash": "sha256:849fc2fa61c3d5ee00706e4b79b07cd3b1fcde69d7d2bed7d6bd090e684bfe09",
     "counts": {
         "fixtures": 442,
         "priced": 441,
-        "recommended": 435,
+        "recommended": 436,
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 5,
+        "won": 7,
         "lost": 2,
         "pushes": 0,
-        "graded": 7,
-        "pct": 71.43
+        "graded": 9,
+        "pct": 77.78
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -328,8 +328,8 @@
             "state": "pick",
             "grade": "won",
             "score": {
-                "home": 1,
-                "away": 0,
+                "home": 2,
+                "away": 1,
                 "aet_home": null,
                 "aet_away": null,
                 "pen_home": null,
@@ -358,7 +358,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 0,
                 "away": 0,
@@ -377,7 +377,7 @@
             "away": "León W",
             "home_id": 9311,
             "away_id": 9319,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -390,8 +390,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1602896,
@@ -1021,12 +1028,19 @@
             "home_id": 673383,
             "away_id": 673571,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 80,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-23T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -1169,31 +1183,6 @@
                 "label": "AH Home +1",
                 "pct": 89,
                 "price": 1.13,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-22T21:11:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1274793,
-            "api_fx": 1619594,
-            "ko": "2026-10-23T11:00:00Z",
-            "comp": "Ligue A (Burundi)",
-            "home": "Muzinga",
-            "away": "Ngozi City",
-            "home_id": 622275,
-            "away_id": 629550,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 90,
-                "price": 1.11,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -1771,31 +1760,6 @@
                 "price": 1.12,
                 "price_est": false,
                 "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-10-22T21:11:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1379208,
-            "api_fx": 1629084,
-            "ko": "2026-10-23T12:00:00Z",
-            "comp": "FKF Premier League (Kenya)",
-            "home": "Posta Rangers FC",
-            "away": "KCB",
-            "home_id": 278611,
-            "away_id": 760106,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1",
-                "label": "AH Home +1",
-                "pct": 90,
-                "price": 1.12,
-                "price_est": false,
-                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-22T21:11:02Z",
             "pre_ko": true,
@@ -3198,6 +3162,56 @@
             "score": null
         },
         {
+            "fx": 1274793,
+            "api_fx": 1619594,
+            "ko": "2026-10-23T13:00:00Z",
+            "comp": "Ligue A (Burundi)",
+            "home": "Muzinga",
+            "away": "Ngozi City",
+            "home_id": 622275,
+            "away_id": 629550,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-22T21:11:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1274794,
+            "api_fx": 1619595,
+            "ko": "2026-10-23T13:00:00Z",
+            "comp": "Ligue A (Burundi)",
+            "home": "Royal Vision",
+            "away": "Inter Star",
+            "home_id": 622279,
+            "away_id": 629553,
+            "status": "NS",
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 85,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-22T21:11:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1290873,
             "api_fx": 1538716,
             "ko": "2026-10-23T13:00:00Z",
@@ -3438,6 +3452,31 @@
                 "pct": 86,
                 "price": 1.17,
                 "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-22T21:11:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1379208,
+            "api_fx": 1629084,
+            "ko": "2026-10-23T13:00:00Z",
+            "comp": "FKF Premier League (Kenya)",
+            "home": "Posta Rangers FC",
+            "away": "KCB",
+            "home_id": 278611,
+            "away_id": 760106,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": false,
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-10-22T21:11:02Z",
@@ -3841,31 +3880,6 @@
             "score": null
         },
         {
-            "fx": 1274794,
-            "api_fx": 1619595,
-            "ko": "2026-10-23T13:45:00Z",
-            "comp": "Ligue A (Burundi)",
-            "home": "Royal Vision",
-            "away": "Inter Star",
-            "home_id": 622279,
-            "away_id": 629553,
-            "status": "NS",
-            "pick": {
-                "market": "over_0_5_2h",
-                "label": "Over 0.5 Goals (2H)",
-                "pct": 85,
-                "price": 1.18,
-                "price_est": true,
-                "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-10-22T21:11:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 148638,
             "api_fx": 1516162,
             "ko": "2026-10-23T14:00:00Z",
@@ -4074,7 +4088,7 @@
             "away": "Etincelles",
             "home_id": 8482,
             "away_id": 766457,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4087,7 +4101,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -4730,31 +4744,6 @@
                 "label": "AH Home +1",
                 "pct": 91,
                 "price": 1.1,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-10-22T21:11:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1599701,
-            "api_fx": 1639690,
-            "ko": "2026-10-23T15:00:00Z",
-            "comp": "CAF Confederation Cup (World)",
-            "home": "1º de Agosto",
-            "away": "Virunga",
-            "home_id": 752135,
-            "away_id": 753044,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 90,
-                "price": 1.11,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -7674,7 +7663,7 @@
             "away": "Kiyovu Sports",
             "home_id": 752124,
             "away_id": 766455,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -7687,7 +7676,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -10473,6 +10462,31 @@
                 "label": "AH Home +1",
                 "pct": 89,
                 "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-22T21:11:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1599701,
+            "api_fx": 1639690,
+            "ko": "2026-10-23T19:00:00Z",
+            "comp": "CAF Confederation Cup (World)",
+            "home": "1º de Agosto",
+            "away": "Virunga",
+            "home_id": 752135,
+            "away_id": 753044,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.11,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
