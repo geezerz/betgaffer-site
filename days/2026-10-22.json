@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-22",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-21T21:10:02Z",
-    "grades_as_of": "2026-10-23T01:10:03Z",
+    "grades_as_of": "2026-10-23T03:10:02Z",
     "prev_hash": "sha256:c501d33c1cceb9f55aa4bbce753713b63ac62353253940769ed90e6c08bfb9db",
     "picks_hash": "sha256:63c5d5516a416c9df6d652ce4e69dd7e72753d646d1ed51664ec907dee2e6e79",
     "counts": {
@@ -15,7 +15,7 @@
     "accuracy": {
         "won": 118,
         "lost": 26,
-        "pushes": 3,
+        "pushes": 4,
         "graded": 144,
         "pct": 81.94
     },
@@ -5267,7 +5267,7 @@
             "away": "Cruzeiro PB",
             "home_id": 8828,
             "away_id": 757902,
-            "status": "NS",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5280,8 +5280,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": 1,
+                "aet_away": 2,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }

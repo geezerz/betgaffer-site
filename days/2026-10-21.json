@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-20T21:10:02Z",
-    "grades_as_of": "2026-10-23T01:10:03Z",
+    "grades_as_of": "2026-10-23T03:10:02Z",
     "prev_hash": "sha256:a6a090a2f845e6fa82ffaa0befc132ea45999a09429d156ee1b608a414eff71e",
     "picks_hash": "sha256:c501d33c1cceb9f55aa4bbce753713b63ac62353253940769ed90e6c08bfb9db",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 199,
+        "won": 200,
         "lost": 25,
         "pushes": 2,
-        "graded": 224,
-        "pct": 88.84
+        "graded": 225,
+        "pct": 88.89
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -6739,7 +6739,7 @@
             "away": "Santa Fe PE",
             "home_id": 1065368,
             "away_id": 1065369,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -6752,8 +6752,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1630185,
