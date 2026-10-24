@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-22T21:11:02Z",
-    "grades_as_of": "2026-10-24T01:10:02Z",
+    "grades_as_of": "2026-10-24T03:10:02Z",
     "prev_hash": "sha256:115ce06ff06b1eaff9c4ae9910837d47be3e52a44154b64710301e2e298862f7",
     "picks_hash": "sha256:1cb85f361ec6f8a6bc617711e2fc637bea97556673160bfeeafd2f045daa90d0",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 90
     },
     "accuracy": {
-        "won": 344,
-        "lost": 58,
+        "won": 345,
+        "lost": 59,
         "pushes": 10,
-        "graded": 402,
-        "pct": 85.57
+        "graded": 404,
+        "pct": 85.4
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -199,7 +199,7 @@
             "away": "Cruzeiro W",
             "home_id": 1066896,
             "away_id": 2388,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -212,8 +212,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1630174,
@@ -224,7 +231,7 @@
             "away": "Bolivar W",
             "home_id": 1052135,
             "away_id": 1056062,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -237,8 +244,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1601486,
