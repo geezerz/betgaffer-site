@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-22T21:11:02Z",
-    "grades_as_of": "2026-10-24T03:10:02Z",
+    "grades_as_of": "2026-10-24T05:10:02Z",
     "prev_hash": "sha256:115ce06ff06b1eaff9c4ae9910837d47be3e52a44154b64710301e2e298862f7",
-    "picks_hash": "sha256:1cb85f361ec6f8a6bc617711e2fc637bea97556673160bfeeafd2f045daa90d0",
+    "picks_hash": "sha256:51eabacc69b5cbae1850798ed6d7d01917b08a5c04666e7616fb80ece379189a",
     "counts": {
         "fixtures": 445,
-        "priced": 441,
+        "priced": 438,
         "recommended": 442,
         "markets_per_fixture": 90
     },
     "accuracy": {
         "won": 345,
-        "lost": 59,
+        "lost": 60,
         "pushes": 10,
-        "graded": 404,
-        "pct": 85.4
+        "graded": 405,
+        "pct": 85.19
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3160,9 +3160,11 @@
             },
             "frozen_at": "2026-10-22T21:11:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -12433,7 +12435,7 @@
             "away": "Clyde",
             "home_id": 6009,
             "away_id": 2756,
-            "status": "PST",
+            "status": "NS",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -12446,7 +12448,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -12533,9 +12535,11 @@
             },
             "frozen_at": "2026-10-22T21:11:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -13831,7 +13835,7 @@
             "away": "Universidad Catolica",
             "home_id": 153,
             "away_id": 143,
-            "status": "PST",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -13844,8 +13848,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148893,
@@ -13931,9 +13942,11 @@
             },
             "frozen_at": "2026-10-22T21:11:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
