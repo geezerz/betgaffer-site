@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-24",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-23T23:49:02Z",
-    "grades_as_of": "2026-10-25T03:10:01Z",
-    "prev_hash": "sha256:a7ab967f82f2373c4285b28b83c89eac86b4042f38893773e9a786fc35a6ea8e",
-    "picks_hash": "sha256:99277428eac1557069a8d0da4e3a8adff75af51b917068f02981f1d10df75d17",
+    "grades_as_of": "2026-10-25T05:10:02Z",
+    "prev_hash": "sha256:084d6a2b15b0986cc37824450b2251848be366b13cecc9d06fb4bfe5489bc13a",
+    "picks_hash": "sha256:9f5c7c9ddc7656c64316849c900f3897a9fe4d017a61b7e11ca4a5b0f04f9061",
     "counts": {
         "fixtures": 1708,
-        "priced": 1608,
+        "priced": 1598,
         "recommended": 1692,
         "markets_per_fixture": 91
     },
     "accuracy": {
-        "won": 1095,
+        "won": 1098,
         "lost": 306,
         "pushes": 36,
-        "graded": 1401,
-        "pct": 78.16
+        "graded": 1404,
+        "pct": 78.21
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2399,9 +2399,11 @@
             },
             "frozen_at": "2026-10-24T07:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -12689,9 +12691,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -16718,9 +16722,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -35293,9 +35299,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -36385,9 +36393,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -36442,9 +36452,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -41368,9 +41380,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -41425,9 +41439,11 @@
             },
             "frozen_at": "2026-10-24T05:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -49909,7 +49925,7 @@
             "away": "Deportiva Agropecuaria",
             "home_id": 4572,
             "away_id": 4574,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49922,8 +49938,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148453,
@@ -50836,7 +50859,7 @@
             "away": "Carlos Mannucci W",
             "home_id": 606567,
             "away_id": 606568,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -50849,8 +50872,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 8,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1623890,
@@ -50861,7 +50891,7 @@
             "away": "PVV",
             "home_id": 1047415,
             "away_id": 1047413,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_2up",
                 "label": "Away Goes 2-Up",
@@ -50875,7 +50905,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1624874,
@@ -50918,7 +50955,7 @@
             "away": "Blooming",
             "home_id": 270,
             "away_id": 175,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_2up",
                 "label": "Away Goes 2-Up",
@@ -50932,7 +50969,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1630379,
@@ -50943,7 +50987,7 @@
             "away": "RB Bragantino U17",
             "home_id": 2455,
             "away_id": 2450,
-            "status": "NS",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -50956,8 +51000,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148747,
@@ -51235,9 +51286,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -51287,9 +51340,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -52267,7 +52322,7 @@
             "away": "Voorwaarts",
             "home_id": 1047412,
             "away_id": 1047417,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_2up",
                 "label": "Away Goes 2-Up",
@@ -52281,7 +52336,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148793,
