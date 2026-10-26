@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T21:10:01Z",
-    "grades_as_of": "2026-10-26T09:10:02Z",
+    "grades_as_of": "2026-10-26T11:10:01Z",
     "prev_hash": "sha256:26b995664e9bb749d1615bc95de6296ca97c2a3c5ee943353fd4723220edd7bc",
     "picks_hash": "sha256:d5d6470d8f5f21cd22034d1cb646b30b1f8219285937f167abdcd90aac6cf74b",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 23,
+        "won": 24,
         "lost": 3,
         "pushes": 0,
-        "graded": 26,
-        "pct": 88.46
+        "graded": 27,
+        "pct": 88.89
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -921,7 +921,7 @@
             "away": "Jiangxi Liansheng",
             "home_id": 4470,
             "away_id": 4634,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -934,8 +934,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1226625,
@@ -946,7 +953,7 @@
             "away": "FarDu",
             "home_id": 602991,
             "away_id": 602720,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
