@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T21:10:01Z",
-    "grades_as_of": "2026-10-26T03:10:02Z",
+    "grades_as_of": "2026-10-26T05:10:02Z",
     "prev_hash": "sha256:26b995664e9bb749d1615bc95de6296ca97c2a3c5ee943353fd4723220edd7bc",
-    "picks_hash": "sha256:77c34e765179599bbef2074c1f59e45007a6246dfcc2cb742829cb8fccb66523",
+    "picks_hash": "sha256:d5d6470d8f5f21cd22034d1cb646b30b1f8219285937f167abdcd90aac6cf74b",
     "counts": {
         "fixtures": 151,
         "priced": 150,
-        "recommended": 145,
+        "recommended": 149,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 17,
-        "lost": 2,
+        "won": 21,
+        "lost": 3,
         "pushes": 0,
-        "graded": 19,
-        "pct": 89.47
+        "graded": 24,
+        "pct": 87.5
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -690,7 +690,7 @@
             "away": "Los Angeles Galaxy",
             "home_id": 1677,
             "away_id": 1694,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -703,8 +703,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148936,
@@ -728,7 +735,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 3,
@@ -779,7 +786,7 @@
             "away": "CF Pachuca",
             "home_id": 3275,
             "away_id": 3256,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -792,8 +799,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148918,
@@ -804,7 +818,7 @@
             "away": "Deportivo Pasto",
             "home_id": 255,
             "away_id": 249,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -817,8 +831,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1662656,
@@ -829,7 +850,7 @@
             "away": "Ventura County",
             "home_id": 1670,
             "away_id": 1721,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -842,8 +863,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148937,
@@ -854,7 +882,7 @@
             "away": "Santos Laguna",
             "home_id": 2987,
             "away_id": 3735,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -1105,12 +1133,19 @@
             "home_id": 19478,
             "away_id": 784542,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 81,
+                "price": 1.21,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-26T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -1948,12 +1983,19 @@
             "home_id": 3772,
             "away_id": 3736,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 85,
+                "price": 1.21,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-26T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2868,12 +2910,19 @@
             "home_id": 57,
             "away_id": 63,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "under_3_5",
+                "label": "Under 3.5 Goals",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-26T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -3486,12 +3535,19 @@
             "home_id": 5328,
             "away_id": 8241,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 86,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-26T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
