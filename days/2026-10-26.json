@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T21:10:01Z",
-    "grades_as_of": "2026-10-26T05:10:02Z",
+    "grades_as_of": "2026-10-26T07:10:03Z",
     "prev_hash": "sha256:26b995664e9bb749d1615bc95de6296ca97c2a3c5ee943353fd4723220edd7bc",
     "picks_hash": "sha256:d5d6470d8f5f21cd22034d1cb646b30b1f8219285937f167abdcd90aac6cf74b",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 21,
+        "won": 22,
         "lost": 3,
         "pushes": 0,
-        "graded": 24,
-        "pct": 87.5
+        "graded": 25,
+        "pct": 88.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -882,7 +882,7 @@
             "away": "Santos Laguna",
             "home_id": 2987,
             "away_id": 3735,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -895,8 +895,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1602783,
