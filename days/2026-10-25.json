@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-25",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T00:07:02Z",
-    "grades_as_of": "2026-10-26T01:10:02Z",
+    "grades_as_of": "2026-10-26T03:10:02Z",
     "prev_hash": "sha256:6f6e8e15aefad94d465c3e6ba6a14f82e1ad85a6cd2d1e69955b7453ba77108d",
     "picks_hash": "sha256:26b995664e9bb749d1615bc95de6296ca97c2a3c5ee943353fd4723220edd7bc",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 899,
+        "won": 901,
         "lost": 160,
         "pushes": 27,
-        "graded": 1059,
-        "pct": 84.89
+        "graded": 1061,
+        "pct": 84.92
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1664,7 +1664,7 @@
             "away": "Dragonas IDV W",
             "home_id": 2378,
             "away_id": 1056061,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1677,8 +1677,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 688771,
@@ -36480,7 +36487,7 @@
             "away": "Coronie Boys",
             "home_id": 1060239,
             "away_id": 1047410,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -36494,7 +36501,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1655707,
@@ -36633,7 +36647,7 @@
             "away": "Santos Laguna U21",
             "home_id": 598855,
             "away_id": 598865,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -36646,8 +36660,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
