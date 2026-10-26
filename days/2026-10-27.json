@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-26T21:10:02Z",
-    "grades_as_of": "2026-10-26T22:15:01Z",
+    "grades_as_of": "2026-10-26T23:10:02Z",
     "prev_hash": "sha256:63eaa1f324a0ba6ccd48ed3011598cd9374513f34e65d94f0b81e8ba497bdfc4",
-    "picks_hash": "sha256:10dfbe2b99b0365271cb5367065762720a99d6e813dd2372760d8cc12e567c46",
+    "picks_hash": "sha256:584256ae47a211fe36e3b6c07373ebd74a7f12e7b77b0f9f3880188349700951",
     "counts": {
         "fixtures": 279,
         "priced": 279,
-        "recommended": 275,
+        "recommended": 276,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Atletico-MG",
             "home_id": 208,
             "away_id": 206,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -64,7 +64,7 @@
             "away": "Llaneros",
             "home_id": 254,
             "away_id": 288,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -89,7 +89,7 @@
             "away": "Puebla W",
             "home_id": 9311,
             "away_id": 9315,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -2476,12 +2476,19 @@
             "home_id": 547,
             "away_id": 562,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_over_0_5",
+                "label": "Home Over 0.5 Goals",
+                "pct": 90,
+                "price": 1.18,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-10-26T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
