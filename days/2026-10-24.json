@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-24",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-23T23:49:02Z",
-    "grades_as_of": "2026-10-25T07:10:02Z",
+    "grades_as_of": "2026-10-26T01:10:02Z",
     "prev_hash": "sha256:084d6a2b15b0986cc37824450b2251848be366b13cecc9d06fb4bfe5489bc13a",
-    "picks_hash": "sha256:9f5c7c9ddc7656c64316849c900f3897a9fe4d017a61b7e11ca4a5b0f04f9061",
+    "picks_hash": "sha256:6f6e8e15aefad94d465c3e6ba6a14f82e1ad85a6cd2d1e69955b7453ba77108d",
     "counts": {
         "fixtures": 1708,
-        "priced": 1598,
+        "priced": 1597,
         "recommended": 1692,
         "markets_per_fixture": 91
     },
     "accuracy": {
-        "won": 1098,
+        "won": 1099,
         "lost": 307,
         "pushes": 36,
-        "graded": 1405,
-        "pct": 78.15
+        "graded": 1406,
+        "pct": 78.17
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -36760,9 +36760,11 @@
             },
             "frozen_at": "2026-10-23T23:49:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -46885,7 +46887,7 @@
             "away": "Naft Maysan",
             "home_id": 662297,
             "away_id": 662114,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -46898,8 +46900,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1370243,
