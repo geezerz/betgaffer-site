@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T21:10:01Z",
-    "grades_as_of": "2026-10-26T07:10:03Z",
+    "grades_as_of": "2026-10-26T09:10:02Z",
     "prev_hash": "sha256:26b995664e9bb749d1615bc95de6296ca97c2a3c5ee943353fd4723220edd7bc",
     "picks_hash": "sha256:d5d6470d8f5f21cd22034d1cb646b30b1f8219285937f167abdcd90aac6cf74b",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 22,
+        "won": 23,
         "lost": 3,
         "pushes": 0,
-        "graded": 25,
-        "pct": 88.0
+        "graded": 26,
+        "pct": 88.46
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -537,7 +537,7 @@
             "away": "Libertad Asuncion W",
             "home_id": 2388,
             "away_id": 1066897,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -550,8 +550,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 688773,
@@ -914,7 +921,7 @@
             "away": "Jiangxi Liansheng",
             "home_id": 4470,
             "away_id": 4634,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
