@@ -160,22 +160,6 @@ export function isCounted(f, rule) {
   checkRule(rule, 'isCounted');
   return inRing(f, rule) && (f.grade === 'won' || f.grade === 'lost');
 }
-const isPct = (p) => Number.isInteger(p) && p >= 0 && p <= 100;
-
-/**
- * Mean stated probability (pick.pct) of the day's settled, counted picks — the forward probability
- * the ring's 100% rule needs. UNROUNDED (the ring rounds, and reads >= 99.5 as ">99"). Null when no
- * pick is counted, or when ANY counted pick lacks a usable pct: a mean over a subset would state a
- * probability the day's picks were never published at. `rule` is the day's ruleOf (1 or 2).
- */
-export function meanStatedPct(fixtures, rule) {
-  checkRule(rule, 'meanStatedPct');
-  if (!Array.isArray(fixtures)) return null;
-  const counted = fixtures.filter((f) => isCounted(f, rule));
-  if (counted.length === 0 || !counted.every((f) => isPct(f.pick.pct))) return null;
-  return counted.reduce((s, f) => s + f.pick.pct, 0) / counted.length;
-}
-
 /**
  * Recount won / lost / pushes from the rows and refuse a day whose accuracy disagrees: the ring is
  * a claim about these rows, so it must be derivable from them (and pct from won / graded).
@@ -541,7 +525,7 @@ export function renderDay(day, { prevDay = null, nextDay = null, generatedAt = n
     + `<p class="day-head__date" aria-hidden="true">${escHtml(longDate)}</p>`
     + `<p class="day-head__count mono">${escHtml(countLine)}</p>`
     + '</div>'
-    + ring(day.accuracy, { dayLabel: ringLabel, date: d, meanStatedPct: meanStatedPct(day.fixtures, rule), relDay: d })
+    + ring(day.accuracy, { dayLabel: ringLabel, date: d, relDay: d })
     + '<p class="day-head__note">The ring counts this card’s own published picks. The graded record, every settled pick over time, is on <a href="/our-record/">Our Record</a>.</p>'
     + `<p class="day-receipt mono">Card published ${escHtml(published)} · grades as of ${escHtml(gradedAt)} · receipt `
     + `<span class="mono">${escHtml(code)}</span></p>`

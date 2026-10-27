@@ -14,7 +14,11 @@
 //     framing -- neither is useful to a visitor, refreshing is);
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
 //     card is already published (the normal 00:00–00:10 window, not a failure) and is linked, or
-//     today's card has not been published yet.
+//     today's card has not been published yet;
+//   - today's ring reads 100% at the visitor's Lagos date -> a 10-second confetti drop, once per
+//     page view (operator, 2026-10-27). Every piece's position/colour/delay/duration comes from
+//     its DOM order via :nth-child (fixtures.css) -- CSP's style-src has no 'unsafe-inline', so
+//     nothing here sets a style= or .style.property.
 // The banner region <div class="stale" role="status" hidden> is in the static HTML. It is unhidden
 // first and filled on the next frame (so the live region announces the text); every string is set
 // with textContent and links are built with DOM APIs.
@@ -105,9 +109,8 @@ function pillOf(el) {
 
 /**
  * A day pill follows its relative word: data-when (the today outline, the phone label) and the
- * accessible name, "<Word>, [All right, ]<date>: <result>[ so far]". The build's name is the date
- * form (a perfect day's starts with its visible "All right"), so the prefix and the note are stripped
- * first: relabelling again never stacks them.
+ * accessible name, "<Word>, <date>: <result>[ so far]". The build's name is the date form, so the
+ * prefix and the note are stripped first: relabelling again never stacks them.
  */
 function relabelPill(el, date, nowMs) {
   const pill = pillOf(el);
@@ -210,9 +213,31 @@ function show(doc, region, notices, raf) {
 
 const defaultRaf = (fn) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(fn) : setTimeout(fn, 0));
 
+export const CONFETTI_MS = 10000;
+const CONFETTI_PIECES = 36;
+
+/** This page's ring, when it reads 100% for the VISITOR's Lagos today; else null. */
+function perfectTodayRing(doc, nowMs) {
+  const el = doc.querySelector('.ring[data-rel="ring"]');
+  const date = el ? el.getAttribute('data-rel-day') : null;
+  if (!date || relDay(date, nowMs) !== 'today') return null;
+  const pct = el.querySelector('.ring__pct');
+  return pct && pct.textContent.startsWith('100%') ? el : null;
+}
+
+/** 36 identical pieces; fixtures.css' :nth-child rules give each its position, colour, delay and fall time. */
+function celebrate(doc, setTimer) {
+  const host = doc.createElement('div');
+  host.className = 'confetti';
+  host.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < CONFETTI_PIECES; i++) host.appendChild(doc.createElement('div')).className = 'confetti-piece';
+  doc.body.appendChild(host);
+  setTimer(() => host.remove(), CONFETTI_MS);
+}
+
 /**
- * Relabel the page and show any notice. Every dependency is injectable (tests drive it with a fake
- * DOM); in the browser it runs with the defaults.
+ * Relabel the page, show any notice, and celebrate a 100% day. Every dependency is injectable
+ * (tests drive it with a fake DOM); in the browser it runs with the defaults.
  */
 export function init({
   doc = document, nowMs = Date.now(), raf = defaultRaf, setTimer = (fn, ms) => setTimeout(fn, ms), now = () => Date.now(),
@@ -225,6 +250,8 @@ export function init({
     schedule(t);
   }, msUntilLagosMidnight(from) + 500);
   schedule(nowMs);
+
+  if (doc.body && perfectTodayRing(doc, nowMs)) celebrate(doc, setTimer);
 
   const main = doc.querySelector('main');
   const region = main ? main.querySelector('.stale') : null;

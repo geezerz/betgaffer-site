@@ -168,15 +168,19 @@ describe('pill content comes from index.days[]', () => {
     assert.equal(a.attrs['aria-label'], `${ariaDate(d)}: ${won} of ${graded} picks right, ${oneDec(pct)}`);
   });
 
-  test('a perfect day reads "All right" with its fraction, and no percentage anywhere', () => {
+  test('a perfect day reads its real 100.0%, same pattern as any other day, with the flame', () => {
     const d = '2026-10-04';
     const { won, graded, pct } = PILL_DAYS[d].accuracy;
     assert.equal(pct, 100, 'premise');
     const a = pills.get(d);
-    assert.equal(textOf(part(a, 'day-pill__fig')), 'All right');
+    const fig = part(a, 'day-pill__fig');
+    assert.equal(textOf(fig), oneDec(pct));
+    assert.ok(fig.attrs.class.split(' ').includes('day-pill__fig--won'), 'green');
     assert.equal(textOf(part(a, 'day-pill__sub')), `${won} of ${graded}`);
-    assert.doesNotMatch(`${textOf(a)} ${a.attrs['aria-label']}`, /%/);
-    assert.equal(a.attrs['aria-label'], `All right, ${ariaDate(d)}: ${won} of ${graded} picks right`, 'the visible words lead the name');
+    assert.equal(a.attrs['data-figure'], 'record-row');
+    assert.equal(a.attrs['data-period'], d);
+    assert.equal(a.attrs['aria-label'], `${ariaDate(d)}: ${won} of ${graded} picks right, ${oneDec(pct)}`);
+    assert.ok(findAll(a, (n) => n.attrs.class === 'day-pill__flame').length === 1, 'the flame (90%+)');
   });
 
   test('a past day with nothing graded: "—" and "No results yet" (as the ring: grading can lag, pushes are not counted)', () => {
@@ -247,7 +251,7 @@ describe('pillPct and the claim guard on a pill', () => {
     assert.equal(pillPct(acc(0, 5, 0)), '0.0%');
     assert.equal(pillPct(acc(1999, 1, 99.95)), '99.9%', 'never 100.0% for a day with a wrong pick');
     assert.equal(pillPct(acc(9999, 1, 99.99)), '99.9%');
-    assert.equal(pillPct(acc(12, 0, 100)), null, 'a perfect day prints no percentage');
+    assert.equal(pillPct(acc(12, 0, 100)), '100.0%', 'a genuinely perfect day reads its real figure');
     assert.equal(pillPct(acc(0, 0, null)), null);
   });
 

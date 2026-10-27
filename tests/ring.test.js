@@ -101,51 +101,28 @@ test('label is always visible, defaults sensibly, and is escaped', () => {
   assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'));
 });
 
-// ---------------------------------------------------------------- the 100% rule (charter)
+// ---------------------------------------------------------------- 100% follows the same pattern
+// as any other percentage (operator, 2026-10-27): fraction, percentage text and a full arc, every time.
 
-test('100% carries its denominator, "settled so far" and the stated-at probability', () => {
-  const html = ring(acc(3, 0, 0, 100), { dayLabel: "Today's published picks, settled so far", meanStatedPct: 87 });
+test('100% carries its denominator and a full arc, exactly like any other percentage', () => {
+  const html = ring(acc(3, 0, 0, 100), { dayLabel: "Today's published picks, settled so far" });
   const t = text(html);
   assert.match(t, /3 of 3 landed/);
   assert.match(t, /100%/);
-  assert.match(t, /settled so far/);
-  assert.match(t, /these picks were stated at an average 87%/i);
-  assert.match(ariaLabel(html), /stated at an average 87%/);
+  assert.match(ariaLabel(html), /100%/);
+  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
 });
 
-test('100% is withheld (fraction only) when the stated-at probability is unknown', () => {
-  for (const m of [undefined, null, NaN, -1, 101, '87']) {
-    const html = ring(acc(3, 0, 0, 100), { dayLabel: 'X', meanStatedPct: m });
-    const t = text(html);
-    assert.match(t, /3 of 3 landed/);
-    assert.ok(!t.includes('100%'), `never a bare 100% (meanStatedPct=${String(m)})`);
-    assert.ok(!t.includes('stated at'));
-    assert.ok(!ariaLabel(html).includes('100%'));
-    assert.ok(!html.includes('ring__arc'), 'a withheld 100% draws no full arc either');
-    assert.ok(!html.includes('ring__track--empty'), 'but it is not the empty state');
-  }
+test('a pct that rounds to 100 (e.g. 99.996) reads 100% with the same full arc', () => {
+  const html = ring(acc(3, 0, 0, 99.996), { dayLabel: 'X' });
+  assert.match(text(html), /100%/);
+  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
 });
 
-test('a stated mean that rounds up to 100 reads ">99", never 100', () => {
-  for (const m of [99.5, 99.9, 100]) {
-    const t = text(ring(acc(3, 0, 0, 100), { dayLabel: 'X', meanStatedPct: m }));
-    assert.match(t, /stated at an average >99%/, `m=${m}`);
-    assert.ok(!/average 100%/.test(t));
-  }
-  assert.match(text(ring(acc(3, 0, 0, 100), { dayLabel: 'X', meanStatedPct: 99.49 })), /stated at an average 99%/);
-});
-
-test('a pct that ROUNDS to 100 is held to the 100% rule too', () => {
-  const bare = text(ring(acc(3, 0, 0, 99.996), { dayLabel: 'X' }));
-  assert.ok(!bare.includes('100%'));
-  const ok = text(ring(acc(3, 0, 0, 99.996), { dayLabel: 'X', meanStatedPct: 90 }));
-  assert.match(ok, /100%/);
-  assert.match(ok, /stated at an average 90%/);
-  assert.match(ring(acc(3, 0, 0, 99.996), { dayLabel: 'X', meanStatedPct: 90 }), /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
-});
-
-test('stated-at is shown only on a 100% ring', () => {
-  assert.ok(!text(ring(acc(2, 1, 0, 66.67), { dayLabel: 'X', meanStatedPct: 80 })).includes('stated at'));
+test('the flame shows at 90% and up, never below', () => {
+  assert.ok(ring(acc(9, 1, 0, 90), { dayLabel: 'X' }).includes('🔥'), '90% exactly: flame');
+  assert.ok(ring(acc(3, 0, 0, 100), { dayLabel: 'X' }).includes('🔥'), '100%: flame');
+  assert.ok(!ring(acc(89, 11, 0, 89), { dayLabel: 'X' }).includes('🔥'), '89%: no flame');
 });
 
 // ---------------------------------------------------------------- contract hygiene

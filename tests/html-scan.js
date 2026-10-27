@@ -246,6 +246,11 @@ function figureOf(el, pct) {
 }
 
 function hundredOk(el) {
+  // A ring or record-row figure is already individually fraction-licensed (figureOf) -- that's
+  // enough context for its own 100% (operator, 2026-10-27: 100 follows the same pattern as any
+  // other percentage there). Anything else still needs its fraction, "so far" and "stated at" together.
+  const fig = el.attrs['data-figure'];
+  if (fig === 'ring' || fig === 'record-row') return true;
   const t = textOf(el);
   return FRACTION_RE.test(t) && RETRO_RE.test(t) && STATED_RE.test(t);
 }
@@ -259,7 +264,8 @@ const where = (el) => el.tag === '#root' ? 'the top level' : `<${el.tag}${el.att
  *     (pick-prob; a ring carrying its fraction; a record row carrying its fraction and period; the
  *     headline block holding its period part and its fraction; an offer figure, data-figure="offer", whose every
  *     percentage is DISCOUNT_PCT or TOPUP_BONUS_PCT from site/lib/founding.js);
- *   - a 100% not inside an element that also carries its fraction, "so far" and "stated at".
+ *   - a 100% outside a ring/record-row figure (already fraction-licensed) and without its own
+ *     fraction, "so far" and "stated at" together (operator, 2026-10-27).
  */
 export function claimViolations(html) {
   const doc = parse(html);

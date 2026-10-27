@@ -192,7 +192,7 @@ describe('day pills (build.mjs dayPills): fraction, "N fixtures" and the aria-la
       assert.equal(by['2026-10-05'].sub, '10,081 of 12,154');
       assert.equal(by['2026-10-05'].aria, 'Monday 5 October: 10,081 of 12,154 picks right, 82.9%');
       assert.equal(by[D].sub, '1,200 of 1,200');
-      assert.equal(by[D].aria, 'All right, Wednesday 7 October: 1,200 of 1,200 picks right');
+      assert.equal(by[D].aria, 'Wednesday 7 October: 1,200 of 1,200 picks right, 100.0%');
       assert.deepEqual(bareCounts(html), []);
       assert.deepEqual(claimViolations(html), []);
     });

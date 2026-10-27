@@ -153,12 +153,12 @@ describe('every built page passes the claim scan', () => {
     assert.ok(!/data-uncounted/.test(html));
   });
 
-  test('the 100% rule: a perfect day shows 100% only beside its fraction, "so far" and "stated at"', async () => {
+  test('the 100% rule: a perfect day shows its real 100%, same pattern as any other percentage', async () => {
     const text = visibleText(await readFile(join(builds.perfect.out, 'index.html'), 'utf8'));
     assert.match(text, /3 of 3 landed/);
     assert.match(text, /100%/, 'premise: the ring states 100%');
-    assert.match(text, /Settled so far\. These picks were stated at an average \d+%\./);
-    // The perfect day's own page and its strip entry pass too (scanned above); a bare 100% nowhere.
+    // The perfect day's own page and its strip entry pass too (scanned above): still allowed,
+    // because the ring/record-row figure already carries its own fraction (claimViolations).
   });
 });
 
@@ -186,16 +186,14 @@ describe('premise: the scanner reports each injected violation', () => {
     assert.ok(v.some((m) => /"83%"/.test(m)), String(v));
   });
 
-  test('a 100% in a ring-like element without "stated at" is reported; with it, it passes', () => {
-    const bad = '<div data-figure="ring"><span>3 of 3 landed</span> <span>100%</span> <span>settled so far</span></div>';
-    const v = claimViolations(inject(pages['index.html'], bad));
-    assert.ok(v.some((m) => /"100%" without its fraction, "so far" and "stated at"/.test(m)), String(v));
-    assert.ok(!v.some((m) => /outside an allowed figure/.test(m)), 'the ring itself is an allowed figure');
-    const good = '<div data-figure="ring"><span>3 of 3 landed</span> <span>100%</span> <span>Settled so far. These picks were stated at an average 84%.</span></div>';
-    assert.deepEqual(claimViolations(inject(pages['index.html'], good)), []);
+  test('a 100% in a ring/record-row figure passes on its fraction alone, no "stated at" needed', () => {
+    const ring = '<div data-figure="ring"><span>3 of 3 landed</span> <span>100%</span></div>';
+    assert.deepEqual(claimViolations(inject(pages['index.html'], ring)), []);
+    const row = '<div data-figure="record-row" data-period="2026-10-08"><span>3 of 3 landed</span> <span>Thu 8 Oct 2026</span> <span>100%</span></div>';
+    assert.deepEqual(claimViolations(inject(pages['index.html'], row)), []);
   });
 
-  test('a 100% without its fraction is reported even with "stated at"', () => {
+  test('a 100% without its own fraction and figure is still reported, same as any other percentage', () => {
     const v = claimViolations(inject(pages['index.html'], '<div data-figure="pick-prob"><b>100%</b> settled so far, stated at 100%</div>'));
     assert.ok(v.some((m) => /"100%" without/.test(m)), String(v));
   });
@@ -227,7 +225,9 @@ describe('premise: the scanner reports each injected violation', () => {
       const v = claimViolations(inject(home, frag));
       assert.ok(v.some((m) => /"83%" outside an allowed figure/.test(m)), `${frag}: ${v}`);
     }
-    const bare100 = claimViolations(inject(home, '<div data-figure="ring" aria-label="3 of 3 landed (100%)"><span>3 of 3 landed</span></div>'));
+    const ok100 = claimViolations(inject(home, '<div data-figure="ring" aria-label="3 of 3 landed (100%)"><span>3 of 3 landed</span></div>'));
+    assert.deepEqual(ok100, [], 'the fraction is in the same element (ring figure), so 100% needs nothing more');
+    const bare100 = claimViolations(inject(home, '<div aria-label="3 of 3 landed (100%)"><span>3 of 3 landed</span></div>'));
     assert.ok(bare100.some((m) => /"100%" without/.test(m)), String(bare100));
   });
 

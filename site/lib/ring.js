@@ -6,11 +6,12 @@
 // ledger and is a different figure; the card says so next to the ring.
 //
 // Claim safety (charter, spec §4.4), enforced here rather than left to callers:
-//   - the won-of-graded fraction is the hero; the percentage is secondary and never appears alone;
+//   - the won-of-graded fraction is the hero; the percentage sits in the dial, same as any other day;
 //   - graded === 0 reads "No results yet": never 0%, never --%, never 0/0, and no arc;
-//   - a ring whose percentage DISPLAYS as 100 must carry its fraction, "settled so far" and the
-//     forward probability ("these picks were stated at an average m%"). Without a usable m the
-//     percentage is withheld and only the fraction is shown — never a bare 100%.
+//   - 100% follows the same pattern as every other percentage (operator, 2026-10-27): the fraction
+//     is always alongside it, so the figure-licensing rule (tests/html-scan.js, data-figure="ring")
+//     already covers it — no separate withholding;
+//   - 90% and up gets a flame next to the percentage (operator, 2026-10-27).
 // The wrapper carries data-figure="ring" for the build's claim scanner, and holds no nested <div>
 // so a scanner can match it as one element.
 //
@@ -46,14 +47,8 @@ function checkAccuracy(a) {
   }
 }
 
-/**
- * A usable forward probability for the 100% rule, as display text, or null. A mean that would
- * round to 100 reads '>99': the stated probability was never certainty.
- */
-function statedPct(m) {
-  if (typeof m !== 'number' || !Number.isFinite(m) || m < 0 || m > 100) return null;
-  return m >= 99.5 ? '>99' : String(Math.round(m));
-}
+/** 90% and up earns a flame next to the percentage (operator, 2026-10-27). */
+const FLAME_AT = 90;
 
 /**
  * The ring for one day's published picks.
@@ -62,13 +57,12 @@ function statedPct(m) {
  * @param {object} [o]
  * @param {string} [o.dayLabel]        always-visible label, e.g. "Today's published picks, settled so far"
  * @param {string} [o.date]            'YYYY-MM-DD' — shown as the long date
- * @param {number} [o.meanStatedPct]   unrounded mean pick.pct of the day's settled counted picks (100% rule)
  * @param {string} [o.relDay]          'YYYY-MM-DD': tags the ring (data-rel-day, data-rel="ring") so the
  *   browser (stale.js) can turn the date-form label into "Today's…"/"Tomorrow's…" for the VISITOR's
  *   Lagos date. The aria-label starts with the label, so the relabel can rewrite both.
  * @returns {string} HTML
  */
-export function ring(accuracy, { dayLabel, date, meanStatedPct, relDay } = {}) {
+export function ring(accuracy, { dayLabel, date, relDay } = {}) {
   checkAccuracy(accuracy);
   if (date !== undefined && date !== null && !isDate(date)) throw new TypeError(`ring: date must be YYYY-MM-DD, got ${String(date)}`);
   if (relDay !== undefined && relDay !== null && !isDate(relDay)) throw new TypeError(`ring: relDay must be YYYY-MM-DD, got ${String(relDay)}`);
@@ -97,21 +91,13 @@ export function ring(accuracy, { dayLabel, date, meanStatedPct, relDay } = {}) {
   }
 
   const pctText = fmtPct(accuracy.pct);
-  const isHundred = pctText === '100';
-  const m = statedPct(meanStatedPct);
-  const showPct = !isHundred || m !== null;
   const fraction = `${fmtInt(won)} of ${fmtInt(graded)} landed`;
-
-  const statedLine = isHundred && m !== null
-    ? `Settled so far. These picks were stated at an average ${m}%.`
-    : '';
+  const flame = accuracy.pct >= FLAME_AT ? '🔥' : '';
   const arc = `<circle class="ring__arc" cx="24" cy="24" r="20" pathLength="100" stroke-dasharray="${escAttr(pctText)} 100" transform="rotate(-90 24 24)"/>`;
-  // A withheld 100% draws no arc either: a full ring IS the figure.
-  const centre = showPct ? `<span class="ring__pct mono">${escHtml(pctText)}%</span>` : '';
+  const centre = `<span class="ring__pct mono">${escHtml(pctText)}%${flame}</span>`;
 
   const aria = [
-    `${label}: ${fraction}${showPct ? ` (${pctText}%)` : ''}.`,
-    statedLine,
+    `${label}: ${fraction} (${pctText}%).`,
     pushesLine ? `${pushesLine}.` : '',
   ].filter(Boolean).join(' ');
 
@@ -119,9 +105,8 @@ export function ring(accuracy, { dayLabel, date, meanStatedPct, relDay } = {}) {
     + '<span class="ring__body">'
     + `<span class="ring__label">${escHtml(label)}</span>`
     + `<span class="ring__hero mono"><b>${escHtml(fmtInt(won))}</b> of <b>${escHtml(fmtInt(graded))}</b> <span class="ring__landed">landed</span></span>`
-    + (statedLine ? `<span class="ring__stated">${escHtml(statedLine)}</span>` : '')
     + metaHtml
     + '</span>'
-    + `<span class="ring__dial"><svg class="ring__svg" viewBox="0 0 48 48" width="64" height="64" aria-hidden="true" focusable="false">${track}${showPct ? arc : ''}</svg>${centre}</span>`
+    + `<span class="ring__dial"><svg class="ring__svg" viewBox="0 0 48 48" width="64" height="64" aria-hidden="true" focusable="false">${track}${arc}</svg>${centre}</span>`
     + '</div>';
 }

@@ -131,14 +131,16 @@ const MON_LONG = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', 
 
 /**
  * A day's accuracy as a pill percentage (spec §17.1): one decimal, rounded half up on the published
- * two decimals (87.55 -> '87.6%'); a day with a wrong pick never reads 100.0% (capped at 99.9%, as
- * record.js caps its two-decimal figures). null when nothing is graded, and for a perfect day,
- * which says "All right" with its fraction instead (the charter's 100% rule).
+ * two decimals (87.55 -> '87.6%'). A day with a wrong pick never reads 100.0% (capped at 99.9%, as
+ * record.js caps its two-decimal figures) -- that would be false. A genuinely perfect day (every
+ * graded pick won) reads its real 100.0%, same pattern as any other day (operator, 2026-10-27).
+ * null when nothing is graded.
  */
 export function pillPct(a) {
-  if (a.graded === 0 || a.pct === null || a.won === a.graded) return null;
+  if (a.graded === 0 || a.pct === null) return null;
   const tenths = Math.round(Math.round(a.pct * 100) / 10);
-  return `${(Math.min(tenths, 999) / 10).toFixed(1)}%`;
+  const capped = a.won === a.graded ? tenths : Math.min(tenths, 999);
+  return `${(capped / 10).toFixed(1)}%`;
 }
 
 /**
@@ -149,7 +151,8 @@ export function pillPct(a) {
  * the window gets no current pill.
  *
  * Each pill is one link: weekday + date, the day's figure from index.days[] (past and today: the
- * percentage, or "All right" on a perfect day, or "—"; tomorrow: its fixture count) and a small
+ * percentage -- a perfect day reads its real 100.0%, same pattern as any other -- or "—";
+ * tomorrow: its fixture count) and a small
  * line beneath (the "won of graded" fraction, "No results yet" — as the ring says, since grading can lag
  * and pushes are not counted — or "fixtures"), a meter
  * of the same share, and the full date in visually hidden text. A pill with a percentage is a
@@ -175,7 +178,7 @@ export function dayPills(listed, today, current, { onDayPage }) {
     let aria;
     let share = null; // the meter's filled share, 0..100; null: an empty (dashed) track
     let figure = '';
-    let lead = ''; // a perfect day's name starts with its visible words (WCAG 2.5.3)
+    let flame = ''; // 90% and up (operator, 2026-10-27), aria-hidden: decoration, not information
     if (d === tomorrow) {
       fig = fmtInt(fixtures);
       sub = fixtures === 1 ? 'fixture' : 'fixtures';
@@ -186,13 +189,13 @@ export function dayPills(listed, today, current, { onDayPage }) {
       aria = 'no results yet';
     } else {
       const pct = pillPct(a);
-      fig = pct ?? 'All right';
+      fig = pct;
       figCls = ' day-pill__fig--won';
       sub = `${fmtInt(a.won)} of ${fmtInt(a.graded)}`;
-      aria = `${sub} picks right${pct ? `, ${pct}` : ''}`;
+      aria = `${sub} picks right, ${pct}`;
       share = Math.round((a.won / a.graded) * 10000) / 100;
-      if (pct) figure = ` data-figure="record-row" data-period="${escAttr(d)}"`;
-      else lead = 'All right, ';
+      figure = ` data-figure="record-row" data-period="${escAttr(d)}"`;
+      if (a.pct >= 90) flame = '<span class="day-pill__flame" aria-hidden="true">🔥</span>';
     }
     const current1 = d === current ? (onDayPage ? ' aria-current="page"' : ' aria-current="true"') : '';
     const when = isToday ? ' data-when="today"' : '';
@@ -202,13 +205,13 @@ export function dayPills(listed, today, current, { onDayPage }) {
         ? '<line class="day-pill__track day-pill__track--empty" x1="0" y1="2" x2="100" y2="2" stroke-dasharray="2 3"/>'
         : `<rect class="day-pill__track" width="100" height="4"/><rect class="day-pill__bar" width="${escAttr(share)}" height="4"/>`)
       + '</svg>';
-    return `<li><a class="day-pill" href="/day/${escAttr(d)}/"${current1}${when}${figure} aria-label="${escAttr(`${lead}${aDate}: ${aria}`)}">`
+    return `<li><a class="day-pill" href="/day/${escAttr(d)}/"${current1}${when}${figure} aria-label="${escAttr(`${aDate}: ${aria}`)}">`
       + '<span class="day-pill__head">'
       + `<span class="day-pill__rel" data-rel-day="${escAttr(d)}" data-rel="pill" hidden></span>`
       + `<span class="day-pill__dow">${escHtml(dow)}</span> `
       + `<span class="day-pill__date"><span class="day-pill__dd">${escHtml(dd)}</span> <span class="day-pill__mon">${escHtml(mon)}</span></span>`
       + '</span>'
-      + `<span class="day-pill__fig${figCls}">${escHtml(fig)}</span> `
+      + `<span class="day-pill__fig${figCls}">${escHtml(fig)}</span>${flame} `
       + `<span class="day-pill__sub">${escHtml(sub)}${sofar}</span>`
       + meter
       + `<span class="vh">${escHtml(fmtDayLong(d))}</span></a></li>`;

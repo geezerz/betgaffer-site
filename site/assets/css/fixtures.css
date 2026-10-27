@@ -49,11 +49,17 @@
 }
 .ring[data-state="graded"]{ border-color:rgba(34,197,94,.3); }
 
+/* Slightly bigger on a phone, where it's the loudest thing on the card (operator 2026-10-27);
+   back to its desktop size from 760px, where the header has more going on beside it. */
 .ring__dial{
   order:-1; position:relative; flex:0 0 auto;
-  width:72px; height:72px; display:grid; place-items:center;
+  width:80px; height:80px; display:grid; place-items:center;
 }
-.ring__svg{ position:absolute; inset:0; width:72px; height:72px; }
+.ring__svg{ position:absolute; inset:0; width:80px; height:80px; }
+@media (min-width:760px){
+  .ring__dial{ width:72px; height:72px; }
+  .ring__svg{ width:72px; height:72px; }
+}
 .ring__track{ fill:none; stroke:var(--line); stroke-width:4.5; }
 /* No results yet: an open, dashed dial (the dash pattern is an SVG attribute). */
 .ring__track--empty{ stroke:var(--line-2); stroke-width:2.5; }
@@ -74,8 +80,37 @@
 .ring[data-state="empty"] .ring__hero{
   font-family:var(--font-display); font-size:19px; font-weight:700; color:var(--ink);
 }
-.ring__stated{ font-size:12.5px; line-height:1.45; color:var(--ink-2); }
 .ring__meta{ font-size:11px; color:var(--muted); }
+
+/* ── 2b. CONFETTI (operator, 2026-10-27) ──────────────────────────────────────
+   A 10-second celebration when today's ring reads 100% (stale.js). 36 identical
+   pieces; :nth-child gives each its left position, colour, fall time and start
+   delay, so JS never sets a style= or .style.property (CSP: style-src has no
+   'unsafe-inline'). The 12-step pattern repeats 3x (36 pieces); delays 0-6.6s
+   plus a ~2.6-3.8s fall keep the shower going for the full 10s.
+   ─────────────────────────────────────────────────────────────────────────── */
+.confetti{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:999; }
+.confetti-piece{
+  position:absolute; top:-16px; width:8px; height:14px; border-radius:2px;
+  animation-name:confetti-fall; animation-timing-function:ease-in; animation-fill-mode:forwards;
+}
+@keyframes confetti-fall{
+  0%{ transform:translateY(0) rotate(0deg); }
+  100%{ transform:translateY(105vh) rotate(680deg); }
+}
+@media (prefers-reduced-motion:reduce){ .confetti{ display:none; } }
+.confetti-piece:nth-child(12n+1){ left:4%; background:var(--accent); animation-duration:2.8s; animation-delay:0s; }
+.confetti-piece:nth-child(12n+2){ left:12%; background:var(--ink); animation-duration:3.4s; animation-delay:.6s; }
+.confetti-piece:nth-child(12n+3){ left:21%; background:var(--accent-hi); animation-duration:3.1s; animation-delay:1.2s; }
+.confetti-piece:nth-child(12n+4){ left:30%; background:var(--accent); animation-duration:3.8s; animation-delay:1.8s; }
+.confetti-piece:nth-child(12n+5){ left:39%; background:var(--ink); animation-duration:2.6s; animation-delay:2.4s; }
+.confetti-piece:nth-child(12n+6){ left:48%; background:var(--accent-hi); animation-duration:3.6s; animation-delay:3s; }
+.confetti-piece:nth-child(12n+7){ left:57%; background:var(--accent); animation-duration:3.2s; animation-delay:3.6s; }
+.confetti-piece:nth-child(12n+8){ left:66%; background:var(--ink); animation-duration:2.9s; animation-delay:4.2s; }
+.confetti-piece:nth-child(12n+9){ left:75%; background:var(--accent-hi); animation-duration:3.5s; animation-delay:4.8s; }
+.confetti-piece:nth-child(12n+10){ left:84%; background:var(--accent); animation-duration:2.7s; animation-delay:5.4s; }
+.confetti-piece:nth-child(12n+11){ left:92%; background:var(--ink); animation-duration:3.3s; animation-delay:6s; }
+.confetti-piece:nth-child(12n+12){ left:98%; background:var(--accent-hi); animation-duration:3s; animation-delay:6.6s; }
 
 /* ── 3. THE LIST: toolbar slot, day bar, one list by kickoff (spec §5) ─────── */
 /* The toolbar slot ships hidden and empty; predictions.js fills and reveals it.
@@ -342,6 +377,8 @@
   letter-spacing:-.025em; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--ink);
 }
 .day-pill__fig--won{ color:var(--won); }
+/* 90% and up (operator 2026-10-27): aria-hidden, decoration riding beside the figure. */
+.day-pill__flame{ margin-left:2px; font-size:13px; }
 .day-pill__sub{
   margin-top:3px; margin-bottom:10px;
   font-size:12px; line-height:1.3; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--muted);

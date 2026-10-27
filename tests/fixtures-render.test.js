@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { CSS_ORDER } from '../site/build.mjs';
 import { fileURLToPath } from 'node:url';
-import { renderDay, receiptCode, meanStatedPct, statusLabel, EST_TEXT, ruleOf, isCounted } from '../site/lib/fixtures.js';
+import { renderDay, receiptCode, statusLabel, EST_TEXT, ruleOf, isCounted } from '../site/lib/fixtures.js';
 import { validateDay, nodeSha256 } from '../site/lib/data.js';
 import { picksHash } from '../site/lib/hash.js';
 import { lagosParts } from '../site/lib/time.js';
@@ -418,43 +418,6 @@ test('ring on the card: date label, and empty on a fresh day', () => {
 const r = (grade, pct, o = {}) => ({ fx: Math.random(), withdrawn: false, pre_ko: true, grade,
   pick: { market: 'm', label: null, pct, price: null, price_est: false, why: null }, ...o });
 
-test('meanStatedPct: settled, counted (pre_ko, not withdrawn, won/lost) picks only', () => {
-  // Unrounded: the ring rounds, so a 99.67 mean can read ">99" rather than 100.
-  assert.equal(meanStatedPct(EDGE.fixtures, 1), (82 + 78 + 84) / 3);
-  assert.equal(meanStatedPct(D08.fixtures, 1), null); // nothing settled
-  assert.equal(meanStatedPct([], 1), null);
-  // Each excluded row would MOVE the mean if it were counted (80 vs 60 / 70 / 66.7).
-  const base = [r('won', 80), r('lost', 80)];
-  assert.equal(meanStatedPct(base, 1), 80);
-  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 1), 80, 'moved kickoff excluded');
-  assert.equal(meanStatedPct([...base, r('withdrawn', 40, { withdrawn: true })], 1), 80, 'withdrawn excluded');
-  assert.equal(meanStatedPct([...base, r('push', 40)], 1), 80, 'push excluded');
-  assert.equal(meanStatedPct([...base, r('void', 40)], 1), 80, 'void excluded');
-  assert.equal(meanStatedPct([...base, r('pending', 40)], 1), 80, 'pending excluded');
-  assert.equal(meanStatedPct([...base, r('won', 40)], 1), 200 / 3, 'a counted pick is included');
-});
-
-test('meanStatedPct: null when ANY counted pick lacks an integer pct (never a subset mean)', () => {
-  assert.equal(meanStatedPct([r('won', 80), r('won', null)], 1), null);
-  assert.equal(meanStatedPct([r('won', 80), r('lost', 80.5)], 1), null);
-  assert.equal(meanStatedPct([r('won', 80), r('lost', 101)], 1), null);
-  // an uncounted row without a pct does not poison the mean
-  assert.equal(meanStatedPct([r('won', 80), r('pending', null)], 1), 80);
-});
-
-test('meanStatedPct returns the unrounded-to-100 mean; the ring shows >= 99.5 as ">99"', () => {
-  const day = structuredClone(EDGE);
-  for (const fx of [900001, 900002, 900014]) {
-    const f = day.fixtures.find((x) => x.fx === fx);
-    f.grade = 'won';
-    f.pick.pct = fx === 900002 ? 99 : 100; // mean 99.67
-  }
-  day.accuracy = { won: 3, lost: 0, pushes: 1, graded: 3, pct: 100 };
-  const t = text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]);
-  assert.match(t, /stated at an average >99%/);
-  assert.ok(!/average 100%/.test(t));
-});
-
 // ---------------------------------------------------------------- the ring is cross-checked against the rows
 
 test('renderDay recounts the ring from the rows and refuses a day whose accuracy disagrees', () => {
@@ -484,16 +447,14 @@ test('renderDay recounts the ring from the rows and refuses a day whose accuracy
   assert.doesNotThrow(() => renderDay(moved, opts()));
 });
 
-test('a 100% day renders the full charter triple via renderDay', () => {
+test('a 100% day renders its fraction, 100% and a full arc via renderDay, same pattern as any other', () => {
   const day = structuredClone(EDGE);
   day.fixtures.find((x) => x.fx === 900002).grade = 'won';
   day.accuracy = { won: 3, lost: 0, pushes: 1, graded: 3, pct: 100 };
   const ringHtml = /<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0];
-  const t = text(ringHtml);
-  assert.match(t, /3 of 3 landed/);
-  assert.match(t, /100%/);
-  assert.match(t, /settled so far/);
-  assert.match(t, /stated at an average 81%/);
+  assert.match(text(ringHtml), /3 of 3 landed/);
+  assert.match(text(ringHtml), /100%/);
+  assert.match(ringHtml, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
 });
 
 test('every percentage sits inside data-figure="pick-prob" or data-figure="ring"', () => {
@@ -861,18 +822,6 @@ test('isCounted: rule 1 needs pre_ko; rule 2 counts every non-withdrawn won/lost
   for (const bad of [undefined, 0, 3, '1']) assert.throws(() => isCounted(r('won', 80), bad), TypeError);
 });
 
-test('meanStatedPct takes the rule: a moved-kickoff pick counts under rule 2 only', () => {
-  const base = [r('won', 80), r('lost', 80)];
-  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 1), 80);
-  assert.equal(meanStatedPct([...base, r('won', 40, { pre_ko: false })], 2), 200 / 3);
-  assert.equal(meanStatedPct([...base, r('won', 40, { withdrawn: true })], 2), 80, 'withdrawn never counts');
-  const counted = R2.fixtures.filter((f) => !f.withdrawn && f.pick && (f.grade === 'won' || f.grade === 'lost'));
-  assert.ok(counted.some((f) => f.fx === 558451) && counted.some((f) => f.fx === 558454), 'premise');
-  assert.equal(meanStatedPct(R2.fixtures, 2), counted.reduce((s, f) => s + f.pick.pct, 0) / counted.length);
-  assert.notEqual(meanStatedPct(R2.fixtures, 1), meanStatedPct(R2.fixtures, 2));
-  for (const bad of [undefined, 0, 3, '2']) assert.throws(() => meanStatedPct(base, bad), TypeError, String(bad));
-});
-
 test('rule 2: the ring counts every non-withdrawn pick, and there is no "accept either" loophole', () => {
   assert.match(text(R2_HTML), /48 of 55 landed/);
   // The same rows read under rule 1 drop the two moved-kickoff wins: refused.
@@ -888,7 +837,7 @@ test('rule 2: the ring counts every non-withdrawn pick, and there is no "accept 
   assert.match(text(renderDay(edge2, opts())), /3 of 4 landed/);
 });
 
-test('rule 2: a 100% day states the mean of every counted pick, moved kickoff included', () => {
+test('rule 2: a 100% day (moved kickoff included) renders its real 100%, same pattern as any other', () => {
   const day = structuredClone(EDGE_RAW);
   day.accuracy_rule = 2;
   day.fixtures.find((x) => x.fx === 900002).grade = 'won';
@@ -896,8 +845,7 @@ test('rule 2: a 100% day states the mean of every counted pick, moved kickoff in
   const counted = day.fixtures.filter((f) => !f.withdrawn && f.pick && f.grade === 'won');
   assert.equal(counted.length, 4);
   assert.ok(counted.some((f) => f.fx === 900011), 'premise: the moved-kickoff pick is one of them');
-  const mean = Math.round(counted.reduce((s, f) => s + f.pick.pct, 0) / 4);
-  assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), new RegExp(`stated at an average ${mean}%`));
+  assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), /4 of 4 landed.*100%/s);
 });
 
 test('rule 2: no moved note, no uncounted marker; a legacy late row with a pick renders like any pick', () => {
@@ -1412,13 +1360,12 @@ test('R3b: "withdrawn" reads "Withdrawn — {copy}" from the fixed list; a withd
   }
 });
 
-test('R3b: card states do not move the ring, the count line or the stated mean', () => {
+test('R3b: card states do not move the ring or the count line', () => {
   const head = (h) => /<header class="day-head">[\s\S]*?<\/header>/.exec(h)[0];
   const bar = (h) => /<p class="day-bar">[\s\S]*?<\/p>/.exec(h)[0];
   assert.equal(head(STATES_HTML), head(EDGE_HTML));
   assert.equal(bar(STATES_HTML), bar(EDGE_HTML));
   assert.equal(head(UNGRADABLE_HTML), head(EDGE_HTML));
-  for (const rule of [1, 2]) assert.equal(meanStatedPct(STATES_RAW.fixtures, rule), meanStatedPct(EDGE_RAW.fixtures, rule));
 });
 
 test('R3b ungradable: a finished pick still pending more than 48 h after kickoff shows the pick and the sentence', () => {
