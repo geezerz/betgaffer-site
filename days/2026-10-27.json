@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-26T21:10:02Z",
-    "grades_as_of": "2026-10-26T23:10:02Z",
+    "grades_as_of": "2026-10-27T01:10:01Z",
     "prev_hash": "sha256:63eaa1f324a0ba6ccd48ed3011598cd9374513f34e65d94f0b81e8ba497bdfc4",
     "picks_hash": "sha256:584256ae47a211fe36e3b6c07373ebd74a7f12e7b77b0f9f3880188349700951",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 3,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 3,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Atletico-MG",
             "home_id": 208,
             "away_id": 206,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148920,
@@ -64,7 +71,7 @@
             "away": "Llaneros",
             "home_id": 254,
             "away_id": 288,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -77,8 +84,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 688751,
@@ -89,7 +103,7 @@
             "away": "Puebla W",
             "home_id": 9311,
             "away_id": 9315,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -102,8 +116,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148750,
@@ -114,7 +135,7 @@
             "away": "Nautico Recife",
             "home_id": 201,
             "away_id": 186,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -139,7 +160,7 @@
             "away": "Colón",
             "home_id": 4539,
             "away_id": 4551,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -214,7 +235,7 @@
             "away": "Deportivo Riestra",
             "home_id": 287,
             "away_id": 292,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -239,7 +260,7 @@
             "away": "Union Cocle",
             "home_id": 598901,
             "away_id": 598926,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -264,7 +285,7 @@
             "away": "AD Carmelita",
             "home_id": 566010,
             "away_id": 566017,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -289,7 +310,7 @@
             "away": "Montego Bay United",
             "home_id": 73702,
             "away_id": 73697,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -314,7 +335,7 @@
             "away": "Bucaramanga",
             "home_id": 252,
             "away_id": 257,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -339,7 +360,7 @@
             "away": "León W",
             "home_id": 9326,
             "away_id": 9319,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
