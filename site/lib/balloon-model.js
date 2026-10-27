@@ -6,14 +6,17 @@
 //
 // Claim safety mirrors the static ring (ring.js):
 //   - nothing graded reads "No results yet": never 0%, never --%, never 0/0, and no arc;
-//   - every pick landed reads "n of n" + "landed so far": no percentage (no bare 100%), no arc;
 //   - a real 0-of-n day may show 0% WITH its fraction;
-//   - a percentage that would DISPLAY as 100 without every pick landing is withheld, arc included;
-//   - every percentage, today's or yesterday's, travels with its "won of graded" fraction.
+//   - a genuinely perfect day (every pick landed) shows its real 100%, a full arc and the flame,
+//     same pattern as any other percentage (operator, 2026-10-27);
+//   - a percentage that would DISPLAY as 100 WITHOUT every pick landing (rounding) is still
+//     withheld, arc included: that one would be a false claim, not a true 100;
+//   - every percentage, today's or yesterday's, travels with its "won of graded" fraction, and
+//     gets the flame at FLAME_AT (ring.js) and up.
 // Day words follow the relabel rules (stale.js relLabel): Today / Tomorrow for the visitor's Lagos
 // date, otherwise the date. The line under it is always the shown day minus one.
 
-import { fmtPct } from './ring.js';
+import { fmtPct, FLAME_AT } from './ring.js';
 import { fmtDayLong, isDate, lagosToday } from './time.js';
 import { fmtInt } from './num.js';
 
@@ -116,14 +119,17 @@ export function readFigures(get) {
 const shortDay = (date) => fmtDayLong(date).replace(/ \d{4}$/, ''); // 'Wed 7 Oct'
 
 /**
- * @returns {null | { pctText: string|null, fracText: string, perfect: boolean }}
+ * @returns {null | { pctText: string|null, fracText: string, perfect: boolean, flame: boolean }}
  *   null when nothing is graded.
  */
 function figure(a) {
   if (a.graded === 0) return null;
   const perfect = a.won === a.graded;
-  const p = perfect ? null : fmtPct(a.pct);
-  return { pctText: p === '100' ? null : p, fracText: `${fmtInt(a.won)} of ${fmtInt(a.graded)}`, perfect };
+  const p = fmtPct(a.pct);
+  // A non-perfect day whose pct rounds up to "100" would be a false claim; a genuinely perfect
+  // day's own 100 is shown like any other percentage.
+  const pctText = !perfect && p === '100' ? null : p;
+  return { pctText, fracText: `${fmtInt(a.won)} of ${fmtInt(a.graded)}`, perfect, flame: a.pct >= FLAME_AT };
 }
 
 /**
@@ -136,8 +142,8 @@ function figure(a) {
  * @param {boolean} [o.compact]           the small ring: never a yesterday line
  * @param {number} [o.nowMs]              the visitor's clock; absent -> the date form (as the static page)
  * @returns {{ state: 'none'|'partial'|'perfect', pctText: string|null, fracText: string|null,
- *   label: string|null, dayText: string, arc: number|null,
- *   yday: null | { dayText: string, pctText: string|null, fracText: string }, aria: string }}
+ *   flame: boolean, label: string|null, dayText: string, arc: number|null,
+ *   yday: null | { dayText: string, pctText: string|null, fracText: string, flame: boolean }, aria: string }}
  */
 export function ringModel(today, { date, yesterday = null, compact = false, nowMs } = {}) {
   checkFigures(today, 'ringModel: today');
@@ -167,12 +173,8 @@ export function ringModel(today, { date, yesterday = null, compact = false, nowM
     state = 'none';
     label = 'No results yet';
     aria = `${lead}: no results yet.`;
-  } else if (t.perfect) {
-    state = 'perfect';
-    label = 'landed so far';
-    aria = `${lead}: ${t.fracText} landed so far.`;
   } else {
-    state = 'partial';
+    state = t.perfect ? 'perfect' : 'partial';
     aria = `${lead}: ${t.fracText} landed${t.pctText === null ? '' : ` (${t.pctText}%)`}.`;
   }
 
@@ -191,10 +193,8 @@ export function ringModel(today, { date, yesterday = null, compact = false, nowM
       yWord = shortDay(prev);
       yLead = fmtDayLong(prev);
     }
-    yday = { dayText: yWord, pctText: y.pctText, fracText: y.fracText };
-    aria += y.perfect
-      ? ` ${yLead}: ${y.fracText} landed so far.`
-      : ` ${yLead}: ${y.fracText}${y.pctText === null ? '' : ` (${y.pctText}%)`}.`;
+    yday = { dayText: yWord, pctText: y.pctText, fracText: y.fracText, flame: y.flame };
+    aria += ` ${yLead}: ${y.fracText}${y.pctText === null ? '' : ` (${y.pctText}%)`}.`;
   }
   aria += ' Opens Our Record.';
 
@@ -202,10 +202,11 @@ export function ringModel(today, { date, yesterday = null, compact = false, nowM
     state,
     pctText: t === null ? null : t.pctText,
     fracText: t === null ? null : t.fracText,
+    flame: t !== null && t.flame,
     label,
     dayText,
     // The arc is the published percentage, only where that percentage is shown.
-    arc: state === 'partial' && t.pctText !== null ? today.pct : null,
+    arc: t !== null && t.pctText !== null ? today.pct : null,
     yday,
     aria,
   };

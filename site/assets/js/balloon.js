@@ -108,23 +108,33 @@ function staticRing(doc) {
   }
 }
 
+/** The flame (90%+, ring.js FLAME_AT), aria-hidden: decoration riding on the percentage. */
+function flameSpan(doc) {
+  const e = span(doc, 'bg-balloon__flame', '🔥');
+  e.setAttribute('aria-hidden', 'true');
+  return e;
+}
+
 /** The ring's inner content for one model and size. */
 function content(doc, m, compact) {
   const inner = span(doc, 'bg-balloon__inner', null);
   const lines = [];
   if (m.state === 'none') {
     lines.push(span(doc, 'bg-balloon__none', m.label), span(doc, 'bg-balloon__label', m.dayText));
-  } else if (m.state === 'perfect' || m.pctText === null) {
-    // No percentage: the fraction is the figure.
+  } else if (m.pctText === null) {
+    // No percentage: a non-perfect day whose pct rounds to 100 (never a false claim) -- the
+    // fraction is the figure.
     lines.push(fracSpan(doc, 'bg-balloon__pct bg-balloon__pct--frac', m.fracText));
-    if (m.state === 'perfect') {
-      const landed = span(doc, 'bg-balloon__landed', null);
-      landed.append(span(doc, 'bg-balloon__w', 'landed'), ' ', span(doc, 'bg-balloon__w', 'so far'));
-      lines.push(landed);
-    }
+    const landed = span(doc, 'bg-balloon__landed', null);
+    landed.append(span(doc, 'bg-balloon__w', 'landed'), ' ', span(doc, 'bg-balloon__w', 'so far'));
+    lines.push(landed);
     if (!compact) lines.push(span(doc, 'bg-balloon__label', m.dayText));
   } else {
-    lines.push(span(doc, 'bg-balloon__pct', `${m.pctText}%`));
+    // A genuine 100% (or any other percentage) follows this one pattern: the number, the flame
+    // when it earns one, the day, the fraction -- no "landed" text (operator, 2026-10-27).
+    const pct = span(doc, 'bg-balloon__pct', `${m.pctText}%`);
+    if (m.flame) pct.append(flameSpan(doc));
+    lines.push(pct);
     if (!compact) lines.push(span(doc, 'bg-balloon__label', m.dayText));
     lines.push(fracSpan(doc, 'bg-balloon__frac', m.fracText));
   }
@@ -132,7 +142,9 @@ function content(doc, m, compact) {
     const prev = span(doc, 'bg-balloon__prev', null);
     prev.append(span(doc, 'bg-balloon__prev-day', m.yday.dayText));
     if (m.yday.pctText !== null) {
-      prev.append(span(doc, 'bg-balloon__prev-pct', `${m.yday.pctText}%`), span(doc, 'bg-balloon__prev-frac', m.yday.fracText));
+      const prevPct = span(doc, 'bg-balloon__prev-pct', `${m.yday.pctText}%`);
+      if (m.yday.flame) prevPct.append(flameSpan(doc));
+      prev.append(prevPct, span(doc, 'bg-balloon__prev-frac', m.yday.fracText));
     } else {
       prev.append(span(doc, 'bg-balloon__prev-pct', m.yday.fracText));
     }

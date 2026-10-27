@@ -48,7 +48,7 @@ function checkAccuracy(a) {
 }
 
 /** 90% and up earns a flame next to the percentage (operator, 2026-10-27). */
-const FLAME_AT = 90;
+export const FLAME_AT = 90;
 
 /**
  * The ring for one day's published picks.

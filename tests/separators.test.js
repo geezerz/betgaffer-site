@@ -125,7 +125,7 @@ describe('the floating ring captions (balloon-model.js ringModel)', () => {
     assert.equal(swap.yday.fracText, '1,131 of 1,308');
   });
   test('a perfect day', () => {
-    assert.equal(ringModel(acc(1200, 0, 0, 100), { date: D, nowMs: at }).aria, "Today's published picks: 1,200 of 1,200 landed so far. Opens Our Record.");
+    assert.equal(ringModel(acc(1200, 0, 0, 100), { date: D, nowMs: at }).aria, "Today's published picks: 1,200 of 1,200 landed (100%). Opens Our Record.");
     assert.equal(ringModel(acc(12000, 0, 0, 100), { date: D, nowMs: at }).fracText, '12,000 of 12,000');
   });
 });

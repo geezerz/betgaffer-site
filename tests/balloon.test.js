@@ -49,7 +49,8 @@ describe('ringModel', () => {
     assert.equal(m.fracText, '24 of 29');
     assert.equal(m.dayText, 'Today');
     assert.equal(m.arc, 82.76);
-    assert.deepEqual(m.yday, { dayText: 'Yesterday', pctText: '81.82', fracText: '18 of 22' });
+    assert.equal(m.flame, false, 'under 90%');
+    assert.deepEqual(m.yday, { dayText: 'Yesterday', pctText: '81.82', fracText: '18 of 22', flame: false });
     assert.equal(m.aria, "Today's published picks: 24 of 29 landed (82.76%). Yesterday: 18 of 22 (81.82%). Opens Our Record.");
   });
 
@@ -63,15 +64,16 @@ describe('ringModel', () => {
     assert.equal(m.aria, "Today's published picks: no results yet. Yesterday: 18 of 22 (81.82%). Opens Our Record.");
   });
 
-  test('perfect: n of n "landed so far", no percentage and no arc (never a bare 100%)', () => {
+  test('perfect: its real 100%, a full arc and the flame, same pattern as any other percentage', () => {
     const m = ringModel(acc(5, 0, 100), { date: TODAY, nowMs: NOW });
     assert.equal(m.state, 'perfect');
-    assert.equal(m.pctText, null);
+    assert.equal(m.pctText, '100');
     assert.equal(m.fracText, '5 of 5');
-    assert.equal(m.label, 'landed so far');
-    assert.equal(m.arc, null);
+    assert.equal(m.label, null);
+    assert.equal(m.arc, 100);
+    assert.equal(m.flame, true, '100% earns the flame');
     assert.equal(m.yday, null);
-    assert.equal(m.aria, "Today's published picks: 5 of 5 landed so far. Opens Our Record.");
+    assert.equal(m.aria, "Today's published picks: 5 of 5 landed (100%). Opens Our Record.");
   });
 
   test('a real 0-of-n day shows 0% WITH its fraction', () => {
@@ -96,10 +98,10 @@ describe('ringModel', () => {
     assert.equal(ringModel(A24, { date: TODAY, nowMs: NOW }).yday, null, 'missing');
     assert.equal(ringModel(A24, { date: TODAY, yesterday: acc(0, 0), nowMs: NOW }).yday, null, 'nothing graded');
     const p = ringModel(A24, { date: TODAY, yesterday: acc(6, 0, 100), nowMs: NOW });
-    assert.deepEqual(p.yday, { dayText: 'Yesterday', pctText: null, fracText: '6 of 6' });
-    assert.match(p.aria, /Yesterday: 6 of 6 landed so far\./);
+    assert.deepEqual(p.yday, { dayText: 'Yesterday', pctText: '100', fracText: '6 of 6', flame: true });
+    assert.match(p.aria, /Yesterday: 6 of 6 \(100%\)\./);
     assert.deepEqual(ringModel(A24, { date: TODAY, yesterday: acc(0, 3, 0), nowMs: NOW }).yday,
-      { dayText: 'Yesterday', pctText: '0', fracText: '0 of 3' });
+      { dayText: 'Yesterday', pctText: '0', fracText: '0 of 3', flame: false });
   });
 
   test('compact (the phone ring) never carries yesterday', () => {
@@ -127,7 +129,7 @@ describe('ringModel', () => {
     assert.equal(ringModel(A24, { date: TODAY }).dayText, 'Wed 7 Oct');
   });
 
-  test('never "--%", "0/0", a bare 100% or a percentage without its fraction, over every small case', () => {
+  test('never "--%", "0/0" or a percentage without its fraction in the same breath, over every small case', () => {
     let cases = 0;
     for (let won = 0; won <= 6; won++) {
       for (let lost = 0; lost <= 6; lost++) {
@@ -136,14 +138,14 @@ describe('ringModel', () => {
         for (const y of [null, acc(0, 0), acc(3, 0, 100), acc(0, 2, 0), acc(7, 2, 77.78)]) {
           for (const compact of [false, true]) {
             const m = ringModel(acc(won, lost, pct), { date: TODAY, yesterday: y, compact, nowMs: NOW });
-            for (const t of textsOf(m)) {
-              assert.doesNotMatch(t, /--%|0\/0|\bNaN\b|undefined|null/, t);
-              assert.doesNotMatch(t, /(^|[^\d.])100(\.0+)?%/, `bare 100%: ${t}`);
-            }
+            for (const t of textsOf(m)) assert.doesNotMatch(t, /--%|0\/0|\bNaN\b|undefined|null/, t);
             if (m.pctText !== null) assert.notEqual(m.fracText, null, 'a percentage always has its fraction');
             if (m.yday && m.yday.pctText !== null) assert.notEqual(m.yday.fracText, null);
+            // A genuinely perfect day's own 100% is fine; it still never stands apart from its
+            // fraction (the only invariant left to prove here).
             for (const part of m.aria.split('. ')) if (/%/.test(part)) assert.match(part, /\d+ of \d+/, part);
             if (won === 0 && lost === 0) assert.equal(m.pctText, null, '0 graded is never 0%');
+            if (won > 0 && won === g) assert.equal(m.pctText, '100', 'a genuinely perfect day reads its real 100');
             cases++;
           }
         }
@@ -386,14 +388,15 @@ describe('balloon.js: rendering', () => {
     for (const n of s.el.querySelectorAll('span')) assert.equal(n.getAttribute('style'), null);
   });
 
-  test('perfect and none draw no arc; none says "No results yet" on desktop', () => {
+  test('a perfect day draws a full arc with its flame; "none" draws no arc, "No results yet" on desktop', () => {
     const p = setup({ html: pageOf({ today: acc(5, 0, 100), yesterday: null }) });
     assert.equal(p.el.getAttribute('data-state'), 'perfect');
-    assert.equal(p.style('--pct'), '');
-    assert.equal(p.el.hasAttribute('data-arc'), false);
+    assert.equal(p.style('--pct'), '100');
+    assert.ok(p.el.hasAttribute('data-arc'));
     assert.match(p.el.textContent, /5 of 5/);
-    assert.match(p.el.textContent, /landed so far/);
-    assert.doesNotMatch(p.el.textContent, /%/);
+    assert.match(p.el.textContent, /100%/);
+    assert.match(p.el.textContent, /🔥/);
+    assert.doesNotMatch(p.el.textContent, /landed so far/);
     const n = setup({ html: pageOf({ today: acc(0, 0), yesterday: null }) });
     assert.equal(n.el.getAttribute('data-state'), 'none');
     assert.equal(n.el.hidden, false);
@@ -904,7 +907,7 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(strip(JS), /style\.setProperty\(\s*'--pct'/, '--pct through CSSOM');
     assert.match(strip(JS), /setPointerCapture/);
     assert.match(strip(JS), /from '\.\/lib\/balloon-model\.js'/);
-    assert.match(strip(MODEL), /import \{ fmtPct \} from '\.\/ring\.js'/, 'reuses the ring\'s percentage format');
+    assert.match(strip(MODEL), /import \{ fmtPct, FLAME_AT \} from '\.\/ring\.js'/, 'reuses the ring\'s percentage format and flame threshold');
     assert.doesNotMatch(strip(JS), /data-auth/, 'no auth gating');
   });
 
@@ -1042,8 +1045,8 @@ describe('balloon.js: a separated four- or five-digit fraction in the ring', () 
     }
   });
 
-  test('a perfect day: the fraction is the figure, split the same way, with "landed" / "so far" under it', () => {
-    for (const [a, first, second] of [[acc(1200, 0, 100), '1,200 of', '1,200'], [acc(12000, 0, 100), '12,000 of', '12,000']]) {
+  test('a day that rounds to 100 without every pick landing: the fraction is the figure, split the same way, with "landed" / "so far" under it', () => {
+    for (const [a, first, second] of [[acc(1199, 1, 99.995), '1,199 of', '1,200'], [acc(11999, 1, 99.9992), '11,999 of', '12,000']]) {
       const el = ringOf(a, 390);
       assert.deepEqual(words(el, 'bg-balloon__pct--frac'), [first, second]);
       assert.deepEqual(words(el, 'bg-balloon__landed'), ['landed', 'so far']);
@@ -1066,10 +1069,11 @@ describe('balloon.js: a separated four- or five-digit fraction in the ring', () 
     for (const a of [acc(24, 5, 82.76), acc(240, 50, 82.76), acc(998, 1, 99.9), acc(999, 0, 100)]) assert.equal(ringOf(a, 390).getAttribute('data-stacked'), null, String(a.won));
     assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct:not\(\.bg-balloon__pct--frac\)\{ font-size:12px; \}/);
     assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct:not(') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:13px; }'), 'after the 13px rule, so it wins');
-    // A perfect day's fraction IS a .bg-balloon__pct (with --frac): a bare selector would match it too
-    // and, coming later at the same specificity, undo its 8px long-fraction size.
+    // A day withheld to its fraction (rounds to 100 without every pick landing) has one that IS a
+    // .bg-balloon__pct (with --frac): a bare selector would match it too and, coming later at the
+    // same specificity, undo its 8px long-fraction size.
     assert.doesNotMatch(SHEET, /\[data-stacked\] \.bg-balloon__pct\s*[{,]/, 'the step-down never reaches .bg-balloon__pct--frac');
-    assert.equal(ringOf(acc(1200, 0, 100), 390).querySelector('.bg-balloon__pct--frac').className, 'bg-balloon__pct bg-balloon__pct--frac', 'premise: the perfect-day fraction carries both classes');
+    assert.equal(ringOf(acc(1199, 1, 99.995), 390).querySelector('.bg-balloon__pct--frac').className, 'bg-balloon__pct bg-balloon__pct--frac', 'premise: that fraction carries both classes');
     assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\[data-stacked\]/, 'the large ring is unchanged');
   });
 });
