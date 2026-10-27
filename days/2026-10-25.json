@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-25",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T00:07:02Z",
-    "grades_as_of": "2026-10-26T19:10:02Z",
+    "grades_as_of": "2026-10-27T03:10:01Z",
     "prev_hash": "sha256:86a99cbf489cfc5401d9a670636da131f55e89605f06528b0cabc2f7a8616f1c",
     "picks_hash": "sha256:1766fbc597dbb9f1faa433d38083ef487e48287c62b96596c7422bf8b92b4979",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 905,
+        "won": 906,
         "lost": 161,
         "pushes": 27,
-        "graded": 1066,
-        "pct": 84.9
+        "graded": 1067,
+        "pct": 84.91
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -35472,7 +35472,7 @@
             "away": "Salcedo",
             "home_id": 651740,
             "away_id": 651735,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -35485,8 +35485,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1655869,
