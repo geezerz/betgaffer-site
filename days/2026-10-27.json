@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-26T21:10:02Z",
-    "grades_as_of": "2026-10-27T22:15:01Z",
+    "grades_as_of": "2026-10-27T23:10:02Z",
     "prev_hash": "sha256:63eaa1f324a0ba6ccd48ed3011598cd9374513f34e65d94f0b81e8ba497bdfc4",
     "picks_hash": "sha256:b0c5e9b7c8e0fcaa33e721eddad537c207433a2dc49e19152147fd8755b208b6",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 199,
+        "won": 205,
         "lost": 31,
         "pushes": 8,
-        "graded": 230,
-        "pct": 86.52
+        "graded": 236,
+        "pct": 86.86
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -5293,7 +5293,7 @@
             "away": "Sant Andreu",
             "home_id": 5454,
             "away_id": 6754,
-            "status": "P",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -5306,8 +5306,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 2,
+                "aet_away": 2,
+                "pen_home": 1,
+                "pen_away": 4
+            }
         },
         {
             "fx": 1627023,
@@ -5318,7 +5325,7 @@
             "away": "Extremadura 1924",
             "home_id": 5430,
             "away_id": 8274,
-            "status": "ET",
+            "status": "AET",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5331,8 +5338,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": 2,
+                "aet_away": 4,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1627096,
@@ -7235,7 +7249,7 @@
             "away": "Havant & Wville",
             "home_id": 5349,
             "away_id": 5231,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -7248,8 +7262,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1151288,
@@ -8214,7 +8235,7 @@
             "away": "Clyde",
             "home_id": 6009,
             "away_id": 2756,
-            "status": "ET",
+            "status": "PEN",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -8227,8 +8248,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": 3,
+                "pen_away": 4
+            }
         },
         {
             "fx": 1669294,
@@ -8424,7 +8452,7 @@
             "away": "Rayo Vallecano",
             "home_id": 6403,
             "away_id": 1104,
-            "status": "ET",
+            "status": "AET",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -8437,8 +8465,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 2,
+                "aet_away": 3,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1627026,
@@ -8609,7 +8644,7 @@
             "away": "Arsenal",
             "home_id": 3504,
             "away_id": 42,
-            "status": "P",
+            "status": "PEN",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -8622,8 +8657,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": 5,
+                "pen_away": 3
+            }
         },
         {
             "fx": 1665244,
@@ -8634,7 +8676,7 @@
             "away": "Caracas FC",
             "home_id": 5639,
             "away_id": 8450,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -8659,7 +8701,7 @@
             "away": "Independ. Rivadavia",
             "home_id": 240,
             "away_id": 293,
-            "status": "1H",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -8709,7 +8751,7 @@
             "away": "Atletico Torque",
             "home_id": 4119,
             "away_id": 4647,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -8734,7 +8776,7 @@
             "away": "Independiente F.b.c.",
             "home_id": 302315,
             "away_id": 599093,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
