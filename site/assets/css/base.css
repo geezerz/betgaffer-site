@@ -421,7 +421,7 @@ a.bg-wordmark:hover{ color:#fff; }
   .bg-foot__brand{ grid-column:1 / -1; }
 }
 @media (min-width:1024px){
-  .bg-foot__in{ grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr)); padding-block:40px 32px; }
+  .bg-foot__in{ grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr)); padding-block:40px 32px; }
   .bg-foot__brand{ grid-column:auto; }
 }
 .bg-foot p{ margin:0; }
@@ -437,6 +437,7 @@ a.bg-wordmark:hover{ color:#fff; }
 }
 .bg-foot__col{ display:flex; flex-direction:column; gap:8px; }
 .bg-foot__col h2{ margin:0 0 2px; }
+.bg-foot__col h2 .mono{ text-transform:none; letter-spacing:0; }
 .bg-foot__col ul{ display:flex; flex-direction:column; }
 .bg-foot__col a{ color:var(--ink-2); text-decoration:none; }
 .bg-foot__col a:hover{ color:var(--accent); text-decoration:underline; }

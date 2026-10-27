@@ -217,6 +217,12 @@ const defaultRaf = (fn) => (typeof requestAnimationFrame === 'function' ? reques
 export const CONFETTI_MS = 10000;
 const CONFETTI_PIECES = 96;
 const PERFECT_PILL = '100.0%'; // build.mjs pillPct: only won === graded reads 100.0%
+// Over 95% (operator 2026-10-27): "a bit" -- the opening 24-piece burst only (fixtures.css gives
+// pieces 1-24 no wave delay; the last lands by ~3.1s).
+export const CONFETTI_LIGHT_MS = 3500;
+const CONFETTI_LIGHT_PIECES = 24;
+const CONFETTI_LIGHT_ABOVE = 95;
+const PILL_PCT_RE = /^(\d+(?:\.\d+)?)%$/; // a pill with nothing graded shows a fixture count, no %
 
 /** This page's ring, when it reads 100% for the VISITOR's Lagos today; else null. */
 function perfectTodayRing(doc, nowMs) {
@@ -227,23 +233,24 @@ function perfectTodayRing(doc, nowMs) {
   return pct && pct.textContent.startsWith('100%') ? el : null;
 }
 
-/** Today's day pill when it reads 100.0% (relabel has already set data-when for the visitor's date). */
-function perfectTodayPill(doc) {
+/** Today's day pill and its figure ({ pill, text, pct }), or null (relabel has already set data-when for the visitor's date). */
+function todayPill(doc) {
   const pill = doc.querySelector('.day-pill[data-when="today"]');
   const fig = pill ? pill.querySelector('.day-pill__fig') : null;
-  return fig && fig.textContent.trim() === PERFECT_PILL ? pill : null;
+  const m = fig ? PILL_PCT_RE.exec(fig.textContent.trim()) : null;
+  return m ? { pill, text: m[0], pct: Number(m[1]) } : null;
 }
 
 /**
- * 96 identical pieces bursting out of origin's centre; fixtures.css' :nth-child rules give each its
+ * n identical pieces bursting out of origin's centre; fixtures.css' :nth-child rules give each its
  * spread, rise, colour, shape and timing. The centre goes in through CSSOM (never a style attribute);
  * an origin with no box (the static ring, hidden while the floating one shows) leaves the CSS default.
  */
-function celebrate(doc, origin, setTimer) {
+function celebrate(doc, origin, setTimer, n = CONFETTI_PIECES, ms = CONFETTI_MS) {
   const host = doc.createElement('div');
   host.className = 'confetti';
   host.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < CONFETTI_PIECES; i++) {
+  for (let i = 0; i < n; i++) {
     const piece = doc.createElement('div');
     piece.className = 'confetti-piece';
     host.append(piece);
@@ -254,7 +261,7 @@ function celebrate(doc, origin, setTimer) {
     host.style.setProperty('--cy', `${Math.round(r.top + r.height / 2)}px`);
   }
   doc.body.append(host);
-  setTimer(() => host.remove(), CONFETTI_MS);
+  setTimer(() => host.remove(), ms);
 }
 
 /** "Perfect so far today: 12 of 12 picks right 🔥" after the day header's h1; null without one. */
@@ -285,9 +292,12 @@ export function init({
 } = {}) {
   relabel(doc, nowMs);
   // A perfect day so far: confetti out of today's pill (else the ring), and the flagship line.
-  const pill = perfectTodayPill(doc);
+  // Over 95%: a short burst from the pill.
+  const today = todayPill(doc);
+  const pill = today && today.text === PERFECT_PILL ? today.pill : null;
   const origin = pill ?? perfectTodayRing(doc, nowMs);
   if (doc.body && origin) celebrate(doc, origin, setTimer);
+  else if (doc.body && today && today.pct > CONFETTI_LIGHT_ABOVE) celebrate(doc, today.pill, setTimer, CONFETTI_LIGHT_PIECES, CONFETTI_LIGHT_MS);
   let note = pill ? perfectNote(doc, pill) : null;
   // Still open at the next Lagos midnight: relabel then (and every midnight after); the day the
   // note names is no longer today.

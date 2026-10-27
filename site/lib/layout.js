@@ -83,6 +83,14 @@ const LEGAL = Object.freeze([
   ['/refunds/', 'Refunds'],
 ]);
 
+/** The brand's accounts (operator 2026-10-27: @betgaffer_ everywhere; Facebook usernames cannot
+ *  hold "_", so its page waits for its real URL). */
+const SOCIAL = Object.freeze([
+  ['https://x.com/betgaffer_', 'X'],
+  ['https://www.instagram.com/betgaffer_/', 'Instagram'],
+  ['https://www.threads.com/@betgaffer_', 'Threads'],
+]);
+
 export const NOT_A_BOOKMAKER = 'Bet Gaffer is football match intelligence. We are not a bookmaker: '
   + 'we take no bets, hold no stakes and pay no winnings.';
 
@@ -168,6 +176,7 @@ function header(path) {
 
 function footer(op, year) {
   const legal = LEGAL.map(([href, label]) => `<li><a href="${escAttr(href)}">${escHtml(label)}</a></li>`).join('');
+  const social = SOCIAL.map(([href, label]) => `<li><a href="${escAttr(href)}" rel="me">${escHtml(label)}</a></li>`).join('');
   const ident = [
     `© ${escHtml(year)} ${escHtml(op.legal_name)}`,
     rcNumber(op) ? `RC ${escHtml(rcNumber(op))}` : '', // the config may already carry the "RC" prefix
@@ -189,6 +198,10 @@ function footer(op, year) {
 <h2 class="t-lbl t-lbl--quiet">Contact</h2>
 <p><a href="mailto:${escAttr(op.contact_email)}">${escHtml(op.contact_email)}</a></p>
 </div>
+<nav class="bg-foot__col" aria-label="Follow Bet Gaffer">
+<h2 class="t-lbl t-lbl--quiet">Follow <span class="mono">@betgaffer_</span></h2>
+<ul role="list">${social}</ul>
+</nav>
 <p class="bg-foot__legal mono">${ident}</p>
 </div>
 </footer>`;

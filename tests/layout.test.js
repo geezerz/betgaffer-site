@@ -1202,9 +1202,13 @@ test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, l
   assert.doesNotMatch(brand, /frozen before|published before kickoff|shows its listing time/i);
   assert.doesNotMatch(foot, /github|reposit|Receipts</i);
   assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
-  // Every footer link is one of: the three legal pages, the contact mailto.
+  // Every footer link is one of: the three legal pages, the contact mailto, the social accounts
+  // (operator 2026-10-27: @betgaffer_ everywhere; checked live on each platform).
   assert.deepEqual([...foot.matchAll(/<a href="([^"]*)"/g)].map((m) => m[1]),
-    ['/privacy/', '/terms/', '/refunds/', 'mailto:hello@example.com']);
+    ['/privacy/', '/terms/', '/refunds/', 'mailto:hello@example.com',
+      'https://x.com/betgaffer_', 'https://www.instagram.com/betgaffer_/', 'https://www.threads.com/@betgaffer_']);
+  for (const label of ['X', 'Instagram', 'Threads']) assert.match(foot, new RegExp(`rel="me">${label}</a>`));
+  assert.match(foot, /<nav class="bg-foot__col" aria-label="Follow Bet Gaffer">/);
 });
 
 test('the footer year is the injected year', () => {

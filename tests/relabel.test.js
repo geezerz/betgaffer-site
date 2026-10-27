@@ -488,9 +488,23 @@ describe('a perfect day so far: confetti out of today\'s pill and the flagship l
     assert.equal(doc.querySelector('.perfect-note'), null);
   });
 
-  test('no celebration on a day short of perfect, or once the day is not today', () => {
+  test('over 95% today (operator 2026-10-27): a bit of confetti, the opening burst only, and no flagship line', () => {
+    const { doc, timers } = run(day('95.8%', '23 of 24'));
+    const host = doc.querySelector('.confetti');
+    assert.equal(host.querySelectorAll('.confetti-piece').length, 24);
+    assert.equal(host.style.getPropertyValue('--cx'), '140px');
+    assert.equal(doc.querySelector('.perfect-note'), null);
+    const [removeIt] = timers.find(([, ms]) => ms === stale.CONFETTI_LIGHT_MS);
+    removeIt();
+    assert.equal(doc.querySelector('.confetti'), null);
+  });
+
+  test('no celebration at 95% or below, on a pill with no percentage, or once the day is not today', () => {
     for (const [html, nowMs, why] of [
+      [day('95.0%', '19 of 20'), NOW, 'exactly 95% is not more than 95%'],
       [day('91.7%', '11 of 12'), NOW, 'not perfect'],
+      [day('130', '130 fixtures'), NOW, 'nothing graded: the pill shows a fixture count'],
+      [day('95.8%', '23 of 24'), MIDNIGHT, 'over 95% but no longer today'],
       [day('100.0%'), MIDNIGHT, 'yesterday by the visitor\'s clock'],
       [day('100.0%'), FAR, 'long past'],
     ]) {
