@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-25",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T00:07:02Z",
-    "grades_as_of": "2026-10-27T03:10:01Z",
+    "grades_as_of": "2026-10-27T05:10:01Z",
     "prev_hash": "sha256:86a99cbf489cfc5401d9a670636da131f55e89605f06528b0cabc2f7a8616f1c",
-    "picks_hash": "sha256:1766fbc597dbb9f1faa433d38083ef487e48287c62b96596c7422bf8b92b4979",
+    "picks_hash": "sha256:10fccb5dd8e690f882df05ce44806b16085622cdf09e6a22d26e07d3400d183c",
     "counts": {
-        "fixtures": 1157,
-        "priced": 1138,
-        "recommended": 1148,
+        "fixtures": 1158,
+        "priced": 1132,
+        "recommended": 1149,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -21156,9 +21156,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -22070,9 +22072,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -23226,9 +23230,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -23308,9 +23314,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -23872,9 +23880,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -23897,9 +23907,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -23922,9 +23934,11 @@
             },
             "frozen_at": "2026-10-25T00:07:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -27458,6 +27472,38 @@
             "grade": "lost",
             "score": {
                 "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
+        {
+            "fx": 1649757,
+            "api_fx": 1646772,
+            "ko": "2026-10-25T15:00:00Z",
+            "comp": "Ligue 1 (Burkina-Faso)",
+            "home": "Douanes",
+            "away": "RCK",
+            "home_id": 752120,
+            "away_id": 919905,
+            "status": "FT",
+            "pick": {
+                "market": "home_2up",
+                "label": "Home Goes 2-Up",
+                "pct": 91,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-10-27T05:10:01Z",
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": {
+                "home": 2,
                 "away": 0,
                 "aet_home": null,
                 "aet_away": null,
