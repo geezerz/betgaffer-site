@@ -198,6 +198,15 @@ export class FakeElement {
       p.childNodes.splice(p.childNodes.indexOf(this), 0, node);
     }
   }
+  after(...nodes) {
+    const p = this.parentNode;
+    if (!p) return;
+    nodes.forEach((n, i) => {
+      const node = this.#adopt(n);
+      node.parentNode = p;
+      p.childNodes.splice(p.childNodes.indexOf(this) + 1 + i, 0, node);
+    });
+  }
   remove() { if (this.parentNode) this.parentNode.childNodes.splice(this.parentNode.childNodes.indexOf(this), 1); this.parentNode = null; }
   addEventListener(type, fn) { (this.listeners[type] ??= []).push(fn); }
   removeEventListener(type, fn) { this.listeners[type] = (this.listeners[type] ?? []).filter((f) => f !== fn); }

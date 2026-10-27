@@ -24,7 +24,7 @@ export const DESKTOP_MIN = 1024;
 /** Each size remembers its own position: a desktop spot would strand the phone ring, and vice versa. */
 export const POS_KEYS = Object.freeze({ desktop: 'bg.balloon.pos', compact: 'bg.balloon.pos.sm' });
 /** Nominal diameters (px), used when the element cannot be measured (hidden, or not laid out yet). */
-export const NOMINAL = Object.freeze({ desktop: 124, compact: 64 });
+export const NOMINAL = Object.freeze({ desktop: 124, compact: 84 });
 /** Distance kept from the viewport edges. */
 export const PAD = 10;
 /** Gap kept below the sticky header (or the stuck toolbar, or the founding banner). */

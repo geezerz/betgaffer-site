@@ -7,7 +7,8 @@
    conic-gradient and hollowed by an inset ::before; --pct is set through CSSOM
    by the script (never a style attribute). --bal-size drives every dimension.
      data-size="desktop" (from 1024px): ~116-128px, today then yesterday;
-     data-size="compact" (below 1024px): 64px, today's figure and fraction only.
+     data-size="compact" (below 1024px): 84px (operator 2026-10-27: ~30% bigger than the original
+     64px), today's figure and fraction only.
    Both start top right just below the topbar (operator, 2026-10-08); balloon.js
    writes the exact top (below the lower of the banner and the day pills while
    they are on screen, below the toolbar while it is stuck). While the ring is shown (html.has-balloon) the
@@ -18,7 +19,7 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .bg-balloon{
-  --bal-size:64px;
+  --bal-size:84px;
   --bal-thick:4px;
   position:fixed; z-index:45;
   left:auto; bottom:auto;
@@ -127,20 +128,20 @@
   font-size:max(7.5px, calc(var(--bal-size) * .058));
 }
 
-/* The small ring: today's figure and fraction, legible at 64px. */
-.bg-balloon[data-size="compact"] .bg-balloon__pct{ font-size:13px; }
-.bg-balloon[data-size="compact"] .bg-balloon__pct--frac{ font-size:11.5px; }
-.bg-balloon[data-size="compact"] .bg-balloon__frac{ font-size:9px; letter-spacing:-.02em; }
-.bg-balloon[data-size="compact"] .bg-balloon__landed{ font-size:8px; }
+/* The small ring: today's figure and fraction, legible at 84px. */
+.bg-balloon[data-size="compact"] .bg-balloon__pct{ font-size:17px; }
+.bg-balloon[data-size="compact"] .bg-balloon__pct--frac{ font-size:15px; }
+.bg-balloon[data-size="compact"] .bg-balloon__frac{ font-size:11.5px; letter-spacing:-.02em; }
+.bg-balloon[data-size="compact"] .bg-balloon__landed{ font-size:10px; }
 .bg-balloon[data-size="compact"] .bg-balloon__w{ display:block; }
 .bg-balloon[data-size="compact"][data-long] .bg-balloon__frac,
-.bg-balloon[data-size="compact"][data-long] .bg-balloon__pct--frac{ font-size:8px; letter-spacing:-.05em; }
-/* A fraction with thousands separators ("1,131 of 1,308", "10,081 of 12,154") is wider than the 64px
+.bg-balloon[data-size="compact"][data-long] .bg-balloon__pct--frac{ font-size:10.5px; letter-spacing:-.05em; }
+/* A fraction with thousands separators ("1,131 of 1,308", "10,081 of 12,154") is wider than the 84px
    ring at any readable size: balloon.js writes it as two words (.bg-balloon__w), which the rule above
    stacks — "1,131 of" over "1,308" — at this same size. The large ring keeps it on one line.
    Three lines are taller than two, so the percentage above them steps down a size (data-stacked);
-   :not(--frac) because a perfect day's fraction is itself a .bg-balloon__pct and keeps its 8px. */
-.bg-balloon[data-size="compact"][data-stacked] .bg-balloon__pct:not(.bg-balloon__pct--frac){ font-size:12px; }
+   :not(--frac) because a perfect day's fraction is itself a .bg-balloon__pct and keeps its 10.5px. */
+.bg-balloon[data-size="compact"][data-stacked] .bg-balloon__pct:not(.bg-balloon__pct--frac){ font-size:15.5px; }
 
 /* No flash of the old ring (spec §16.7). With scripting on, the header's static copy is hidden from
    the first paint, so it never shows before the floating ring replaces it. balloon.js adds
@@ -162,12 +163,12 @@ html.has-balloon .day-head .ring{ display:none; }
   main[data-ring-graded="0"] .day-head .ring{ display:flex; }
 }
 
-/* Phones: room for the small ring's start spot (spec §16.7). Below 600px the 64px ring starts top
+/* Phones: room for the small ring's start spot (spec §16.7). Below 600px the 84px ring starts top
    right, 12px in, just below the day pills (or, without pills, the founding card or the header) —
    over the right end of the first lines under it: the day header's title block (label, h1, date, count), on the home page the tomorrow
    line and the missing-day notice, and the stale-data notice (.stale) above them all when it shows.
    Those lines keep a right margin of ring + gap
-   (64 + 12 − 16px page gutter + 8px gap = 68px, plus the right safe area, as the ring's own offset),
+   (84 + 12 − 16px page gutter + 8px gap = 88px, plus the right safe area, as the ring's own offset),
    so the ring covers no text. CSS only and present from the first paint: no shift. Scoped to scripting
    (no floating ring without JS; the static ring sits in the flow) and to pages where the ring shows
    on a phone: something graded (balloon.js hides the small ring on a day with nothing graded). */
@@ -176,7 +177,7 @@ html.has-balloon .day-head .ring{ display:none; }
   main[data-ring-graded]:not([data-ring-graded="0"]) .home-next,
   main[data-ring-graded]:not([data-ring-graded="0"]) .home-notice,
   main[data-ring-graded]:not([data-ring-graded="0"]) .stale{
-    margin-right:calc(68px + env(safe-area-inset-right, 0px));
+    margin-right:calc(88px + env(safe-area-inset-right, 0px));
   }
 }
 

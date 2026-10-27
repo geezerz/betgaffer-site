@@ -15,10 +15,11 @@
 //     on the home page only, the visitor's Lagos date is after the shown day -> either tomorrow's
 //     card is already published (the normal 00:00–00:10 window, not a failure) and is linked, or
 //     today's card has not been published yet;
-//   - today's ring reads 100% at the visitor's Lagos date -> a 10-second confetti drop, once per
-//     page view (operator, 2026-10-27). Every piece's position/colour/delay/duration comes from
-//     its DOM order via :nth-child (fixtures.css) -- CSP's style-src has no 'unsafe-inline', so
-//     nothing here sets a style= or .style.property.
+//   - today's pill (else ring) reads 100% at the visitor's Lagos date -> a 10-second confetti burst
+//     out of that pill, once per page view, and a "Perfect so far today" line under the day's h1
+//     (operator, 2026-10-27). Each piece's spread/colour/delay/duration comes from its DOM order
+//     via :nth-child (fixtures.css); only the burst's centre is set, as CSSOM custom properties --
+//     CSP's style-src has no 'unsafe-inline', so nothing here writes a style= attribute.
 // The banner region <div class="stale" role="status" hidden> is in the static HTML. It is unhidden
 // first and filled on the next frame (so the live region announces the text); every string is set
 // with textContent and links are built with DOM APIs.
@@ -214,7 +215,8 @@ function show(doc, region, notices, raf) {
 const defaultRaf = (fn) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(fn) : setTimeout(fn, 0));
 
 export const CONFETTI_MS = 10000;
-const CONFETTI_PIECES = 36;
+const CONFETTI_PIECES = 96;
+const PERFECT_PILL = '100.0%'; // build.mjs pillPct: only won === graded reads 100.0%
 
 /** This page's ring, when it reads 100% for the VISITOR's Lagos today; else null. */
 function perfectTodayRing(doc, nowMs) {
@@ -225,14 +227,53 @@ function perfectTodayRing(doc, nowMs) {
   return pct && pct.textContent.startsWith('100%') ? el : null;
 }
 
-/** 36 identical pieces; fixtures.css' :nth-child rules give each its position, colour, delay and fall time. */
-function celebrate(doc, setTimer) {
+/** Today's day pill when it reads 100.0% (relabel has already set data-when for the visitor's date). */
+function perfectTodayPill(doc) {
+  const pill = doc.querySelector('.day-pill[data-when="today"]');
+  const fig = pill ? pill.querySelector('.day-pill__fig') : null;
+  return fig && fig.textContent.trim() === PERFECT_PILL ? pill : null;
+}
+
+/**
+ * 96 identical pieces bursting out of origin's centre; fixtures.css' :nth-child rules give each its
+ * spread, rise, colour, shape and timing. The centre goes in through CSSOM (never a style attribute);
+ * an origin with no box (the static ring, hidden while the floating one shows) leaves the CSS default.
+ */
+function celebrate(doc, origin, setTimer) {
   const host = doc.createElement('div');
   host.className = 'confetti';
   host.setAttribute('aria-hidden', 'true');
-  for (let i = 0; i < CONFETTI_PIECES; i++) host.appendChild(doc.createElement('div')).className = 'confetti-piece';
-  doc.body.appendChild(host);
+  for (let i = 0; i < CONFETTI_PIECES; i++) {
+    const piece = doc.createElement('div');
+    piece.className = 'confetti-piece';
+    host.append(piece);
+  }
+  const r = origin.getBoundingClientRect();
+  if (r.width > 0) {
+    host.style.setProperty('--cx', `${Math.round(r.left + r.width / 2)}px`);
+    host.style.setProperty('--cy', `${Math.round(r.top + r.height / 2)}px`);
+  }
+  doc.body.append(host);
   setTimer(() => host.remove(), CONFETTI_MS);
+}
+
+/** "Perfect so far today: 12 of 12 picks right 🔥" after the day header's h1; null without one. */
+function perfectNote(doc, pill) {
+  const title = doc.querySelector('.day-head__title');
+  const h1 = title ? title.querySelector('h1') : null;
+  const sub = pill.querySelector('.day-pill__sub');
+  const frac = sub ? /^[\d,]+ of [\d,]+/.exec(sub.textContent.trim()) : null;
+  if (!h1 || !frac) return null;
+  const note = doc.createElement('p');
+  note.className = 'perfect-note';
+  const b = doc.createElement('b');
+  b.textContent = frac[0];
+  const flame = doc.createElement('span');
+  flame.setAttribute('aria-hidden', 'true');
+  flame.textContent = '🔥';
+  note.append('Perfect so far today: ', b, ' picks right ', flame);
+  h1.after(note);
+  return note;
 }
 
 /**
@@ -243,15 +284,20 @@ export function init({
   doc = document, nowMs = Date.now(), raf = defaultRaf, setTimer = (fn, ms) => setTimeout(fn, ms), now = () => Date.now(),
 } = {}) {
   relabel(doc, nowMs);
-  // Still open at the next Lagos midnight: relabel then (and every midnight after).
+  // A perfect day so far: confetti out of today's pill (else the ring), and the flagship line.
+  const pill = perfectTodayPill(doc);
+  const origin = pill ?? perfectTodayRing(doc, nowMs);
+  if (doc.body && origin) celebrate(doc, origin, setTimer);
+  let note = pill ? perfectNote(doc, pill) : null;
+  // Still open at the next Lagos midnight: relabel then (and every midnight after); the day the
+  // note names is no longer today.
   const schedule = (from) => setTimer(() => {
     const t = now();
     relabel(doc, t);
+    if (note) { note.remove(); note = null; }
     schedule(t);
   }, msUntilLagosMidnight(from) + 500);
   schedule(nowMs);
-
-  if (doc.body && perfectTodayRing(doc, nowMs)) celebrate(doc, setTimer);
 
   const main = doc.querySelector('main');
   const region = main ? main.querySelector('.stale') : null;

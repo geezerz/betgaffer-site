@@ -866,7 +866,7 @@ test('phones with the floating ring: the lines under its start spot keep a right
   const gutter = /^(\d+)px$/.exec(valueOf(cssRules('base.css'), ':root', '--gutter'));
   assert.ok(size && right && gutter, 'premise: ring size, ring right offset and page gutter are plain px');
   const want = Number(size[1]) + Number(right[1]) - Number(gutter[1]) + RING_GAP;
-  assert.equal(want, 68, 'premise: 64 + 12 - 16 + 8');
+  assert.equal(want, 88, 'premise: 84 + 12 - 16 + 8');
   // The lines the ring's start spot can cover: the day header's title block (label, h1, date, count), the
   // home page's lines above it (the tomorrow line, the missing-day notice) and the late-data notice on top.
   const lines = ['.day-head__title', '.home-next', '.home-notice', '.stale'];

@@ -2,7 +2,7 @@
 // build puts the figures on <main> (data-ring-* for the shown day, data-yday-* for the day before).
 //
 // One design at every width. From 1024 px: the large ring, today then yesterday. Below: the same
-// ring at ~64 px with today's figure and fraction only, and not shown at all while nothing is graded
+// ring at ~84 px with today's figure and fraction only, and not shown at all while nothing is graded
 // (the day header's static ring already says "No results yet"). Both sizes:
 //   - drag anywhere with pointer events + setPointerCapture; movement is transform-only during the
 //     gesture (composited, no layout per frame) and commits to left/top once, on release;
@@ -87,7 +87,7 @@ function span(doc, cls, text) {
  * The "won of graded" fraction. Without a thousands separator ("998 of 999") it is one run. As soon
  * as a count carries one — "863 of 1,018", "1,131 of 1,308" — it is written as two words, "863 of"
  * and "1,018", which the small ring stacks (balloon.css: .bg-balloon__w is a block there): on one
- * line even "863 of 1,018" reaches the arc of a 64px ring. The text content is unchanged.
+ * line even "863 of 1,018" reaches the arc of a 84px ring. The text content is unchanged.
  */
 const isStacked = (fracText) => typeof fracText === 'string' && fracText.includes(',') && fracText.includes(' of ');
 function fracSpan(doc, cls, fracText) {

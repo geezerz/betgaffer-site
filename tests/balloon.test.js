@@ -250,7 +250,7 @@ describe('clamp, size class and storage keys', () => {
     assert.equal(storageKey('compact'), 'bg.balloon.pos.sm');
     assert.notEqual(POS_KEYS.desktop, POS_KEYS.compact);
     assert.throws(() => storageKey('tablet'), TypeError);
-    assert.deepEqual(NOMINAL, { desktop: 124, compact: 64 });
+    assert.deepEqual(NOMINAL, { desktop: 124, compact: 84 });
   });
 
   test('floorTop: GAP under the topbar, or under the toolbar while it is stuck there', () => {
@@ -924,7 +924,7 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(CSS, /touch-action:\s*none/);
     assert.match(CSS, /conic-gradient\([^;{}]*var\(--pct/);
     assert.match(CSS, /prefers-reduced-motion/);
-    assert.match(CSS, /64px/);
+    assert.match(CSS, /84px/);
     assert.doesNotMatch(CSS, /data-auth/);
   });
 
@@ -1001,7 +1001,7 @@ describe('balloon.js and balloon-model.js: source', () => {
 
 // ------------------------------------------------------------------ thousands separators (BRAND 2026-10-12)
 
-// The small ring is 64px wide. A fraction written with a thousands separator ("863 of 1,018",
+// The small ring is 84px wide. A fraction written with a thousands separator ("863 of 1,018",
 // "1,131 of 1,308") is too wide for it at any readable size (even "863 of 1,018" on one line touches
 // the arc), so balloon.js writes every fraction that contains a comma as two words and the stylesheet
 // stacks them in the small ring ("1,131 of" over "1,308"); the large ring keeps one line. The text
@@ -1057,21 +1057,21 @@ describe('balloon.js: a separated four- or five-digit fraction in the ring', () 
   test('balloon.css stacks the words only in the small ring, at the long-fraction size', () => {
     assert.match(SHEET, /\.bg-balloon\[data-size="compact"\] \.bg-balloon__w\{ display:block; \}/);
     assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\.bg-balloon__w/, 'the large ring keeps the fraction on one line');
-    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__frac,\s*\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__pct--frac\{ font-size:8px;/);
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__frac,\s*\.bg-balloon\[data-size="compact"\]\[data-long\] \.bg-balloon__pct--frac\{ font-size:10.5px;/);
     for (const a of [acc(1131, 177, 86.47), acc(10081, 2073, 82.94), acc(1200, 0, 100)]) assert.equal(ringOf(a, 390).getAttribute('data-long'), '');
   });
 
   test('a stacked fraction is marked (data-stacked) and the small ring steps its percentage down a size', () => {
-    // three lines are taller than two: at 13px the percentage's corners would touch the arc
+    // three lines are taller than two: at 17px the percentage's corners would touch the arc
     for (const a of [acc(1131, 177, 86.47), acc(10081, 2073, 82.94), acc(1200, 0, 100)]) {
       for (const width of [390, 1280]) assert.equal(ringOf(a, width).getAttribute('data-stacked'), '', `${a.won} at ${width}`);
     }
     for (const a of [acc(24, 5, 82.76), acc(240, 50, 82.76), acc(998, 1, 99.9), acc(999, 0, 100)]) assert.equal(ringOf(a, 390).getAttribute('data-stacked'), null, String(a.won));
-    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct:not\(\.bg-balloon__pct--frac\)\{ font-size:12px; \}/);
-    assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct:not(') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:13px; }'), 'after the 13px rule, so it wins');
+    assert.match(SHEET, /\.bg-balloon\[data-size="compact"\]\[data-stacked\] \.bg-balloon__pct:not\(\.bg-balloon__pct--frac\)\{ font-size:15.5px; \}/);
+    assert.ok(SHEET.indexOf('[data-stacked] .bg-balloon__pct:not(') > SHEET.indexOf('[data-size="compact"] .bg-balloon__pct{ font-size:17px; }'), 'after the 17px rule, so it wins');
     // A day withheld to its fraction (rounds to 100 without every pick landing) has one that IS a
     // .bg-balloon__pct (with --frac): a bare selector would match it too and, coming later at the
-    // same specificity, undo its 8px long-fraction size.
+    // same specificity, undo its 10.5px long-fraction size.
     assert.doesNotMatch(SHEET, /\[data-stacked\] \.bg-balloon__pct\s*[{,]/, 'the step-down never reaches .bg-balloon__pct--frac');
     assert.equal(ringOf(acc(1199, 1, 99.995), 390).querySelector('.bg-balloon__pct--frac').className, 'bg-balloon__pct bg-balloon__pct--frac', 'premise: that fraction carries both classes');
     assert.doesNotMatch(SHEET, /\[data-size="desktop"\][^{]*\[data-stacked\]/, 'the large ring is unchanged');

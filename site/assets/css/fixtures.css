@@ -82,35 +82,62 @@
 }
 .ring__meta{ font-size:11px; color:var(--muted); }
 
-/* ── 2b. CONFETTI (operator, 2026-10-27) ──────────────────────────────────────
-   A 10-second celebration when today's ring reads 100% (stale.js). 36 identical
-   pieces; :nth-child gives each its left position, colour, fall time and start
-   delay, so JS never sets a style= or .style.property (CSP: style-src has no
-   'unsafe-inline'). The 12-step pattern repeats 3x (36 pieces); delays 0-6.6s
-   plus a ~2.6-3.8s fall keep the shower going for the full 10s.
+/* ── 2b. A PERFECT DAY: CONFETTI + THE FLAGSHIP LINE (operator, 2026-10-27) ───
+   stale.js, when today's pill reads 100.0%: 96 pieces burst up out of that pill and
+   fall past the bottom of the screen for 10 seconds. stale.js sets only --cx/--cy
+   (the pill's centre) through CSSOM, never a style attribute (CSP: style-src has no
+   'unsafe-inline'); each piece's spread, rise, spin, colour, shape and timing come
+   from its DOM order via :nth-child. No measurable origin: the top centre.
+   Timing: a 24-piece burst (the second dozen narrower, a beat later), then six
+   12-piece waves; the last starts by 7.12s and lands by 9.92s, before stale.js
+   removes the layer at 10s. Transform only: fill-mode both holds scale(0) through
+   each piece's delay, so nothing sits on the pill before its turn.
    ─────────────────────────────────────────────────────────────────────────── */
-.confetti{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:999; }
+.confetti{ --cx:50%; --cy:0px; position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:999; }
 .confetti-piece{
-  position:absolute; top:-16px; width:8px; height:14px; border-radius:2px;
-  animation-name:confetti-fall; animation-timing-function:ease-in; animation-fill-mode:forwards;
+  --dx:0vw; --rise:-150px; --spin:560deg; --k:1; --wave:0s; --d:0s;
+  position:absolute; left:clamp(12px, var(--cx), calc(100% - 12px)); top:max(0px, var(--cy));
+  width:8px; height:13px; margin:-6px 0 0 -4px; border-radius:2px;
+  animation-name:confetti-burst; animation-delay:calc(var(--wave) + var(--d)); animation-fill-mode:both;
 }
-@keyframes confetti-fall{
-  0%{ transform:translateY(0) rotate(0deg); }
-  100%{ transform:translateY(105vh) rotate(680deg); }
+.confetti-piece:nth-child(odd){ --spin:-640deg; }
+.confetti-piece:nth-child(3n){ width:9px; height:9px; border-radius:50%; }
+.confetti-piece:nth-child(5n){ width:5px; height:15px; }
+@keyframes confetti-burst{
+  0%{ transform:translate(0, 0) rotate(0deg) scale(0); animation-timing-function:cubic-bezier(.15,.7,.35,1); }
+  20%{ transform:translate(calc(var(--dx) * var(--k) * .55), var(--rise)) rotate(calc(var(--spin) * .3)) scale(1); animation-timing-function:cubic-bezier(.45,0,.85,.55); }
+  100%{ transform:translate(calc(var(--dx) * var(--k)), 110vh) rotate(var(--spin)) scale(1); }
 }
+.confetti-piece:nth-child(12n+1){ --dx:-40vw; --rise:-150px; --d:0s; background:var(--accent); animation-duration:2.6s; }
+.confetti-piece:nth-child(12n+2){ --dx:34vw; --rise:-110px; --d:.05s; background:var(--accent-lo); animation-duration:2.4s; }
+.confetti-piece:nth-child(12n+3){ --dx:-26vw; --rise:-175px; --d:.1s; background:var(--ink); animation-duration:2.8s; }
+.confetti-piece:nth-child(12n+4){ --dx:20vw; --rise:-135px; --d:.02s; background:var(--accent-hi); animation-duration:2.5s; }
+.confetti-piece:nth-child(12n+5){ --dx:-12vw; --rise:-190px; --d:.08s; background:var(--accent-lo); animation-duration:2.7s; }
+.confetti-piece:nth-child(12n+6){ --dx:6vw; --rise:-160px; --d:.12s; background:var(--accent); animation-duration:2.3s; }
+.confetti-piece:nth-child(12n+7){ --dx:-4vw; --rise:-120px; --d:.04s; background:var(--accent-hi); animation-duration:2.6s; }
+.confetti-piece:nth-child(12n+8){ --dx:12vw; --rise:-185px; --d:.09s; background:var(--ink); animation-duration:2.4s; }
+.confetti-piece:nth-child(12n+9){ --dx:-20vw; --rise:-140px; --d:.06s; background:var(--accent); animation-duration:2.8s; }
+.confetti-piece:nth-child(12n+10){ --dx:27vw; --rise:-170px; --d:.11s; background:var(--accent-lo); animation-duration:2.5s; }
+.confetti-piece:nth-child(12n+11){ --dx:-33vw; --rise:-125px; --d:.03s; background:var(--accent-hi); animation-duration:2.7s; }
+.confetti-piece:nth-child(12n+12){ --dx:42vw; --rise:-155px; --d:.07s; background:var(--ink); animation-duration:2.3s; }
+.confetti-piece:nth-child(n+13):nth-child(-n+24){ --k:.55; }
+.confetti-piece:nth-child(n+13){ --wave:.15s; }
+.confetti-piece:nth-child(n+25){ --wave:1.2s; }
+.confetti-piece:nth-child(n+37){ --wave:2.4s; }
+.confetti-piece:nth-child(n+49){ --wave:3.6s; }
+.confetti-piece:nth-child(n+61){ --wave:4.8s; }
+.confetti-piece:nth-child(n+73){ --wave:6s; }
+.confetti-piece:nth-child(n+85){ --wave:7s; }
 @media (prefers-reduced-motion:reduce){ .confetti{ display:none; } }
-.confetti-piece:nth-child(12n+1){ left:4%; background:var(--accent); animation-duration:2.8s; animation-delay:0s; }
-.confetti-piece:nth-child(12n+2){ left:12%; background:var(--ink); animation-duration:3.4s; animation-delay:.6s; }
-.confetti-piece:nth-child(12n+3){ left:21%; background:var(--accent-hi); animation-duration:3.1s; animation-delay:1.2s; }
-.confetti-piece:nth-child(12n+4){ left:30%; background:var(--accent); animation-duration:3.8s; animation-delay:1.8s; }
-.confetti-piece:nth-child(12n+5){ left:39%; background:var(--ink); animation-duration:2.6s; animation-delay:2.4s; }
-.confetti-piece:nth-child(12n+6){ left:48%; background:var(--accent-hi); animation-duration:3.6s; animation-delay:3s; }
-.confetti-piece:nth-child(12n+7){ left:57%; background:var(--accent); animation-duration:3.2s; animation-delay:3.6s; }
-.confetti-piece:nth-child(12n+8){ left:66%; background:var(--ink); animation-duration:2.9s; animation-delay:4.2s; }
-.confetti-piece:nth-child(12n+9){ left:75%; background:var(--accent-hi); animation-duration:3.5s; animation-delay:4.8s; }
-.confetti-piece:nth-child(12n+10){ left:84%; background:var(--accent); animation-duration:2.7s; animation-delay:5.4s; }
-.confetti-piece:nth-child(12n+11){ left:92%; background:var(--ink); animation-duration:3.3s; animation-delay:6s; }
-.confetti-piece:nth-child(12n+12){ left:98%; background:var(--accent-hi); animation-duration:3s; animation-delay:6.6s; }
+
+/* The flagship line under the day's h1: a fact, at the size of the date line's neighbours. */
+.perfect-note{
+  align-self:flex-start; margin:2px 0;
+  padding:6px 12px; border:1px solid var(--accent); border-radius:var(--r-1);
+  background:var(--accent-quiet); color:var(--ink);
+  font-size:14px; font-weight:700; line-height:1.35;
+}
+.perfect-note b{ font-family:var(--font-mono); font-weight:800; color:var(--accent-hi); }
 
 /* ── 3. THE LIST: toolbar slot, day bar, one list by kickoff (spec §5) ─────── */
 /* The toolbar slot ships hidden and empty; predictions.js fills and reveals it.

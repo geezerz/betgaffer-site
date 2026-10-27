@@ -437,3 +437,66 @@ describe('day.js init on built stubs (fake DOM)', () => {
     assert.equal(doc.getElementById('day-root').textContent, before1);
   });
 });
+
+// ------------------------------------------------------------------ a perfect day (operator 2026-10-27)
+
+describe('a perfect day so far: confetti out of today\'s pill and the flagship line', () => {
+  // The two figures stale.js reads, as the build writes them (pillPct: only won === graded reads 100.0%).
+  const day = (fig, sub = '12 of 12') => `<html><body><main>
+    <nav class="day-pills"><ol><li><a class="day-pill" data-when="today" aria-label="Wednesday 7 October: ${sub} picks right, ${fig}">
+      <span class="day-pill__head"><span class="day-pill__rel" data-rel-day="2026-10-07" data-rel="pill" hidden></span></span>
+      <span class="day-pill__fig day-pill__fig--won">${fig}</span>
+      <span class="day-pill__sub">${sub} <span class="day-pill__sofar" data-rel-day="2026-10-07" data-rel="sofar" hidden></span></span></a></li></ol></nav>
+    <header class="day-head"><div class="day-head__title"><h1>Football predictions</h1><p class="day-head__date">Wed 7 Oct 2026</p></div></header>
+  </main></body></html>`;
+  const run = (html, nowMs = NOW) => {
+    const doc = fakeDocument(html);
+    const pill = doc.querySelector('.day-pill');
+    pill._rect = { left: 100, top: 150, width: 80, height: 60 };
+    const timers = [];
+    stale.init({ doc, nowMs, raf: sync, setTimer: (fn, ms) => timers.push([fn, ms]), now: () => nowMs });
+    return { doc, timers };
+  };
+
+  test('100.0% today: 96 pieces burst from the pill\'s centre (CSSOM only) and go after 10s', () => {
+    const { doc, timers } = run(day('100.0%'));
+    const host = doc.querySelector('.confetti');
+    assert.ok(host, 'the confetti layer is on the page');
+    assert.equal(host.getAttribute('aria-hidden'), 'true');
+    assert.equal(host.querySelectorAll('.confetti-piece').length, 96);
+    assert.equal(host.style.getPropertyValue('--cx'), '140px');
+    assert.equal(host.style.getPropertyValue('--cy'), '180px');
+    assert.equal(host.getAttribute('style'), null, 'never a style attribute (CSP)');
+    const [removeIt] = timers.find(([, ms]) => ms === stale.CONFETTI_MS);
+    removeIt();
+    assert.equal(doc.querySelector('.confetti'), null);
+  });
+
+  test('100.0% today: the flagship line sits in the day header, after the h1, and states the fraction', () => {
+    const { doc } = run(day('100.0%'));
+    const note = doc.querySelector('.day-head__title').querySelector('.perfect-note');
+    assert.ok(note);
+    assert.equal(note.textContent, 'Perfect so far today: 12 of 12 picks right 🔥');
+    const kids = doc.querySelector('.day-head__title').children.map((c) => c.className || c.localName);
+    assert.deepEqual(kids, ['h1', 'perfect-note', 'day-head__date']);
+  });
+
+  test('the flagship line goes at the next Lagos midnight (the day is no longer today)', () => {
+    const { doc, timers } = run(day('100.0%'), BEFORE_MIDNIGHT);
+    const [midnight] = timers.find(([, ms]) => ms === stale.msUntilLagosMidnight(BEFORE_MIDNIGHT) + 500);
+    midnight();
+    assert.equal(doc.querySelector('.perfect-note'), null);
+  });
+
+  test('no celebration on a day short of perfect, or once the day is not today', () => {
+    for (const [html, nowMs, why] of [
+      [day('91.7%', '11 of 12'), NOW, 'not perfect'],
+      [day('100.0%'), MIDNIGHT, 'yesterday by the visitor\'s clock'],
+      [day('100.0%'), FAR, 'long past'],
+    ]) {
+      const { doc } = run(html, nowMs);
+      assert.equal(doc.querySelector('.confetti'), null, why);
+      assert.equal(doc.querySelector('.perfect-note'), null, why);
+    }
+  });
+});
