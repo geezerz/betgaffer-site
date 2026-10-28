@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-26T21:10:02Z",
-    "grades_as_of": "2026-10-28T11:10:02Z",
+    "grades_as_of": "2026-10-28T13:10:02Z",
     "prev_hash": "sha256:63eaa1f324a0ba6ccd48ed3011598cd9374513f34e65d94f0b81e8ba497bdfc4",
     "picks_hash": "sha256:c40d6f4421c28749265d741c2d124beeac070975a8f0b7d84e789ef6d7dc74ae",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 216,
+        "won": 217,
         "lost": 34,
         "pushes": 10,
-        "graded": 250,
-        "pct": 86.4
+        "graded": 251,
+        "pct": 86.45
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -578,7 +578,7 @@
             "away": "FC Kharkiv",
             "home_id": 671589,
             "away_id": 2783,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_win_either_half",
                 "label": "Away Win Either Half",
@@ -591,8 +591,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626486,
