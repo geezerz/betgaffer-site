@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-28",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-27T21:10:02Z",
-    "grades_as_of": "2026-10-27T23:10:02Z",
+    "grades_as_of": "2026-10-28T01:10:02Z",
     "prev_hash": "sha256:b0c5e9b7c8e0fcaa33e721eddad537c207433a2dc49e19152147fd8755b208b6",
     "picks_hash": "sha256:b5272c934ac69e99eeda8b7b8a7bca2dcdab22dd5fd76468cb6dad5aeed1e9d3",
     "counts": {
@@ -14,10 +14,10 @@
     },
     "accuracy": {
         "won": 0,
-        "lost": 0,
+        "lost": 2,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 2,
+        "pct": 0.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Águilas Doradas",
             "home_id": 289,
             "away_id": 263,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148745,
@@ -64,7 +71,7 @@
             "away": "Goias",
             "home_id": 210,
             "away_id": 199,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -78,7 +85,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1669368,
@@ -89,7 +103,7 @@
             "away": "Flamengo U20",
             "home_id": 757711,
             "away_id": 2409,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -102,8 +116,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665245,
@@ -114,7 +135,7 @@
             "away": "Monagas SC",
             "home_id": 7191,
             "away_id": 7074,
-            "status": "PST",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -127,7 +148,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -139,7 +160,7 @@
             "away": "Junior",
             "home_id": 258,
             "away_id": 247,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
