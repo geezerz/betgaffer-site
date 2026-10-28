@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-25T21:10:01Z",
-    "grades_as_of": "2026-10-27T19:10:01Z",
+    "grades_as_of": "2026-10-28T03:10:02Z",
     "prev_hash": "sha256:efffc4157e7a843bfd86f9a46673f8ddc2e74396cc8263698d1a4ea80d024f36",
     "picks_hash": "sha256:63eaa1f324a0ba6ccd48ed3011598cd9374513f34e65d94f0b81e8ba497bdfc4",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 127,
+        "won": 128,
         "lost": 17,
         "pushes": 3,
-        "graded": 144,
-        "pct": 88.19
+        "graded": 145,
+        "pct": 88.28
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2829,7 +2829,7 @@
             "away": "Fountain Gate",
             "home_id": 621340,
             "away_id": 621341,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -2842,8 +2842,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1598919,
