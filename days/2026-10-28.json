@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-28",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-27T21:10:02Z",
-    "grades_as_of": "2026-10-29T19:10:02Z",
+    "grades_as_of": "2026-10-30T01:10:02Z",
     "prev_hash": "sha256:3d1e0df67ded8b888853683d62bdbe85fde03e2cefb62755393abe3419bb3852",
     "picks_hash": "sha256:912744ff76c76ecf97e0751ab342087ce3bcda1f03e783ef752e241957bad176",
     "counts": {
@@ -14,10 +14,10 @@
     },
     "accuracy": {
         "won": 258,
-        "lost": 38,
+        "lost": 39,
         "pushes": 12,
-        "graded": 296,
-        "pct": 87.16
+        "graded": 297,
+        "pct": 86.87
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1280,7 +1280,7 @@
             "away": "Wolves U18",
             "home_id": 574037,
             "away_id": 574039,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1293,8 +1293,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1379217,

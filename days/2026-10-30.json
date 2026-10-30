@@ -3,21 +3,21 @@
     "lagos_day": "2026-10-30",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-29T21:10:03Z",
-    "grades_as_of": "2026-10-29T23:10:02Z",
+    "grades_as_of": "2026-10-30T01:10:02Z",
     "prev_hash": "sha256:6d89a81c43b31c4005e6f88ffb0f107e65d41dfba0b11f1698e953ec44e500ea",
-    "picks_hash": "sha256:c83ed4efcf79e7e28f89c7ca471a130eac16d946a69b82978c6f52449b7ebfd0",
+    "picks_hash": "sha256:865b83793e9514155b1d4c20d745932357876befc3bd9d236ad8bc4a1c7b2234",
     "counts": {
         "fixtures": 413,
-        "priced": 411,
-        "recommended": 411,
+        "priced": 413,
+        "recommended": 413,
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Flamengo",
             "home_id": 188,
             "away_id": 208,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 145265,
@@ -64,7 +71,7 @@
             "away": "Fortaleza FC",
             "home_id": 262,
             "away_id": 285,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -89,7 +96,7 @@
             "away": "Danubio",
             "home_id": 799466,
             "away_id": 4648,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -114,7 +121,7 @@
             "away": "Deportivo San Pedro",
             "home_id": 9235,
             "away_id": 9116,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -139,7 +146,7 @@
             "away": "LDU de Quito",
             "home_id": 143,
             "away_id": 144,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -164,7 +171,7 @@
             "away": "Atletico Paranaense",
             "home_id": 211,
             "away_id": 216,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -189,7 +196,7 @@
             "away": "Comerciantes Unidos",
             "home_id": 4200,
             "away_id": 4202,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -214,7 +221,7 @@
             "away": "Mineros de Zacatecas",
             "home_id": 9038,
             "away_id": 3250,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -239,7 +246,7 @@
             "away": "Walter Ferretti",
             "home_id": 763936,
             "away_id": 763938,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -5490,12 +5497,19 @@
             "home_id": 917289,
             "away_id": 917277,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 84,
+                "price": 1.19,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-30T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -8808,12 +8822,19 @@
             "home_id": 917282,
             "away_id": 1027510,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 87,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-10-30T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
