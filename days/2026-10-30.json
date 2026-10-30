@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-30",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-29T21:10:03Z",
-    "grades_as_of": "2026-10-30T22:15:02Z",
+    "grades_as_of": "2026-10-30T23:10:04Z",
     "prev_hash": "sha256:b4a2bea9732d518a7bedcbdff266de84b1e8e8e71be90b9172224667f14fb3e9",
     "picks_hash": "sha256:4b71fb2fc78d884c3cb2989a6259d0dc4ddac534f0bb965b41d9266112cfb904",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 258,
+        "won": 263,
         "lost": 39,
         "pushes": 11,
-        "graded": 297,
-        "pct": 86.87
+        "graded": 302,
+        "pct": 87.09
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -12129,7 +12129,7 @@
             "away": "H&W Welders",
             "home_id": 3156,
             "away_id": 2978,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "btts_yes",
                 "label": "Both Teams to Score",
@@ -12142,7 +12142,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -12154,7 +12154,7 @@
             "away": "Strabane Athletic",
             "home_id": 5387,
             "away_id": 3057,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -12167,8 +12167,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149177,
@@ -12403,7 +12410,7 @@
             "away": "UTS Rabat",
             "home_id": 8282,
             "away_id": 74333,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -12416,8 +12423,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1678393,
@@ -12485,7 +12499,7 @@
             "away": "Sporting CP",
             "home_id": 4370,
             "away_id": 567,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_win_either_half",
                 "label": "Away Win Either Half",
@@ -12498,8 +12512,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626410,
@@ -12510,7 +12531,7 @@
             "away": "Juvenes / Dogana",
             "home_id": 766387,
             "away_id": 766384,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -12523,8 +12544,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 145244,
@@ -12535,7 +12563,7 @@
             "away": "Jaguares",
             "home_id": 260,
             "away_id": 254,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -12548,8 +12576,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382434,
@@ -12560,7 +12595,7 @@
             "away": "Correcaminos UAT II",
             "home_id": 760538,
             "away_id": 760500,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -12610,7 +12645,7 @@
             "away": "Novo Esporte Clube",
             "home_id": 919842,
             "away_id": 919850,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -12635,7 +12670,7 @@
             "away": "Gimnasia L.P.",
             "home_id": 299,
             "away_id": 236,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -12660,7 +12695,7 @@
             "away": "Tigre",
             "home_id": 234,
             "away_id": 284,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -12685,7 +12720,7 @@
             "away": "Universidad de Concepcion",
             "home_id": 4452,
             "away_id": 5028,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -12710,7 +12745,7 @@
             "away": "Union La Calera",
             "home_id": 5026,
             "away_id": 9056,
-            "status": "1H",
+            "status": "HT",
             "pick": {
                 "market": "home_over_0_5",
                 "label": "Home Over 0.5 Goals",
@@ -12735,7 +12770,7 @@
             "away": "Independiente Petrolero",
             "home_id": 177,
             "away_id": 176,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -12760,7 +12795,7 @@
             "away": "Ponte Preta",
             "home_id": 280,
             "away_id": 197,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -12785,7 +12820,7 @@
             "away": "2 de Mayo",
             "home_id": 301691,
             "away_id": 594267,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -12810,7 +12845,7 @@
             "away": "Rubio NU",
             "home_id": 593823,
             "away_id": 599069,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -12835,7 +12870,7 @@
             "away": "Venda Nova",
             "home_id": 919852,
             "away_id": 919846,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -12860,7 +12895,7 @@
             "away": "Pittsburgh Riverhounds",
             "home_id": 1708,
             "away_id": 1705,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",

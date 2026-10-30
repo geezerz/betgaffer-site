@@ -3,13 +3,13 @@
     "lagos_day": "2026-10-31",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-30T21:10:02Z",
-    "grades_as_of": "2026-10-30T22:15:02Z",
+    "grades_as_of": "2026-10-30T23:10:04Z",
     "prev_hash": "sha256:4b71fb2fc78d884c3cb2989a6259d0dc4ddac534f0bb965b41d9266112cfb904",
-    "picks_hash": "sha256:e47e0c1ba9b057aae76bbf711d3abe0ada9290eeeb898ed06e3c69320798f62e",
+    "picks_hash": "sha256:692ab9f7ecf0bd3554b66293b8527f56702002d9b9475961e35963cc7961bbdc",
     "counts": {
         "fixtures": 1634,
         "priced": 1620,
-        "recommended": 1594,
+        "recommended": 1596,
         "markets_per_fixture": 101
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Mirassol",
             "home_id": 212,
             "away_id": 278,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -64,7 +64,7 @@
             "away": "Rhode Island",
             "home_id": 1702,
             "away_id": 1742,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -89,13 +89,20 @@
             "away": "Chattanooga Red Wolves",
             "home_id": 4277,
             "away_id": 4265,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 83,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-10-30T23:10:04Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -39892,12 +39899,19 @@
             "home_id": 4202,
             "away_id": 4203,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 81,
+                "price": 1.21,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-10-30T23:10:04Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
