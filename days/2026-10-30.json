@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-30",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-29T21:10:03Z",
-    "grades_as_of": "2026-10-31T01:10:03Z",
+    "grades_as_of": "2026-10-31T03:10:02Z",
     "prev_hash": "sha256:b4a2bea9732d518a7bedcbdff266de84b1e8e8e71be90b9172224667f14fb3e9",
     "picks_hash": "sha256:4b71fb2fc78d884c3cb2989a6259d0dc4ddac534f0bb965b41d9266112cfb904",
     "counts": {
@@ -13231,7 +13231,7 @@
             "away": "Pittsburgh Riverhounds",
             "home_id": 1708,
             "away_id": 1705,
-            "status": "ET",
+            "status": "AET",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -13245,7 +13245,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 1,
+                "aet_away": 0,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
