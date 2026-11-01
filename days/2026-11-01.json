@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-01",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-31T21:10:02Z",
-    "grades_as_of": "2026-10-31T23:10:02Z",
+    "grades_as_of": "2026-11-01T01:10:02Z",
     "prev_hash": "sha256:d0c2a24f5726482c98404beb910df94bf21adb27c60c780db8556d2e242e8915",
-    "picks_hash": "sha256:c382010c08c6c31cb4e7abffecd6ef1a722c70c099e224690c76f78adefc5b7e",
+    "picks_hash": "sha256:6e255d6a1ae7cc7d9c6fadaa1608e8742a618a0e19f0fd590729e3c3833ab132",
     "counts": {
         "fixtures": 1141,
         "priced": 1140,
-        "recommended": 1122,
+        "recommended": 1124,
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 0,
+        "won": 2,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 2,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Tigres UANL",
             "home_id": 3256,
             "away_id": 4194,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -64,7 +64,7 @@
             "away": "Junior",
             "home_id": 288,
             "away_id": 247,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -77,8 +77,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1243152,
@@ -89,7 +96,7 @@
             "away": "Lexington W",
             "home_id": 613949,
             "away_id": 613950,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -102,8 +109,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1623898,
@@ -139,7 +153,7 @@
             "away": "Alianza FC",
             "home_id": 598896,
             "away_id": 5169,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -164,7 +178,7 @@
             "away": "Juticalpa",
             "home_id": 5987,
             "away_id": 605770,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -189,7 +203,7 @@
             "away": "Monagas SC",
             "home_id": 8450,
             "away_id": 7074,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -214,7 +228,7 @@
             "away": "Mineros de Fresnillo",
             "home_id": 760569,
             "away_id": 760521,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -289,7 +303,7 @@
             "away": "Corinthians W",
             "home_id": 2388,
             "away_id": 2378,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -314,7 +328,7 @@
             "away": "Instituto Cordoba",
             "home_id": 237,
             "away_id": 287,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -339,7 +353,7 @@
             "away": "Municipal Limeño",
             "home_id": 9300,
             "away_id": 9296,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -364,7 +378,7 @@
             "away": "CDS Tampico Madero",
             "home_id": 2984,
             "away_id": 3274,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -389,7 +403,7 @@
             "away": "Monarcas",
             "home_id": 5225,
             "away_id": 3272,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -414,7 +428,7 @@
             "away": "Tapatío",
             "home_id": 9133,
             "away_id": 2982,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -439,7 +453,7 @@
             "away": "Chapulineros",
             "home_id": 760503,
             "away_id": 760738,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -464,7 +478,7 @@
             "away": "Auckland City",
             "home_id": 7607,
             "away_id": 583221,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -539,7 +553,7 @@
             "away": "Atlante FC",
             "home_id": 2986,
             "away_id": 2875,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -3726,12 +3740,19 @@
             "home_id": 757,
             "away_id": 75605,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 81,
+                "price": 1.23,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-01T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -4580,12 +4601,19 @@
             "home_id": 4674,
             "away_id": 524,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_score_2h",
+                "label": "Away Scores 2nd Half",
+                "pct": 83,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-01T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {

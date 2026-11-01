@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-31",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-30T21:10:02Z",
-    "grades_as_of": "2026-10-31T23:10:02Z",
+    "grades_as_of": "2026-11-01T01:10:02Z",
     "prev_hash": "sha256:e2a80c6de741f29c0012b9cf6c7b3159b149050c9b2f99db836a99388b121dfe",
     "picks_hash": "sha256:d0c2a24f5726482c98404beb910df94bf21adb27c60c780db8556d2e242e8915",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 1021,
-        "lost": 215,
-        "pushes": 21,
-        "graded": 1236,
-        "pct": 82.61
+        "won": 1163,
+        "lost": 243,
+        "pushes": 25,
+        "graded": 1406,
+        "pct": 82.72
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1357,7 +1357,7 @@
             "away": "Sydney FC W",
             "home_id": 50021,
             "away_id": 50012,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1370,8 +1370,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1630209,
@@ -2438,7 +2445,7 @@
             "away": "Adelaide United W",
             "home_id": 50010,
             "away_id": 50018,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -2451,8 +2458,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 165054,
@@ -6276,7 +6290,7 @@
             "away": "Bukovyna",
             "home_id": 3565,
             "away_id": 2815,
-            "status": "INT",
+            "status": "ABD",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -6289,7 +6303,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -6493,7 +6507,7 @@
             "away": "Pirin Razlog",
             "home_id": 7432,
             "away_id": 6142,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -6506,8 +6520,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1188550,
@@ -8309,7 +8330,7 @@
             "away": "Pogon Szczecin W",
             "home_id": 582,
             "away_id": 900,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -8322,8 +8343,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148999,
@@ -9191,7 +9219,7 @@
             "away": "Sleza Wroclaw W",
             "home_id": 9152,
             "away_id": 9111,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -9204,8 +9232,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 709728,
@@ -9241,7 +9276,7 @@
             "away": "FK Minyor Pernik",
             "home_id": 8422,
             "away_id": 5822,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -9254,8 +9289,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138027,
@@ -9266,7 +9308,7 @@
             "away": "Belasitsa",
             "home_id": 5610,
             "away_id": 5578,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -9279,8 +9321,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138028,
@@ -9291,7 +9340,7 @@
             "away": "Natsional Sofia",
             "home_id": 565006,
             "away_id": 565007,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -9304,8 +9353,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138029,
@@ -9316,7 +9372,7 @@
             "away": "Oborishte",
             "home_id": 5571,
             "away_id": 5364,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -9329,8 +9385,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138030,
@@ -9341,7 +9404,7 @@
             "away": "Bansko",
             "home_id": 564942,
             "away_id": 301900,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -9354,8 +9417,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138031,
@@ -10127,7 +10197,7 @@
             "away": "Widzew II",
             "home_id": 3567,
             "away_id": 3585,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -10140,8 +10210,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1190198,
@@ -10152,7 +10229,7 @@
             "away": "Olimpia Elbląg",
             "home_id": 9170,
             "away_id": 3776,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -10165,8 +10242,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1191840,
@@ -10273,7 +10357,7 @@
             "away": "Chemik Bydgoszcz",
             "home_id": 3782,
             "away_id": 3576,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -10286,8 +10370,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1192654,
@@ -10330,7 +10421,7 @@
             "away": "Zaglebie Sosnowiec",
             "home_id": 7345,
             "away_id": 3001,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -10343,8 +10434,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1192658,
@@ -10355,7 +10453,7 @@
             "away": "Zagłębie Lubin II",
             "home_id": 3478,
             "away_id": 3473,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -10368,8 +10466,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1193370,
@@ -10380,7 +10485,7 @@
             "away": "Naprzód",
             "home_id": 3537,
             "away_id": 3689,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -10393,8 +10498,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201641,
@@ -10405,7 +10517,7 @@
             "away": "Banská Byst II",
             "home_id": 4309,
             "away_id": 7481,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -10418,8 +10530,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201643,
@@ -10430,7 +10549,7 @@
             "away": "Fomat Martin",
             "home_id": 7004,
             "away_id": 7314,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -10443,8 +10562,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201645,
@@ -10455,7 +10581,7 @@
             "away": "Oravské Veselé",
             "home_id": 3022,
             "away_id": 8471,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -10468,8 +10594,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201646,
@@ -10480,7 +10613,7 @@
             "away": "Novohrad Lučenec",
             "home_id": 5133,
             "away_id": 7841,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -10493,8 +10626,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201649,
@@ -10505,7 +10645,7 @@
             "away": "Baník Kalinovo",
             "home_id": 3839,
             "away_id": 7464,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -10518,8 +10658,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1203130,
@@ -10555,7 +10702,7 @@
             "away": "Trenčín II",
             "home_id": 3712,
             "away_id": 4308,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -10568,8 +10715,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1203132,
@@ -11558,14 +11712,21 @@
             "away": "Zvijezda 09",
             "home_id": 9178,
             "away_id": 6067,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 5,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372927,
@@ -11576,7 +11737,7 @@
             "away": "Cherno more II",
             "home_id": 6452,
             "away_id": 8010,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -11590,7 +11751,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372928,
@@ -11601,7 +11769,7 @@
             "away": "Septemvri Dragoevo",
             "home_id": 5065,
             "away_id": 758250,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -11614,8 +11782,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372929,
@@ -11626,7 +11801,7 @@
             "away": "Olympic Varna",
             "home_id": 758111,
             "away_id": 758160,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_win_either_half",
                 "label": "Home Win Either Half",
@@ -11639,8 +11814,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372930,
@@ -11651,7 +11833,7 @@
             "away": "Chernolomets 1919",
             "home_id": 5068,
             "away_id": 6609,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -11664,8 +11846,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372931,
@@ -11676,7 +11865,7 @@
             "away": "Botev Novi Pazar",
             "home_id": 758114,
             "away_id": 6627,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -11689,8 +11878,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372932,
@@ -11701,7 +11897,7 @@
             "away": "Aksakovo",
             "home_id": 758113,
             "away_id": 758128,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -11714,8 +11910,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1372934,
@@ -11726,7 +11929,7 @@
             "away": "Chernomorets Balchik",
             "home_id": 758248,
             "away_id": 7346,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -11739,8 +11942,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1377588,
@@ -12281,7 +12491,7 @@
             "away": "RB Leipzig W",
             "home_id": 73309,
             "away_id": 73310,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -12294,8 +12504,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1630152,
@@ -12306,7 +12523,7 @@
             "away": "Union Berlin W",
             "home_id": 73330,
             "away_id": 73331,
-            "status": "NS",
+            "status": "AET",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -12319,8 +12536,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": 3,
+                "aet_away": 4,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1666202,
@@ -13565,7 +13789,7 @@
             "away": "Bałtyk Koszalin",
             "home_id": 7761,
             "away_id": 7954,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -13578,8 +13802,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1193371,
@@ -13590,7 +13821,7 @@
             "away": "Czarni Połaniec",
             "home_id": 3571,
             "away_id": 3472,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -13603,8 +13834,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1193377,
@@ -13647,7 +13885,7 @@
             "away": "Spišská Nová Ves",
             "home_id": 2804,
             "away_id": 3310,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -13660,8 +13898,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201612,
@@ -13672,7 +13917,7 @@
             "away": "Stará Ľubovňa",
             "home_id": 6047,
             "away_id": 7575,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -13685,8 +13930,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201616,
@@ -13697,7 +13949,7 @@
             "away": "MSK Tesla Stropkov",
             "home_id": 8669,
             "away_id": 2993,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -13710,8 +13962,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201618,
@@ -13722,7 +13981,7 @@
             "away": "Slávia TU Košice",
             "home_id": 8957,
             "away_id": 7195,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -13735,8 +13994,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201620,
@@ -13747,7 +14013,7 @@
             "away": "Poprad",
             "home_id": 7768,
             "away_id": 2831,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13760,8 +14026,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201622,
@@ -13772,7 +14045,7 @@
             "away": "Partizán Bardejov",
             "home_id": 3701,
             "away_id": 3457,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -13785,8 +14058,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1201624,
@@ -13797,7 +14077,7 @@
             "away": "Lipany",
             "home_id": 5968,
             "away_id": 3370,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13810,8 +14090,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1211498,
@@ -13854,7 +14141,7 @@
             "away": "GOŠK Gabela",
             "home_id": 8655,
             "away_id": 5996,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13867,8 +14154,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213466,
@@ -13879,7 +14173,7 @@
             "away": "Zvijezda Gradačac",
             "home_id": 595652,
             "away_id": 4039,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13892,8 +14186,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 6,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213467,
@@ -13904,7 +14205,7 @@
             "away": "Sloboda Tuzla",
             "home_id": 9205,
             "away_id": 5137,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13917,8 +14218,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213468,
@@ -13929,7 +14237,7 @@
             "away": "TOŠK Tešanj",
             "home_id": 596988,
             "away_id": 278170,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -13942,8 +14250,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213469,
@@ -13954,7 +14269,7 @@
             "away": "Radnik Hadžići",
             "home_id": 597002,
             "away_id": 8656,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -13967,8 +14282,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213471,
@@ -13979,7 +14301,7 @@
             "away": "Budućnost Banovići",
             "home_id": 9100,
             "away_id": 7578,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -13992,8 +14314,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1213472,
@@ -14004,7 +14333,7 @@
             "away": "Travnik",
             "home_id": 8522,
             "away_id": 595667,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -14017,8 +14346,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270829,
@@ -14029,7 +14365,7 @@
             "away": "Zagorets",
             "home_id": 5589,
             "away_id": 4343,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -14042,8 +14378,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270830,
@@ -14054,7 +14397,7 @@
             "away": "Rodopa Smolyan",
             "home_id": 3698,
             "away_id": 621905,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -14067,8 +14410,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270831,
@@ -14079,7 +14429,7 @@
             "away": "Levski Karlovo",
             "home_id": 5239,
             "away_id": 3696,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -14092,8 +14442,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270832,
@@ -14104,7 +14461,7 @@
             "away": "Gigant Saedinenie",
             "home_id": 7829,
             "away_id": 5960,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -14117,8 +14474,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270833,
@@ -14129,7 +14493,7 @@
             "away": "Rozova dolina",
             "home_id": 3995,
             "away_id": 3699,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -14142,8 +14506,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270834,
@@ -14154,7 +14525,7 @@
             "away": "Sayana Haskovo",
             "home_id": 5025,
             "away_id": 7975,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -14167,8 +14538,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270835,
@@ -14179,7 +14557,7 @@
             "away": "Maritsa Plovdiv",
             "home_id": 621907,
             "away_id": 5577,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -14192,8 +14570,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270836,
@@ -14204,7 +14589,7 @@
             "away": "Spartak Plovdiv",
             "home_id": 5911,
             "away_id": 8470,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -14217,8 +14602,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1290877,
@@ -14416,7 +14808,7 @@
             "away": "Partizan",
             "home_id": 7424,
             "away_id": 6363,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -14429,8 +14821,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626908,
@@ -14459,7 +14858,7 @@
             "away": "Akademik Svishtov",
             "home_id": 758181,
             "away_id": 7196,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -14472,8 +14871,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626910,
@@ -14484,7 +14890,7 @@
             "away": "Lokomotiv Mezdra",
             "home_id": 758179,
             "away_id": 3123,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -14497,8 +14903,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626911,
@@ -14509,7 +14922,7 @@
             "away": "Yantra Polski Trambesh",
             "home_id": 758180,
             "away_id": 6207,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -14522,8 +14935,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626912,
@@ -14534,7 +14954,7 @@
             "away": "Etar VT II",
             "home_id": 758183,
             "away_id": 5062,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -14547,8 +14967,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1629156,
@@ -14559,7 +14986,7 @@
             "away": "Olimpia Cluj W",
             "home_id": 2107,
             "away_id": 623,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -14572,8 +14999,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631066,
@@ -16965,7 +17399,7 @@
             "away": "Kyustendil",
             "home_id": 564943,
             "away_id": 7433,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -16978,8 +17412,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1141353,
@@ -18009,7 +18450,7 @@
             "away": "Fortuna Ålesund W",
             "home_id": 583314,
             "away_id": 249916,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -18022,8 +18463,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1189491,
@@ -18034,7 +18482,7 @@
             "away": "Hønefoss W",
             "home_id": 249974,
             "away_id": 249913,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -18048,7 +18496,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1189492,
@@ -18059,7 +18514,7 @@
             "away": "Bodø / Glimt W",
             "home_id": 249976,
             "away_id": 249923,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -18072,8 +18527,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1190193,
@@ -19546,7 +20008,7 @@
             "away": "NK Ormoz",
             "home_id": 6442,
             "away_id": 622931,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -19559,8 +20021,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1301890,
@@ -19596,7 +20065,7 @@
             "away": "Dobrovce",
             "home_id": 7548,
             "away_id": 622935,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -19609,8 +20078,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1301892,
@@ -19621,7 +20097,7 @@
             "away": "Fužinar",
             "home_id": 7494,
             "away_id": 5843,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -19634,8 +20110,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1301893,
@@ -19646,7 +20129,7 @@
             "away": "Odranci",
             "home_id": 7711,
             "away_id": 6892,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -19659,8 +20142,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1301894,
@@ -19671,7 +20161,7 @@
             "away": "Limbuš Pekre",
             "home_id": 622934,
             "away_id": 622932,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -19684,8 +20174,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302828,
@@ -19696,7 +20193,7 @@
             "away": "Adria",
             "home_id": 8475,
             "away_id": 630357,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -19709,8 +20206,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302830,
@@ -19721,7 +20225,7 @@
             "away": "Zidgrad Idrija",
             "home_id": 622943,
             "away_id": 622946,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -19734,8 +20238,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302831,
@@ -19746,7 +20257,7 @@
             "away": "Litija",
             "home_id": 622947,
             "away_id": 622944,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -19759,8 +20270,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302832,
@@ -19771,7 +20289,7 @@
             "away": "Šobec Lesce",
             "home_id": 630356,
             "away_id": 622949,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -19784,8 +20302,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302833,
@@ -19796,7 +20321,7 @@
             "away": "Svoboda",
             "home_id": 276774,
             "away_id": 622945,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -19809,8 +20334,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1302834,
@@ -19821,7 +20353,7 @@
             "away": "Dob",
             "home_id": 622942,
             "away_id": 7572,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -19834,8 +20366,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1313030,
@@ -19993,7 +20532,7 @@
             "away": "Famos Vojkovići",
             "home_id": 755143,
             "away_id": 7566,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -20006,8 +20545,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1366436,
@@ -20018,7 +20564,7 @@
             "away": "Velež Nevesinje",
             "home_id": 755142,
             "away_id": 8340,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -20031,8 +20577,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1366437,
@@ -20068,7 +20621,7 @@
             "away": "FK Romanija Pale",
             "home_id": 755145,
             "away_id": 546770,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -20081,8 +20634,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1380203,
@@ -20125,7 +20685,7 @@
             "away": "Viitorul Onesti",
             "home_id": 7375,
             "away_id": 585417,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -20138,8 +20698,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1388712,
@@ -20150,7 +20717,7 @@
             "away": "Ceahlăul Piatra Neamţ",
             "home_id": 7376,
             "away_id": 6397,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -20163,8 +20730,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1388713,
@@ -20175,7 +20749,7 @@
             "away": "Gheorgheni",
             "home_id": 585533,
             "away_id": 585364,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -20188,8 +20762,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1389460,
@@ -20200,7 +20781,7 @@
             "away": "Baicoi",
             "home_id": 585519,
             "away_id": 585522,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -20213,8 +20794,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1389461,
@@ -20225,7 +20813,7 @@
             "away": "ACS Mediaş 2022",
             "home_id": 3771,
             "away_id": 7950,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -20238,8 +20826,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1389462,
@@ -20250,7 +20845,7 @@
             "away": "Corona Braşov",
             "home_id": 585536,
             "away_id": 5127,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -20263,8 +20858,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390284,
@@ -20275,7 +20877,7 @@
             "away": "Râmnicu Sărat",
             "home_id": 8108,
             "away_id": 281503,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -20288,8 +20890,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390285,
@@ -20300,7 +20909,7 @@
             "away": "Pucioasa",
             "home_id": 4000,
             "away_id": 7478,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -20313,8 +20922,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 7,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390286,
@@ -20325,7 +20941,7 @@
             "away": "Flacăra Moreni",
             "home_id": 585535,
             "away_id": 585418,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -20338,8 +20954,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 6,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390288,
@@ -20350,7 +20973,7 @@
             "away": "Blejoi",
             "home_id": 765611,
             "away_id": 5284,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -20363,8 +20986,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390715,
@@ -20375,7 +21005,7 @@
             "away": "Dunarea Calarasi",
             "home_id": 8428,
             "away_id": 3534,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -20388,8 +21018,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390716,
@@ -20400,7 +21037,7 @@
             "away": "Agigea",
             "home_id": 585397,
             "away_id": 585361,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -20413,8 +21050,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390717,
@@ -20425,7 +21069,7 @@
             "away": "Portul Constanta",
             "home_id": 585411,
             "away_id": 765658,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -20438,8 +21082,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390718,
@@ -20450,7 +21101,7 @@
             "away": "Înainte Modelu",
             "home_id": 585410,
             "away_id": 8489,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -20463,8 +21114,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1390719,
@@ -20475,7 +21133,7 @@
             "away": "Sporting Lieşti",
             "home_id": 303495,
             "away_id": 585402,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -20488,8 +21146,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1391274,
@@ -20500,7 +21165,7 @@
             "away": "Alexandria",
             "home_id": 765733,
             "away_id": 5641,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -20513,8 +21178,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1391904,
@@ -20525,7 +21197,7 @@
             "away": "CS U Craiova II",
             "home_id": 585370,
             "away_id": 765721,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -20538,8 +21210,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1391905,
@@ -20550,7 +21229,7 @@
             "away": "Păușești",
             "home_id": 766020,
             "away_id": 585520,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -20563,8 +21242,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1392789,
@@ -20575,7 +21261,7 @@
             "away": "Ghiroda şi Giarmata Vii",
             "home_id": 585521,
             "away_id": 6840,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -20588,8 +21274,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1392792,
@@ -20600,7 +21293,7 @@
             "away": "Metalurgistul Cugir",
             "home_id": 585529,
             "away_id": 8022,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -20613,8 +21306,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1392922,
@@ -20625,7 +21325,7 @@
             "away": "Sighetu Marmaţiei",
             "home_id": 585523,
             "away_id": 302316,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -20638,8 +21338,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1392923,
@@ -20650,7 +21357,7 @@
             "away": "Minaur Baia Mare",
             "home_id": 6186,
             "away_id": 7495,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -20663,8 +21370,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1392924,
@@ -20675,7 +21389,7 @@
             "away": "Crişul Sântandrei",
             "home_id": 766371,
             "away_id": 585409,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -20688,8 +21402,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1395044,
@@ -20924,7 +21645,7 @@
             "away": "Kigezi HomeBoyz",
             "home_id": 799332,
             "away_id": 767200,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -20937,7 +21658,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -22507,7 +23228,7 @@
             "away": "Sokol Medzibrod",
             "home_id": 4011,
             "away_id": 587736,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -22520,8 +23241,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1202996,
@@ -22532,7 +23260,7 @@
             "away": "Z. Moravce-Vrable W",
             "home_id": 588479,
             "away_id": 588530,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -22545,8 +23273,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1289734,
@@ -24709,7 +25444,7 @@
             "away": "Septemvri Simitli",
             "home_id": 564945,
             "away_id": 5783,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -24722,8 +25457,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1142096,
@@ -25768,7 +26510,7 @@
             "away": "Salernitana U19",
             "home_id": 760183,
             "away_id": 760176,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -25781,8 +26523,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1456144,
@@ -26311,7 +27060,7 @@
             "away": "Viking FK W",
             "home_id": 9145,
             "away_id": 9105,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -26324,8 +27073,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1680350,
@@ -26425,7 +27181,7 @@
             "away": "Al Nassr W",
             "home_id": 812859,
             "away_id": 593570,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -26438,8 +27194,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149047,
@@ -27090,7 +27853,7 @@
             "away": "Legia W",
             "home_id": 9153,
             "away_id": 9109,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -27103,8 +27866,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1156463,
@@ -32898,7 +33668,7 @@
             "away": "Sporting Braga W",
             "home_id": 584476,
             "away_id": 584468,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -32912,7 +33682,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1194757,
@@ -32923,7 +33700,7 @@
             "away": "Racing Power W",
             "home_id": 584477,
             "away_id": 584475,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -32936,8 +33713,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1204082,
@@ -32980,7 +33764,7 @@
             "away": "Toluca U21",
             "home_id": 598867,
             "away_id": 598863,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -32993,8 +33777,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1217917,
@@ -33005,7 +33796,7 @@
             "away": "Atlante U21",
             "home_id": 598862,
             "away_id": 598854,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -33018,8 +33809,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1217918,
@@ -33030,7 +33828,7 @@
             "away": "Club Tijuana U21",
             "home_id": 598864,
             "away_id": 598855,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -33043,8 +33841,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1226749,
@@ -33247,7 +34052,7 @@
             "away": "Albion Rovers",
             "home_id": 3814,
             "away_id": 5915,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -33260,8 +34065,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238418,
@@ -33272,7 +34084,7 @@
             "away": "Civil Service Strollers",
             "home_id": 3618,
             "away_id": 2868,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -33285,8 +34097,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238419,
@@ -33297,7 +34116,7 @@
             "away": "Stirling University",
             "home_id": 2755,
             "away_id": 4358,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_win_either_half",
                 "label": "Home Win Either Half",
@@ -33310,8 +34129,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238420,
@@ -33322,7 +34148,7 @@
             "away": "Bonnyrigg Rose Athletic",
             "home_id": 610640,
             "away_id": 3144,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -33335,8 +34161,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238421,
@@ -33372,7 +34205,7 @@
             "away": "East Stirlingshire",
             "home_id": 5106,
             "away_id": 4417,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -33385,8 +34218,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238423,
@@ -33397,7 +34237,7 @@
             "away": " Johnstone Burgh",
             "home_id": 275768,
             "away_id": 3166,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -33410,7 +34250,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -33422,7 +34262,7 @@
             "away": "Clydebank",
             "home_id": 6042,
             "away_id": 2711,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "win_to_nil_away",
                 "label": "Away Win to Nil",
@@ -33435,8 +34275,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 8,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238425,
@@ -33447,7 +34294,7 @@
             "away": "Brechin",
             "home_id": 3228,
             "away_id": 3150,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -33460,8 +34307,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238426,
@@ -33522,7 +34376,7 @@
             "away": "Bo'ness United",
             "home_id": 3163,
             "away_id": 6010,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -33535,8 +34389,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 5,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238429,
@@ -33547,7 +34408,7 @@
             "away": "Gretna 2008",
             "home_id": 610642,
             "away_id": 2758,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -33560,8 +34421,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1238430,
@@ -33622,7 +34490,7 @@
             "away": "Largs Thistle",
             "home_id": 610643,
             "away_id": 610645,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -33635,8 +34503,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1241108,
@@ -33903,7 +34778,7 @@
             "away": "Hajdina",
             "home_id": 7793,
             "away_id": 622933,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -33916,8 +34791,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1306533,
@@ -34696,7 +35578,7 @@
             "away": "Loto Popo",
             "home_id": 753031,
             "away_id": 752795,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -34710,7 +35592,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1526999,
@@ -34721,7 +35610,7 @@
             "away": "Damissa",
             "home_id": 917330,
             "away_id": 917351,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -34734,8 +35623,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1527000,
@@ -34746,7 +35642,7 @@
             "away": "Bani Gansè",
             "home_id": 917366,
             "away_id": 917355,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -34759,8 +35655,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1527001,
@@ -34771,7 +35674,7 @@
             "away": "Panthères",
             "home_id": 752146,
             "away_id": 917343,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -34785,7 +35688,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1527002,
@@ -34796,7 +35706,7 @@
             "away": "AS Sobemap",
             "home_id": 917337,
             "away_id": 752193,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -34809,8 +35719,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533736,
@@ -34929,7 +35846,7 @@
             "away": "Soccer Intellectuals",
             "home_id": 921046,
             "away_id": 921066,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -34942,8 +35859,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533741,
@@ -34954,7 +35878,7 @@
             "away": "Kalibi SC",
             "home_id": 921039,
             "away_id": 921053,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -34967,8 +35891,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533742,
@@ -34979,7 +35910,7 @@
             "away": "PAC Academy",
             "home_id": 8291,
             "away_id": 921051,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -34992,8 +35923,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533743,
@@ -35220,7 +36158,7 @@
             "away": "Nsuopun Fidelity",
             "home_id": 921045,
             "away_id": 921036,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -35233,8 +36171,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533753,
@@ -35272,7 +36217,7 @@
             "away": "Okwawu",
             "home_id": 921065,
             "away_id": 921070,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -35285,8 +36230,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533755,
@@ -35297,7 +36249,7 @@
             "away": "Berekum City",
             "home_id": 921047,
             "away_id": 921054,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -35310,8 +36262,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533756,
@@ -35322,7 +36281,7 @@
             "away": "Techiman Liberty",
             "home_id": 921048,
             "away_id": 921074,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -35335,8 +36294,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1533757,
@@ -35894,7 +36860,7 @@
             "away": "Ipswich Town W",
             "home_id": 574801,
             "away_id": 574773,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -35907,8 +36873,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631150,
@@ -35919,7 +36892,7 @@
             "away": "Lossiemouth",
             "home_id": 8628,
             "away_id": 3329,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_score_2h",
                 "label": "Home Scores 2nd Half",
@@ -35932,8 +36905,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631151,
@@ -35969,7 +36949,7 @@
             "away": "Strathspey Thistle",
             "home_id": 2748,
             "away_id": 8613,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -35982,8 +36962,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631153,
@@ -36012,7 +36999,7 @@
             "away": "Wick Academy",
             "home_id": 2739,
             "away_id": 609286,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -36025,8 +37012,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631155,
@@ -36037,7 +37031,7 @@
             "away": "Keith",
             "home_id": 6214,
             "away_id": 3894,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_2h",
                 "label": "Over 1.5 Goals (2H)",
@@ -36050,8 +37044,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631156,
@@ -36062,7 +37063,7 @@
             "away": "Fraserburgh",
             "home_id": 2898,
             "away_id": 5119,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -36075,8 +37076,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631157,
@@ -36087,7 +37095,7 @@
             "away": "Nairn County",
             "home_id": 3107,
             "away_id": 2760,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -36100,8 +37108,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1631158,
@@ -36112,7 +37127,7 @@
             "away": "Forres Mechanics",
             "home_id": 3229,
             "away_id": 2975,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -36125,8 +37140,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1679381,
@@ -39330,7 +40352,7 @@
             "away": "Jedinstvo Bihać",
             "home_id": 6000,
             "away_id": 595650,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -39343,8 +40365,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1241110,
@@ -39579,7 +40608,7 @@
             "away": "FK Majevica Lopare",
             "home_id": 7064,
             "away_id": 755191,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -39592,8 +40621,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1395645,
@@ -42895,7 +43931,7 @@
             "away": "Vipava",
             "home_id": 7864,
             "away_id": 622948,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -42908,8 +43944,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1306536,
@@ -45601,7 +46644,7 @@
             "away": "Central SC",
             "home_id": 1051059,
             "away_id": 4755,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -45614,8 +46657,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1628758,
@@ -46323,7 +47373,7 @@
             "away": "Mons Calpe",
             "home_id": 759441,
             "away_id": 679,
-            "status": "NS",
+            "status": "AET",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -46336,8 +47386,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 0,
+                "aet_away": 2,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 520518,
@@ -47602,7 +48659,7 @@
             "away": "Flora",
             "home_id": 1047417,
             "away_id": 1047414,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -47615,8 +48672,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1624215,
@@ -48376,7 +49440,7 @@
             "away": "GO Ahead Eagles",
             "home_id": 3175,
             "away_id": 888,
-            "status": "INT",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -48389,8 +49453,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 169030,
@@ -49031,7 +50102,7 @@
             "away": "Robin Hood",
             "home_id": 1047412,
             "away_id": 651745,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -49044,8 +50115,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 148767,
@@ -49069,7 +50147,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 2,
                 "away": 0,
@@ -49088,7 +50166,7 @@
             "away": "Real Salt Lake",
             "home_id": 1681,
             "away_id": 1697,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -49101,8 +50179,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149112,
@@ -49113,7 +50198,7 @@
             "away": "Austin",
             "home_id": 1694,
             "away_id": 1686,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49126,8 +50211,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149113,
@@ -49376,7 +50468,7 @@
             "away": "Nublense",
             "home_id": 7002,
             "away_id": 7018,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49389,8 +50481,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1219076,
@@ -49433,7 +50532,7 @@
             "away": "Génesis",
             "home_id": 605772,
             "away_id": 605768,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -49446,8 +50545,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1681578,
@@ -49483,7 +50589,7 @@
             "away": "San Antonio Bulo Bulo",
             "home_id": 273,
             "away_id": 269,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -49496,8 +50602,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382431,
@@ -49508,7 +50621,7 @@
             "away": "FC Santiago",
             "home_id": 760568,
             "away_id": 760576,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -49521,8 +50634,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382436,
@@ -49533,7 +50653,7 @@
             "away": "La Tribu de Cd. Juarez",
             "home_id": 760574,
             "away_id": 760572,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -49546,8 +50666,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538071,
@@ -49558,7 +50685,7 @@
             "away": "Racing de Veracruz",
             "home_id": 760498,
             "away_id": 760497,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -49571,8 +50698,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538072,
@@ -49583,7 +50717,7 @@
             "away": "Jaguares de Chiapas",
             "home_id": 760639,
             "away_id": 760509,
-            "status": "2H",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -49596,8 +50730,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": 2,
+                "aet_away": 2,
+                "pen_home": 6,
+                "pen_away": 5
+            }
         },
         {
             "fx": 1624959,
@@ -49608,7 +50749,7 @@
             "away": "Barcelona SC",
             "home_id": 141,
             "away_id": 147,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -49621,8 +50762,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665248,
@@ -49633,7 +50781,7 @@
             "away": "Deportivo Tachira FC",
             "home_id": 5639,
             "away_id": 7191,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -49646,8 +50794,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 688780,
@@ -49658,7 +50813,7 @@
             "away": "Pachuca W",
             "home_id": 9321,
             "away_id": 9313,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_2up",
                 "label": "Away Goes 2-Up",
@@ -49671,8 +50826,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 619741,
@@ -49683,7 +50845,7 @@
             "away": "Tlaxcala",
             "home_id": 9039,
             "away_id": 2872,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -49696,8 +50858,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382432,
@@ -49708,7 +50877,7 @@
             "away": "Atlético Saltillo",
             "home_id": 760571,
             "away_id": 760537,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49721,8 +50890,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382433,
@@ -49733,7 +50909,7 @@
             "away": "Guerreros",
             "home_id": 760570,
             "away_id": 760567,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -49746,8 +50922,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385538,
@@ -49758,7 +50941,7 @@
             "away": "Celaya 2",
             "home_id": 763143,
             "away_id": 763146,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -49771,8 +50954,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385539,
@@ -49808,7 +50998,7 @@
             "away": "Atlántico",
             "home_id": 651726,
             "away_id": 920934,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49821,8 +51011,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538068,
@@ -49833,7 +51030,7 @@
             "away": "Pioneros de Cancún",
             "home_id": 760505,
             "away_id": 760496,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -49846,8 +51043,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1664835,
@@ -49858,7 +51062,7 @@
             "away": "La Luz",
             "home_id": 4091,
             "away_id": 4537,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -49871,8 +51075,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665140,
@@ -49883,7 +51094,7 @@
             "away": "Gimnasia Concepción",
             "home_id": 2517,
             "away_id": 2537,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -49896,8 +51107,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665144,
@@ -49908,7 +51126,7 @@
             "away": "Juventud Antoniana",
             "home_id": 2569,
             "away_id": 2529,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -49921,8 +51139,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149216,
@@ -49933,7 +51158,7 @@
             "away": "San Lorenzo",
             "home_id": 230,
             "away_id": 232,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -49946,8 +51171,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149106,
@@ -49958,7 +51190,7 @@
             "away": "Avai",
             "home_id": 186,
             "away_id": 195,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -49971,8 +51203,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1387038,
@@ -49983,7 +51222,7 @@
             "away": "Nacional Asuncion",
             "home_id": 593821,
             "away_id": 593822,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -49996,8 +51235,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1387040,
@@ -50008,7 +51254,7 @@
             "away": "Libertad Asuncion",
             "home_id": 599080,
             "away_id": 302315,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -50021,8 +51267,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 688779,
@@ -50033,7 +51286,7 @@
             "away": "Cruz Azul W",
             "home_id": 9316,
             "away_id": 9310,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
