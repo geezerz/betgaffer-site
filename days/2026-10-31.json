@@ -3,7 +3,7 @@
     "lagos_day": "2026-10-31",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-30T21:10:02Z",
-    "grades_as_of": "2026-11-01T01:10:02Z",
+    "grades_as_of": "2026-11-01T03:11:03Z",
     "prev_hash": "sha256:e2a80c6de741f29c0012b9cf6c7b3159b149050c9b2f99db836a99388b121dfe",
     "picks_hash": "sha256:d0c2a24f5726482c98404beb910df94bf21adb27c60c780db8556d2e242e8915",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 1163,
+        "won": 1164,
         "lost": 243,
         "pushes": 25,
-        "graded": 1406,
-        "pct": 82.72
+        "graded": 1407,
+        "pct": 82.73
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -51286,7 +51286,7 @@
             "away": "Cruz Azul W",
             "home_id": 9316,
             "away_id": 9310,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -51299,8 +51299,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
