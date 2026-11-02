@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-01",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-31T21:10:02Z",
-    "grades_as_of": "2026-11-02T13:10:02Z",
+    "grades_as_of": "2026-11-02T15:10:01Z",
     "prev_hash": "sha256:ef80e0caab77e27e15c7a3c4b8c1c6d9482ea9c966cfaacec6ba4644f41826c1",
     "picks_hash": "sha256:d7563a9a3fa574debf6db38f7b8f391cecf525acdb7a5e0d13cf62f30be3fab7",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 887,
+        "won": 888,
         "lost": 153,
         "pushes": 20,
-        "graded": 1040,
-        "pct": 85.29
+        "graded": 1041,
+        "pct": 85.3
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -11618,7 +11618,7 @@
             "away": "Regar-TadAZ",
             "home_id": 766678,
             "away_id": 19441,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -11631,8 +11631,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1454342,
@@ -34596,7 +34603,7 @@
             "away": "FC Andorra",
             "home_id": 4323,
             "away_id": 3862,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
