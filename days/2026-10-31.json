@@ -3,12 +3,12 @@
     "lagos_day": "2026-10-31",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-30T21:10:02Z",
-    "grades_as_of": "2026-11-02T01:10:02Z",
+    "grades_as_of": "2026-11-02T07:10:02Z",
     "prev_hash": "sha256:e2a80c6de741f29c0012b9cf6c7b3159b149050c9b2f99db836a99388b121dfe",
-    "picks_hash": "sha256:1e91c9e3e4928935f3f1aba7ee876d37c0db1bdd88c1ce08f372e180f4fafc4c",
+    "picks_hash": "sha256:ef80e0caab77e27e15c7a3c4b8c1c6d9482ea9c966cfaacec6ba4644f41826c1",
     "counts": {
         "fixtures": 1644,
-        "priced": 1504,
+        "priced": 1503,
         "recommended": 1611,
         "markets_per_fixture": 101
     },
@@ -42750,9 +42750,11 @@
             },
             "frozen_at": "2026-10-30T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {

@@ -3,8 +3,8 @@
     "lagos_day": "2026-11-01",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-10-31T21:10:02Z",
-    "grades_as_of": "2026-11-02T05:11:02Z",
-    "prev_hash": "sha256:1e91c9e3e4928935f3f1aba7ee876d37c0db1bdd88c1ce08f372e180f4fafc4c",
+    "grades_as_of": "2026-11-02T07:10:02Z",
+    "prev_hash": "sha256:ef80e0caab77e27e15c7a3c4b8c1c6d9482ea9c966cfaacec6ba4644f41826c1",
     "picks_hash": "sha256:d7563a9a3fa574debf6db38f7b8f391cecf525acdb7a5e0d13cf62f30be3fab7",
     "counts": {
         "fixtures": 1153,
@@ -13,11 +13,11 @@
         "markets_per_fixture": 101
     },
     "accuracy": {
-        "won": 885,
+        "won": 886,
         "lost": 153,
         "pushes": 20,
-        "graded": 1038,
-        "pct": 85.26
+        "graded": 1039,
+        "pct": 85.27
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1620,7 +1620,7 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 1,
@@ -11586,7 +11586,7 @@
             "away": "Istiqlol",
             "home_id": 18947,
             "away_id": 7098,
-            "status": "TBD",
+            "status": "NS",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -11599,7 +11599,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -11611,7 +11611,7 @@
             "away": "Regar-TadAZ",
             "home_id": 766678,
             "away_id": 19441,
-            "status": "TBD",
+            "status": "NS",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -11624,7 +11624,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -22657,14 +22657,21 @@
             "away": "Middlesbrough W",
             "home_id": 1101988,
             "away_id": 1101989,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1658195,

@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-02",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-01T21:10:02Z",
-    "grades_as_of": "2026-11-02T05:11:02Z",
+    "grades_as_of": "2026-11-02T07:10:02Z",
     "prev_hash": "sha256:d7563a9a3fa574debf6db38f7b8f391cecf525acdb7a5e0d13cf62f30be3fab7",
     "picks_hash": "sha256:a3b545bd3a783fd17fb25df70a423d4fee018a6c5f09f942f121c5a114c63ad9",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 20,
+        "won": 21,
         "lost": 3,
         "pushes": 1,
-        "graded": 23,
-        "pct": 86.96
+        "graded": 24,
+        "pct": 87.5
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -807,7 +807,7 @@
             "away": "Ulaanbaatar",
             "home_id": 921642,
             "away_id": 19061,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -820,8 +820,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 9,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1670021,
