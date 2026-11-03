@@ -1,34 +1,47 @@
 {
     "schema": 1,
-    "generated_at": "2026-11-02T15:10:01Z",
-    "today": "2026-11-02",
-    "newest_day": "2026-11-02",
+    "generated_at": "2026-11-03T11:23:03Z",
+    "today": "2026-11-03",
+    "newest_day": "2026-11-03",
     "strategy": "edge_reliability",
     "days": [
         {
+            "day": "2026-11-03",
+            "compacted": false,
+            "picks_hash": "sha256:727fe965627d9db46f0c2b28d98ce105d7e559e5ad759e2532410e80572eca47",
+            "fixtures": 199,
+            "accuracy": {
+                "won": 28,
+                "lost": 4,
+                "pushes": 0,
+                "graded": 32,
+                "pct": 87.5
+            }
+        },
+        {
             "day": "2026-11-02",
             "compacted": false,
-            "picks_hash": "sha256:3017bb0aa42bd0834095adf45e62222780b50aeeaa69f5fee0ed9105036990b6",
-            "fixtures": 222,
+            "picks_hash": "sha256:e1fb25503727a1ead999e4ed39897757c33b756bc6ef20c6fa3b83eb660e225b",
+            "fixtures": 227,
             "accuracy": {
-                "won": 54,
-                "lost": 18,
-                "pushes": 3,
-                "graded": 72,
-                "pct": 75.0
+                "won": 174,
+                "lost": 41,
+                "pushes": 5,
+                "graded": 215,
+                "pct": 80.93
             }
         },
         {
             "day": "2026-11-01",
             "compacted": false,
-            "picks_hash": "sha256:d7563a9a3fa574debf6db38f7b8f391cecf525acdb7a5e0d13cf62f30be3fab7",
+            "picks_hash": "sha256:8db58597a6044d7fcd77772ecd1efd817a13bd617a1e4b27bce00c7abc12f7e5",
             "fixtures": 1153,
             "accuracy": {
-                "won": 888,
+                "won": 897,
                 "lost": 153,
                 "pushes": 20,
-                "graded": 1041,
-                "pct": 85.3
+                "graded": 1050,
+                "pct": 85.43
             }
         },
         {
@@ -356,42 +369,53 @@
             "max_odds": 1.8,
             "effective_since_date": "2026-10-31"
         },
-        "as_of": "2026-11-02T15:10:01Z",
+        "as_of": "2026-11-03T11:23:03Z",
         "last_30": {
-            "period": "2026-10-04..2026-11-02",
-            "won": 12650,
-            "lost": 2309,
-            "pushes": 439,
-            "graded": 14959,
-            "finished_fixtures": 16067,
-            "pct": 84.56,
-            "coverage": 0.931,
+            "period": "2026-10-05..2026-11-03",
+            "won": 12224,
+            "lost": 2240,
+            "pushes": 410,
+            "graded": 14464,
+            "finished_fixtures": 15516,
+            "pct": 84.51,
+            "coverage": 0.9322,
             "status_days": {
-                "live": 2,
-                "provisional": 28
+                "live": 3,
+                "provisional": 27
             }
         },
         "last_7": [
             {
+                "period": "2026-11-03",
+                "won": 28,
+                "lost": 4,
+                "pushes": 0,
+                "graded": 32,
+                "finished_fixtures": 33,
+                "pct": 87.5,
+                "coverage": 0.9697,
+                "status": "live"
+            },
+            {
                 "period": "2026-11-02",
-                "won": 54,
-                "lost": 18,
-                "pushes": 3,
-                "graded": 72,
-                "finished_fixtures": 71,
-                "pct": 75.0,
-                "coverage": 1.0141,
+                "won": 174,
+                "lost": 41,
+                "pushes": 5,
+                "graded": 215,
+                "finished_fixtures": 222,
+                "pct": 80.93,
+                "coverage": 0.9685,
                 "status": "live"
             },
             {
                 "period": "2026-11-01",
-                "won": 888,
+                "won": 897,
                 "lost": 153,
                 "pushes": 20,
-                "graded": 1041,
-                "finished_fixtures": 1091,
-                "pct": 85.3,
-                "coverage": 0.9542,
+                "graded": 1050,
+                "finished_fixtures": 1101,
+                "pct": 85.43,
+                "coverage": 0.9537,
                 "status": "live"
             },
             {
@@ -400,9 +424,9 @@
                 "lost": 244,
                 "pushes": 25,
                 "graded": 1417,
-                "finished_fixtures": 1469,
+                "finished_fixtures": 1479,
                 "pct": 82.78,
-                "coverage": 0.9646,
+                "coverage": 0.9581,
                 "status": "provisional"
             },
             {
@@ -411,9 +435,9 @@
                 "lost": 54,
                 "pushes": 11,
                 "graded": 365,
-                "finished_fixtures": 385,
+                "finished_fixtures": 388,
                 "pct": 85.21,
-                "coverage": 0.9481,
+                "coverage": 0.9407,
                 "status": "provisional"
             },
             {
@@ -437,40 +461,29 @@
                 "pct": 87.0,
                 "coverage": 0.9119,
                 "status": "provisional"
-            },
-            {
-                "period": "2026-10-27",
-                "won": 216,
-                "lost": 34,
-                "pushes": 9,
-                "graded": 250,
-                "finished_fixtures": 263,
-                "pct": 86.4,
-                "coverage": 0.9506,
-                "status": "provisional"
             }
         ],
         "months": [
             {
                 "period": "2026-11",
-                "won": 942,
-                "lost": 171,
-                "pushes": 23,
-                "graded": 1113,
-                "finished_fixtures": 1162,
-                "pct": 84.64,
-                "coverage": 0.9578,
+                "won": 1099,
+                "lost": 198,
+                "pushes": 25,
+                "graded": 1297,
+                "finished_fixtures": 1356,
+                "pct": 84.73,
+                "coverage": 0.9565,
                 "status": "live"
             },
             {
                 "period": "2026-10",
-                "won": 12945,
+                "won": 12946,
                 "lost": 2343,
                 "pushes": 471,
-                "graded": 15288,
-                "finished_fixtures": 16531,
-                "pct": 84.67,
-                "coverage": 0.9248,
+                "graded": 15289,
+                "finished_fixtures": 16545,
+                "pct": 84.68,
+                "coverage": 0.9241,
                 "status": "provisional"
             },
             {
