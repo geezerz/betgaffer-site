@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-03",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T11:23:03Z",
-    "grades_as_of": "2026-11-03T22:15:02Z",
+    "grades_as_of": "2026-11-03T23:10:06Z",
     "prev_hash": "sha256:e1fb25503727a1ead999e4ed39897757c33b756bc6ef20c6fa3b83eb660e225b",
     "picks_hash": "sha256:184be5adf2d26035f453cbb7c7bdb0e882860b3bfb1bba5d3737b45d6f3f4517",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 131,
-        "lost": 31,
+        "won": 133,
+        "lost": 32,
         "pushes": 4,
-        "graded": 162,
-        "pct": 80.86
+        "graded": 165,
+        "pct": 80.61
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -5771,7 +5771,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 0,
                 "away": 0,
@@ -6046,7 +6046,7 @@
             "away": "Deportes Tolima",
             "home_id": 260,
             "away_id": 255,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -6059,8 +6059,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1624962,
@@ -6071,7 +6078,7 @@
             "away": "Manta FC",
             "home_id": 142,
             "away_id": 159,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -6084,8 +6091,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 525973,
@@ -6096,7 +6110,7 @@
             "away": "Marquense",
             "home_id": 9211,
             "away_id": 9162,
-            "status": "HT",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -6121,7 +6135,7 @@
             "away": "Caracas FC",
             "home_id": 7074,
             "away_id": 8450,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -6146,7 +6160,7 @@
             "away": "Tigre Res.",
             "home_id": 113,
             "away_id": 105,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -6171,7 +6185,7 @@
             "away": "Mirassol",
             "home_id": 214,
             "away_id": 278,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -6196,7 +6210,7 @@
             "away": "Club Sp. San Lorenzo",
             "home_id": 593822,
             "away_id": 599080,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
