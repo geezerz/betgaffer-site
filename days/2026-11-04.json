@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-03T23:10:06Z",
+    "grades_as_of": "2026-11-04T01:10:02Z",
     "prev_hash": "sha256:184be5adf2d26035f453cbb7c7bdb0e882860b3bfb1bba5d3737b45d6f3f4517",
-    "picks_hash": "sha256:4558a12f6ab628f260a0e6a2a1f693565a2f12b96b747afa1f0773be8220145a",
+    "picks_hash": "sha256:2513f85fc7ad459fd96744836f0c7462eb2eef994f17df9d20da3a555315ccaa",
     "counts": {
         "fixtures": 234,
         "priced": 227,
-        "recommended": 204,
+        "recommended": 208,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Independiente Petrolero",
             "home_id": 166,
             "away_id": 176,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -64,7 +64,7 @@
             "away": "Jaguares",
             "home_id": 249,
             "away_id": 254,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -89,7 +89,7 @@
             "away": "Puerto Cabello",
             "home_id": 7191,
             "away_id": 5639,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -114,7 +114,7 @@
             "away": "Coritiba",
             "home_id": 218,
             "away_id": 194,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -164,7 +164,7 @@
             "away": "Cienciano",
             "home_id": 3969,
             "away_id": 4199,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -189,7 +189,7 @@
             "away": "Perez Zeledon",
             "home_id": 3345,
             "away_id": 565945,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -562,12 +562,19 @@
             "home_id": 808978,
             "away_id": 1271,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 92,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-04T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2388,12 +2395,19 @@
             "home_id": 755191,
             "away_id": 302094,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 87,
+                "price": 1.18,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-04T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -3771,12 +3785,19 @@
             "home_id": 1356,
             "away_id": 1310,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_win_either_half",
+                "label": "Home Win Either Half",
+                "pct": 89,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Half-by-half scoring pattern"
+            },
+            "frozen_at": "2026-11-04T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -4701,12 +4722,19 @@
             "home_id": 1276,
             "away_id": 1250,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-04T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
