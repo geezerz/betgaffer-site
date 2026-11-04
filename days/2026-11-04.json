@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-04T05:10:02Z",
+    "grades_as_of": "2026-11-04T07:10:02Z",
     "prev_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
-    "picks_hash": "sha256:24814298ca0a85bdba70e7c45ede33384e5a09de9310039316ff70751583fa04",
+    "picks_hash": "sha256:d7c474ab56cc6f47984ee3a80bde4326d97bd67c90eb226df8a51f5ad06f8aa3",
     "counts": {
         "fixtures": 237,
-        "priced": 222,
-        "recommended": 208,
+        "priced": 225,
+        "recommended": 212,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 6,
+        "won": 7,
         "lost": 2,
         "pushes": 0,
-        "graded": 8,
-        "pct": 75.0
+        "graded": 9,
+        "pct": 77.78
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -295,7 +295,7 @@
             "away": "Roasso Kumamoto",
             "home_id": 4608,
             "away_id": 4609,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -308,8 +308,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1670028,
@@ -320,7 +327,7 @@
             "away": "Azkals",
             "home_id": 763979,
             "away_id": 787599,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -2480,12 +2487,19 @@
             "home_id": 1292,
             "away_id": 1377,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_1_5_early",
+                "label": "Over 1.5 (Early)",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-04T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2573,12 +2587,19 @@
             "home_id": 8679,
             "away_id": 8811,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-04T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -3690,12 +3711,19 @@
             "home_id": 8813,
             "away_id": 757568,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 88,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-04T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -3708,12 +3736,19 @@
             "home_id": 752830,
             "away_id": 757569,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 84,
+                "price": 1.2,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-04T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
