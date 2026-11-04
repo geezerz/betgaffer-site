@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-05",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-04T21:10:02Z",
-    "grades_as_of": "2026-11-04T21:10:02Z",
+    "grades_as_of": "2026-11-04T22:15:01Z",
     "prev_hash": "sha256:cce5f8c133fd00d04191793437b1ee37512dfff52603c3805dd6bd0ced9f0a85",
-    "picks_hash": "sha256:dd3ceba800b2059debcb0c02017cd94f233022401d189fc289d7162d839bb12a",
+    "picks_hash": "sha256:63e40cc349ab8cae2c4c240d304e99b2388672d23d9899120bab5738b1b3b02e",
     "counts": {
         "fixtures": 137,
         "priced": 137,
-        "recommended": 130,
+        "recommended": 131,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -2144,12 +2144,19 @@
             "home_id": 876,
             "away_id": 855,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 81,
+                "price": 1.19,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-04T22:15:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
