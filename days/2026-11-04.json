@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-04T22:15:01Z",
+    "grades_as_of": "2026-11-04T23:10:02Z",
     "prev_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
-    "picks_hash": "sha256:cce5f8c133fd00d04191793437b1ee37512dfff52603c3805dd6bd0ced9f0a85",
+    "picks_hash": "sha256:1437ba145a53c6e6411d4a5f960d2ffa9da0d6e43894f39b328aa4389aba6f54",
     "counts": {
         "fixtures": 244,
-        "priced": 219,
+        "priced": 218,
         "recommended": 215,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 118,
+        "won": 120,
         "lost": 22,
         "pushes": 8,
-        "graded": 140,
-        "pct": 84.29
+        "graded": 142,
+        "pct": 84.51
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -6524,7 +6524,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 2,
@@ -6554,9 +6554,11 @@
             },
             "frozen_at": "2026-11-03T22:15:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -6817,7 +6819,7 @@
             "away": "Lobos Upnfm",
             "home_id": 301491,
             "away_id": 605772,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -6830,8 +6832,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1695799,
@@ -6969,7 +6978,7 @@
             "away": "Deportivo La Guaira",
             "home_id": 5075,
             "away_id": 7391,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -6994,7 +7003,7 @@
             "away": "Cerro Porteno",
             "home_id": 302315,
             "away_id": 8606,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7019,7 +7028,7 @@
             "away": "Club Guarani",
             "home_id": 593733,
             "away_id": 301691,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -7044,7 +7053,7 @@
             "away": "Coquimbo Unido",
             "home_id": 9056,
             "away_id": 5026,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7094,7 +7103,7 @@
             "away": "Oriente Petrolero",
             "home_id": 164,
             "away_id": 174,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -7119,7 +7128,7 @@
             "away": "Gremio",
             "home_id": 208,
             "away_id": 211,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -7144,7 +7153,7 @@
             "away": "Vasco DA Gama",
             "home_id": 216,
             "away_id": 188,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
