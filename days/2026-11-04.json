@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-04T07:10:02Z",
+    "grades_as_of": "2026-11-04T09:11:02Z",
     "prev_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
-    "picks_hash": "sha256:d7c474ab56cc6f47984ee3a80bde4326d97bd67c90eb226df8a51f5ad06f8aa3",
+    "picks_hash": "sha256:3456722ae33002e390a681903c87a4b7c6593a5ab7aa2491f0a41971e1f80482",
     "counts": {
         "fixtures": 237,
         "priced": 225,
-        "recommended": 212,
+        "recommended": 213,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 7,
+        "won": 8,
         "lost": 2,
         "pushes": 0,
-        "graded": 9,
-        "pct": 77.78
+        "graded": 10,
+        "pct": 80.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -327,7 +327,7 @@
             "away": "Azkals",
             "home_id": 763979,
             "away_id": 787599,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -340,8 +340,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1667522,
@@ -352,13 +359,20 @@
             "away": "Persib Bandung",
             "home_id": 8106,
             "away_id": 19435,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "2H",
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 83,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-04T09:11:02Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -370,7 +384,7 @@
             "away": "Nizhny Novgorod",
             "home_id": 2916,
             "away_id": 3077,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -400,7 +414,7 @@
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -413,7 +427,7 @@
             "away": "Naegohyang W",
             "home_id": 593572,
             "away_id": 593689,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -438,12 +452,12 @@
             "away": "Hồ Chí Minh City W",
             "home_id": 593708,
             "away_id": 593580,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -456,12 +470,12 @@
             "away": "MTK U19",
             "home_id": 1281,
             "away_id": 1286,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
