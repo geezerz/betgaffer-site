@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-02",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-01T21:10:02Z",
-    "grades_as_of": "2026-11-03T11:23:03Z",
+    "grades_as_of": "2026-11-04T05:10:02Z",
     "prev_hash": "sha256:8db58597a6044d7fcd77772ecd1efd817a13bd617a1e4b27bce00c7abc12f7e5",
-    "picks_hash": "sha256:e1fb25503727a1ead999e4ed39897757c33b756bc6ef20c6fa3b83eb660e225b",
+    "picks_hash": "sha256:758366f812ab2c6d52fc09dd8c7cbff02843db732cc28cbdbd5a3da3cf3249b5",
     "counts": {
-        "fixtures": 227,
-        "priced": 225,
-        "recommended": 226,
+        "fixtures": 228,
+        "priced": 226,
+        "recommended": 227,
         "markets_per_fixture": 100
     },
     "accuracy": {
         "won": 174,
-        "lost": 41,
+        "lost": 42,
         "pushes": 5,
-        "graded": 215,
-        "pct": 80.93
+        "graded": 216,
+        "pct": 80.56
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2582,6 +2582,38 @@
             "state": "pick",
             "grade": "void",
             "score": null
+        },
+        {
+            "fx": 1627458,
+            "api_fx": 1646202,
+            "ko": "2026-11-02T13:00:00Z",
+            "comp": "Ligue 1 (Congo-DR)",
+            "home": "Dauphins Noirs",
+            "away": "FC Renaissance",
+            "home_id": 1063999,
+            "away_id": 1064010,
+            "status": "FT",
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": true,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-04T05:10:02Z",
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1628402,
