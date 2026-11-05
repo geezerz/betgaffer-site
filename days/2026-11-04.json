@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-05T07:11:02Z",
+    "grades_as_of": "2026-11-05T13:10:02Z",
     "prev_hash": "sha256:744ea9a1996e458db77aca06a879fb17013161105030034b17873a3ea7650654",
     "picks_hash": "sha256:eaf1b8898ad3d1d69659e2d1adad79911c846e784089e3e4a9a13799756c7ff5",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 134,
+        "won": 136,
         "lost": 24,
         "pushes": 8,
-        "graded": 158,
-        "pct": 84.81
+        "graded": 160,
+        "pct": 85.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3385,7 +3385,7 @@
             "away": "Centre Chiefs",
             "home_id": 8679,
             "away_id": 8811,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3398,8 +3398,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1624990,
@@ -4797,7 +4804,7 @@
             "away": "Enesia",
             "home_id": 8813,
             "away_id": 757568,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -4810,8 +4817,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1370257,
@@ -4822,7 +4836,7 @@
             "away": "Tonota",
             "home_id": 752830,
             "away_id": 757569,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -4836,7 +4850,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1396085,
