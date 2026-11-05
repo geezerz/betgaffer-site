@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-05",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-04T21:10:02Z",
-    "grades_as_of": "2026-11-04T23:10:02Z",
+    "grades_as_of": "2026-11-05T01:10:02Z",
     "prev_hash": "sha256:1437ba145a53c6e6411d4a5f960d2ffa9da0d6e43894f39b328aa4389aba6f54",
     "picks_hash": "sha256:63e40cc349ab8cae2c4c240d304e99b2388672d23d9899120bab5738b1b3b02e",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Transvaal",
             "home_id": 1047410,
             "away_id": 1047415,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1701965,
@@ -64,7 +71,7 @@
             "away": "Monarcas",
             "home_id": 5851,
             "away_id": 3272,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -89,7 +96,7 @@
             "away": "CD Motagua",
             "home_id": 1042044,
             "away_id": 7245,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -114,7 +121,7 @@
             "away": "Santa Fe",
             "home_id": 289,
             "away_id": 252,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -139,7 +146,7 @@
             "away": "Carabobo FC",
             "home_id": 7075,
             "away_id": 7904,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -164,7 +171,7 @@
             "away": "San Carlos",
             "home_id": 565943,
             "away_id": 565949,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -189,7 +196,7 @@
             "away": "Universidad Catolica",
             "home_id": 144,
             "away_id": 143,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -214,7 +221,7 @@
             "away": "Club Nacional",
             "home_id": 799463,
             "away_id": 4115,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -239,7 +246,7 @@
             "away": "Deportivo Recoleta",
             "home_id": 4088,
             "away_id": 594049,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -264,7 +271,7 @@
             "away": "Atletico-MG",
             "home_id": 185,
             "away_id": 206,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -289,7 +296,7 @@
             "away": "Corinthians",
             "home_id": 204,
             "away_id": 212,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -314,7 +321,7 @@
             "away": "Always Ready",
             "home_id": 165,
             "away_id": 169,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -339,7 +346,7 @@
             "away": "Alianza",
             "home_id": 7246,
             "away_id": 165185,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -364,7 +371,7 @@
             "away": "Fuerte San Francisco",
             "home_id": 9296,
             "away_id": 7900,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
