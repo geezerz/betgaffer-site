@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-03",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T11:23:03Z",
-    "grades_as_of": "2026-11-04T11:11:02Z",
+    "grades_as_of": "2026-11-05T03:10:01Z",
     "prev_hash": "sha256:758366f812ab2c6d52fc09dd8c7cbff02843db732cc28cbdbd5a3da3cf3249b5",
     "picks_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 141,
-        "lost": 32,
+        "won": 142,
+        "lost": 33,
         "pushes": 4,
-        "graded": 173,
-        "pct": 81.5
+        "graded": 175,
+        "pct": 81.14
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1492,7 +1492,7 @@
             "away": "Willem II U21",
             "home_id": 582948,
             "away_id": 582954,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1505,8 +1505,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1230349,
@@ -1976,7 +1983,7 @@
             "away": "Cambuur U21",
             "home_id": 582883,
             "away_id": 7514,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1989,8 +1996,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 6,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1274809,
