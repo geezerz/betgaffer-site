@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-05T05:11:02Z",
-    "prev_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
-    "picks_hash": "sha256:e4b1548bc8bacdab5e6cb08a22d9f4f6d30eec6f4c7ed527bb5a1683951b5bce",
+    "grades_as_of": "2026-11-05T07:11:02Z",
+    "prev_hash": "sha256:744ea9a1996e458db77aca06a879fb17013161105030034b17873a3ea7650654",
+    "picks_hash": "sha256:eaf1b8898ad3d1d69659e2d1adad79911c846e784089e3e4a9a13799756c7ff5",
     "counts": {
         "fixtures": 244,
-        "priced": 216,
+        "priced": 211,
         "recommended": 215,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 131,
-        "lost": 23,
+        "won": 134,
+        "lost": 24,
         "pushes": 8,
-        "graded": 154,
-        "pct": 85.06
+        "graded": 158,
+        "pct": 84.81
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2038,7 +2038,7 @@
             "away": "Maritsa Plovdiv",
             "home_id": 3698,
             "away_id": 5577,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -2051,8 +2051,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1270786,
@@ -2063,7 +2070,7 @@
             "away": "Spartak Plovdiv",
             "home_id": 5239,
             "away_id": 8470,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -2076,8 +2083,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1396084,
@@ -3407,9 +3421,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3464,9 +3480,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5851,7 +5869,7 @@
             "away": "Gau-Odernheim",
             "home_id": 9328,
             "away_id": 3723,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5864,8 +5882,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1134807,
@@ -6829,7 +6854,7 @@
             "away": "Matagalpa",
             "home_id": 763941,
             "away_id": 763940,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -6842,8 +6867,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665315,
@@ -6897,9 +6929,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -6922,9 +6956,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -7156,9 +7192,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {

@@ -3,8 +3,8 @@
     "lagos_day": "2026-11-05",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-04T21:10:02Z",
-    "grades_as_of": "2026-11-05T05:11:02Z",
-    "prev_hash": "sha256:e4b1548bc8bacdab5e6cb08a22d9f4f6d30eec6f4c7ed527bb5a1683951b5bce",
+    "grades_as_of": "2026-11-05T07:11:02Z",
+    "prev_hash": "sha256:eaf1b8898ad3d1d69659e2d1adad79911c846e784089e3e4a9a13799756c7ff5",
     "picks_hash": "sha256:63e40cc349ab8cae2c4c240d304e99b2388672d23d9899120bab5738b1b3b02e",
     "counts": {
         "fixtures": 137,
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 15,
+        "won": 16,
         "lost": 2,
         "pushes": 1,
-        "graded": 17,
-        "pct": 88.24
+        "graded": 18,
+        "pct": 88.89
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -640,7 +640,7 @@
             "away": "Ulaangom City",
             "home_id": 921641,
             "away_id": 921643,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -653,8 +653,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1670023,
