@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-04",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-03T21:10:01Z",
-    "grades_as_of": "2026-11-05T01:10:02Z",
+    "grades_as_of": "2026-11-05T05:11:02Z",
     "prev_hash": "sha256:0809ce3a0c8fe60ab5c220f8a4099bf3b88dbd0cf3813dc9568da2fb15a43d69",
-    "picks_hash": "sha256:1437ba145a53c6e6411d4a5f960d2ffa9da0d6e43894f39b328aa4389aba6f54",
+    "picks_hash": "sha256:e4b1548bc8bacdab5e6cb08a22d9f4f6d30eec6f4c7ed527bb5a1683951b5bce",
     "counts": {
         "fixtures": 244,
-        "priced": 218,
+        "priced": 216,
         "recommended": 215,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 126,
+        "won": 131,
         "lost": 23,
         "pushes": 8,
-        "graded": 149,
-        "pct": 84.56
+        "graded": 154,
+        "pct": 85.06
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1272,7 +1272,7 @@
             "away": "Oborishte",
             "home_id": 5610,
             "away_id": 5364,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1285,8 +1285,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1137785,
@@ -1297,7 +1304,7 @@
             "away": "Strumska Slava",
             "home_id": 7433,
             "away_id": 5056,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1310,8 +1317,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1137791,
@@ -1322,7 +1336,7 @@
             "away": "Bansko",
             "home_id": 564943,
             "away_id": 301900,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -1335,8 +1349,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138007,
@@ -2414,7 +2435,7 @@
             "away": "Tolmin",
             "home_id": 622944,
             "away_id": 8475,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -2427,8 +2448,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1395054,
@@ -3183,7 +3211,7 @@
             "away": "Sutjeska Foča",
             "home_id": 755191,
             "away_id": 302094,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -3196,8 +3224,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 6,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1626742,
@@ -6912,9 +6947,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -6964,9 +7001,11 @@
             },
             "frozen_at": "2026-11-03T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
