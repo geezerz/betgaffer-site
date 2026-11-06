@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-06",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-06T05:57:21Z",
-    "grades_as_of": "2026-11-06T05:57:21Z",
+    "grades_as_of": "2026-11-06T07:10:02Z",
     "prev_hash": "sha256:e7e6392c76a03b476d7f2e313dbc92b284659b0bbea8eb0415a683c443e28d20",
-    "picks_hash": "sha256:61af6fd25826d5aae0da8ccd866f8979181f4b5a59e7eb70b49deb91b7e72066",
+    "picks_hash": "sha256:0dd762fa2aa5ed27472eb144af3f3fed5207efc8f76b1529d6f293e94e1dfb03",
     "counts": {
         "fixtures": 352,
-        "priced": 350,
-        "recommended": 274,
+        "priced": 352,
+        "recommended": 276,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 10,
+        "won": 11,
         "lost": 5,
         "pushes": 0,
-        "graded": 15,
-        "pct": 66.67
+        "graded": 16,
+        "pct": 68.75
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -519,7 +519,7 @@
             "away": "Central Stallions",
             "home_id": 19061,
             "away_id": 593547,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -532,8 +532,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1666589,
@@ -3746,12 +3753,19 @@
             "home_id": 921278,
             "away_id": 921295,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-06T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -5745,12 +5759,19 @@
             "home_id": 757584,
             "away_id": 757588,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-06T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
