@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-07T21:10:01Z",
-    "grades_as_of": "2026-11-07T22:15:02Z",
+    "grades_as_of": "2026-11-07T23:10:01Z",
     "prev_hash": "sha256:b2dac739d4d5a18cd38b5e323cf48c47b9662f7803da9a7a6efb308179ab8da0",
-    "picks_hash": "sha256:f45b27c68554a8573277bbed933b7751953222d85513d200927f000eb6ee4190",
+    "picks_hash": "sha256:73e350d06519d453ed0d75a8edd4e5ae9b87023079dae07755aac1a6e62a2575",
     "counts": {
         "fixtures": 1166,
         "priced": 1158,
-        "recommended": 1063,
+        "recommended": 1066,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Criciuma",
             "home_id": 184,
             "away_id": 280,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -64,7 +64,7 @@
             "away": "Juventude",
             "home_id": 200,
             "away_id": 201,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -89,7 +89,7 @@
             "away": "Juan Pablo II College",
             "home_id": 4200,
             "away_id": 4196,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -114,7 +114,7 @@
             "away": "CF Pachuca",
             "home_id": 2869,
             "away_id": 3256,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -164,13 +164,20 @@
             "away": "Tritons Vallarta",
             "home_id": 760516,
             "away_id": 760505,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 83,
+                "price": 1.21,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-07T23:10:01Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -282,7 +289,7 @@
             "away": "Puerto Cabello",
             "home_id": 8450,
             "away_id": 5639,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -869,12 +876,19 @@
             "home_id": 7933,
             "away_id": 760501,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 83,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-07T23:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -26328,12 +26342,19 @@
             "home_id": 760512,
             "away_id": 760523,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 92,
+                "price": 1.13,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-07T23:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
