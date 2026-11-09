@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-08T21:10:01Z",
-    "grades_as_of": "2026-11-08T23:10:07Z",
-    "prev_hash": "sha256:c2780c0f4674ad9b3d6d782a44b7ed94a2cb258403120160068960edcc99d1f6",
-    "picks_hash": "sha256:f1396ef3361ff733d4df19ccc7b8f979b0ffedcff2bc60dc1d2b52d931413d25",
+    "grades_as_of": "2026-11-09T01:10:02Z",
+    "prev_hash": "sha256:6b0771f2cbbe5d7e9a4339d99ea120310938da233ad791d0f8be6e9f6f534f61",
+    "picks_hash": "sha256:87ec757e833db9ae5b9202506f94de36be73aee22e3115a9be26d5a6b43fdd4e",
     "counts": {
         "fixtures": 86,
-        "priced": 86,
-        "recommended": 75,
+        "priced": 83,
+        "recommended": 76,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 3,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 3,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Comerciantes Unidos",
             "home_id": 4198,
             "away_id": 4202,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 521405,
@@ -64,7 +71,7 @@
             "away": "Atletico Balboa",
             "home_id": 9296,
             "away_id": 9299,
-            "status": "1H",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
@@ -82,7 +89,7 @@
             "away": "O'Higgins",
             "home_id": 5028,
             "away_id": 7002,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -95,8 +102,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1713883,
@@ -107,7 +121,7 @@
             "away": "Los Angeles FC II",
             "home_id": 1736,
             "away_id": 1735,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -132,7 +146,7 @@
             "away": "Millonarios",
             "home_id": 255,
             "away_id": 245,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -168,9 +182,11 @@
             },
             "frozen_at": "2026-11-08T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -182,13 +198,20 @@
             "away": "Real Espana",
             "home_id": 605773,
             "away_id": 5987,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "2H",
+            "pick": {
+                "market": "corners_over_6_5",
+                "label": "Corners Over 6.5",
+                "pct": 80,
+                "price": 1.24,
+                "price_est": true,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-11-09T01:10:02Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -200,7 +223,7 @@
             "away": "Carabobo FC",
             "home_id": 7391,
             "away_id": 7904,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -213,8 +236,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1668075,
@@ -225,7 +255,7 @@
             "away": "Oriente Petrolero",
             "home_id": 175,
             "away_id": 174,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -250,7 +280,7 @@
             "away": "Puebla",
             "home_id": 2983,
             "away_id": 2871,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -275,7 +305,7 @@
             "away": "Malacateco",
             "home_id": 9235,
             "away_id": 9118,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -300,7 +330,7 @@
             "away": "Forward Madison",
             "home_id": 4273,
             "away_id": 4267,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -325,7 +355,7 @@
             "away": "RB Bragantino U20",
             "home_id": 2425,
             "away_id": 2417,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -350,12 +380,12 @@
             "away": "Inter San Carlos",
             "home_id": 6002,
             "away_id": 565947,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -368,7 +398,7 @@
             "away": "Fuerte San Francisco",
             "home_id": 6966,
             "away_id": 7900,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -2023,8 +2053,10 @@
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
-            "withdrawn": false,
-            "state": "coming",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
             "grade": null,
             "score": null
         },
@@ -2048,9 +2080,11 @@
             },
             "frozen_at": "2026-11-08T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
