@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-08T21:10:01Z",
-    "grades_as_of": "2026-11-09T22:15:01Z",
+    "grades_as_of": "2026-11-09T23:10:02Z",
     "prev_hash": "sha256:84ea380fc25de685115f6f973861cd4d04c9a8493b99089c622222d939493bc7",
     "picks_hash": "sha256:ac490141fec61f5e8b71d4345bf890172430319fb7445ddb8137cbaa6ef7e2c9",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 58,
-        "lost": 14,
+        "won": 62,
+        "lost": 15,
         "pushes": 3,
-        "graded": 72,
-        "pct": 80.56
+        "graded": 77,
+        "pct": 80.52
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2426,7 +2426,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 1,
@@ -2586,7 +2586,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 0,
                 "away": 2,
@@ -2662,7 +2662,7 @@
             "away": "União de Leiria",
             "home_id": 3944,
             "away_id": 3942,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -2675,8 +2675,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665797,
@@ -2687,7 +2694,7 @@
             "away": "Manta FC",
             "home_id": 154,
             "away_id": 159,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -2700,8 +2707,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1718192,
@@ -2712,7 +2726,7 @@
             "away": "Union Magdalena",
             "home_id": 605494,
             "away_id": 275,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -2725,8 +2739,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1670309,
@@ -2784,7 +2805,7 @@
             "away": "Racing United",
             "home_id": 73711,
             "away_id": 73897,
-            "status": "1H",
+            "status": "HT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -2809,7 +2830,7 @@
             "away": "2 de Mayo",
             "home_id": 593821,
             "away_id": 594267,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
