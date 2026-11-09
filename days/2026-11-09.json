@@ -3,8 +3,8 @@
     "lagos_day": "2026-11-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-08T21:10:01Z",
-    "grades_as_of": "2026-11-09T05:11:02Z",
-    "prev_hash": "sha256:6b0771f2cbbe5d7e9a4339d99ea120310938da233ad791d0f8be6e9f6f534f61",
+    "grades_as_of": "2026-11-09T07:10:02Z",
+    "prev_hash": "sha256:f1fcdecc282b1205a9b56758ecb980332d1f3ca3c51d8bc2df5f12931d5916a3",
     "picks_hash": "sha256:87ec757e833db9ae5b9202506f94de36be73aee22e3115a9be26d5a6b43fdd4e",
     "counts": {
         "fixtures": 86,
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 10,
+        "won": 11,
         "lost": 4,
         "pushes": 1,
-        "graded": 14,
-        "pct": 71.43
+        "graded": 15,
+        "pct": 73.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -653,7 +653,7 @@
             "away": "Khovd Western",
             "home_id": 921609,
             "away_id": 921641,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -666,8 +666,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1576743,

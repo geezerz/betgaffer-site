@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-07T21:10:01Z",
-    "grades_as_of": "2026-11-09T05:11:02Z",
+    "grades_as_of": "2026-11-09T07:10:02Z",
     "prev_hash": "sha256:6afdea3b530035721a574564b1ecae05ab2ff3d475d2310ae5362c57d982d00f",
-    "picks_hash": "sha256:6b0771f2cbbe5d7e9a4339d99ea120310938da233ad791d0f8be6e9f6f534f61",
+    "picks_hash": "sha256:f1fcdecc282b1205a9b56758ecb980332d1f3ca3c51d8bc2df5f12931d5916a3",
     "counts": {
         "fixtures": 1167,
-        "priced": 1137,
+        "priced": 1134,
         "recommended": 1133,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 885,
+        "won": 887,
         "lost": 165,
         "pushes": 40,
-        "graded": 1050,
-        "pct": 84.29
+        "graded": 1052,
+        "pct": 84.32
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -966,9 +966,11 @@
             },
             "frozen_at": "2026-11-07T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -991,9 +993,11 @@
             },
             "frozen_at": "2026-11-07T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3527,7 +3531,7 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 4,
                 "away": 2,
@@ -5394,7 +5398,7 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 1,
@@ -6320,7 +6324,7 @@
             "away": "Rīgas FS",
             "home_id": 524,
             "away_id": 658,
-            "status": "TBD",
+            "status": "PST",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -23574,7 +23578,7 @@
             "away": "Peterborough United W",
             "home_id": 1102013,
             "away_id": 1102014,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -23587,7 +23591,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -25715,9 +25719,11 @@
             },
             "frozen_at": "2026-11-07T21:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -33556,7 +33562,7 @@
             "away": "Eldense",
             "home_id": 6321,
             "away_id": 4078,
-            "status": "PST",
+            "status": "NS",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -33569,7 +33575,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
