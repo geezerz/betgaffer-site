@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-08T21:10:01Z",
-    "grades_as_of": "2026-11-09T03:11:19Z",
+    "grades_as_of": "2026-11-09T05:11:02Z",
     "prev_hash": "sha256:6b0771f2cbbe5d7e9a4339d99ea120310938da233ad791d0f8be6e9f6f534f61",
     "picks_hash": "sha256:87ec757e833db9ae5b9202506f94de36be73aee22e3115a9be26d5a6b43fdd4e",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 7,
-        "lost": 2,
+        "won": 10,
+        "lost": 4,
         "pushes": 1,
-        "graded": 9,
-        "pct": 77.78
+        "graded": 14,
+        "pct": 71.43
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -481,7 +481,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "lost",
             "score": {
                 "home": 2,
                 "away": 2,
@@ -525,7 +525,7 @@
             "away": "Llaneros",
             "home_id": 259,
             "away_id": 288,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -538,8 +538,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149412,
@@ -550,7 +557,7 @@
             "away": "UCV Moquegua",
             "home_id": 3232,
             "away_id": 4201,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_win_either_half",
                 "label": "Home Win Either Half",
@@ -563,8 +570,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1665326,
@@ -575,7 +589,7 @@
             "away": "Atlético Choloma",
             "home_id": 605235,
             "away_id": 605769,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_win_either_half",
                 "label": "Home Win Either Half",
@@ -588,8 +602,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149506,
@@ -600,7 +621,7 @@
             "away": "Guadalajara Chivas",
             "home_id": 2981,
             "away_id": 2986,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -613,8 +634,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1670026,
@@ -625,7 +653,7 @@
             "away": "Khovd Western",
             "home_id": 921609,
             "away_id": 921641,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
