@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-07T21:10:01Z",
-    "grades_as_of": "2026-11-09T09:10:02Z",
+    "grades_as_of": "2026-11-09T13:10:02Z",
     "prev_hash": "sha256:6afdea3b530035721a574564b1ecae05ab2ff3d475d2310ae5362c57d982d00f",
     "picks_hash": "sha256:f1fcdecc282b1205a9b56758ecb980332d1f3ca3c51d8bc2df5f12931d5916a3",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 887,
+        "won": 888,
         "lost": 165,
         "pushes": 40,
-        "graded": 1052,
-        "pct": 84.32
+        "graded": 1053,
+        "pct": 84.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -33747,7 +33747,7 @@
             "away": "Seattle Reign FC W",
             "home_id": 1651,
             "away_id": 1647,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -33760,8 +33760,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 602459,
@@ -35820,14 +35827,21 @@
             "away": "Portland Thorns W",
             "home_id": 1646,
             "away_id": 1642,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1713950,

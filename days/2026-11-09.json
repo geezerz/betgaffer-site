@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-09",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-08T21:10:01Z",
-    "grades_as_of": "2026-11-09T11:10:02Z",
+    "grades_as_of": "2026-11-09T13:10:02Z",
     "prev_hash": "sha256:f1fcdecc282b1205a9b56758ecb980332d1f3ca3c51d8bc2df5f12931d5916a3",
     "picks_hash": "sha256:3057ca33188efe7ba3612d4d9c3e6e70d3e057c578262aea1dbb12874908d7e5",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 15,
+        "won": 17,
         "lost": 5,
         "pushes": 2,
-        "graded": 20,
-        "pct": 75.0
+        "graded": 22,
+        "pct": 77.27
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -724,7 +724,7 @@
             "away": "Ahrobiznes Volochysk",
             "home_id": 3872,
             "away_id": 2797,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -737,8 +737,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1226637,
@@ -977,7 +984,7 @@
             "away": "Rodina Moskva II",
             "home_id": 5600,
             "away_id": 7441,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "draw_10min",
                 "label": "Draw at 10 Min",
@@ -990,8 +997,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1639320,
@@ -1002,7 +1016,7 @@
             "away": "Naft Gachsaran",
             "home_id": 1054460,
             "away_id": 1054457,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1027,7 +1041,7 @@
             "away": "Havadar",
             "home_id": 1054456,
             "away_id": 278177,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -1102,7 +1116,7 @@
             "away": "CSM Reşiţa",
             "home_id": 5581,
             "away_id": 5580,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1127,7 +1141,7 @@
             "away": "Rilski Sportist",
             "home_id": 3544,
             "away_id": 2816,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1152,7 +1166,7 @@
             "away": "Yantra 2019",
             "home_id": 2817,
             "away_id": 3120,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1177,7 +1191,7 @@
             "away": "Al Wahda U23",
             "home_id": 637298,
             "away_id": 623349,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1202,7 +1216,7 @@
             "away": "Al Jazira U23",
             "home_id": 630825,
             "away_id": 637300,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1227,7 +1241,7 @@
             "away": "Ajman U23",
             "home_id": 637299,
             "away_id": 623348,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1252,7 +1266,7 @@
             "away": "Al Nasr U23",
             "home_id": 630824,
             "away_id": 623351,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1277,7 +1291,7 @@
             "away": "Queens Park Rangers U21",
             "home_id": 7787,
             "away_id": 3897,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1302,7 +1316,7 @@
             "away": "Niki Volos",
             "home_id": 598602,
             "away_id": 6930,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
