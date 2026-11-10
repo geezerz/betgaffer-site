@@ -8,7 +8,7 @@ cover, with at most one recommended pick per fixture. It is not a bookmaker and 
 
 ## What the receipts show
 
-- **Every pick is made on the Bet Gaffer platform before kickoff and carries the day's receipt.** Each row has
+- **Every pick carries the day's receipt.** Each row has
   `frozen_at` (UTC), the moment this site listed the pick, and `pre_ko` says whether that listing
   was before kickoff. Under accuracy rule 2 (`accuracy_rule: 2`) every pick that is not withdrawn
   counts with its real grade, including one with `pre_ko: false`. The receipt (`picks_hash`) proves
@@ -42,7 +42,7 @@ against them** — they would be overwritten, and a card can't be edited after t
 | `fx`, `api_fx` | Our fixture id, and the data provider's fixture id |
 | `home_id`, `away_id` | Team ids |
 | `pick` | `{market, label, pct, price, price_est, why}` or `null`; `pct` is the stated probability in whole percent; `price` is a decimal price or `null`, `price_est: true` when it is an estimate |
-| `frozen_at` | When this site listed the pick (UTC); the pick itself was made on the platform before kickoff |
+| `frozen_at` | When this site listed the pick (UTC) |
 | `pre_ko` | `true` if this site listed the pick before kickoff; `false` if it listed it after kickoff, or the kickoff later moved to before the listing. Under accuracy rule 2 a `pre_ko: false` pick counts with its real grade |
 | `late` | Legacy flag, being removed; ignore |
 | `withdrawn` | The fixture's identity changed after publication; the row is kept, marked and left out of the accuracy figures |

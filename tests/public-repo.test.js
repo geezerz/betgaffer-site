@@ -78,19 +78,18 @@ test('.gitignore keeps every build working path out of git', () => {
   assert.ok(existsSync(join(ROOT, '.gitignore')));
 });
 
-// Operator decision D15 (BRAND wording 2026-10-12): every pick is made before kickoff on the platform;
-// `frozen_at` is when this site LISTED it and `pre_ko` says whether that listing was before
+// Legal 11-10 withdrew D15's "every pick is made before kickoff on the platform" (unproven).
+// `frozen_at` is when this site LISTED a pick and `pre_ko` says whether that listing was before
 // kickoff; rule 2 counts every non-withdrawn pick with its real grade. The README is public and must
 // say exactly that: the receipt proves a pick did not change after `frozen_at` — it does not by itself
 // prove the pick preceded kickoff.
-test('README: says what is true about picks listed after kickoff (D15)', () => {
+test('README: says what is true about picks listed after kickoff (Legal 11-10)', () => {
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   const flat = readme.replace(/\s+/g, ' ');
   const rowOf = (k) => readme.split('\n').find((l) => l.startsWith(`| \`${k}\` |`));
   assert.doesNotMatch(flat, /committed before its kickoff|Every pick is committed before|frozen before kickoff/i);
-  // BRAND 2026-10-12: one opening sentence, not two
-  assert.ok(readme.includes("- **Every pick is made on the Bet Gaffer platform before kickoff and carries the day's receipt.** Each row has"), 'the receipts bullet opens with the one approved sentence');
-  assert.doesNotMatch(flat, /Picks are made on the Bet Gaffer platform before kickoff\./);
+  assert.ok(readme.includes("- **Every pick carries the day's receipt.** Each row has"), 'the receipts bullet opens with the one cleared sentence');
+  assert.doesNotMatch(flat, /made (on the Bet Gaffer platform )?before kickoff/i);
   // the legacy flag: its false sentence is gone and its row says to ignore it (Plan E4 deletes the row)
   assert.doesNotMatch(flat, /10 minutes|carries no pick|never has a pick|`late: true`/);
   assert.equal(rowOf('late'), '| `late` | Legacy flag, being removed; ignore |');
@@ -102,7 +101,7 @@ test('README: says what is true about picks listed after kickoff (D15)', () => {
   assert.doesNotMatch(rowOf('pre_ko'), /left out of the accuracy figures|frozen/);
   assert.match(rowOf('pre_ko'), /this site listed the pick before kickoff/);
   assert.match(rowOf('pre_ko'), /counts with its real grade/);
-  assert.match(rowOf('frozen_at'), /When this site listed the pick \(UTC\)/);
+  assert.equal(rowOf('frozen_at'), '| `frozen_at` | When this site listed the pick (UTC) |');
   assert.doesNotMatch(flat, /gets its first pick before kickoff|shows its listing time|first listed/);
   // per-pick `frozen_at` is "when this site listed the pick" everywhere, the receipt row included
   assert.match(rowOf('picks_hash'), /pick, listing time \(`frozen_at`\) and withdrawn flag/);
