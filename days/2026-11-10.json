@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-10",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-09T21:10:02Z",
-    "grades_as_of": "2026-11-10T03:10:01Z",
+    "grades_as_of": "2026-11-10T05:11:02Z",
     "prev_hash": "sha256:ac490141fec61f5e8b71d4345bf890172430319fb7445ddb8137cbaa6ef7e2c9",
-    "picks_hash": "sha256:8c552e97ef4a0bf3a9b43644f20840327fac113f19a4e1d0f9aa4f2f564dadcd",
+    "picks_hash": "sha256:159745ca1dcc5282cf8aad69151f14aacace765b39db7435f618a066c0e743bc",
     "counts": {
-        "fixtures": 112,
-        "priced": 112,
-        "recommended": 108,
+        "fixtures": 113,
+        "priced": 106,
+        "recommended": 109,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 3,
+        "won": 4,
         "lost": 2,
         "pushes": 0,
-        "graded": 5,
-        "pct": 60.0
+        "graded": 6,
+        "pct": 66.67
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -199,7 +199,7 @@
             "away": "Cordobés",
             "home_id": 760738,
             "away_id": 760639,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -212,8 +212,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1698598,
@@ -224,7 +231,7 @@
             "away": "Hunters",
             "home_id": 593547,
             "away_id": 921642,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -635,9 +642,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -660,9 +669,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -685,9 +696,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -710,9 +723,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -735,9 +750,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -760,9 +777,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -785,9 +804,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1084,6 +1105,31 @@
             "score": null
         },
         {
+            "fx": 1694887,
+            "api_fx": 1631522,
+            "ko": "2026-11-10T18:00:00Z",
+            "comp": "National 2 - Group C (France)",
+            "home": "Chasselay MDA",
+            "away": "UF Touraine",
+            "home_id": 9090,
+            "away_id": 66156,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 89,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-10T05:11:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1699447,
             "api_fx": 1644161,
             "ko": "2026-11-10T18:00:00Z",
@@ -1096,6 +1142,56 @@
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-09T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1726896,
+            "api_fx": 1649436,
+            "ko": "2026-11-10T18:00:00Z",
+            "comp": "Pernambucano - 1 (Brazil)",
+            "home": "América PE",
+            "away": "Serrano PE",
+            "home_id": 1051055,
+            "away_id": 1065368,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 86,
+                "price": 1.16,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-09T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1726898,
+            "api_fx": 1649438,
+            "ko": "2026-11-10T18:00:00Z",
+            "comp": "Pernambucano - 1 (Brazil)",
+            "home": "Íbis",
+            "away": "Centro Limoeirense",
+            "home_id": 1051056,
+            "away_id": 1051057,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
                 "pct": 90,
                 "price": 1.12,
                 "price_est": true,
@@ -1577,31 +1673,6 @@
             "score": null
         },
         {
-            "fx": 1726896,
-            "api_fx": 1649436,
-            "ko": "2026-11-10T19:00:00Z",
-            "comp": "Pernambucano - 1 (Brazil)",
-            "home": "América PE",
-            "away": "Serrano PE",
-            "home_id": 1051055,
-            "away_id": 1065368,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1",
-                "label": "AH Home +1",
-                "pct": 86,
-                "price": 1.16,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-09T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 1726897,
             "api_fx": 1649437,
             "ko": "2026-11-10T19:00:00Z",
@@ -1616,31 +1687,6 @@
                 "label": "AH Home +1",
                 "pct": 84,
                 "price": 1.19,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-09T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1726898,
-            "api_fx": 1649438,
-            "ko": "2026-11-10T19:00:00Z",
-            "comp": "Pernambucano - 1 (Brazil)",
-            "home": "Íbis",
-            "away": "Centro Limoeirense",
-            "home_id": 1051056,
-            "away_id": 1051057,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 90,
-                "price": 1.12,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
