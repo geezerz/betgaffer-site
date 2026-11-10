@@ -20,6 +20,7 @@ import * as privacy from '../site/content/privacy.js';
 import * as terms from '../site/content/terms.js';
 import * as refunds from '../site/content/refunds.js';
 import { parse, find, findAll, textOf, visibleText, cspViolations } from './html-scan.js';
+import { findBanned } from '../site/lib/claims.js';
 import {
   REPO_ROOT, testConfig, workspace, copyArtifact, addArchive, readJson, writeJson, snapshot, htmlFiles, rehash,
 } from './site-fixtures.js';
@@ -452,7 +453,24 @@ describe('build of the fixture artifact', () => {
     const locCount = (sitemap.match(/<loc>/g) || []).length;
     assert.equal(locCount, PAGE_ROUTES.length - 5, 'every route but the 404 and the four noindex result pages');
     const robots = await read(ws, 'robots.txt');
-    assert.equal(robots, 'User-agent: *\nAllow: /\nSitemap: https://betgaffer.com/sitemap.xml\n');
+    assert.match(robots, /^User-agent: \*\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nAllow: \/\n/);
+    assert.match(robots, /\nSitemap: https:\/\/betgaffer\.com\/sitemap\.xml\n$/);
+    // Training-only crawlers sit in the one Disallow group; answer engines and Google-Extended (Gemini
+    // grounding, operator 2026-11-10) must never land in it.
+    const blocked = robots.split('\n\n')[1];
+    for (const bot of ['GPTBot', 'ClaudeBot', 'CCBot', 'Bytespider']) assert.match(blocked, new RegExp(`^User-agent: ${bot}$`, 'm'), bot);
+    for (const bot of ['Google-Extended', 'OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'Claude-SearchBot', 'Googlebot', 'Bingbot']) {
+      assert.doesNotMatch(robots, new RegExp(`User-agent: ${bot}\\b`), bot);
+    }
+    assert.match(blocked, /\nDisallow: \/$/);
+  });
+
+  test('llms.txt names the indexable pages and carries no figure', async () => {
+    const llms = await read(ws, 'llms.txt');
+    assert.match(llms, /^# BetGaffer\n\n> .*not a bookmaker/);
+    assert.match(llms, /\(https:\/\/betgaffer\.com\/our-record\/\)/);
+    assert.doesNotMatch(llms, /\d/, 'a figure would travel without its period');
+    assert.deepEqual(findBanned(llms), []);
   });
 
   test('each page family carries its own og:image, true to the real file\'s pixel size, mirrored in twitter:image', async () => {

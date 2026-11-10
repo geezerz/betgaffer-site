@@ -616,7 +616,24 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const sitemapUrls = [...pages].filter(([, html]) => !NOINDEX_META.test(html)).map(([path]) => config.origin + path);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
     + sitemapUrls.map((u) => `  <url><loc>${escHtml(u)}</loc></url>`).join('\n') + '\n</urlset>\n';
-  const robots = `User-agent: *\nAllow: /\nSitemap: ${config.origin}/sitemap.xml\n`;
+  // AI policy OD-SEO-1 "B+" (operator 2026-11-10): answer engines may read and cite us live; training-only
+  // crawlers may not, because a trained model repeats a dated figure without its period. Google-Extended
+  // stays allowed so the Gemini app can ground on us (the operator accepted Gemini training for that).
+  // A Cloudflare AI-bot WAF rule overrides this file, so the dashboard must match it.
+  const robots = `User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nAllow: /\n\n`
+    + ['GPTBot', 'ClaudeBot', 'anthropic-ai', 'Applebot-Extended', 'CCBot', 'Meta-ExternalAgent', 'Bytespider',
+      'cohere-training-data-crawler', 'Amazonbot', 'Diffbot', 'omgili'].map((b) => `User-agent: ${b}\n`).join('')
+    + `Disallow: /\n\nSitemap: ${config.origin}/sitemap.xml\n`;
+  // llms.txt (SEO spec §5): a charter-checked description for agents that read it. NO figures: a number
+  // here would go stale and travel without its period.
+  const llms = `# BetGaffer\n\n> BetGaffer publishes football predictions as model probabilities and grades every recommended pick in public, misses included. It is not a bookmaker and takes no bets.\n\n`
+    + `## Pages\n\n`
+    + `- [Home](${config.origin}/): what BetGaffer is\n`
+    + `- [Our Record](${config.origin}/our-record/): every graded recommended pick, by day and by month, with its sample size and period\n`
+    + `- [Features](${config.origin}/features/): what the platform does\n`
+    + `- [Terms](${config.origin}/terms/): terms of use, including responsible play\n\n`
+    + `## Quoting our figures\n\n`
+    + `An accuracy figure from BetGaffer is only true with its sample size and period. Quote both and link Our Record. Past results don't promise future ones.\n`;
 
   // 7–8. Write <out>.tmp, then swap.
   await rmrf(tmp);
@@ -632,6 +649,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     await write('assets/css/site.css', css);
     await write('sitemap.xml', sitemap);
     await write('robots.txt', robots);
+    await write('llms.txt', llms);
     await write('_headers', HEADERS);
     await write(MARKER, MARKER_TEXT);
     for (const [from, rel] of copies) {
