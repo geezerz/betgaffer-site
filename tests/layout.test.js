@@ -1195,11 +1195,11 @@ test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, l
   assert.match(foot, /<a href="mailto:hello@example.com">hello@example.com<\/a>/);
   // Spec §10: the brand column states the receipt idea; no Receipts column, no repository link.
   const brand = foot.match(/<div class="bg-foot__brand">[\s\S]*?<\/div>/)[0];
-  // Operator decision D15 (BRAND wording 2026-10-12): every pick is MADE before kickoff on the
-  // platform; this site may LIST one after kickoff, and counts it with its real grade. The line
-  // must not say picks are frozen / listed before kickoff, nor that a row shows its listing time.
-  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick is made before kickoff and carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</p>'), brand);
-  assert.doesNotMatch(brand, /frozen before|published before kickoff|shows its listing time/i);
+  // Legal 11-10 (D15 withdrawn): the line claims nothing about kickoff for the pick itself; this site
+  // may LIST one after kickoff, and counts it with its real grade. Never made / frozen / listed before
+  // kickoff, nor that a row shows its listing time.
+  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</p>'), brand);
+  assert.doesNotMatch(brand, /before kick-?off|shows its listing time/i);
   assert.doesNotMatch(foot, /github|reposit|Receipts</i);
   assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
   // Every footer link is one of: the three legal pages, the contact mailto, the social accounts

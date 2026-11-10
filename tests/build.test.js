@@ -1378,11 +1378,11 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
     assert.match(visibleText(await read(b, 'index.html')), /the platform's card pick/);
   });
 
-  // Operator decision D15 (BRAND wording 2026-10-12): every pick is MADE before kickoff on the
-  // platform, but this site may LIST one after kickoff (recorded with its listing time, counted
-  // with its real grade). So a page may say "made before kickoff" and nothing else about it: never
-  // frozen / published / listed / committed before kickoff, and never that a row shows its listing time.
-  test('D15: a built page says picks are made before kickoff — never frozen, published or listed before it', async () => {
+  // Legal 11-10 withdrew D15's "every pick is made before kickoff" (unproven for ~19% of graded rows).
+  // This site may LIST a pick after kickoff (recorded with its listing time, counted with its real
+  // grade), and no page says a pick was made / frozen / published / listed / committed before kickoff,
+  // nor that a row shows its listing time, until Legal clears the T-30 line.
+  test('Legal 11-10: no built page claims a pick came before kickoff', async () => {
     const hits = [];
     let pages = 0;
     for (const w of wss) {
@@ -1391,12 +1391,10 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
         const t = visibleText(html);
         for (const re of [/frozen before/gi, /committed before/gi, /before its matches kick off/gi, /shows? its listing time/gi, /picks frozen/gi, /before (its |their )?kick-?off/gi]) {
           for (const x of t.matchAll(re)) {
-            const before = t.slice(Math.max(0, x.index - 40), x.index);
-            if (/^before kick-?off$/i.test(x[0]) && / made $/.test(before)) continue;
             hits.push(`${rel}: ${JSON.stringify(t.slice(Math.max(0, x.index - 50), x.index + 40))}`);
           }
         }
-        assert.ok(t.includes('Every pick is made before kickoff and carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
+        assert.ok(t.includes('Every pick carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
       }
     }
     assert.ok(pages >= 28, `premise: every page of both builds was read (${pages})`);
