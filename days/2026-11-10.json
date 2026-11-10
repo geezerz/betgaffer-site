@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-10",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-09T21:10:02Z",
-    "grades_as_of": "2026-11-10T05:11:02Z",
+    "grades_as_of": "2026-11-10T07:11:01Z",
     "prev_hash": "sha256:ac490141fec61f5e8b71d4345bf890172430319fb7445ddb8137cbaa6ef7e2c9",
-    "picks_hash": "sha256:159745ca1dcc5282cf8aad69151f14aacace765b39db7435f618a066c0e743bc",
+    "picks_hash": "sha256:7699774134eb19ecb853d84cd2d7228eab293c61c32dc3a464317d8681479daa",
     "counts": {
         "fixtures": 113,
-        "priced": 106,
+        "priced": 104,
         "recommended": 109,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 4,
+        "won": 5,
         "lost": 2,
         "pushes": 0,
-        "graded": 6,
-        "pct": 66.67
+        "graded": 7,
+        "pct": 71.43
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -231,7 +231,7 @@
             "away": "Hunters",
             "home_id": 593547,
             "away_id": 921642,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -244,8 +244,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1698599,
@@ -1267,9 +1274,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1292,9 +1301,11 @@
             },
             "frozen_at": "2026-11-09T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
