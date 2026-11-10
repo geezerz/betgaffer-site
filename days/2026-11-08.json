@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-08",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-07T21:10:01Z",
-    "grades_as_of": "2026-11-09T19:10:02Z",
+    "grades_as_of": "2026-11-10T03:10:01Z",
     "prev_hash": "sha256:e3b9b705d0fc6f95588b3c06a196360a81c6db53c2636f9218c5623c1fbca660",
     "picks_hash": "sha256:84ea380fc25de685115f6f973861cd4d04c9a8493b99089c622222d939493bc7",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 888,
+        "won": 889,
         "lost": 165,
         "pushes": 40,
-        "graded": 1053,
-        "pct": 84.33
+        "graded": 1054,
+        "pct": 84.35
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -24851,7 +24851,7 @@
             "away": "Covadonga",
             "home_id": 776794,
             "away_id": 6913,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -24864,8 +24864,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149059,
