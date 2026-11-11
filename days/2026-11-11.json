@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-11",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-10T23:10:05Z",
-    "grades_as_of": "2026-11-11T09:10:01Z",
+    "grades_as_of": "2026-11-11T11:10:01Z",
     "prev_hash": "sha256:34f692963a03bff50e58a7a6d9595414d942c01e81d72c05a91c86cdff213f3f",
     "picks_hash": "sha256:16f46be2a0c0ed9e10764c55ffbcb1f8576efa4e344edb886c2d005b0a845d2d",
     "counts": {
@@ -13,10 +13,10 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 6,
+        "won": 8,
         "lost": 0,
         "pushes": 0,
-        "graded": 6,
+        "graded": 8,
         "pct": 100.0
     },
     "accuracy_rule": 2,
@@ -281,7 +281,7 @@
             "away": "Italy U17",
             "home_id": 1163,
             "away_id": 1127,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -294,8 +294,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 6,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1699221,
@@ -306,7 +313,7 @@
             "away": "North Macedonia U17",
             "home_id": 1151,
             "away_id": 1123,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -319,8 +326,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 464715,
@@ -356,7 +370,7 @@
             "away": "Etimesgut SK",
             "home_id": 77011,
             "away_id": 76975,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -381,7 +395,7 @@
             "away": "Balıkesirspor",
             "home_id": 76910,
             "away_id": 76979,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -406,7 +420,7 @@
             "away": "Eskişehirspor",
             "home_id": 76894,
             "away_id": 6988,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -456,7 +470,7 @@
             "away": "Mazıdağı Fosfatspor",
             "home_id": 76890,
             "away_id": 77202,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -481,7 +495,7 @@
             "away": "Adanaspor",
             "home_id": 76927,
             "away_id": 6197,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -506,7 +520,7 @@
             "away": "Diyarbekirspor",
             "home_id": 81175,
             "away_id": 76970,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -531,7 +545,7 @@
             "away": "Talasgücü Belediyespor",
             "home_id": 77029,
             "away_id": 8273,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -556,7 +570,7 @@
             "away": "Yeşilyurt Belediyespor",
             "home_id": 77251,
             "away_id": 77250,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -581,7 +595,7 @@
             "away": "Osmaniyespor",
             "home_id": 81110,
             "away_id": 77252,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -606,7 +620,7 @@
             "away": "Karaköprü Belediyespor",
             "home_id": 81176,
             "away_id": 76922,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -631,7 +645,7 @@
             "away": "Karadeniz Ereğli BSK",
             "home_id": 76969,
             "away_id": 81112,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -656,7 +670,7 @@
             "away": "Gölcükspor",
             "home_id": 76888,
             "away_id": 186577,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -681,7 +695,7 @@
             "away": "Kartal Bulvarspor",
             "home_id": 76980,
             "away_id": 76897,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -706,7 +720,7 @@
             "away": "Orduspor 1967",
             "home_id": 76902,
             "away_id": 77216,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -731,7 +745,7 @@
             "away": "Beykoz İshaklıspor",
             "home_id": 8579,
             "away_id": 77017,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -756,7 +770,7 @@
             "away": "Denmark U19",
             "home_id": 1609,
             "away_id": 1769,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -781,7 +795,7 @@
             "away": "Liechtenstein U19",
             "home_id": 1034,
             "away_id": 1823,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -806,7 +820,7 @@
             "away": "Montenegro U19",
             "home_id": 1608,
             "away_id": 1778,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -831,7 +845,7 @@
             "away": "Machida Zelvia",
             "home_id": 4299,
             "away_id": 4301,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -856,7 +870,7 @@
             "away": "Kashiwa Reysol",
             "home_id": 4053,
             "away_id": 7506,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -881,7 +895,7 @@
             "away": "Kashima",
             "home_id": 3984,
             "away_id": 3980,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -906,7 +920,7 @@
             "away": "Azerbaijan U17",
             "home_id": 1106,
             "away_id": 652302,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -931,7 +945,7 @@
             "away": "Croatia U17",
             "home_id": 1621,
             "away_id": 1154,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -956,7 +970,7 @@
             "away": "Norway U17",
             "home_id": 1136,
             "away_id": 1159,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -981,7 +995,7 @@
             "away": "Cerezo Osaka",
             "home_id": 4293,
             "away_id": 3982,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1006,7 +1020,7 @@
             "away": "Fatsa Belediyespor",
             "home_id": 76903,
             "away_id": 77204,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1031,7 +1045,7 @@
             "away": "Hungary U19",
             "home_id": 1140,
             "away_id": 1776,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1056,7 +1070,7 @@
             "away": "Israel U19",
             "home_id": 1803,
             "away_id": 1158,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1081,12 +1095,12 @@
             "away": "Poland U19",
             "home_id": 652849,
             "away_id": 1798,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -1124,7 +1138,7 @@
             "away": "Armenia U17",
             "home_id": 1161,
             "away_id": 652301,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -1149,7 +1163,7 @@
             "away": "Estonia U17",
             "home_id": 1150,
             "away_id": 1145,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
