@@ -3,20 +3,20 @@
     "lagos_day": "2026-11-11",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-10T23:10:05Z",
-    "grades_as_of": "2026-11-11T03:10:01Z",
+    "grades_as_of": "2026-11-11T05:10:04Z",
     "prev_hash": "sha256:d2abd32aebd741a1361dcbf4c84c031753ed52379baf469363695097d7d9a7cf",
-    "picks_hash": "sha256:6600480fd20d9560cb44fbb194bb2adb871cf15c36c1bd8b4c300d808bb9bfb7",
+    "picks_hash": "sha256:70102179d330ad629c5ab2c57851da33a2e77a4680f5230bef5d06101ee8c16b",
     "counts": {
         "fixtures": 193,
-        "priced": 190,
+        "priced": 186,
         "recommended": 181,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 1,
+        "won": 5,
         "lost": 0,
         "pushes": 0,
-        "graded": 1,
+        "graded": 5,
         "pct": 100.0
     },
     "accuracy_rule": 2,
@@ -139,7 +139,7 @@
             "away": "Platense",
             "home_id": 9300,
             "away_id": 9297,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -152,8 +152,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1727321,
@@ -164,7 +171,7 @@
             "away": "Tigres UANL W",
             "home_id": 9318,
             "away_id": 9314,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -177,8 +184,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724259,
@@ -189,7 +203,7 @@
             "away": "Atletico Nacional",
             "home_id": 256,
             "away_id": 251,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -202,8 +216,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1727322,
@@ -214,7 +235,7 @@
             "away": "Guadalajara W",
             "home_id": 9312,
             "away_id": 9320,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -227,8 +248,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1699225,
@@ -3651,9 +3679,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3946,6 +3976,31 @@
                 "label": "AH Home +1.5",
                 "pct": 90,
                 "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-10T23:10:05Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1727314,
+            "api_fx": 1649443,
+            "ko": "2026-11-11T18:00:00Z",
+            "comp": "Pernambucano - 1 (Brazil)",
+            "home": "Ypiranga PE",
+            "away": "Afogados",
+            "home_id": 1051064,
+            "away_id": 4684,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 86,
+                "price": 1.16,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -4326,9 +4381,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4351,9 +4408,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4371,31 +4430,6 @@
                 "label": "AH Home +1.5",
                 "pct": 89,
                 "price": 1.13,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-10T23:10:05Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1727314,
-            "api_fx": 1649443,
-            "ko": "2026-11-11T19:00:00Z",
-            "comp": "Pernambucano - 1 (Brazil)",
-            "home": "Ypiranga PE",
-            "away": "Afogados",
-            "home_id": 1051064,
-            "away_id": 4684,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 86,
-                "price": 1.16,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -4723,9 +4757,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
