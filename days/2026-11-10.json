@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-10",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-09T21:10:02Z",
-    "grades_as_of": "2026-11-10T23:10:05Z",
+    "grades_as_of": "2026-11-11T03:10:01Z",
     "prev_hash": "sha256:ac490141fec61f5e8b71d4345bf890172430319fb7445ddb8137cbaa6ef7e2c9",
     "picks_hash": "sha256:d2abd32aebd741a1361dcbf4c84c031753ed52379baf469363695097d7d9a7cf",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 79,
+        "won": 80,
         "lost": 11,
         "pushes": 0,
-        "graded": 90,
-        "pct": 87.78
+        "graded": 91,
+        "pct": 87.91
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3489,7 +3489,7 @@
             "away": "Firpo",
             "home_id": 7901,
             "away_id": 7246,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3502,8 +3502,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
