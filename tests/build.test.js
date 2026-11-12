@@ -98,7 +98,7 @@ describe('build of the fixture artifact', () => {
   });
 
   test('site.css concatenates the stylesheets in the fixed order', async () => {
-    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+    assert.deepEqual([...CSS_ORDER], ['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css', 'blog.css']);
     const css = await read(ws, 'assets/css/site.css');
     let at = -1;
     for (const f of CSS_ORDER) {
@@ -432,10 +432,15 @@ describe('build of the fixture artifact', () => {
     }
   });
 
-  test('every page carries the one approved inline script (JSON-LD), byte-identical, nothing else', async () => {
+  test('every page carries the site JSON-LD first, byte-identical; any further block is valid JSON with "<" escaped', async () => {
     for (const { rel, html } of await htmlFiles(ws.out)) {
       const scripts = findAll(parse(html), (n) => n.tag === 'script' && n.attrs.type === 'application/ld+json');
-      assert.equal(scripts.length, 1, rel);
+      assert.ok(scripts.length >= 1, rel);
+      for (const extra of scripts.slice(1)) {
+        const text = extra.children[0]?.text ?? '';
+        assert.doesNotThrow(() => JSON.parse(text), rel);
+        assert.ok(!text.includes('<'), `${rel}: "<" is escaped in JSON-LD`);
+      }
       // script is a RAW element (html-scan.js): its text sits as a raw, undecoded child, not
       // reachable through textOf (which hides script/style content -- it answers "visible text").
       assert.equal(scripts[0].children[0]?.text, JSON_LD_CONTENT, rel);

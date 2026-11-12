@@ -83,3 +83,10 @@ export function lagosToday(nowMs = Date.now()) {
   }
   return partsOfMs(nowMs).date;
 }
+
+/** 'YYYY-MM-DD' + n calendar days (UTC arithmetic on a date, never the host timezone). */
+export function addDays(date, n) {
+  const [y, m, d] = date.split('-').map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d) + n * 86400000);
+  return `${pad4(t.getUTCFullYear())}-${pad2(t.getUTCMonth() + 1)}-${pad2(t.getUTCDate())}`;
+}
