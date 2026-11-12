@@ -23,12 +23,12 @@ import {
 export const META = Object.freeze({
   path: '/waitlist/',
   title: 'Founding members',
-  description: `${fmtInt(TOTAL_PLACES)} founding places. ${DISCOUNT_PCT}% off every subscription payment while you `
-    + 'subscribe, double plan Credits, first look at new features and priority support.',
+  description: `${fmtInt(TOTAL_PLACES)} founding places. ${DISCOUNT_PCT}% off subscription payments while you `
+    + 'stay subscribed, double plan Credits, early access to new features and priority support.',
 });
 
-const LEDE = `${fmtInt(TOTAL_PLACES)} places. ${DISCOUNT_PCT}% off your plan's price at every payment, for as long as `
-  + 'you subscribe — plus double plan Credits, first look at new features and priority support.';
+const LEDE = `${fmtInt(TOTAL_PLACES)} places. Founding members get ${DISCOUNT_PCT}% off subscription payments `
+  + 'while they stay subscribed, plus double plan Credits, early access to new features and priority support.';
 
 const FULL_LINE = `All ${fmtInt(WAITLIST_PLACES)} waitlist places are taken. Join anyway and we'll email your invite `
   + `when it's ready — with a head start on one of the ${fmtInt(LAUNCH_PLACES)} launch places.`;

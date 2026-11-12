@@ -108,7 +108,7 @@ export const APPROVED_SOURCES = Object.freeze([
   ...BENEFITS.flatMap((b) => commitmentSentences(b.text).map((s) => ({ text: s, routes: ['/terms/', '/waitlist/'], source: `founding.js ${b.id}` }))),
   // Spec §3.5 step 2 (final copy, /waitlist/) and programme §1 in the Terms: the 30-day claim window.
   { text: `Start any paid plan within ${CLAIM_DAYS} days of it and the place is yours.`, routes: ['/waitlist/'], source: 'spec §3.5 step 2' },
-  { text: `The first ${WAITLIST_PLACES} people on the waitlist get a founding place, claimed with a paid subscription within ${CLAIM_DAYS} days of launch.`, routes: ['/privacy/'], source: 'Legal addendum 2 (11-12), banner variant 2' },
+  { text: `The first ${WAITLIST_PLACES} people on the waitlist get a founding place, claimed with a paid subscription within ${CLAIM_DAYS} days of launch.`, routes: ['/privacy/'], source: 'Legal addendum 3 (11-12): accepted dated commitment, claim date = launch + 30; the line changes the day that date moves' },
   { text: `A paid subscription started within ${CLAIM_DAYS} days of the invite claims the place; subscribing before the invite arrives also claims it.`, routes: ['/terms/'], source: 'programme §1' },
   // Spec §9 "Kept": 30-day data-request replies, 72-hour breach notice.
   { text: 'We will reply within 30 days, and we may ask you to confirm the request from that address before acting on it.', routes: ['/privacy/'], source: 'spec §9 kept: data requests' },

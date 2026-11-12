@@ -43,13 +43,20 @@ test('Legal addendum 2: no variant says "every payment" or "double Credits" with
   assert.match('double Credits every month', /double credits/i);
 });
 
+test('Legal addendum 3: B6 card text; the Lab banner names "Coming at launch" once', () => {
+  assert.equal(F.BENEFITS.find((b) => b.id === 'B6').text,
+    'A first reply from a person within 12 hours of a message to support@betgaffer.com or in-app support, every day.');
+  const t = (v) => [...v.heading, ...v.line].map((s) => s.t).join('');
+  assert.equal(t(F.VARIANTS[10]).split('Coming at launch').length, 2);
+});
+
 test('the waitlist cap in config is the founding waitlist cap', () => {
   assert.equal(config.waitlist_places, F.WAITLIST_PLACES);
 });
 
 test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 2026-10-19)', () => {
   assert.ok(Object.isFrozen(F.CTA_TEASER));
-  assert.equal(md(F.CTA_TEASER), '**30% off** while you stay subscribed, **double plan Credits**, early access.');
+  assert.equal(md(F.CTA_TEASER), 'Founding members: **30% off** while subscribed, **double plan Credits**, early access.');
   assert.equal(F.CTA_TEASER.filter((s) => s.offer).length, 1, 'only the percentage is tagged offer');
 });
 
@@ -97,7 +104,7 @@ const SPEC_VARIANTS = Object.freeze([
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
   ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.'],
   ['Get the **founding member** badge', 'A **founding badge**, **30% off** and **double plan Credits**, for our **1,000 founding members**.'],
-  ['Build a slip to **YOUR odds**', "Tell Gaffer the odds you want — it suggests a slip, you confirm before anything's added."],
+  ['Coming at launch: **the Lab**', "You'll be able to set your stake and Gaffer will build a ticket from our model's rated picks, to your rules."],
 ]);
 /** Segments -> the spec's **markdown** form. */
 const md = (segs) => segs.map((s) => (s.hl ? `**${s.t}**` : s.t)).join('');

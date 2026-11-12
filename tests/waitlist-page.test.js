@@ -27,7 +27,7 @@ import { commitmentSentences, commitmentViolations } from '../site/lib/commitmen
 const NOW = Date.parse('2026-10-07T22:30:00Z');
 
 // ── spec copy (§2, §3; amendments "Task 4 additions") ──────────────────────────────────────────
-const LEDE = "1,000 places. 30% off your plan's price at every payment, for as long as you subscribe — plus double plan Credits, first look at new features and priority support.";
+const LEDE = '1,000 places. Founding members get 30% off subscription payments while they stay subscribed, plus double plan Credits, early access to new features and priority support.';
 const LAUNCH_TILE = '500 places for the first people to subscribe at launch.';
 const FULL_LINE = "All 500 waitlist places are taken. Join anyway and we'll email your invite when it's ready — with a head start on one of the 500 launch places.";
 const STEPS = [
@@ -43,7 +43,7 @@ const QUESTIONS = [
   ['Does the 30% combine with other discounts?', 'No. If another percentage discount applies, you get whichever saves you more.'],
   ['What if I cancel?', 'You have 90 days after your last paid period ends to subscribe again and keep everything. After that, the place passes to the next member in line.'],
 ];
-const META_DESCRIPTION = '1,000 founding places. 30% off every subscription payment while you subscribe, double plan Credits, first look at new features and priority support.';
+const META_DESCRIPTION = '1,000 founding places. 30% off subscription payments while you stay subscribed, double plan Credits, early access to new features and priority support.';
 const THANKS = "You're on the founding waitlist. We'll email your invite when it's ready — if you're among the first 500, you'll have 30 days from that email to claim your place.";
 
 const RESULT_KINDS = ['thanks', 'invalid', 'slow-down', 'unavailable'];
@@ -143,7 +143,7 @@ describe('site/content/waitlist.js', () => {
       // The subtle teaser line under the CTA (operator, 2026-10-19): same on every variant.
       const teaser = find(slot, (n) => has(n, 'bg-fd-card__teaser'));
       assert.equal(teaser.tag, 'p', `variant ${i}: teaser`);
-      assert.equal(textOf(teaser), '30% off while you stay subscribed, double plan Credits, early access.', `variant ${i}`);
+      assert.equal(textOf(teaser), 'Founding members: 30% off while subscribed, double plan Credits, early access.', `variant ${i}`);
       assert.deepEqual(findAll(teaser, (n) => n.tag === 'strong').map((n) => [n.attrs.class, textOf(n)]),
         [['fd-hl', '30% off'], ['fd-hl', 'double plan Credits']], `variant ${i}: teaser highlights`);
       assert.equal(find(teaser, (n) => n.attrs['data-figure'] === 'offer') && textOf(find(teaser, (n) => n.attrs['data-figure'] === 'offer')),

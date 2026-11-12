@@ -23,7 +23,7 @@ export const BENEFITS = Object.freeze([
   { id: 'B3', title: 'More from every top-up', text: `Every Credit top-up comes with ${TOPUP_BONUS_PCT}% extra.` },
   { id: 'B4', title: 'A bigger say', text: 'A founding badge, and your vote counts twice when members vote on new features and improvements.' },
   { id: 'B5', title: 'First look at new features', text: `New features reach you at least ${EARLY_ACCESS_HOURS} hours before everyone else, and you help shape them while they're built. (Fixes and security updates go to everyone at once.)` },
-  { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of your message, every day, on any paid plan — plus a founding-members WhatsApp community with our team.` },
+  { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day.` },
 ].map(Object.freeze));
 
 /** The founding summary line used on Features (Legal-cleared wording, 2026-11-12). */
@@ -76,12 +76,12 @@ export const VARIANTS = Object.freeze([
   // founding-waitlist ask like every other variant — it just leads with what's coming instead of a
   // membership perk. Joins the same rotation pool (operator: "features cards becomes part of the
   // cards picked at random... still link to founding member registrations").
-  variant([P('Build a slip to '), H('YOUR odds')],
-    [P("Tell Gaffer the odds you want — it suggests a slip, you confirm before anything's added.")]),
+  variant([P('Coming at launch: '), H('the Lab')],
+    [P("You'll be able to set your stake and Gaffer will build a ticket from our model's rated picks, to your rules.")]),
 ]);
 
 /** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */
-export const CTA_TEASER = Object.freeze([H(OFF), P(' while you stay subscribed, '), H('double plan Credits'), P(', early access.')]);
+export const CTA_TEASER = Object.freeze([P('Founding members: '), H(OFF), P(' while subscribed, '), H('double plan Credits'), P(', early access.')]);
 
 /**
  * The carousel dots (operator 2026-10-23): on a phone only the previous/current/next dot shows
