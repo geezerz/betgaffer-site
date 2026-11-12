@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-12T22:15:06Z",
-    "grades_as_of": "2026-11-12T22:15:06Z",
+    "grades_as_of": "2026-11-12T23:10:05Z",
     "prev_hash": "sha256:c24873fed9e686b4ef0169487348516844e1af3b8b13e4f8c3e4849ab1714c6d",
-    "picks_hash": "sha256:71bbb5846bb43e048b7991281ba5d24720a3b421c18d819b2ca88933c8dd355e",
+    "picks_hash": "sha256:93de941943ea2add45d28efc5d1c94dafd2eb70a70322baaf5f80c20d4be202f",
     "counts": {
         "fixtures": 221,
         "priced": 221,
-        "recommended": 196,
+        "recommended": 197,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Athletic Club",
             "home_id": 300,
             "away_id": 297,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -64,7 +64,7 @@
             "away": "Progreso",
             "home_id": 4544,
             "away_id": 4117,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -89,12 +89,12 @@
             "away": "Trinidad and Tobago",
             "home_id": 407,
             "away_id": 326,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -107,7 +107,7 @@
             "away": "Nacional Potosí",
             "home_id": 177,
             "away_id": 164,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -2481,12 +2481,19 @@
             "home_id": 752308,
             "away_id": 1051587,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 82,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-12T23:10:05Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
