@@ -71,7 +71,7 @@ function sections(op) {
     {
       id: 'who-we-are',
       title: 'Who we are',
-      now: `<p>Bet Gaffer is run by ${operatorLine(op)} ("we", "us"). Bet Gaffer is football match intelligence: football data and probability analytics, not betting tips.</p>
+      now: `<p>Bet Gaffer is run by ${operatorLine(op)} ("we", "us"). BetGaffer is a sports prediction platform. We're not a bookmaker: we take no bets, hold no stakes and pay no winnings.</p>
 <p>By using this site you agree to these terms. If you do not agree, please do not use it.</p>`,
       launch: SAME,
     },

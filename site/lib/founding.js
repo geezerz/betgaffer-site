@@ -27,7 +27,7 @@ export const BENEFITS = Object.freeze([
 ].map(Object.freeze));
 
 /** The founding summary line used on Features (Legal-cleared wording, 2026-11-12). */
-export const SUMMARY = `${DISCOUNT_PCT}% off your subscription after your first payment, while you stay subscribed · double plan Credits · early access to new features · priority support`;
+export const SUMMARY = `Founding members get ${DISCOUNT_PCT}% off subscription payments while they stay subscribed · double plan Credits · ${TOPUP_BONUS_PCT}% extra on top-ups · early access to new features · priority support`;
 
 /**
  * One run of card copy. `hl`: a key word (bold, accent colour). `offer` is derived, never typed: every
@@ -50,14 +50,16 @@ const ALL = fmtInt(TOTAL_PLACES);
  * @type {readonly {heading: readonly {t: string, hl?: true, offer?: true}[], line: readonly {t: string, hl?: true, offer?: true}[]}[]}
  */
 export const VARIANTS = Object.freeze([
-  variant([P('Be one of '), H(`${ALL} founding members`)],
-    [H(OFF), P(' every subscription payment · '), H('double Credits'), P(' · '), H('first look'), P(' at new features · '), H('priority support')]),
-  variant([H(OFF), P(' for as long as you subscribe')],
-    [P('Founding members save '), H(`${DISCOUNT_PCT}%`), P(' on every payment. There are only '), H(`${ALL} founding places`), P('.')]),
+  variant([P('Be one of our '), H(`${ALL} founding members.`)],
+    [P('Founding members get '), H(OFF), P(' subscription payments while they stay subscribed · '), H('double plan Credits'), P(' · '), H(`${TOPUP_BONUS_PCT}% extra`),
+      P(' on top-ups · '), H('early access'), P(' to new features · '), H('priority support')]),
+  variant([H(OFF), P(' while you stay subscribed')],
+    [P('Founding members get '), H(`${DISCOUNT_PCT}%`), P(' off their subscription payments while they stay subscribed. There are '), H(`${ALL} founding places`), P('.')]),
   variant([P('Reserve your '), H('founding place')],
-    [P("It's "), H('free'), P(' to join the waitlist. The first '), H(fmtInt(WAITLIST_PLACES)), P(' reserve a founding place with '), H(OFF), P(' every payment.')]),
+    [P('The first '), H(fmtInt(WAITLIST_PLACES)), P(' people on the waitlist get a founding place, claimed with a paid subscription within '), H(`${CLAIM_DAYS} days`),
+      P(' of launch. Joining the waitlist is '), H('free'), P('.')]),
   variant([P("Your plan's Credits, "), H('doubled')],
-    [P('Founding members get '), H('double Credits'), P(' every month on any paid plan, and '), H(`${TOPUP_BONUS_PCT}% extra`), P(' on every top-up.')]),
+    [P('Founding members get '), H('double plan Credits'), P(' every month on any paid plan, and '), H(`${TOPUP_BONUS_PCT}% extra`), P(' Credits on every top-up.')]),
   variant([P('See new features '), H('before everyone else')],
     [P('Founding members get '), H('early access'), P(' to new features and help '), H('shape them'), P(" while they're built.")]),
   variant([P('A '), H('bigger say'), P(' in what we build')],
@@ -67,9 +69,9 @@ export const VARIANTS = Object.freeze([
   variant([P('Only '), H(`${ALL} founding places`)],
     [H(fmtInt(WAITLIST_PLACES)), P(' for the waitlist and '), H(fmtInt(LAUNCH_PLACES)), P(' for the first subscribers at launch.')]),
   variant([P('Founding benefits that '), H('stay with you')],
-    [P('Stay subscribed and keep your '), H(OFF), P(', '), H('double Credits'), P(' and '), H('priority support'), P('.')]),
+    [P('Stay subscribed and keep your '), H(OFF), P(', '), H('double plan Credits'), P(' and '), H('priority support'), P('.')]),
   variant([P('Get the '), H('founding member'), P(' badge')],
-    [P('A '), H('founding badge'), P(', '), H(OFF), P(' every payment and '), H('double Credits'), P(' — for the first '), H(ALL), P('.')]),
+    [P('A '), H('founding badge'), P(', '), H(OFF), P(' and '), H('double plan Credits'), P(', for our '), H(`${ALL} founding members`), P('.')]),
   // Feature teaser (operator, 2026-10-19): no live feature to try yet, so the CTA still reads as a
   // founding-waitlist ask like every other variant — it just leads with what's coming instead of a
   // membership perk. Joins the same rotation pool (operator: "features cards becomes part of the
@@ -79,7 +81,7 @@ export const VARIANTS = Object.freeze([
 ]);
 
 /** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */
-export const CTA_TEASER = Object.freeze([H(OFF), P(' after your first payment, '), H('double plan Credits'), P(', early access.')]);
+export const CTA_TEASER = Object.freeze([H(OFF), P(' while you stay subscribed, '), H('double plan Credits'), P(', early access.')]);
 
 /**
  * The carousel dots (operator 2026-10-23): on a phone only the previous/current/next dot shows

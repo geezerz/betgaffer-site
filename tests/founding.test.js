@@ -26,7 +26,21 @@ test('every printed offer percentage is derived from DISCOUNT_PCT / TOPUP_BONUS_
   // No literal "<digits>%" in the module's code: B1's title, SUMMARY and the sentences use the constants.
   assert.deepEqual(code.match(/\d+%/g) ?? [], []);
   assert.ok(F.BENEFITS[0].title.startsWith(`${F.DISCOUNT_PCT}% off`));
-  assert.ok(F.SUMMARY.startsWith(`${F.DISCOUNT_PCT}% off`));
+  assert.ok(F.SUMMARY.startsWith(`Founding members get ${F.DISCOUNT_PCT}% off`));
+});
+
+test('Legal addendum 2: no variant says "every payment" or "double Credits" without "plan"; the Features summary is variant 0\'s line', () => {
+  const text = (segs) => segs.map((s) => s.t).join('');
+  for (const [i, v] of F.VARIANTS.entries()) {
+    const t = text([...v.heading, ...v.line]);
+    assert.doesNotMatch(t, /every payment/i, `variant ${i}`);
+    assert.doesNotMatch(t, /double credits/i, `variant ${i}`);
+  }
+  assert.match(text(F.CTA_TEASER), /double plan Credits/);
+  assert.equal(text(F.VARIANTS[0].line), F.SUMMARY);
+  // Premise: the guard's patterns fire on the old copy.
+  assert.match('30% off every payment', /every payment/i);
+  assert.match('double Credits every month', /double credits/i);
 });
 
 test('the waitlist cap in config is the founding waitlist cap', () => {
@@ -35,7 +49,7 @@ test('the waitlist cap in config is the founding waitlist cap', () => {
 
 test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 2026-10-19)', () => {
   assert.ok(Object.isFrozen(F.CTA_TEASER));
-  assert.equal(md(F.CTA_TEASER), '**30% off** after your first payment, **double plan Credits**, early access.');
+  assert.equal(md(F.CTA_TEASER), '**30% off** while you stay subscribed, **double plan Credits**, early access.');
   assert.equal(F.CTA_TEASER.filter((s) => s.offer).length, 1, 'only the percentage is tagged offer');
 });
 
@@ -73,16 +87,16 @@ test('plans are the operator-decided prices (2026-10-08)', () => {
 // Typed out from the spec table on purpose (never derived from founding.js): **bold** marks the words
 // the card highlights (bold, in the accent colour).
 const SPEC_VARIANTS = Object.freeze([
-  ['Be one of **1,000 founding members**', '**30% off** every subscription payment · **double Credits** · **first look** at new features · **priority support**'],
-  ['**30% off** for as long as you subscribe', 'Founding members save **30%** on every payment. There are only **1,000 founding places**.'],
-  ['Reserve your **founding place**', "It's **free** to join the waitlist. The first **500** reserve a founding place with **30% off** every payment."],
-  ["Your plan's Credits, **doubled**", 'Founding members get **double Credits** every month on any paid plan, and **20% extra** on every top-up.'],
+  ['Be one of our **1,000 founding members.**', 'Founding members get **30% off** subscription payments while they stay subscribed · **double plan Credits** · **20% extra** on top-ups · **early access** to new features · **priority support**'],
+  ['**30% off** while you stay subscribed', 'Founding members get **30%** off their subscription payments while they stay subscribed. There are **1,000 founding places**.'],
+  ['Reserve your **founding place**', 'The first **500** people on the waitlist get a founding place, claimed with a paid subscription within **30 days** of launch. Joining the waitlist is **free**.'],
+  ["Your plan's Credits, **doubled**", 'Founding members get **double plan Credits** every month on any paid plan, and **20% extra** Credits on every top-up.'],
   ['See new features **before everyone else**', "Founding members get **early access** to new features and help **shape them** while they're built."],
   ['A **bigger say** in what we build', 'As a founding member, your vote counts **twice** when members vote on new features and improvements.'],
   ['Help when you need it, **first**', '**Priority support** on any paid plan, plus a founding-members **WhatsApp community** with our team.'],
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
-  ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double Credits** and **priority support**.'],
-  ['Get the **founding member** badge', 'A **founding badge**, **30% off** every payment and **double Credits** — for the first **1,000**.'],
+  ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.'],
+  ['Get the **founding member** badge', 'A **founding badge**, **30% off** and **double plan Credits**, for our **1,000 founding members**.'],
   ['Build a slip to **YOUR odds**', "Tell Gaffer the odds you want — it suggests a slip, you confirm before anything's added."],
 ]);
 /** Segments -> the spec's **markdown** form. */
@@ -99,8 +113,8 @@ describe('VARIANTS: the founding card copy (spec §16.5)', () => {
   });
 
   test('variants 4 and 9 carry the corrected spec copy (plan C amendments)', () => {
-    assert.equal(md(F.VARIANTS[3].line), 'Founding members get **double Credits** every month on any paid plan, and **20% extra** on every top-up.');
-    assert.equal(md(F.VARIANTS[8].line), 'Stay subscribed and keep your **30% off**, **double Credits** and **priority support**.');
+    assert.equal(md(F.VARIANTS[3].line), 'Founding members get **double plan Credits** every month on any paid plan, and **20% extra** Credits on every top-up.');
+    assert.equal(md(F.VARIANTS[8].line), 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.');
   });
 
   test('segments: a non-empty string t, hl only as true, offer exactly when the segment prints a %', () => {
@@ -147,7 +161,8 @@ describe('VARIANTS: the founding card copy (spec §16.5)', () => {
     for (const [i, v] of F.VARIANTS.entries()) {
       const t = `<p>${md(v.heading)}</p><p>${md(v.line)}</p>`.replace(/\*\*/g, '');
       assert.deepEqual(findBanned(t), [], `variant ${i + 1}`);
-      assert.deepEqual(commitmentSentences(t), [], `variant ${i + 1}`);
+      // Variant 3 (index 2) carries the one approved claim window (Legal addendum 2); no other card may commit to a time.
+      assert.deepEqual(commitmentSentences(t), i === 2 ? ['the first 500 people on the waitlist get a founding place, claimed with a paid subscription within 30 days of launch.'] : [], `variant ${i + 1}`);
     }
     // Premise: both scans fire on this kind of copy.
     assert.deepEqual(findBanned('<p>A sure bet for founding members.</p>'), ['sure bet']);
@@ -176,7 +191,7 @@ describe('variantFor(path): the static variant of a page', () => {
     const map = F.PAGE_VARIANTS;
     assert.ok(Object.isFrozen(map));
     assert.equal(map['/'], 0, "operator's pick (2026-10-08): the home page leads with variant 1");
-    assert.equal(F.VARIANTS[F.variantFor('/')].heading.map((x) => x.t).join(''), 'Be one of 1,000 founding members');
+    assert.equal(F.VARIANTS[F.variantFor('/')].heading.map((x) => x.t).join(''), 'Be one of our 1,000 founding members.');
     const values = Object.values(map);
     assert.ok(values.every((i) => Number.isInteger(i) && i >= 0 && i < F.VARIANTS.length), String(values));
     assert.equal(new Set(values).size, values.length, `distinct: ${JSON.stringify(map)}`);

@@ -8,7 +8,7 @@ const config = {
   origin: 'https://betgaffer.com',
   repo: 'geezerz/betgaffer-site',
   brand: 'Bet Gaffer',
-  descriptor: 'football match intelligence',
+  descriptor: "BetGaffer is a sports prediction platform. We're not a bookmaker: we take no bets, hold no stakes and pay no winnings.",
   operator: {
     legal_name: 'BETGAFFER LTD',
     trading_name: 'Bet Gaffer',

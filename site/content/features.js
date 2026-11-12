@@ -171,6 +171,7 @@ ${pricingBody}
 <section class="ct-fsec ct-founding" aria-labelledby="ct-founding-h">
 <h2 class="t-d2" id="ct-founding-h">Be one of our ${escHtml(fmtInt(TOTAL_PLACES))} founding members.</h2>
 <p class="ct-founding__sum" data-figure="offer">${escHtml(SUMMARY)}</p>
+<p class="t-s"><a href="/terms/#founding">When each benefit starts: Subscription Terms</a></p>
 <div class="ct-founding__cta"><a class="bg-btn bg-btn--primary" href="/waitlist/">Join the founding waitlist</a></div>
 </section>
 ${identityCard(op)}

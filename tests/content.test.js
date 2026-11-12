@@ -227,11 +227,9 @@ for (const name of Object.keys(PAGES)) {
 
   test(`${name}: positioning — football data and probability analytics, not a bookmaker`, () => {
     const t = visibleText(renderPage(name));
-    assert.match(t, /not a bookmaker/i);
-    if (name === 'features') return; // the spec's intro replaces the positioning paragraph on this page
-    assert.match(t, /football data and probability analytics, not betting tips/);
-    assert.match(t, /Bet Gaffer/);
-    assert.match(t, /football match intelligence/);
+    assert.doesNotMatch(t, /football match intelligence|probability analytics/);
+    if (name === 'features') return; // the spec's intro carries the same sentence on this page
+    assert.ok(t.includes("BetGaffer is a sports prediction platform. We're not a bookmaker: we take no bets, hold no stakes and pay no winnings."), 'R-182 line verbatim');
   });
 
   test(`${name}: no percentage outside an offer figure, and no banned phrase in visible text`, () => {
@@ -880,9 +878,12 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     assert.ok(sec, 'a founding section');
     const offer = find(sec, (n) => n.attrs['data-figure'] === 'offer');
     assert.ok(offer, 'the summary is an offer figure');
-    assert.equal(textOf(offer), '30% off your subscription after your first payment, while you stay subscribed · double plan Credits · early access to new features · priority support');
+    assert.equal(textOf(offer), 'Founding members get 30% off subscription payments while they stay subscribed · double plan Credits · 20% extra on top-ups · early access to new features · priority support');
     assert.equal(TOTAL_PLACES, 1000, 'premise: the heading prints 1,000');
     assert.equal(textOf(find(sec, (n) => n.tag === 'h2')), 'Be one of our 1,000 founding members.');
+    const terms = findAll(sec, (n) => n.tag === 'a' && n.attrs.href === '/terms/#founding');
+    assert.equal(terms.length, 1);
+    assert.equal(textOf(terms[0]), 'When each benefit starts: Subscription Terms');
     const btn = findAll(sec, (n) => n.tag === 'a' && cls(n, 'bg-btn--primary'));
     assert.equal(btn.length, 1);
     assert.equal(btn[0].attrs.href, '/waitlist/');

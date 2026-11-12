@@ -24,11 +24,11 @@
    tallest reading taken; each min-height is that tallest reading + a flat
    8px margin.
      width   min-height   tallest variant
-      320       333px        324.78px   (re-measured 2026-11-12: the longer CTA line wraps)
-      360       311px        302.28px   (re-measured 2026-11-12)
-      480       271px        262.28px
-      520       244px        235.89px
-     1024       176px        167.19px
+      320       378px        369.78px   (re-measured 2026-11-12: Legal addendum 2 copy)
+      360       356px        347.28px   (re-measured 2026-11-12)
+      480       333px        324.78px   (re-measured 2026-11-12)
+      520       267px        258.39px   (re-measured 2026-11-12)
+     1024       200px        191.19px   (re-measured 2026-11-12)
    shortcut: one scrollbar/rendering pass, not the dual-scrollbar sweep across
    every intermediate width the original ten-variant table used (2026-10-08,
    see git history) -- the margin above is wider (8px, not 3-30px) to cover
@@ -47,7 +47,7 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card{
   position:relative;
   display:flex; flex-direction:column; justify-content:space-between; gap:16px;
-  min-height:333px;
+  min-height:378px;
   padding:18px 16px 16px;
   border:1px solid var(--accent); border-radius:var(--r-2);
   background:
@@ -104,16 +104,16 @@ html.fd-hidden [data-banner]{ display:none; }
 
 /* The reservation steps (measured; see the table above). 244px holds from 520px
    to 1023px: at 640px only the button's own width changes (auto, still centered). */
-@media (min-width:360px){ .bg-fd-card{ min-height:311px; } }
-@media (min-width:480px){ .bg-fd-card{ min-height:271px; } }
-@media (min-width:520px){ .bg-fd-card{ min-height:244px; } }
+@media (min-width:360px){ .bg-fd-card{ min-height:356px; } }
+@media (min-width:480px){ .bg-fd-card{ min-height:333px; } }
+@media (min-width:520px){ .bg-fd-card{ min-height:267px; } }
 @media (min-width:640px){
   .bg-fd-card__cta{ width:auto; }
 }
 @media (min-width:1024px){
   .bg-fd-slot{ padding-top:20px; }
   .bg-fd-card{
-    min-height:176px;
+    min-height:200px;
     padding:20px 64px 20px 24px;
   }
   .bg-fd-card__row{ flex-direction:row; align-items:center; gap:24px; }

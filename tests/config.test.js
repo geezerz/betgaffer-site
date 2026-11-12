@@ -8,7 +8,7 @@ test('config carries the plan constants', () => {
   assert.equal(config.origin, 'https://betgaffer.com');
   assert.equal(config.repo, 'geezerz/betgaffer-site');
   assert.equal(config.brand, 'Bet Gaffer');
-  assert.equal(config.descriptor, 'football match intelligence');
+  assert.equal(config.descriptor, "BetGaffer is a sports prediction platform. We're not a bookmaker: we take no bets, hold no stakes and pay no winnings.");
   assert.equal(config.waitlist_places, 500);
   assert.equal(config.stale_after_hours, 6);
   assert.equal(config.pricing.currency, 'NGN');

@@ -8,8 +8,7 @@ import { isDate } from '../lib/time.js';
 import { requireOperator } from '../config.js';
 
 /** Positioning, stated on every content page (spec §9, charter "IS / IS NOT"). */
-export const POSITIONING = 'Bet Gaffer is football match intelligence: football data and probability analytics, '
-  + 'not betting tips. We are not a bookmaker. We take no bets, hold no stakes and pay no winnings.';
+export const POSITIONING = "BetGaffer is a sports prediction platform. We're not a bookmaker: we take no bets, hold no stakes and pay no winnings.";
 
 export const COL_NOW = 'Now (this site)';
 export const COL_LAUNCH = 'At full launch';
