@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { build, REPO_ROOT } from '../site/build.mjs';
-import { blogErrors, freshness, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
+import { backdated, blogErrors, freshness, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
 import { lagosToday, addDays } from '../site/lib/time.js';
 import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
 import { parse, findAll, cspViolations, claimViolations, bareCounts } from './html-scan.js';
@@ -185,6 +185,15 @@ describe('publication dates (operator R-210: true and identical in the byline, J
     const s = sample();
     s.data.articles[0].updated = '2026-10-30';
     assert.ok(blogErrors(s).some((e) => /updated is before published/.test(e)));
+  });
+});
+
+describe('merge preflight: a piece going live for the first time is dated today (Marketing R-210)', () => {
+  test('only pieces not yet in the live sitemap, published before today, are backdated', () => {
+    const arts = [piece('live1'), piece('new-ok', { published: TODAY, updated: TODAY }), piece('new-old'), piece('later', { published: '2026-11-20', updated: '2026-11-20' }), { slug: 'planned' }];
+    const live = new Set(['https://betgaffer.com/blog/learn/live1/']);
+    assert.deepEqual(backdated(arts, live, TODAY, 'https://betgaffer.com'), ['new-old']);
+    assert.deepEqual(backdated(arts, new Set(), TODAY, 'https://betgaffer.com'), ['live1', 'new-old'], 'nothing live yet: every past-dated piece is new');
   });
 });
 
