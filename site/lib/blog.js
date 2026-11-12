@@ -69,7 +69,7 @@ export async function readBlog(dir) {
 }
 
 /** The publish rules (the platform's publish rules + this site's CSP/safety checks); [] = the content may ship. */
-export function blogErrors({ data, bodies }) {
+export function blogErrors({ data, bodies }, today = null) {
   const err = [];
   if (!Array.isArray(data.articles)) return ['blog.json: articles must be a list'];
   const list = data.articles;
@@ -101,6 +101,7 @@ export function blogErrors({ data, bodies }) {
       if (a[k] !== undefined && !isDate(a[k])) err.push(`${id}: ${k} is not a YYYY-MM-DD date`);
     }
     if (isDate(a.published) && isDate(a.updated) && a.updated < a.published) err.push(`${id}: updated is before published`);
+    if (today && isDate(a.published) && isDate(a.updated) && a.updated > (a.published > today ? a.published : today)) err.push(`${id}: updated is in the future`);
     const body = bodies[id];
     if (body === undefined) { err.push(`${id}: no body file ${id}.html`); continue; }
     for (const h of Object.keys(a.toc ?? {})) if (!body.includes(`id="${h}"`)) err.push(`${id}: contents entry '${h}' has no heading`);
@@ -177,7 +178,7 @@ const crumbNav = (crumbs) => `<nav class="lr-crumb" aria-label="Breadcrumb">${cr
  */
 export function renderBlog(blog, { today, origin, rc }) {
   if (blog === null) return null;
-  const errors = blogErrors(blog);
+  const errors = blogErrors(blog, today);
   if (errors.length) throw new Error(`blog: ${errors.join('; ')}`);
   const { data, bodies } = blog;
   const cats = data.categories;
