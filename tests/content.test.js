@@ -574,7 +574,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
       'aliases such as +tags or Gmail dots, hold one place',
       'not transferable',
       'no cash value',
-      'It does not combine with other percentage discounts: if one applies, you get whichever saves you more.',
+      "It doesn't combine with other percentage discounts, such as a challenge reward: the bigger one applies to that payment.",
       'We will not reduce your founding benefits while you hold the status.',
       'founding members get an equal or better replacement, with 30 days\' notice',
       'It also ends if you close your account, or if we close it for a breach of these terms or fraud',
