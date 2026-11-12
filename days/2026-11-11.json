@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-11",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-10T23:10:05Z",
-    "grades_as_of": "2026-11-11T23:10:02Z",
+    "grades_as_of": "2026-11-12T01:10:02Z",
     "prev_hash": "sha256:34f692963a03bff50e58a7a6d9595414d942c01e81d72c05a91c86cdff213f3f",
     "picks_hash": "sha256:bac03b3ec4017a6f8d6a2fe9c739d753ac05960a042fab0342dba069239d4405",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 110,
-        "lost": 13,
+        "won": 111,
+        "lost": 14,
         "pushes": 5,
-        "graded": 123,
-        "pct": 89.43
+        "graded": 125,
+        "pct": 88.8
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -5776,7 +5776,7 @@
             "away": "Alianza",
             "home_id": 7900,
             "away_id": 165185,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -5789,8 +5789,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149558,
@@ -5801,7 +5808,7 @@
             "away": "Nautico Recife",
             "home_id": 181,
             "away_id": 186,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -5814,8 +5821,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
