@@ -43,7 +43,7 @@ const LIVE_NOW = 'Live now';
 const isCount = (n) => Number.isSafeInteger(n) && n >= 0;
 
 // The three tiles a visitor most needs; the large-screen bento sets them wider (operator can change the pick).
-const HEROES = new Set(['Predictions', 'Ask Gaffer', 'Our Record']);
+const HEROES = new Set(['Predictions', 'Ask Gaffer']);
 
 // [name, problem, what we do, label, href]. Only the blog row links: the app pages are not on the teaser.
 export const ROWS = [

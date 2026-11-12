@@ -836,7 +836,9 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     assert.deepEqual(feats, features.bentoSpans(features.ROWS.map((r) => r.hero === true)));
     assert.equal(feats.length, 12);
     assert.deepEqual(spans('ct-coming-h'), [2, 2, 2]);
-    assert.deepEqual(features.ROWS.filter((r) => r.hero).map((r) => r.name), ['Predictions', 'Ask Gaffer', 'Our Record']);
+    assert.deepEqual(features.ROWS.filter((r) => r.hero).map((r) => r.name), ['Predictions', 'Ask Gaffer']);
+    // Two heroes pack the 12 rows with one widened pair and no lone full-width tile (the 3-hero set left Ask Gaffer alone).
+    assert.deepEqual(feats, [4, 2, 2, 2, 2, 3, 3, 4, 2, 2, 2, 2]);
     assert.doesNotMatch(html, /\sstyle=/);
   });
 
