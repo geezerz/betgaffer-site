@@ -40,6 +40,10 @@ export function freshness(a, today) {
   return days <= CHECK_DAYS ? 'fresh' : days > (a.strict ? CHECK_DAYS : GONE_DAYS) ? 'gone' : 'stale';
 }
 
+/** Operator R-210: the byline states the same dates as the JSON-LD and sitemap; "Updated" only for a later change. */
+const dated = (a) => `Published <time datetime="${escAttr(a.published)}">${fmtShort(a.published)}</time>`
+  + (a.updated > a.published ? ` · Updated <time datetime="${escAttr(a.updated)}">${fmtShort(a.updated)}</time>` : '');
+
 export const pathOf = (a) => `${a.section === 'learn' ? '/blog/learn/' : '/blog/'}${a.slug}/`;
 
 /** Read content/blog. null when there is no blog.json; throws on unparsable JSON. */
@@ -88,6 +92,7 @@ export function blogErrors({ data, bodies }) {
     for (const k of ['published', 'updated', 'checked']) {
       if (a[k] !== undefined && !isDate(a[k])) err.push(`${id}: ${k} is not a YYYY-MM-DD date`);
     }
+    if (isDate(a.published) && isDate(a.updated) && a.updated < a.published) err.push(`${id}: updated is before published`);
     const body = bodies[id];
     if (body === undefined) { err.push(`${id}: no body file ${id}.html`); continue; }
     for (const h of Object.keys(a.toc ?? {})) if (!body.includes(`id="${h}"`)) err.push(`${id}: contents entry '${h}' has no heading`);
@@ -169,7 +174,7 @@ export function renderBlog(blog, { today, origin, rc }) {
   const { data, bodies } = blog;
   const cats = data.categories;
   const mark = (a) => ({ ...a, state: freshness(a, today) });
-  const live = data.articles.filter((a) => a.published !== undefined).map(mark).filter((a) => a.state !== 'gone');
+  const live = data.articles.filter((a) => a.published !== undefined && a.published <= today).map(mark).filter((a) => a.state !== 'gone');
   if (live.length < MIN_ARTICLES) return null;
   const bySlug = new Map(live.map((a) => [a.slug, a]));
   const learn = live.filter((a) => a.section === 'learn');
@@ -183,7 +188,7 @@ export function renderBlog(blog, { today, origin, rc }) {
   });
   const card = (a) => `<a class="lr-card" href="${escAttr(pathOf(a))}"><span class="lr-card__top"><span class="lr-cat">${escHtml(cats[a.cat])}</span>${level(a.level)}</span>`
     + `<b class="lr-card__t">${escHtml(a.title)}</b><span class="lr-card__p">${escHtml(a.card)}</span>`
-    + `<span class="lr-card__f"><span>Updated <time datetime="${escAttr(a.updated)}">${fmtShort(a.updated)}</time> · ${a.minutes} min read</span>`
+    + `<span class="lr-card__f"><span>${dated(a)} · ${a.minutes} min read</span>`
     + '<svg class="ic ic--s" aria-hidden="true"><use href="#i-right"/></svg></span></a>';
   const cards = (list) => `<div class="lr-cards">${list.map(card).join('')}</div>`;
   const allGuides = '<a class="lr-all" href="/blog/learn/">All guides<svg class="ic ic--xs" aria-hidden="true"><use href="#i-right"/></svg></a>';
@@ -237,7 +242,7 @@ export function renderBlog(blog, { today, origin, rc }) {
       body: `<div class="lr">${SPRITE}${crumbNav(crumbs)}<div class="lr-grid"><article class="lr-art">`
         + `<header class="lr-head"><div class="lr-head__top"><p class="lr-cat">${escHtml(cats[a.cat])}</p>${level(a.level)}</div>`
         + `<h1 class="lr-t">${escHtml(a.h1 ?? a.title)}</h1><p class="lr-dek">${escHtml(a.dek)}</p>`
-        + `<p class="lr-meta"><span>Updated <time datetime="${escAttr(a.updated)}">${fmtShort(a.updated)}</time></span><span aria-hidden="true">·</span><span>${a.minutes} min read</span></p></header>`
+        + `<p class="lr-meta"><span>${dated(a)}</span><span aria-hidden="true">·</span><span>${a.minutes} min read</span></p></header>`
         + `<details class="lr-toc"><summary>On this page</summary>${toc}</details>${stale}${fillBody(a, bodies[a.slug], rc)}${source}`
         + (next ? `<nav class="lr-path" aria-label="Where to go next">${next}</nav>` : '')
         + `</article><aside class="lr-aside" aria-label="On this page"><p class="lr-aside__h">On this page</p>${toc}</aside></div>`

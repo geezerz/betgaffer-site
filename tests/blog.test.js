@@ -29,8 +29,8 @@ const sample = () => ({
     articles: [
       piece('g1', { next: 'g2' }),
       piece('g2', { level: 'regular', start_with: 'g1' }),
-      piece('p1', { section: 'blog', cat: 'trust', published: '2026-11-03' }),
-      piece('p2', { section: 'blog', cat: 'trust', published: '2026-11-05' }),
+      piece('p1', { section: 'blog', cat: 'trust', published: '2026-11-03', updated: '2026-11-03' }),
+      piece('p2', { section: 'blog', cat: 'trust', published: '2026-11-05', updated: '2026-11-05' }),
       { slug: 'planned', section: 'learn', cat: 'maths', level: 'sharp', title: 'Planned piece' },
     ],
   },
@@ -159,6 +159,35 @@ describe('receipts', () => {
   });
 });
 
+describe('publication dates (operator R-210: true and identical in the byline, JSON-LD and sitemap)', () => {
+  test('the byline says Published, and adds Updated only when the piece really changed later', async () => {
+    const { ws, done } = await buildBlog((s) => { s.data.articles[2].updated = s.data.articles[2].published; });
+    try {
+      for (const [rel, pub, upd] of [['blog/p1/index.html', '2026-11-03', null], ['blog/learn/g1/index.html', '2026-11-01', '2026-11-02']]) {
+        const h = await read(ws, rel);
+        const meta = h.match(/<p class="lr-meta">[\s\S]*?<\/p>/)[0];
+        assert.match(meta, new RegExp(`Published <time datetime="${pub}">`), rel);
+        if (upd) assert.match(meta, new RegExp(`Updated <time datetime="${upd}">`), rel);
+        else assert.doesNotMatch(meta, /Updated/, `${rel}: never "Updated" on the day it was published`);
+        const ld = [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1])).find((x) => x.datePublished);
+        assert.equal(ld.datePublished, pub);
+        assert.equal(ld.dateModified, upd ?? pub);
+      }
+    } finally { await done(); }
+  });
+  test('a piece dated in the future is not published yet; updated before published is an error', async () => {
+    const { ws, done } = await buildBlog((s) => { s.data.articles.push(piece('later', { published: '2026-11-20', updated: '2026-11-20' })); s.bodies.later = bodyOf(); });
+    try {
+      assert.equal(await exists(join(ws.out, 'blog/learn/later/index.html')), false);
+      assert.doesNotMatch(await read(ws, 'sitemap-blog.xml'), /later/);
+      assert.doesNotMatch(await read(ws, 'blog/learn/index.html'), /Title later/);
+    } finally { await done(); }
+    const s = sample();
+    s.data.articles[0].updated = '2026-10-30';
+    assert.ok(blogErrors(s).some((e) => /updated is before published/.test(e)));
+  });
+});
+
 describe('the built blog (fixture content)', () => {
   test('gate: three live pieces -> everything; two -> nothing blog-related anywhere', async () => {
     const on = await buildBlog();
@@ -268,7 +297,7 @@ describe('the built blog (fixture content)', () => {
     try {
       const sm = await read(a.ws, 'sitemap-blog.xml');
       assert.deepEqual([...sm.matchAll(/<loc>([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g)].map((m) => [m[1].replace('https://betgaffer.com', ''), m[2]]), [
-        ['/blog/', '2026-11-02'], ['/blog/learn/', '2026-11-02'], ['/blog/learn/g1/', '2026-11-02'], ['/blog/learn/g2/', '2026-11-02'], ['/blog/p2/', '2026-11-02'], ['/blog/p1/', '2026-11-02'],
+        ['/blog/', '2026-11-05'], ['/blog/learn/', '2026-11-02'], ['/blog/learn/g1/', '2026-11-02'], ['/blog/learn/g2/', '2026-11-02'], ['/blog/p2/', '2026-11-05'], ['/blog/p1/', '2026-11-03'],
       ]);
       const feed = await read(a.ws, 'blog/feed.xml');
       assert.match(feed, /^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0">/);
