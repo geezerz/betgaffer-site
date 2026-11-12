@@ -42,6 +42,9 @@ const LIVE_NOW = 'Live now';
 
 const isCount = (n) => Number.isSafeInteger(n) && n >= 0;
 
+// The three tiles a visitor most needs; the large-screen bento sets them wider (operator can change the pick).
+const HEROES = new Set(['Predictions', 'Ask Gaffer', 'Our Record']);
+
 // [name, problem, what we do, label, href]. Only the blog row links: the app pages are not on the teaser.
 export const ROWS = [
   ['Predictions', "Bookmaker odds show a price, with the bookmaker's margin built in.",
@@ -72,7 +75,7 @@ export const ROWS = [
     + '(self-exclusion) and we set it up. When it ends, you ask for your access back, and it returns 24 hours later.'],
   ['Blog and Learn', 'Words like 1UP or GG on a slip can be confusing.',
     'Plain guides to how bets work and settle.', LIVE_NOW, '/blog/'],
-].map(([name, problem, answer, tag = AT_LAUNCH, href]) => ({ name, problem, answer, tag, href }));
+].map(([name, problem, answer, tag = AT_LAUNCH, href]) => ({ name, problem, answer, tag, href, hero: HEROES.has(name) }));
 
 export const COMING_H2 = "What's coming";
 export const COMING = [
@@ -89,10 +92,10 @@ const problemP = (t) => (t === null ? ''
   : `\n<p class="ct-feature__problem"><span class="ct-feature__lbl">The problem:</span> ${escHtml(t)}</p>`);
 const answerP = (t) => `\n<p class="ct-feature__answer"><span class="ct-feature__lbl">What we do:</span> ${escHtml(t)}</p>`;
 
-function featureCard({ name, problem, answer, tag, href }, i) {
+function featureCard({ name, problem, answer, tag, href }, i, span) {
   const id = `ct-f${i + 1}`;
   const title = href ? `<a href="${escAttr(href)}">${escHtml(name)}</a>` : escHtml(name);
-  return `<li class="ct-ladder__step">
+  return `<li class="ct-ladder__step" data-span="${span}">
 <article class="ct-feature" aria-labelledby="${id}">
 <div class="ct-feature__head">
 <p class="ct-feature__n mono" aria-hidden="true">${String(i + 1).padStart(2, '0')}</p>
@@ -103,15 +106,39 @@ function featureCard({ name, problem, answer, tag, href }, i) {
 </li>`;
 }
 
-function comingCard({ name, problem, answer }, i) {
+function comingCard({ name, problem, answer }, i, span) {
   const id = `ct-c${i + 1}`;
-  return `<li class="ct-ladder__step">
+  return `<li class="ct-ladder__step" data-span="${span}">
 <article class="ct-feature ct-feature--soon" aria-labelledby="${id}">
 <div class="ct-feature__head">
 <h3 class="ct-feature__name" id="${id}">${escHtml(name)}</h3>
 </div>${problemP(problem)}${answerP(answer)}
 </article>
 </li>`;
+}
+
+/**
+ * Column spans (of 6) for the large-screen bento, in reading order: a hero is 4, a normal tile 2. A row takes
+ * tiles while they fit in 6; a row that ends short (two normals, or a lone hero) widens evenly, so none ends in
+ * a hole. A hero pairs with one normal tile when the next or previous one fits.
+ * @param {boolean[]} heroes
+ */
+export function bentoSpans(heroes) {
+  const out = [];
+  let row = []; // indexes in the open row
+  let used = 0;
+  const close = () => {
+    for (const i of row) out[i] = 6 / row.length;
+    row = []; used = 0;
+  };
+  heroes.forEach((hero, i) => {
+    const w = hero ? 4 : 2;
+    if (used + w > 6) close();
+    out[i] = w; row.push(i); used += w;
+    if (used === 6) { row = []; used = 0; }
+  });
+  if (used < 6) close();
+  return out;
 }
 
 function tierTable(tiers) {
@@ -137,8 +164,11 @@ function tierTable(tiers) {
 export function render(cfg) {
   const op = operatorOf(cfg);
   const pricing = cfg.pricing && typeof cfg.pricing === 'object' ? cfg.pricing : {};
-  const ladder = ROWS.filter((r) => !r.href || cfg.blog === true).map(featureCard).join('\n');
-  const coming = COMING.map(comingCard).join('\n');
+  const rows = ROWS.filter((r) => !r.href || cfg.blog === true);
+  const rowSpans = bentoSpans(rows.map((r) => r.hero));
+  const ladder = rows.map((r, i) => featureCard(r, i, rowSpans[i])).join('\n');
+  const comingSpans = bentoSpans(COMING.map(() => false));
+  const coming = COMING.map((c, i) => comingCard(c, i, comingSpans[i])).join('\n');
 
   const pricingBody = pricing.show_prices === true
     ? `<p>${escHtml(PRICING_INTENT)}</p>\n${tierTable(pricing.tiers)}`

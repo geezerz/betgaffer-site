@@ -357,3 +357,25 @@ html.fd-hidden [data-banner]{ display:none; }
 /* ── The rules link ── */
 .bg-fd__rules{ margin:0; }
 .bg-fd__rules a{ display:inline-flex; align-items:center; min-height:var(--tap); font-weight:600; }
+
+/* ── Large screens (R-214(2), mock big.css): /waitlist/ ──
+   From 1100px the offer, the places and the form sit beside Gaffer; the detail below runs the full width
+   (benefits 3 across, the steps 3 across, the questions in 2 columns). Below 1100px nothing here applies.
+   Last in the file on purpose: it overrides the 1024px grid and the 1024-1279px steps rule above at equal
+   specificity. The aside needs `.bg-fd >` to beat `.bg-fd > .bg-fd__gaffer` (span 7) in the 1024px rule. */
+@media (min-width:1100px){
+  .bg-fd{ grid-template-columns:minmax(0,1fr) 360px; column-gap:56px; row-gap:40px; }
+  .bg-fd > .bg-fd__gaffer{ grid-row:1 / span 3; }
+  .bg-fd__counts{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .bg-fd__count{ font-size:clamp(22px, 1.9vw, 28px); }
+  .bg-fd__sec{ grid-column:1 / -1; max-width:none; }
+  .bg-fd__benefits{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; border-top:0; }
+  .bg-fd__benefit{ padding:22px 24px; border:1px solid var(--line); border-radius:var(--r-2); background:var(--surface); }
+  .bg-fd__benefit:first-child{ border-color:color-mix(in srgb, var(--accent) 45%, var(--line)); background:linear-gradient(160deg, color-mix(in srgb, var(--accent) 9%, var(--surface)), var(--surface) 60%); }
+  .bg-fd__steps{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:32px; }
+  /* The three-across step, as from 768px: the 1024-1279px rule above would put the number beside the text. */
+  .bg-fd__step{ grid-template-columns:minmax(0,1fr); row-gap:10px; padding-top:18px; border-top:1px solid var(--line); }
+  .bg-fd__step::before{ grid-row:auto; }
+  .bg-fd__step-h{ padding-top:0; }
+  .bg-fd__faq{ max-width:none; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:56px; }
+}

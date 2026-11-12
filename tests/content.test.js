@@ -804,6 +804,42 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     }
   });
 
+  // Large-screen bento (R-214(2)): span 4 = hero, 2 = normal; an unfinished row widens evenly.
+  test('bentoSpans: rows always sum to 6, order kept, heroes pair with one normal tile', () => {
+    const N = false;
+    const H = true;
+    for (const [name, heroes, want] of [
+      ['all normal, full rows', [N, N, N, N, N, N], [2, 2, 2, 2, 2, 2]],
+      ['hero then normal', [H, N], [4, 2]],
+      ['normal then hero', [N, H], [2, 4]],
+      ['unfinished last row: two tiles', [N, N, N, N, N], [2, 2, 2, 3, 3]],
+      ['unfinished last row: one tile', [N, N, N, N], [2, 2, 2, 6]],
+      ['a lone tile', [N], [6]],
+      ['a lone hero', [H], [6]],
+      ['hero closes a short row: two normals widen', [N, N, H, N], [3, 3, 4, 2]],
+      ['hero followed by hero: the first widens', [H, H, N], [6, 4, 2]],
+      ['empty', [], []],
+      ['the shipped 12 (Predictions, Ask Gaffer, Our Record)', [H, N, N, N, N, N, N, H, H, N, N, N], [4, 2, 2, 2, 2, 3, 3, 6, 4, 2, 3, 3]],
+    ]) {
+      const got = features.bentoSpans(heroes);
+      assert.deepEqual(got, want, name);
+      let acc = 0;
+      for (const s of got) { acc += s; assert.ok(acc <= 6, `${name}: a row overflows`); if (acc === 6) acc = 0; }
+      assert.equal(acc, 0, `${name}: no row ends in a hole`);
+    }
+  });
+
+  test('every ladder step carries data-span (heroes 4, the rest 2 or widened), in both lists', () => {
+    const html = render();
+    const spans = (id) => findAll(find(doc(html), (n) => n.attrs['aria-labelledby'] === id), (n) => n.tag === 'li' && cls(n, 'ct-ladder__step')).map((n) => Number(n.attrs['data-span']));
+    const feats = spans('ct-feats-h');
+    assert.deepEqual(feats, features.bentoSpans(features.ROWS.map((r) => r.hero === true)));
+    assert.equal(feats.length, 12);
+    assert.deepEqual(spans('ct-coming-h'), [2, 2, 2]);
+    assert.deepEqual(features.ROWS.filter((r) => r.hero).map((r) => r.name), ['Predictions', 'Ask Gaffer', 'Our Record']);
+    assert.doesNotMatch(html, /\sstyle=/);
+  });
+
   test('removed phrases and unverified features are absent', () => {
     const t = visibleText(render(cfg({ pricing: { show_prices: true } }))).toLowerCase();
     for (const s of ['Power Teams', 'landed', 'sport investors', 'match intelligence', 'Credits back', 'match clock',
@@ -915,7 +951,7 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
 
   test('premise: the row checks fire on a broken page', () => {
     const html = render();
-    const items = html.match(/<li class="ct-ladder__step">[\s\S]*?<\/li>/g);
+    const items = html.match(/<li class="ct-ladder__step"[^>]*>[\s\S]*?<\/li>/g);
     const swapped = html.replace(items[0], '@@SWAP@@').replace(items[1], items[0]).replace('@@SWAP@@', items[1]);
     assert.notDeepEqual(articles(swapped).map(h3Of).slice(0, 12), SPEC.map(([n]) => n));
     const noLabel = html.replace('<p class="ct-feature__tag">At launch</p>', '');

@@ -932,6 +932,22 @@ function valueOf(rules, sel, prop, media = null) {
   return v;
 }
 
+// R-214(2): the large-screen layout lives only under (min-width:1100px). Every other rule of every stylesheet is as it
+// was before it, so a phone or tablet renders exactly as today. Adding a rule outside that media fails the hash.
+const BIG = '(min-width:1100px)';
+const NON_BIG_SHA256 = '28ed7334a4dd1d4bb566084088f867b6b7d704de9b5da2f6bc8ffc8864c480b0';
+test('large-screen layout: only (min-width:1100px) rules were added; every other rule is unchanged', () => {
+  const byFile = CSS_ORDER.map((f) => [f, cssRules(f)]);
+  const rest = byFile.map(([, rs]) => rs.filter((r) => r.media !== BIG));
+  assert.equal(createHash('sha256').update(JSON.stringify(rest)).digest('hex'), NON_BIG_SHA256, 'a rule outside (min-width:1100px) changed');
+  const big = byFile.map(([f, rs]) => [f, rs.filter((r) => r.media === BIG)]);
+  assert.deepEqual(big.filter(([, rs]) => rs.length).map(([f]) => f), ['content.css', 'founding.css'], 'each component owns its rules');
+  const sels = big.flatMap(([, rs]) => rs.flatMap((r) => r.sels));
+  for (const s of ['.ct-ladder', '.ct-ladder__step[data-span="4"]', '.bg-fd', '.bg-fd > .bg-fd__gaffer', '.bg-fd__benefits', '.bg-fd__faq']) {
+    assert.ok(sels.includes(s), `premise: the large-screen rules cover ${s}`);
+  }
+});
+
 test('menu markup: a ☰ button controls #bg-nav-panel; the panel holds the four nav links and a SEPARATE legal list', () => {
   const doc = parse(base());
   const bar = find(doc, (n) => n.tag === 'header' && n.attrs.class === 'bg-topbar');
@@ -1098,8 +1114,8 @@ test('/waitlist/ from 1024 px (spec §17.3): two columns; the Gaffer aside spans
   // Below 1024 px: today's single column (the aside follows the form in DOM order).
   assert.equal(valueOf(r, '.bg-fd', 'display'), 'flex');
   assert.equal(valueOf(r, '.bg-fd', 'flex-direction'), 'column');
-  assert.ok(!r.some((x) => x.media !== W && x.sels.some((s) => /\.bg-fd__gaffer(?![\w-])/.test(s)) && x.decls.some(([p]) => /^grid-(?:row|column|area)/.test(p))),
-    'no placement below 1024 px');
+  assert.ok(!r.some((x) => x.media !== W && x.media !== BIG && x.sels.some((s) => /\.bg-fd__gaffer(?![\w-])/.test(s)) && x.decls.some(([p]) => /^grid-(?:row|column|area)/.test(p))),
+    'no placement below 1024 px (the 1100px large-screen layout aside)');
   // From 1024 px: the grid.
   assert.equal(valueOf(r, '.bg-fd', 'display', W), 'grid');
   const cols = valueOf(r, '.bg-fd', 'grid-template-columns', W);
@@ -1116,11 +1132,12 @@ test('/waitlist/ from 1024 px (spec §17.3): two columns; the Gaffer aside spans
   assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'grid-column', W), '2');
   assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'grid-row', W), `1 / span ${N}`);
   assert.equal(valueOf(r, '.bg-fd > .bg-fd__gaffer', 'align-self', W), 'start', 'the panel is its own height, not the column\'s');
-  for (const x of r) for (const [p, v] of x.decls) if (/^grid-(?:row|column|area)/.test(p)) assert.doesNotMatch(v, /-1/, `${x.sels} ${p}:${v}`);
+  // (The 1100px large-screen rules are the one place a full-width `1 / -1` section is right: the aside spans 3 rows there.)
+  for (const x of r) for (const [p, v] of x.decls) if (x.media !== BIG && /^grid-(?:row|column|area)/.test(p)) assert.doesNotMatch(v, /-1/, `${x.sels} ${p}:${v}`);
   // The benefits stay two across beside the aside (no third column at 1024 px).
   assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', W), undefined, 'no 1024 px benefits rule');
   assert.equal(valueOf(r, '.bg-fd__benefits', 'grid-template-columns', '(min-width:640px)'), 'repeat(2,minmax(0,1fr))');
-  assert.ok(!r.some((x) => x.sels.includes('.bg-fd__benefits') && /repeat\(3/.test(x.decls.map(([, v]) => v).join(';'))), 'never three across');
+  assert.ok(!r.some((x) => x.media !== BIG && x.sels.includes('.bg-fd__benefits') && /repeat\(3/.test(x.decls.map(([, v]) => v).join(';'))), 'never three across');
   // D4 review: beside the aside at 1024-1279px the left column starts at ~573px, too narrow for three steps
   // across; the steps go back to one column there (the phone layout: number beside the text).
   const MID = '(min-width:1024px)and(max-width:1279.98px)';
