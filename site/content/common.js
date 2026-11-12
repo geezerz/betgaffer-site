@@ -27,9 +27,9 @@ export function fmtDateLong(date) {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
-/** The "Last updated" line. */
-export function lastUpdated(date) {
-  return `<p class="ct-meta mono">Last updated <time datetime="${escAttr(date)}">${escHtml(fmtDateLong(date))}</time></p>`;
+/** The date byline: "Last updated" unless a page says otherwise. */
+export function lastUpdated(date, label = 'Last updated') {
+  return `<p class="ct-meta mono">${label} <time datetime="${escAttr(date)}">${escHtml(fmtDateLong(date))}</time></p>`;
 }
 
 /** Effective operator identity (throws naming every missing field, plan S8). */

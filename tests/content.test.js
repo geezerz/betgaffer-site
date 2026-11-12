@@ -28,7 +28,6 @@ const cfg = (over = {}) => ({
   ...siteConfig,
   operator: { ...siteConfig.operator, ...OP, ...(over.operator || {}) },
   pricing: { ...siteConfig.pricing, tiers: TEST_TIERS, ...(over.pricing || {}) },
-  ...(over.breadth !== undefined ? { breadth: over.breadth } : {}),
 });
 
 // The private platform's name, built from char codes so the literal never appears in this repo.
@@ -169,9 +168,10 @@ for (const name of Object.keys(PAGES)) {
   // Per page (Plan A Task 1b): each page prints its own LAST_UPDATED, so a task can bump one page's date.
   test(`${name}: renders a CSP-clean fragment with its own Last updated line`, () => {
     const mod = PAGES[name];
-    assert.match(mod.LAST_UPDATED, /^\d{4}-\d{2}-\d{2}$/);
-    assert.ok(mod.LAST_UPDATED >= '2026-10-07', 'never earlier than the first published version');
-    const line = lastUpdated(mod.LAST_UPDATED);
+    const [date, label] = name === 'features' ? [mod.CHECKED, 'Checked'] : [mod.LAST_UPDATED, 'Last updated'];
+    assert.match(date, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(date >= '2026-10-07', 'never earlier than the first published version');
+    const line = lastUpdated(date, label);
     const html = renderPage(name);
     assert.equal(typeof html, 'string');
     assert.doesNotMatch(html, /<!doctype|<html|<main/i, 'a body fragment, not a document');
@@ -179,11 +179,11 @@ for (const name of Object.keys(PAGES)) {
     assert.doesNotMatch(html, /<style/i);
     assert.doesNotMatch(html, /\sstyle=/i);
     assert.ok(html.includes(line), `the page prints ${line}`);
-    assert.match(visibleText(line), /^Last updated \d{1,2} [A-Z][a-z]+ \d{4}$/, 'premise: the line reads as a date');
-    assert.ok(visibleText(html).includes(visibleText(line)), 'its visible text carries the Last updated line');
+    assert.match(visibleText(line), new RegExp(`^${label} \\d{1,2} [A-Z][a-z]+ \\d{4}$`), 'premise: the line reads as a date');
+    assert.ok(visibleText(html).includes(visibleText(line)), 'its visible text carries the date line');
     const opener = line.slice(0, line.indexOf('<time'));
-    assert.match(opener, /Last updated $/, 'premise: the line opens with its label');
-    assert.equal(html.split(opener).length, 2, 'exactly one Last updated line');
+    assert.match(opener, new RegExp(`${label} $`), 'premise: the line opens with its label');
+    assert.equal(html.split(opener).length, 2, 'exactly one date line');
     assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, 'exactly one h1');
   });
 
@@ -227,15 +227,15 @@ for (const name of Object.keys(PAGES)) {
 
   test(`${name}: positioning — football data and probability analytics, not a bookmaker`, () => {
     const t = visibleText(renderPage(name));
-    assert.match(t, /football data and probability analytics, not betting tips/);
     assert.match(t, /not a bookmaker/i);
+    if (name === 'features') return; // the spec's intro replaces the positioning paragraph on this page
+    assert.match(t, /football data and probability analytics, not betting tips/);
     assert.match(t, /Bet Gaffer/);
     assert.match(t, /football match intelligence/);
   });
 
   test(`${name}: no percentage outside an offer figure, and no banned phrase in visible text`, () => {
-    const html = renderPage(name, cfg({ pricing: { show_prices: true },
-      breadth: { markets: 92, competitions: 57, fixtures: 146, day: '2026-10-07' } }));
+    const html = renderPage(name, cfg({ pricing: { show_prices: true } }));
     const t = visibleText(html);
     assert.deepEqual(percentagesOutsideOffers(html), [], 'content pages carry percentages only inside an offer figure');
     // Premise: the same check fires on this page for a bare percentage or a wrong offer value, and
@@ -686,52 +686,55 @@ test('shipped config: operator identity and published prices', async () => {
     [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
 });
 
-describe('features (Plan A Task 6, spec §8)', () => {
+describe('features (teaser copy spec 2026-11-12, section A)', () => {
   const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
     + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
   const PRICES_LATER = 'Prices will be published here before any payment is taken.';
-  const INTRO = "Bet Gaffer is football match intelligence for sport investors. Here's what it does, from the "
-    + 'simplest tool to the most advanced.';
-
-  // Spec §8 as amended (Plan A "Task 6 additions": #4's problem carries no number). #5's answer is
-  // asserted separately: its tail depends on cfg.breadth.
-  const SPEC = [
-    ['Every match, by kickoff', 'A Saturday can bring more than 1,500 matches spread across apps and sites.',
-      'One list of every fixture in the competitions we cover, in Lagos time, with Live, Next 3 hours and Finished views.'],
-    ['Search and league filters', 'Scrolling through hundreds of games to find yours wastes time.',
-      'Find a team or league in seconds, or show only the leagues you follow.'],
-    ['Live scores and match clock', 'Switching apps to check whether a match is still on.',
-      'Live scores and the match clock right on the fixture.'],
-    ['One recommended pick per fixture', 'There are dozens of markets on every match — too many choices.',
-      'We highlight one recommended pick for each fixture, with its probability and price.'],
-    ['Probabilities for every market', 'Bookmaker odds tell you the price, not the chance.', null],
-    ['Clearly marked prices', "You can't always tell where a price came from.",
-      'When no bookmaker price was captured, ours is clearly marked as an estimate.'],
-    ['Match centre', 'Research means opening five tabs.',
-      'Head-to-head, standings, stats, lineups and commentary in one place.'],
-    ['Early results', 'Waiting for full time to know if a pick landed.',
-      "See a pick land the moment it's decided — an over-goals line passed, or a first-half market at half time."],
-    ["Today's accuracy ring", 'No quick way to see how today is going.',
-      "A ring that shows today's settled picks at a glance."],
-    ['Our Record', 'Anyone can claim a big number.',
-      'Every recommended pick is graded and kept, misses alongside hits.'],
-    ['Power Teams', 'Too much noise when you only follow the big clubs.',
-      'One tap narrows the day to the major clubs we track most closely. Elite plan.'],
-    ['Ready-made slips', 'No time to build a slip every day.',
-      "Ready-made slips every day, for when you'd rather not build your own."],
-    ['Same-game slips', 'Combining markets from one match ignores how they affect each other.',
-      'Slips that combine several markets from one match, with the link between them taken into account.'],
-    ['My Bets', 'Slips scattered across screenshots and notes.',
-      'Every slip you build on Bet Gaffer, tracked in one place until it settles.'],
-    ['The Lab', 'Building a multi-leg slip by hand is slow and guesswork.',
-      'Assemble a multi-leg slip from our priced markets, see which leg is weakest, and change one leg.'],
-    ['Credits', 'Paying for a whole plan when you only want one thing.',
-      'Pay with Credits only for the actions you use — and get Credits back when a Lab slip you marked as played loses.'],
-    ['Ask Gaffer', 'Wanting a second opinion before you place a ticket.',
-      'Ask in plain language and get the reasoning behind a pick.'],
+  const INTRO = [
+    'BetGaffer is a sports prediction platform. We cover football today, and other sports will follow.',
+    "We're not a bookmaker: we take no bets and never hold your stake.",
+    "BetGaffer opens at launch. Here's what it will do.",
   ];
-  const SOON = new Set(['Ask Gaffer']);
-  const BREADTH = { markets: 92, competitions: 57, fixtures: 1146, day: '2026-10-07' };
+
+  // Spec rows 1-9 and 11-13 (10, Results by day, is omitted until Legal's condition is met).
+  // [name, problem, what we do, label]
+  const SPEC = [
+    ['Predictions', "Bookmaker odds show a price, with the bookmaker's margin built in.",
+      "The day's fixtures, with our probabilities for the markets your plan covers.", 'At launch'],
+    ['One recommended pick', "Every match has dozens of markets, and that's too many choices.",
+      "On a match where we recommend a pick, it's one pick for that match: the outcome our model rates best.", 'At launch'],
+    ['Match pages', 'Checking one match means jumping between apps.',
+      'One page per match, with all the markets your plan covers for it.', 'At launch'],
+    ['League, team and country pages', 'Finding out how a team has really been playing takes digging.',
+      "Country: every competition we cover there, plus its national side and today's fixtures. League: the table, trends in context, "
+      + "today's fixtures and the cups those clubs play. Team: form and tendencies first, then fixtures. Guests see fixtures, results "
+      + 'and form tiles only; our statistics, charts and rating are for members whose plan covers that league.', 'At launch'],
+    ['National team pages', 'National sides play rarely, so their form is hard to follow.',
+      "A page for each national side we cover: men's, women's and youth.", 'At launch'],
+    ['Coverage', "It isn't always clear which leagues a service covers.",
+      'Which leagues each plan covers, grouped by country.', 'At launch'],
+    ['Daily Slips', 'Building a slip from scratch takes time.',
+      "Ready-made slips, from lower to higher odds, built from our model's picks.", 'At launch'],
+    ['Ask Gaffer', 'A slip can look strong and still hide a weak leg.',
+      'Gaffer is our AI football assistant. Bring your slip, and Gaffer finds the weak legs. Gaffer comes with some plans.', 'At launch'],
+    ['Our Record', 'Anyone can claim a big number.',
+      'Every recommended pick is graded in public after full time, misses included, month by month.', 'At launch'],
+    ['Credits', "Some features you'll only want now and then.",
+      'Monthly Credits on plans that include them, and top-ups on any plan.', 'At launch'],
+    ['Breaks and limits', 'Betting should stay fun, and sometimes that means a break.',
+      'Profile, billing, notifications, limits on buying Credits, and Breaks & limits: email us to take a break (self-exclusion) '
+      + 'and we set it up. When it ends, you ask for your access back, and it returns 24 hours later.', 'At launch'],
+    ['Blog and Learn', 'Words like 1UP or GG on a slip can be confusing.',
+      'Plain guides to how bets work and settle.', 'Live now'],
+  ];
+  const COMING = [
+    ['The Lab', 'Building a ticket to a target takes ages.',
+      "Coming at launch: the Lab, where you'll be able to set your stake and Gaffer will build a ticket from our model's rated picks, to your rules."],
+    ['Power Picks', null,
+      'Coming soon: Power Picks, our recommended picks on the matches we single out, on the plans that include them.'],
+    ['Booking codes', 'Typing a ticket in leg by leg is slow.',
+      "We're working to let you turn a ticket into a SportyBet booking code, where SportyBet offers its markets."],
+  ];
 
   // The rendered page has no <body>, so wrap it for the strict scanner (it also proves the markup
   // nests the way a browser builds it: no block inside a <p>, nothing left open).
@@ -739,99 +742,96 @@ describe('features (Plan A Task 6, spec §8)', () => {
   const cls = (n, c) => (n.attrs.class || '').split(/\s+/).includes(c);
   const articles = (html) => findAll(doc(html), (n) => n.tag === 'article' && cls(n, 'ct-feature'));
   const partOf = (art, c) => find(art, (n) => cls(n, c));
-  const render = (c = cfg()) => features.render(c);
+  const render = (c = cfg()) => features.render({ ...c, blog: true });
+  const rowsOf = (html) => articles(html).slice(0, SPEC.length);
+  const h3Of = (a) => textOf(find(a, (n) => n.tag === 'h3'));
 
-  test('LAST_UPDATED is bumped for the rewrite', () => {
-    assert.equal(features.LAST_UPDATED, '2026-10-08');
-    assert.ok(render().includes(lastUpdated('2026-10-08')));
+  test('CHECKED is 12 November 2026 and the byline reads "Checked", not "Last updated"', () => {
+    assert.equal(features.CHECKED, '2026-11-12');
+    const html = render();
+    assert.ok(html.includes(lastUpdated('2026-11-12', 'Checked')));
+    assert.ok(visibleText(html).includes('Checked 12 November 2026'));
+    assert.ok(!visibleText(html).includes('Last updated'));
   });
 
-  test('H1 and the spec §8 intro', () => {
+  test('H1 is "What BetGaffer will do" and matches the meta; intro lines verbatim', () => {
     const d = doc(render());
     const h1 = findAll(d, (n) => n.tag === 'h1');
     assert.equal(h1.length, 1);
-    assert.equal(textOf(h1[0]), 'What Bet Gaffer does');
-    assert.ok(textOf(d).includes(INTRO), 'intro verbatim');
+    assert.equal(textOf(h1[0]), 'What BetGaffer will do');
+    assert.ok(features.META.description.startsWith('What BetGaffer will do at launch: '));
+    assert.equal(features.META.fullTitle, 'Features | BetGaffer');
+    assert.deepEqual(findAll(d, (n) => n.tag === 'p' && cls(n, 'ct-lead')).map(textOf), INTRO);
   });
 
-  test('the 17 features, in the spec order, each a ct-feature article with an h3 name', () => {
-    const arts = articles(render());
-    assert.equal(arts.length, 17);
-    assert.deepEqual(arts.map((a) => textOf(find(a, (n) => n.tag === 'h3'))), SPEC.map(([name]) => name));
-    // They sit in one ordered list: the order IS the content (simplest first).
-    const ol = find(doc(render()), (n) => n.tag === 'ol' && cls(n, 'ct-ladder'));
-    assert.ok(ol, 'an ordered list holds the features');
-    assert.equal(findAll(ol, (n) => n.tag === 'article' && cls(n, 'ct-feature')).length, 17);
-  });
-
-  // The verbatim check, shared with the premise test below so the premise exercises the real loop.
-  const assertVerbatim = (html) => {
-    const arts = articles(html);
-    assert.equal(arts.length, SPEC.length, 'premise: every spec row is rendered (an empty loop proves nothing)');
+  test('12 rows in spec order: name, problem, answer verbatim; "Results by day" absent', () => {
+    const arts = rowsOf(render());
+    assert.equal(arts.length, 12);
+    assert.deepEqual(arts.map(h3Of), SPEC.map(([n]) => n));
     for (const [i, a] of arts.entries()) {
       const [name, problem, answer] = SPEC[i];
+      assert.equal(textOf(partOf(a, 'ct-feature__problem')), `The problem: ${problem}`, name);
+      assert.equal(textOf(partOf(a, 'ct-feature__answer')), `What we do: ${answer}`, name);
+    }
+    assert.ok(!visibleText(render()).includes('Results by day'));
+  });
+
+  test('the label sits on every row itself: "At launch" on rows 1-11, "Live now" on the blog row', () => {
+    assert.equal(SPEC.filter(([, , , l]) => l === 'At launch').length, 11, 'premise: eleven At launch rows');
+    for (const [i, a] of rowsOf(render()).entries()) {
+      const tag = partOf(a, 'ct-feature__tag');
+      assert.ok(tag, `${SPEC[i][0]}: a label inside the row`);
+      assert.equal(textOf(tag), SPEC[i][3], SPEC[i][0]);
+    }
+  });
+
+  test('only the blog row links, and it goes to /blog/', () => {
+    const hrefs = rowsOf(render()).map((a) => findAll(a, (n) => n.tag === 'a').map((n) => n.attrs.href));
+    assert.deepEqual(hrefs.slice(0, 11), Array(11).fill([]));
+    assert.deepEqual(hrefs[11], ['/blog/']);
+  });
+
+  test("What's coming: H2 and the Lab, Power Picks, Booking codes lines verbatim (no problem line on Power Picks)", () => {
+    const html = render();
+    assert.ok(findAll(doc(html), (n) => n.tag === 'h2').map(textOf).includes("What's coming"));
+    const arts = articles(html).slice(SPEC.length);
+    assert.equal(arts.length, 3);
+    for (const [i, a] of arts.entries()) {
+      const [name, problem, answer] = COMING[i];
+      assert.equal(h3Of(a), name);
       const p = partOf(a, 'ct-feature__problem');
-      const w = partOf(a, 'ct-feature__answer');
-      assert.ok(p && p.tag === 'p' && w && w.tag === 'p', `${name}: problem and answer paragraphs`);
-      assert.equal(textOf(p), `The problem: ${problem}`, name);
-      if (answer !== null) assert.equal(textOf(w), `What we do: ${answer}`, name);
-      assert.ok(textOf(a).indexOf('The problem:') < textOf(a).indexOf('What we do:'), `${name}: problem before answer`);
+      if (problem === null) assert.ok(!p, `${name}: no problem line`);
+      else assert.equal(textOf(p), `The problem: ${problem}`, name);
+      assert.equal(textOf(partOf(a, 'ct-feature__answer')), `What we do: ${answer}`, name);
     }
-  };
-
-  test('every feature states the problem, then what we do — verbatim from spec §8', () => {
-    assertVerbatim(render());
   });
 
-  test('16 "At launch" tags and one "Coming soon" (Ask Gaffer)', () => {
-    const tags = articles(render()).map((a) => {
-      const t = partOf(a, 'ct-feature__tag');
-      assert.ok(t, 'each feature carries a tag chip');
-      return textOf(t);
-    });
-    assert.equal(tags.filter((t) => t === 'At launch').length, 16);
-    assert.equal(tags.filter((t) => t === 'Coming soon').length, 1);
-    assert.deepEqual(SPEC.map(([n], i) => [n, tags[i]]).filter(([, t]) => t === 'Coming soon').map(([n]) => n), [...SOON]);
-    const soon = articles(render()).filter((a) => cls(a, 'ct-feature--soon'));
-    assert.deepEqual(soon.map((a) => textOf(find(a, (n) => n.tag === 'h3'))), [...SOON], 'the soon modifier marks only Ask Gaffer');
+  test('removed phrases and unverified features are absent', () => {
+    const t = visibleText(render(cfg({ pricing: { show_prices: true } }))).toLowerCase();
+    for (const s of ['Power Teams', 'landed', 'sport investors', 'match intelligence', 'Credits back', 'match clock',
+      'accuracy ring', 'Same-game', 'Live scores', 'Early results', 'Results by day']) {
+      assert.ok(!t.includes(s.toLowerCase()), `absent: ${s}`);
+    }
+    assert.doesNotMatch(t, /up to [\d,]+ per match/, 'no breadth number');
   });
 
-  test('#4 names no market count; #5 reads "up to {markets} per match" from cfg.breadth', () => {
-    const answer5 = (c) => textOf(partOf(articles(features.render(c))[4], 'ct-feature__answer'));
-    assert.equal(answer5(cfg({ breadth: BREADTH })), 'What we do: Our probability for every market we price — up to 92 per match.');
-    assert.equal(answer5(cfg({ breadth: { ...BREADTH, markets: 1 } })), 'What we do: Our probability for every market we price — up to 1 per match.');
-    assert.equal(answer5(cfg({ breadth: { ...BREADTH, markets: 1234 } })), 'What we do: Our probability for every market we price — up to 1,234 per match.');
-    // Absent, or an empty day: no number at all.
-    for (const c of [cfg(), cfg({ breadth: { ...BREADTH, fixtures: 0, competitions: 0 } }), cfg({ breadth: { ...BREADTH, markets: 0 } })]) {
-      assert.equal(answer5(c), 'What we do: Our probability for every market we price.');
-    }
-    const none = visibleText(render());
-    assert.doesNotMatch(none, /\b\d{2,}\s+(?:markets|leagues|competitions)\b/, 'no hardcoded breadth figure');
-    assert.doesNotMatch(none, /\d+\s+per match|over \d+ markets/i);
-    // Malformed breadth is refused rather than printed.
-    for (const b of [{ markets: 92 }, { ...BREADTH, markets: '92' }, { ...BREADTH, day: '2026-13-01' },
-      { ...BREADTH, markets: -1 }, { ...BREADTH, markets: 1.5 }, 'x', [1]]) {
-      assert.throws(() => features.render(cfg({ breadth: b })), TypeError, JSON.stringify(b));
-    }
+  test('with the blog off there is no blog row and no /blog/ link', () => {
+    const html = features.render(cfg());
+    assert.equal(articles(html).length, 14);
+    assert.doesNotMatch(html, /\/blog\/|Blog and Learn/);
   });
 
   test('left off on purpose: no unlaunched or banned surface, no form', () => {
-    const html = render(cfg({ pricing: { show_prices: true }, breadth: BREADTH }));
+    const html = render(cfg({ pricing: { show_prices: true } }));
     const t = visibleText(html);
-    for (const s of ['Daily Slips', 'booking code', 'Exposure', 'Steam', 'Green Month', 'cash out', 'ROI',
+    for (const s of ['Exposure', 'Steam', 'Green Month', 'cash out', 'ROI',
       'swap any leg', 'odds you want', 'Life Changer', '50x', 'Guarantee', 'suggested stake']) {
       assert.ok(!t.toLowerCase().includes(s.toLowerCase()), `absent: ${s}`);
     }
     assert.doesNotMatch(html, /<form/i);
     assert.deepEqual(findBanned(t), []);
     assert.doesNotMatch(t, /Token/);
-    // Sells time and friction only. "accuracy ring" (the feature's name) is the ONE accuracy phrase allowed.
-    const rest = t.replace(/accuracy ring/gi, '');
-    assert.ok(t.includes('accuracy ring'), 'premise: the allowed phrase is on the page');
-    assert.doesNotMatch(rest, /accura|\bwin\b|\bwinning\b|value bet|\bedge\b|beat the/i);
-    // Premise: the narrowed ban still catches any other accuracy wording.
-    assert.match(`${t} our accuracy is high`.replace(/accuracy ring/gi, ''), /accura/i);
-    assert.match(`${t} Accurate picks`.replace(/accuracy ring/gi, ''), /accura/i);
+    assert.doesNotMatch(t, /accura|\bwin\b|\bwinning\b|value bet|\bedge\b|beat the/i);
   });
 
   test('pricing: intent kept, tier table from config, Elite at ₦5,000 in the shipped config', () => {
@@ -911,20 +911,12 @@ describe('features (Plan A Task 6, spec §8)', () => {
     }
   });
 
-  test('premise: the order and verbatim checks fire on a broken page', () => {
+  test('premise: the row checks fire on a broken page', () => {
     const html = render();
-    // Swap two features: the order check must notice.
-    const arts = html.match(/<li class="ct-ladder__step">[\s\S]*?<\/li>/g);
-    assert.equal(arts.length, 17, 'premise: one list item per feature');
-    const swapped = html.replace(arts[0], '@@SWAP@@').replace(arts[1], arts[0]).replace('@@SWAP@@', arts[1]);
-    const names = articles(swapped).map((a) => textOf(find(a, (n) => n.tag === 'h3')));
-    assert.notDeepEqual(names, SPEC.map(([n]) => n));
-    // The real verbatim loop passes the page as rendered and throws on a reworded problem or answer.
-    assertVerbatim(html);
-    for (const [from, to] of [['Research means opening five tabs.', 'Research takes ages.'],
-      ['Head-to-head, standings, stats, lineups and commentary in one place.', 'Everything in one place.']]) {
-      assert.ok(html.includes(from), `premise: the page carries ${from}`);
-      assert.throws(() => assertVerbatim(html.replace(from, to)), assert.AssertionError, from);
-    }
+    const items = html.match(/<li class="ct-ladder__step">[\s\S]*?<\/li>/g);
+    const swapped = html.replace(items[0], '@@SWAP@@').replace(items[1], items[0]).replace('@@SWAP@@', items[1]);
+    assert.notDeepEqual(articles(swapped).map(h3Of).slice(0, 12), SPEC.map(([n]) => n));
+    const noLabel = html.replace('<p class="ct-feature__tag">At launch</p>', '');
+    assert.equal(rowsOf(noLabel).filter((a) => partOf(a, 'ct-feature__tag')).length, 11);
   });
 });

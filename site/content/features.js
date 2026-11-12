@@ -1,35 +1,36 @@
-// Features page (spec §8, Plan A Task 6; charter v6). BUILD ONLY.
+// Features page (teaser copy spec 2026-11-12, section A, Legal-cleared). BUILD ONLY.
 //
-// Seventeen features, simplest to most advanced, each stated as the problem it answers and then what
-// Bet Gaffer does about it, with a status tag: "At launch" (built on the platform today) or "Coming
-// soon". Copy is verbatim from spec §8 as amended. Features left off on purpose: see spec §8.
+// Twelve rows, each stated as the problem it answers and then what BetGaffer does, with a label on
+// the row: "At launch" (nothing on the platform is public yet) or "Live now" (the blog). Then
+// "What's coming". Row "Results by day" is left out until its fix merges (Legal's condition).
 //
 // Interface:
 //   render(cfg)  this page carries no form: it links to /waitlist/, where the founding waitlist form is.
-//   cfg.breadth = { markets, competitions, fixtures, day } from the home day file, or absent. Only
-//     `markets` is printed (feature #5, "up to N per match"); the whole shape is still validated so a
-//     malformed day file fails the build instead of printing nonsense. Absent or an empty day: no number.
+//   cfg.blog (bool)  the blog row and its /blog/ link appear only while the blog is published (it gates itself).
 //   cfg.pricing.show_prices (S9) swaps the "prices later" sentence for the tier table.
 
-import { escHtml } from '../lib/esc.js';
-import { isDate } from '../lib/time.js';
+import { escHtml, escAttr } from '../lib/esc.js';
 import { fmtInt } from '../lib/num.js';
 import { SUMMARY, TOTAL_PLACES } from '../lib/founding.js';
-import { POSITIONING, identityCard, lastUpdated, operatorOf } from './common.js';
+import { identityCard, lastUpdated, operatorOf } from './common.js';
 
-export const LAST_UPDATED = '2026-10-08';
+// The date the copy was last checked against the platform; the byline prints it.
+export const CHECKED = '2026-11-12';
 
 export const META = Object.freeze({
   path: '/features/',
   title: 'Features',
-  // SEO 2026-10-19: trimmed from 216 to ~155 chars -- the original ran well past the ~155-160
-  // chars most search results actually show, so its final clause (plan pricing) was being cut.
-  description: 'What Bet Gaffer does: every match by kickoff, one recommended pick per fixture, probabilities '
-    + 'for every market we price, the Lab, Credits and pricing.',
+  fullTitle: 'Features | BetGaffer',
+  description: 'What BetGaffer will do at launch: our probabilities for the markets your plan covers, a recommended '
+    + 'pick where we have one, graded in public, misses included.',
 });
 
-export const INTRO = "Bet Gaffer is football match intelligence for sport investors. Here's what it does, from the "
-  + 'simplest tool to the most advanced.';
+export const H1 = 'What BetGaffer will do';
+export const INTRO = [
+  'BetGaffer is a sports prediction platform. We cover football today, and other sports will follow.',
+  "We're not a bookmaker: we take no bets and never hold your stake.",
+  "BetGaffer opens at launch. Here's what it will do.",
+];
 
 export const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
   + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
@@ -37,82 +38,78 @@ export const PRICES_LATER = 'Prices will be published here before any payment is
 
 const NAIRA = String.fromCharCode(0x20a6);
 const AT_LAUNCH = 'At launch';
-const COMING_SOON = 'Coming soon';
+const LIVE_NOW = 'Live now';
 
 const isCount = (n) => Number.isSafeInteger(n) && n >= 0;
 
-/**
- * Markets per fixture from cfg.breadth, or null when absent or the day is empty (nothing claimed).
- * Throws on a malformed breadth object.
- */
-function marketsOf(breadth) {
-  if (breadth === undefined || breadth === null) return null;
-  if (typeof breadth !== 'object' || Array.isArray(breadth)) {
-    throw new TypeError('features: cfg.breadth must be { markets, competitions, fixtures, day } or absent');
-  }
-  const { markets, competitions, fixtures, day } = breadth;
-  for (const [k, v] of Object.entries({ markets, competitions, fixtures })) {
-    if (!isCount(v)) throw new TypeError(`features: cfg.breadth.${k} must be a non-negative integer, got ${JSON.stringify(v)}`);
-  }
-  if (!isDate(day)) throw new TypeError(`features: cfg.breadth.day must be a real YYYY-MM-DD date, got ${JSON.stringify(day)}`);
-  if (fixtures === 0 || competitions === 0 || markets === 0) return null; // an empty day claims no breadth
-  return markets;
-}
+// [name, problem, what we do, label, href]. Only the blog row links: the app pages are not on the teaser.
+export const ROWS = [
+  ['Predictions', "Bookmaker odds show a price, with the bookmaker's margin built in.",
+    "The day's fixtures, with our probabilities for the markets your plan covers."],
+  ['One recommended pick', "Every match has dozens of markets, and that's too many choices.",
+    "On a match where we recommend a pick, it's one pick for that match: the outcome our model rates best."],
+  ['Match pages', 'Checking one match means jumping between apps.',
+    'One page per match, with all the markets your plan covers for it.'],
+  ['League, team and country pages', 'Finding out how a team has really been playing takes digging.',
+    "Country: every competition we cover there, plus its national side and today's fixtures. League: the table, "
+    + "trends in context, today's fixtures and the cups those clubs play. Team: form and tendencies first, then "
+    + 'fixtures. Guests see fixtures, results and form tiles only; our statistics, charts and rating are for '
+    + 'members whose plan covers that league.'],
+  ['National team pages', 'National sides play rarely, so their form is hard to follow.',
+    "A page for each national side we cover: men's, women's and youth."],
+  ['Coverage', "It isn't always clear which leagues a service covers.",
+    'Which leagues each plan covers, grouped by country.'],
+  ['Daily Slips', 'Building a slip from scratch takes time.',
+    "Ready-made slips, from lower to higher odds, built from our model's picks."],
+  ['Ask Gaffer', 'A slip can look strong and still hide a weak leg.',
+    'Gaffer is our AI football assistant. Bring your slip, and Gaffer finds the weak legs. Gaffer comes with some plans.'],
+  ['Our Record', 'Anyone can claim a big number.',
+    'Every recommended pick is graded in public after full time, misses included, month by month.'],
+  ['Credits', "Some features you'll only want now and then.",
+    'Monthly Credits on plans that include them, and top-ups on any plan.'],
+  ['Breaks and limits', 'Betting should stay fun, and sometimes that means a break.',
+    'Profile, billing, notifications, limits on buying Credits, and Breaks & limits: email us to take a break '
+    + '(self-exclusion) and we set it up. When it ends, you ask for your access back, and it returns 24 hours later.'],
+  ['Blog and Learn', 'Words like 1UP or GG on a slip can be confusing.',
+    'Plain guides to how bets work and settle.', LIVE_NOW, '/blog/'],
+].map(([name, problem, answer, tag = AT_LAUNCH, href]) => ({ name, problem, answer, tag, href }));
 
-/** Spec §8, in order. `answer` for #5 is filled in from cfg.breadth. */
-function featureList(markets) {
-  const priced = markets === null
-    ? 'Our probability for every market we price.'
-    : `Our probability for every market we price — up to ${fmtInt(markets)} per match.`;
-  return [
-    ['Every match, by kickoff', 'A Saturday can bring more than 1,500 matches spread across apps and sites.',
-      'One list of every fixture in the competitions we cover, in Lagos time, with Live, Next 3 hours and Finished views.'],
-    ['Search and league filters', 'Scrolling through hundreds of games to find yours wastes time.',
-      'Find a team or league in seconds, or show only the leagues you follow.'],
-    ['Live scores and match clock', 'Switching apps to check whether a match is still on.',
-      'Live scores and the match clock right on the fixture.'],
-    ['One recommended pick per fixture', 'There are dozens of markets on every match — too many choices.',
-      'We highlight one recommended pick for each fixture, with its probability and price.'],
-    ['Probabilities for every market', 'Bookmaker odds tell you the price, not the chance.', priced],
-    ['Clearly marked prices', "You can't always tell where a price came from.",
-      'When no bookmaker price was captured, ours is clearly marked as an estimate.'],
-    ['Match centre', 'Research means opening five tabs.',
-      'Head-to-head, standings, stats, lineups and commentary in one place.'],
-    ['Early results', 'Waiting for full time to know if a pick landed.',
-      "See a pick land the moment it's decided — an over-goals line passed, or a first-half market at half time."],
-    ["Today's accuracy ring", 'No quick way to see how today is going.',
-      "A ring that shows today's settled picks at a glance."],
-    ['Our Record', 'Anyone can claim a big number.',
-      'Every recommended pick is graded and kept, misses alongside hits.'],
-    ['Power Teams', 'Too much noise when you only follow the big clubs.',
-      'One tap narrows the day to the major clubs we track most closely. Elite plan.'],
-    ['Ready-made slips', 'No time to build a slip every day.',
-      "Ready-made slips every day, for when you'd rather not build your own."],
-    ['Same-game slips', 'Combining markets from one match ignores how they affect each other.',
-      'Slips that combine several markets from one match, with the link between them taken into account.'],
-    ['My Bets', 'Slips scattered across screenshots and notes.',
-      'Every slip you build on Bet Gaffer, tracked in one place until it settles.'],
-    ['The Lab', 'Building a multi-leg slip by hand is slow and guesswork.',
-      'Assemble a multi-leg slip from our priced markets, see which leg is weakest, and change one leg.'],
-    ['Credits', 'Paying for a whole plan when you only want one thing.',
-      'Pay with Credits only for the actions you use — and get Credits back when a Lab slip you marked as played loses.'],
-    ['Ask Gaffer', 'Wanting a second opinion before you place a ticket.',
-      'Ask in plain language and get the reasoning behind a pick.', COMING_SOON],
-  ].map(([name, problem, answer, tag = AT_LAUNCH]) => ({ name, problem, answer, tag }));
-}
+export const COMING_H2 = "What's coming";
+export const COMING = [
+  ['The Lab', 'Building a ticket to a target takes ages.',
+    "Coming at launch: the Lab, where you'll be able to set your stake and Gaffer will build a ticket from our "
+    + "model's rated picks, to your rules."],
+  ['Power Picks', null,
+    'Coming soon: Power Picks, our recommended picks on the matches we single out, on the plans that include them.'],
+  ['Booking codes', 'Typing a ticket in leg by leg is slow.',
+    "We're working to let you turn a ticket into a SportyBet booking code, where SportyBet offers its markets."],
+].map(([name, problem, answer]) => ({ name, problem, answer }));
 
-function featureCard({ name, problem, answer, tag }, i) {
-  const soon = tag !== AT_LAUNCH;
+const problemP = (t) => (t === null ? ''
+  : `\n<p class="ct-feature__problem"><span class="ct-feature__lbl">The problem:</span> ${escHtml(t)}</p>`);
+const answerP = (t) => `\n<p class="ct-feature__answer"><span class="ct-feature__lbl">What we do:</span> ${escHtml(t)}</p>`;
+
+function featureCard({ name, problem, answer, tag, href }, i) {
   const id = `ct-f${i + 1}`;
+  const title = href ? `<a href="${escAttr(href)}">${escHtml(name)}</a>` : escHtml(name);
   return `<li class="ct-ladder__step">
-<article class="ct-feature${soon ? ' ct-feature--soon' : ''}" aria-labelledby="${id}">
+<article class="ct-feature" aria-labelledby="${id}">
 <div class="ct-feature__head">
 <p class="ct-feature__n mono" aria-hidden="true">${String(i + 1).padStart(2, '0')}</p>
+<h3 class="ct-feature__name" id="${id}">${title}</h3>
+<p class="ct-feature__tag">${escHtml(tag)}</p>
+</div>${problemP(problem)}${answerP(answer)}
+</article>
+</li>`;
+}
+
+function comingCard({ name, problem, answer }, i) {
+  const id = `ct-c${i + 1}`;
+  return `<li class="ct-ladder__step">
+<article class="ct-feature ct-feature--soon" aria-labelledby="${id}">
+<div class="ct-feature__head">
 <h3 class="ct-feature__name" id="${id}">${escHtml(name)}</h3>
-<p class="ct-feature__tag${soon ? ' ct-feature__tag--soon' : ''}">${escHtml(tag)}</p>
-</div>
-<p class="ct-feature__problem"><span class="ct-feature__lbl">The problem:</span> ${escHtml(problem)}</p>
-<p class="ct-feature__answer"><span class="ct-feature__lbl">What we do:</span> ${escHtml(answer)}</p>
+</div>${problemP(problem)}${answerP(answer)}
 </article>
 </li>`;
 }
@@ -134,13 +131,14 @@ function tierTable(tiers) {
 }
 
 /**
- * @param {object} cfg  site config (+ optional cfg.breadth); cfg.operator must be complete (S8)
+ * @param {object} cfg  site config; cfg.operator must be complete (S8)
  * @returns {string} body fragment for /features/
  */
 export function render(cfg) {
   const op = operatorOf(cfg);
   const pricing = cfg.pricing && typeof cfg.pricing === 'object' ? cfg.pricing : {};
-  const ladder = featureList(marketsOf(cfg.breadth)).map(featureCard).join('\n');
+  const ladder = ROWS.filter((r) => !r.href || cfg.blog === true).map(featureCard).join('\n');
+  const coming = COMING.map(comingCard).join('\n');
 
   const pricingBody = pricing.show_prices === true
     ? `<p>${escHtml(PRICING_INTENT)}</p>\n${tierTable(pricing.tiers)}`
@@ -149,15 +147,20 @@ export function render(cfg) {
   return `<article class="ct-doc ct-features">
 <header class="ct-hero">
 <p class="t-lbl">Features</p>
-<h1 class="t-d1">What Bet Gaffer does</h1>
-${lastUpdated(LAST_UPDATED)}
-<p class="ct-lead">${escHtml(INTRO)}</p>
-<p class="ct-pos">${escHtml(POSITIONING)}</p>
+<h1 class="t-d1">${escHtml(H1)}</h1>
+${lastUpdated(CHECKED, 'Checked')}
+${INTRO.map((t) => `<p class="ct-lead">${escHtml(t)}</p>`).join('\n')}
 </header>
 <section class="ct-fsec" aria-labelledby="ct-feats-h">
-<h2 class="vh" id="ct-feats-h">The features, simplest first</h2>
+<h2 class="vh" id="ct-feats-h">The features</h2>
 <ol class="ct-ladder" role="list">
 ${ladder}
+</ol>
+</section>
+<section class="ct-fsec" aria-labelledby="ct-coming-h">
+<h2 class="t-d2" id="ct-coming-h">${escHtml(COMING_H2)}</h2>
+<ol class="ct-ladder" role="list">
+${coming}
 </ol>
 </section>
 <section class="ct-fsec ct-pricing" aria-labelledby="ct-pricing-h">

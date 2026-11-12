@@ -287,19 +287,6 @@ function notFoundBody() {
 </section>`;
 }
 
-/** Features breadth from the home day file: active (non-withdrawn) rows only; absent when empty. */
-function breadthOf(day, date) {
-  if (!day) return undefined;
-  const active = day.fixtures.filter((f) => f.withdrawn !== true);
-  if (active.length === 0) return undefined;
-  return {
-    markets: day.counts.markets_per_fixture,
-    competitions: new Set(active.map((f) => f.comp)).size,
-    fixtures: active.length,
-    day: date,
-  };
-}
-
 // ------------------------------------------------------------------ filesystem
 
 const RETRY_CODES = new Set(['EPERM', 'EBUSY', 'EACCES', 'ENOTEMPTY']);
@@ -573,8 +560,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     ogImage: OG_RECORD,
   });
 
-  const breadth = choice.home ? breadthOf(days.get(choice.home), choice.home) : undefined;
-  add({ ...features.META, body: features.render({ ...config, breadth }), ogImage: OG_FEATURES });
+  add({ ...features.META, body: features.render({ ...config, blog: blog !== null }), ogImage: OG_FEATURES });
   for (const mod of [privacy, terms, refunds]) add({ ...mod.META, body: mod.render(config), ogImage: OG_DEFAULT });
 
   // The founding page (spec §3): no founding card (it IS the founding page), the founding OG image, and a
