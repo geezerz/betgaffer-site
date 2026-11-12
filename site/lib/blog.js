@@ -46,6 +46,16 @@ export function freshness(a, today) {
 const dated = (a) => `Published <time datetime="${escAttr(a.published)}">${fmtShort(a.published)}</time>`
   + (a.updated > a.published ? ` · Updated <time datetime="${escAttr(a.updated)}">${fmtShort(a.updated)}</time>` : '');
 
+/**
+ * Keep reading (WR3 SEO crawl, parity with the app): the live Learn guides after this one in curated order, wrapping
+ * round and skipping the piece itself; same topic first, order kept inside each group; three at most.
+ */
+export function keepReading(a, learn) {
+  const i = learn.findIndex((g) => g.slug === a.slug);
+  const ring = i < 0 ? learn : [...learn.slice(i + 1), ...learn.slice(0, i)];
+  return [...ring.filter((g) => g.cat === a.cat), ...ring.filter((g) => g.cat !== a.cat)].slice(0, 3);
+}
+
 export const pathOf = (a) => `${a.section === 'learn' ? '/blog/learn/' : '/blog/'}${a.slug}/`;
 
 /**
@@ -167,6 +177,8 @@ function fillBody(a, body, rc, liveBySlug) {
   return body
     .replaceAll('{{checked_long}}', a.checked ? fmtLong(a.checked) : '')
     .replaceAll('{{receipt_lines}}', rc.html)
+    // Legal R-214's unlinked variant: the app links the public day files, which this site never names.
+    .replaceAll('{{receipt_chain}}', "<p>Each day's results page shows that day's receipt code, and each day's code is built from the day before it.</p>")
     .replaceAll('{{receipt_href}}', escAttr(rc.href))
     // {{when:KEY:text}}: the text only where this host has a page for KEY (the {{link}} test); one level of inner {{…}}.
     .replace(/\{\{when:(\w+):((?:[^{}]|\{\{[^{}]*\}\})*)\}\}/g, (_, key, text) => (Object.hasOwn(LINKS, key) ? text : ''))
@@ -257,13 +269,13 @@ export function renderBlog(blog, { today, origin, rc }) {
       return t ? `<a class="lr-step lr-step--${dir}" href="${escAttr(pathOf(t))}"><span class="lr-step__k">${k}</span><b class="lr-step__t">${escHtml(t.title)}</b>${level(t.level)}</a>` : '';
     };
     const next = step('down', 'New to this? Start with', a.start_with) + step('up', 'Next', a.next);
-    const rel = learn.filter((r) => r.slug !== a.slug).slice(0, 3);
+    const rel = keepReading(a, learn);
     const stale = a.state === 'stale'
       ? `<p class="lr-stale" role="note">We last checked this page on ${fmtLong(a.checked)}. Some details may have changed since.</p>` : '';
     const source = a.source === undefined ? ''
       : `<p class="lr-src">${escHtml(a.source).replaceAll('{{checked}}', `<time datetime="${escAttr(a.checked)}">${fmtShort(a.checked)}</time>`)}</p>`;
     const ld = {
-      '@context': 'https://schema.org', '@type': a.section === 'learn' ? 'Article' : 'BlogPosting', headline: a.title, description: a.card,
+      '@context': 'https://schema.org', '@type': a.section === 'learn' ? 'Article' : 'BlogPosting', headline: a.title, description: a.card, image: url(common.ogImage),
       datePublished: a.published, dateModified: a.updated, inLanguage: 'en-NG', mainEntityOfPage: url(path), author: PUBLISHER, publisher: PUBLISHER,
     };
     return {

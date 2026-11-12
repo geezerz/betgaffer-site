@@ -78,7 +78,7 @@ const OG_ALT = Object.freeze({
   [OG_DAY]: "Bet Gaffer: today's recommended picks, each with its probability.",
   [OG_RECORD]: 'Bet Gaffer: Our Record, graded pick accuracy over time.',
   [OG_FEATURES]: 'Bet Gaffer: tools for checking and tracking your slips.',
-  [OG_DEFAULT]: 'Bet Gaffer.',
+  [OG_DEFAULT]: 'BetGaffer',
 });
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;

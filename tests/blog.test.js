@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { build, REPO_ROOT } from '../site/build.mjs';
-import { backdated, blogErrors, freshness, pathOf, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
+import { backdated, blogErrors, freshness, keepReading, pathOf, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
 import { lagosToday, addDays } from '../site/lib/time.js';
 import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
 import { parse, findAll, cspViolations, claimViolations, bareCounts, visibleText } from './html-scan.js';
@@ -282,7 +282,7 @@ describe('the built blog (fixture content)', () => {
       assert.match(art, /<meta name="robots" content="index,follow">/);
       assert.match(art, /<meta property="og:type" content="article">/);
       const [, article, crumbs, org] = ld(art);
-      assert.deepEqual(Object.keys(article), ['@context', '@type', 'headline', 'description', 'datePublished', 'dateModified', 'inLanguage', 'mainEntityOfPage', 'author', 'publisher']);
+      assert.deepEqual(Object.keys(article), ['@context', '@type', 'headline', 'description', 'image', 'datePublished', 'dateModified', 'inLanguage', 'mainEntityOfPage', 'author', 'publisher']);
       assert.equal(article['@type'], 'Article');
       assert.deepEqual(article.author, { '@type': 'Organization', name: 'BetGaffer', url: 'https://betgaffer.com/' });
       assert.deepEqual(crumbs.itemListElement.map((i) => [i.position, i.name, i.item]), [
@@ -409,5 +409,38 @@ describe('the built blog (committed content, real data)', () => {
         for (const u of findAll(doc, (n) => n.tag === 'use')) assert.ok(html.includes(`id="${u.attrs.href.slice(1)}"`), `${rel}: sprite has ${u.attrs.href}`);
       }
     } finally { await ws.cleanup(); }
+  });
+});
+
+describe('WR3 SEO crawl (6c approved for both hosts)', () => {
+  const g = (slug, cat = 'markets') => ({ slug, cat });
+  const LEARN = ['1x2', 'asian-handicap-0', 'draw-no-bet', 'double-chance', 'gg-ng', 'over-1-5-goals', 'over-2-5-goals', 'early-goals', '1up-2up']
+    .map((s) => g(s)).concat(g('implied-probability', 'odds'));
+  test('Keep reading: the next live guides in curated order, wrapping, same topic first, never the piece itself', () => {
+    for (const [a, want] of [
+      [g('asian-handicap-0'), ['draw-no-bet', 'double-chance', 'gg-ng']],
+      [g('1up-2up'), ['1x2', 'asian-handicap-0', 'draw-no-bet']],
+      [g('how-to-check-us', 'trust'), ['1x2', 'asian-handicap-0', 'draw-no-bet']],
+      [g('implied-probability', 'odds'), ['1x2', 'asian-handicap-0', 'draw-no-bet']],
+    ]) assert.deepEqual(keepReading(a, LEARN).map((r) => r.slug), want, a.slug);
+    assert.deepEqual(keepReading(g('a'), [g('a'), g('b')]).map((r) => r.slug), ['b'], 'fewer than 3: what is left');
+  });
+  test('an article JSON-LD carries image (its own og:image) right after description; hubs carry none', async () => {
+    const { ws, done } = await buildBlog();
+    try {
+      const lds = (h) => [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+      const h = await read(ws, 'blog/learn/g1/index.html');
+      const art = lds(h).find((x) => x['@type'] === 'Article');
+      assert.deepEqual(Object.keys(art).slice(3, 5), ['description', 'image']);
+      assert.equal(art.image, /<meta property="og:image" content="([^"]+)"/.exec(h)[1]);
+      assert.ok(!lds(await read(ws, 'blog/index.html')).some((x) => 'image' in x));
+      assert.match(h, /<meta property="og:image:alt" content="BetGaffer">/);
+    } finally { await done(); }
+  });
+  test('{{receipt_chain}} renders Legal\'s unlinked teaser line (R-214)', async () => {
+    const { ws, done } = await buildBlog((s) => { s.bodies.g1 = bodyOf('{{receipt_lines}}{{receipt_chain}}'); });
+    try {
+      assert.ok((await read(ws, 'blog/learn/g1/index.html')).includes("<p>Each day's results page shows that day's receipt code, and each day's code is built from the day before it.</p>"));
+    } finally { await done(); }
   });
 });
