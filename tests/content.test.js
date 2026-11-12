@@ -598,7 +598,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
       // 8 (operator decision): claiming a founding place requires a verified phone number.
       'claiming a place requires a verified phone number',
       // 9
-      `Double plan Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get ${F.TOPUP_BONUS_PCT}% extra Credits instead, not double.`,
+      `Double plan Credits means double the plan's monthly Credit allowance, every month, and the limit on how many plan Credits you can hold is doubled too. As for every member, new plan Credits aren't added while you're at that limit. Top-ups get ${F.TOPUP_BONUS_PCT}% extra Credits instead, not double.`,
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
     for (const gone of ['and any place released later, go to', 'a verified phone number is checked', 'never double',
       'Founding status starts with your first paid subscription']) {
