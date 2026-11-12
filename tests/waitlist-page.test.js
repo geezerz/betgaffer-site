@@ -220,7 +220,7 @@ describe('/waitlist/ and the founding card in the built site', () => {
 
   test('dist/waitlist/index.html exists; title, description and og tags are the spec\'s', async () => {
     assert.ok(await exists(join(ws.out, 'waitlist/index.html')));
-    assert.match(page, /<title>Founding members — Bet Gaffer<\/title>/);
+    assert.match(page, /<title>Founding members — BetGaffer<\/title>/);
     const meta = (k, v) => find(doc, (n) => n.tag === 'meta' && n.attrs[k] === v)?.attrs.content;
     assert.equal(meta('name', 'description'), META_DESCRIPTION);
     assert.equal(meta('property', 'og:description'), META_DESCRIPTION);

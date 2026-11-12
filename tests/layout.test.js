@@ -69,13 +69,13 @@ test('page() returns a complete HTML document with the required head', () => {
   assert.match(html, /<html lang="en-NG">/);
   assert.match(html, /<meta charset="utf-8">/);
   assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
-  assert.match(html, /<title>Our Record — Bet Gaffer<\/title>/);
+  assert.match(html, /<title>Our Record — BetGaffer<\/title>/);
   assert.match(html, /<meta name="description" content="The graded record of every published pick.">/);
   assert.match(html, /<link rel="canonical" href="https:\/\/betgaffer.com\/our-record\/">/);
   assert.match(html, /<meta name="theme-color" content="#0B1017">/);
   assert.match(html, /<meta name="color-scheme" content="dark">/);
   assert.match(html, /<link rel="icon" href="\/assets\/img\/favicon.svg" type="image\/svg\+xml">/);
-  assert.match(html, /<meta property="og:title" content="Our Record — Bet Gaffer">/);
+  assert.match(html, /<meta property="og:title" content="Our Record — BetGaffer">/);
   assert.match(html, /<meta property="og:description" content="The graded record of every published pick.">/);
   assert.match(html, /<meta property="og:url" content="https:\/\/betgaffer.com\/our-record\/">/);
   // Outside <noscript>: exactly one stylesheet. The no-JS sheet (spec §16.3) is inside <noscript>.
@@ -113,7 +113,7 @@ test('a noindex page drops canonical and og:url (it must not name itself the can
   assert.match(html, /<meta name="robots" content="noindex">/);
   assert.doesNotMatch(html, /rel="canonical"/);
   assert.doesNotMatch(html, /og:url/);
-  assert.match(html, /<meta property="og:title" content="Our Record — Bet Gaffer">/, 'the rest of the head stays');
+  assert.match(html, /<meta property="og:title" content="Our Record — BetGaffer">/, 'the rest of the head stays');
 });
 
 test('page() requires an explicit config object (no silent fallback to site/config.js)', () => {
@@ -132,7 +132,7 @@ test('title and description are escaped', () => {
   const html = base({ title: '<img src=x onerror=alert(1)> & "q"', description: '"><script>alert(1)</script>' });
   assert.doesNotMatch(html, /<img src=x/);
   assert.doesNotMatch(html, /<script>alert/);
-  assert.match(html, /<title>&lt;img src=x onerror=alert\(1\)&gt; &amp; &quot;q&quot; — Bet Gaffer<\/title>/);
+  assert.match(html, /<title>&lt;img src=x onerror=alert\(1\)&gt; &amp; &quot;q&quot; — BetGaffer<\/title>/);
   assert.match(html, /content="&quot;&gt;&lt;script&gt;alert\(1\)&lt;\/script&gt;"/);
 });
 

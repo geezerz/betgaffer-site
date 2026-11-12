@@ -219,7 +219,7 @@ ${blogCol}<div class="bg-foot__col">
  *
  * @param {object} o
  * @param {string} o.path         site path of this page ('/', '/our-record/', '/day/2026-10-08/', '/404.html')
- * @param {string} o.title        page title; rendered as "<title> — Bet Gaffer"
+ * @param {string} o.title        page title; rendered as "<title> — BetGaffer" (one-word company spelling, R-36)
  * @param {string} o.description  meta + Open Graph description
  * @param {string} o.body         trusted, already-escaped HTML fragment placed in <main>
  * @param {string[]} [o.scripts]  same-origin module script paths
@@ -290,7 +290,7 @@ export function page({
   const y = year === undefined ? Number(lagosToday().slice(0, 4)) : year;
   if (!Number.isInteger(y)) throw new TypeError('page: year must be an integer');
 
-  const fullTitle = fullTitleOverride ?? `${title} — ${config.brand || 'Bet Gaffer'}`;
+  const fullTitle = fullTitleOverride ?? `${title} — BetGaffer`;
   const url = config.origin + (canonicalPath ?? path);
   // banner.js first, so a dismissed card is removed before any other module runs (spec §2); then
   // nav.js on every page (spec §16.3); then the page's own scripts. Each at most once.
