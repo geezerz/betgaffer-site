@@ -1399,7 +1399,9 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
             hits.push(`${rel}: ${JSON.stringify(t.slice(Math.max(0, x.index - 50), x.index + 40))}`);
           }
         }
-        assert.ok(t.includes('Every pick carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
+        // The receipt sentence before it depends on the receipt run at build time (receiptFooter, tests/blog.test.js).
+        assert.ok(t.includes('A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
+        assert.ok(t.includes('For adults aged 18 and over. Betting carries risk. Only bet what you can afford to lose, and play responsibly.'), `${rel}: the 18+ and responsible-play line (Legal 12 Nov)`);
       }
     }
     assert.ok(pages >= 28, `premise: every page of both builds was read (${pages})`);

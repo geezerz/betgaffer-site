@@ -28,7 +28,7 @@ import { receiptCode, renderDay } from './lib/fixtures.js';
 import {
   JSON_LD_CONTENT, OG_DAY, OG_DEFAULT, OG_FEATURES, OG_FOUNDING, OG_HOME, OG_RECORD, page,
 } from './lib/layout.js';
-import { readBlog, receipts, renderBlog } from './lib/blog.js';
+import { readBlog, receiptFooter, receipts, renderBlog } from './lib/blog.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
 import { fmtInt, plural } from './lib/num.js';
@@ -488,18 +488,16 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
 
   // The blog exists only with >= 3 live pieces (renderBlog returns null otherwise).
   const lagosDay = lagosToday(now);
-  const blog = renderBlog(await readBlog(blogDir), {
-    today: lagosDay,
-    origin: config.origin,
-    rc: receipts(new Set(listed.filter((e) => e.picks_hash).map((e) => e.day)), lagosDay),
-  });
+  const rc = receipts(new Set(listed.filter((e) => e.picks_hash).map((e) => e.day)), lagosDay);
+  const receiptLine = receiptFooter(rc.since);
+  const blog = renderBlog(await readBlog(blogDir), { today: lagosDay, origin: config.origin, rc });
 
   // 4–5. Render every page in memory first: a renderer that throws stops the build before disk.
   const pages = new Map();
   const blogPages = new Map(); // not in sitemap.xml: the blog has its own
   const add = (o, into = pages) => {
     if (pages.has(o.path) || blogPages.has(o.path)) throw new Error(`build: route ${o.path} rendered twice`);
-    into.set(o.path, page({ config, year, blog: blog !== null, ...o }));
+    into.set(o.path, page({ config, year, blog: blog !== null, receiptLine, ...o }));
   };
   for (const o of blog?.pages ?? []) add(o, blogPages);
 
