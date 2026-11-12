@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-11",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-10T23:10:05Z",
-    "grades_as_of": "2026-11-12T05:10:04Z",
+    "grades_as_of": "2026-11-12T07:10:03Z",
     "prev_hash": "sha256:34f692963a03bff50e58a7a6d9595414d942c01e81d72c05a91c86cdff213f3f",
-    "picks_hash": "sha256:b4d578f293a86345957b85b25d91ba6b994d3f3bff7a79ec3825ecf70c853374",
+    "picks_hash": "sha256:0c930c396a27c697f1b1cbdcb5d1d6f03a6fee76d3c9d211a099ca0a67ad620d",
     "counts": {
         "fixtures": 196,
-        "priced": 175,
+        "priced": 153,
         "recommended": 186,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 120,
+        "won": 121,
         "lost": 16,
         "pushes": 5,
-        "graded": 136,
-        "pct": 88.24
+        "graded": 137,
+        "pct": 88.32
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2300,9 +2300,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -2496,7 +2498,7 @@
             "away": "Anzio",
             "home_id": 303691,
             "away_id": 582333,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -2509,8 +2511,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1699229,
@@ -2934,9 +2943,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3400,9 +3411,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3585,9 +3598,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3642,9 +3657,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3667,9 +3684,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3712,8 +3731,10 @@
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
-            "withdrawn": false,
-            "state": "none",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
             "grade": null,
             "score": null
         },
@@ -3764,9 +3785,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3789,9 +3812,11 @@
             },
             "frozen_at": "2026-11-11T07:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3841,9 +3866,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3893,9 +3920,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4026,9 +4055,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4051,9 +4082,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4076,9 +4109,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4101,9 +4136,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4153,9 +4190,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4178,9 +4217,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4203,9 +4244,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4228,9 +4271,11 @@
             },
             "frozen_at": "2026-11-11T03:10:01Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4728,9 +4773,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4906,9 +4953,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4963,9 +5012,11 @@
             },
             "frozen_at": "2026-11-10T23:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {

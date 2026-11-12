@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-12",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-11T21:10:02Z",
-    "grades_as_of": "2026-11-12T05:10:04Z",
-    "prev_hash": "sha256:b4d578f293a86345957b85b25d91ba6b994d3f3bff7a79ec3825ecf70c853374",
-    "picks_hash": "sha256:467724140aeba52f745ae6cfb1feb3686c31c54d7c3ef170b8e6ce2372591876",
+    "grades_as_of": "2026-11-12T07:10:03Z",
+    "prev_hash": "sha256:0c930c396a27c697f1b1cbdcb5d1d6f03a6fee76d3c9d211a099ca0a67ad620d",
+    "picks_hash": "sha256:b2cd293a7cdc66bd875eaf16e39435e3026ff2ac777efeac96257d71e2ce44f6",
     "counts": {
-        "fixtures": 97,
-        "priced": 96,
-        "recommended": 89,
+        "fixtures": 101,
+        "priced": 100,
+        "recommended": 93,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -24,9 +24,9 @@
         "strategy": "edge_reliability",
         "fallback": "probability_range",
         "ledger_match_rate": 1.0,
-        "ledger_match_n": 87,
-        "ledger_match_matched": 87,
-        "ledger_match_served_n": 87,
+        "ledger_match_n": 91,
+        "ledger_match_matched": 91,
+        "ledger_match_served_n": 91,
         "ledger_match_unserved": 0
     },
     "fixtures": [
@@ -384,12 +384,12 @@
             "away": "India",
             "home_id": 499,
             "away_id": 395,
-            "status": "NS",
+            "status": "HT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -687,6 +687,31 @@
             "score": null
         },
         {
+            "fx": 1466226,
+            "api_fx": 1635820,
+            "ko": "2026-11-12T13:00:00Z",
+            "comp": "UEFA U19 Championship - Qualification (World)",
+            "home": "Germany U19",
+            "away": "Sweden U19",
+            "home_id": 1799,
+            "away_id": 1779,
+            "status": "NS",
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 87,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-12T07:10:03Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1637169,
             "api_fx": 1646211,
             "ko": "2026-11-12T13:00:00Z",
@@ -905,6 +930,31 @@
             "score": null
         },
         {
+            "fx": 1466214,
+            "api_fx": 1635808,
+            "ko": "2026-11-12T15:00:00Z",
+            "comp": "UEFA U19 Championship - Qualification (World)",
+            "home": "Portugal U19",
+            "away": "Lithuania U19",
+            "home_id": 1775,
+            "away_id": 1580,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 87,
+                "price": 1.13,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-12T07:10:03Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1696487,
             "api_fx": 1647358,
             "ko": "2026-11-12T15:00:00Z",
@@ -966,6 +1016,56 @@
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-11T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1699217,
+            "api_fx": 1559455,
+            "ko": "2026-11-12T15:00:00Z",
+            "comp": "UEFA U17 Championship - Qualification (World)",
+            "home": "Bulgaria U17",
+            "away": "Serbia U17",
+            "home_id": 2134,
+            "away_id": 2133,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 85,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-12T07:10:03Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1699228,
+            "api_fx": 1559466,
+            "ko": "2026-11-12T15:00:00Z",
+            "comp": "UEFA U17 Championship - Qualification (World)",
+            "home": "Portugal U17",
+            "away": "Andorra U17",
+            "home_id": 1105,
+            "away_id": 652300,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 84,
+                "price": 1.15,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-12T07:10:03Z",
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
