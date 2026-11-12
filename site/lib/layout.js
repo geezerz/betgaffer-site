@@ -63,7 +63,7 @@ export const OG_DIMENSIONS = Object.freeze({
  * exception without one) -- change this object and the pinned hash test fails until both are
  * updated together.
  */
-export const JSON_LD_SITE = Object.freeze({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bet Gaffer', url: 'https://betgaffer.com/' });
+export const JSON_LD_SITE = Object.freeze({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'BetGaffer', url: 'https://betgaffer.com/' });
 /** One JSON-LD data block's text: each `<` escaped so the data can never close the script element. */
 export const ldText = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 /** The exact <script type="application/ld+json"> text content every page carries. */
@@ -327,7 +327,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 ${withBanner ? `<script src="${escAttr(EARLY_SCRIPT)}"></script>\n` : ''}<link rel="stylesheet" href="/assets/css/site.css">
 <noscript><link rel="stylesheet" href="${escAttr(NOJS_CSS)}"></noscript>
 <meta property="og:type" content="${escAttr(ogType)}">
-<meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">
+<meta property="og:site_name" content="BetGaffer">
 <meta property="og:title" content="${escAttr(fullTitle)}">
 <meta property="og:description" content="${escAttr(description)}">
 ${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${twitterTags}${jsonLd}${scriptTags ? `${scriptTags}\n` : ''}</head>

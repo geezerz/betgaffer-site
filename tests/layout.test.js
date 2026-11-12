@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
-import { page, NAV, OG_FOUNDING, navCurrent } from '../site/lib/layout.js';
+import { page, NAV, OG_FOUNDING, navCurrent, JSON_LD_SITE, JSON_LD_CONTENT } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
 import { isNear, VARIANTS, variantFor } from '../site/lib/founding.js';
 import { foundingCard } from '../site/content/waitlist.js';
@@ -1408,4 +1408,11 @@ test('below 400px button labels may wrap and centre', () => {
 
 test('gold is reserved for the recommended pick: base.css defines it but never uses it', () => {
   assert.doesNotMatch(css(), /var\(--gold\)/);
+});
+
+test('machine-readable names use the one-word company spelling BetGaffer (R-35/R-36)', () => {
+  const html = base();
+  assert.match(html, /<meta property="og:site_name" content="BetGaffer">/);
+  assert.equal(JSON_LD_SITE.name, 'BetGaffer');
+  assert.ok(html.includes(JSON_LD_CONTENT), 'the page carries that WebSite block');
 });
