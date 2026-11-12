@@ -82,7 +82,7 @@ export const COMING = [
   ['Power Picks', null,
     'Coming soon: Power Picks, our recommended picks on the matches we single out, on the plans that include them.'],
   ['Booking codes', 'Typing a ticket in leg by leg is slow.',
-    "We're working to let you turn a ticket into a SportyBet booking code, where SportyBet offers its markets."],
+    "Coming at launch: turn a ticket into a SportyBet booking code, where SportyBet offers its markets."],
 ].map(([name, problem, answer]) => ({ name, problem, answer }));
 
 const problemP = (t) => (t === null ? ''
