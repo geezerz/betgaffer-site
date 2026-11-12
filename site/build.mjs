@@ -28,10 +28,11 @@ import { receiptCode, renderDay } from './lib/fixtures.js';
 import {
   JSON_LD_CONTENT, OG_DAY, OG_DEFAULT, OG_FEATURES, OG_FOUNDING, OG_HOME, OG_RECORD, page,
 } from './lib/layout.js';
+import { readBlog, receipts, renderBlog } from './lib/blog.js';
 import { renderRecord } from './lib/record.js';
 import { ring } from './lib/ring.js';
 import { fmtInt, plural } from './lib/num.js';
-import { fmtDayLong, lagosToday } from './lib/time.js';
+import { addDays, fmtDayLong, lagosToday } from './lib/time.js';
 import { waitlistForm, waitlistResultMeta, waitlistResultPage, WAITLIST_RESULT_KINDS } from './lib/waitlist-form.js';
 import * as features from './content/features.js';
 import * as privacy from './content/privacy.js';
@@ -43,7 +44,7 @@ const SITE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = resolve(SITE, '..');
 
 /** site.css = these files, in this order. */
-export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css']);
+export const CSS_ORDER = Object.freeze(['base.css', 'fixtures.css', 'predictions.css', 'balloon.css', 'record.css', 'content.css', 'waitlist.css', 'founding.css', 'blog.css']);
 /** Linked from <noscript> by layout.js (NOJS_CSS); copied as its own file, never concatenated. */
 const NOJS_CSS_FILE = 'nojs.css';
 /** site/lib modules that run in the browser too, copied to /assets/js/lib/ (archive loader, toolbar, floating ring, founding card). */
@@ -75,15 +76,6 @@ export const HEADERS = `/*
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 `;
-
-const DAY_MS = 86400000;
-
-/** 'YYYY-MM-DD' + n calendar days (UTC arithmetic on a date, never the host timezone). */
-function addDays(date, n) {
-  const [y, m, d] = date.split('-').map(Number);
-  const t = new Date(Date.UTC(y, m - 1, d) + n * DAY_MS);
-  return `${String(t.getUTCFullYear()).padStart(4, '0')}-${String(t.getUTCMonth() + 1).padStart(2, '0')}-${String(t.getUTCDate()).padStart(2, '0')}`;
-}
 
 /**
  * The floating ring's figures for <main> (spec §6, §15): the shown day's accuracy as data-ring-*,
@@ -446,6 +438,7 @@ const NOINDEX_META = /<meta name="robots" content="noindex">/;
  * @param {number} [o.now]        epoch ms; fixes the copyright year and no-data "today"
  * @param {(m:string)=>void} [o.warn]  warnings (unlisted day files); default stderr
  * @param {(tmp:string)=>Promise<void>} [o.beforeSwap]  test seam: runs after <out>.tmp is complete
+ * @param {string} [o.blogDir]    blog content (blog.json + bodies); default <root>/content/blog, so only a build of the repo itself has a blog
  * @param {string} [o.configPath] the config file's path, named in operator errors (the CLI passes it)
  * @returns {Promise<{ out: string, routes: string[], files: number }>}
  */
@@ -464,7 +457,7 @@ export async function build({ root = REPO_ROOT, out = join(REPO_ROOT, 'dist'), c
   }
 }
 
-async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, beforeSwap, configPath }) {
+async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, beforeSwap, configPath, blogDir = join(rootAbs, 'content', 'blog') }) {
   const tmp = `${outAbs}.tmp`;
   const old = `${outAbs}.old`;
   for (const p of [outAbs, tmp, old]) await assertOwned(p);
@@ -493,12 +486,22 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const today = index ? index.today : lagosToday(now);
   const staleAfterHours = Number.isFinite(config.stale_after_hours) && config.stale_after_hours > 0 ? config.stale_after_hours : 6;
 
+  // The blog exists only with >= 3 live pieces (renderBlog returns null otherwise).
+  const lagosDay = lagosToday(now);
+  const blog = renderBlog(await readBlog(blogDir), {
+    today: lagosDay,
+    origin: config.origin,
+    rc: receipts(new Set(listed.filter((e) => e.picks_hash).map((e) => e.day)), lagosDay),
+  });
+
   // 4–5. Render every page in memory first: a renderer that throws stops the build before disk.
   const pages = new Map();
-  const add = (o) => {
-    if (pages.has(o.path)) throw new Error(`build: route ${o.path} rendered twice`);
-    pages.set(o.path, page({ config, year, ...o }));
+  const blogPages = new Map(); // not in sitemap.xml: the blog has its own
+  const add = (o, into = pages) => {
+    if (pages.has(o.path) || blogPages.has(o.path)) throw new Error(`build: route ${o.path} rendered twice`);
+    into.set(o.path, page({ config, year, blog: blog !== null, ...o }));
   };
+  for (const o of blog?.pages ?? []) add(o, blogPages);
 
   const home = homeBody({ index, choice, days, neighbours });
   add({
@@ -623,7 +626,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const robots = `User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=no\nAllow: /\n\n`
     + ['GPTBot', 'ClaudeBot', 'anthropic-ai', 'Applebot-Extended', 'CCBot', 'Meta-ExternalAgent', 'Bytespider',
       'cohere-training-data-crawler', 'Amazonbot', 'Diffbot', 'omgili'].map((b) => `User-agent: ${b}\n`).join('')
-    + `Disallow: /\n\nSitemap: ${config.origin}/sitemap.xml\n`;
+    + `Disallow: /\n\nSitemap: ${config.origin}/sitemap.xml\n${blog ? `Sitemap: ${config.origin}/sitemap-blog.xml\n` : ''}`;
   // llms.txt (SEO spec §5): a charter-checked description for agents that read it. NO figures: a number
   // here would go stale and travel without its period.
   const llms = `# BetGaffer\n\n> BetGaffer publishes football predictions as model probabilities and grades every recommended pick in public, misses included. It is not a bookmaker and takes no bets.\n\n`
@@ -632,6 +635,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     + `- [Our Record](${config.origin}/our-record/): every graded recommended pick, by day and by month, with its sample size and period\n`
     + `- [Features](${config.origin}/features/): what the platform does\n`
     + `- [Terms](${config.origin}/terms/): terms of use, including responsible play\n\n`
+    + (blog ? blog.llms : '')
     + `## Quoting our figures\n\n`
     + `An accuracy figure from BetGaffer is only true with its sample size and period. Quote both and link Our Record. Past results don't promise future ones.\n`;
 
@@ -645,7 +649,11 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
       await writeFile(p, data);
       fileCount++;
     };
-    for (const [path, html] of pages) await write(routeFile(path), html);
+    for (const [path, html] of [...pages, ...blogPages]) await write(routeFile(path), html);
+    if (blog) {
+      await write('sitemap-blog.xml', blog.sitemap);
+      await write('blog/feed.xml', blog.feed);
+    }
     await write('assets/css/site.css', css);
     await write('sitemap.xml', sitemap);
     await write('robots.txt', robots);
@@ -678,7 +686,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   } catch (e) {
     (warn ?? ((m) => process.stderr.write(`${m}\n`)))(`warning: could not remove ${old} (${e.code ?? e.message}); the next build removes it`);
   }
-  return { out: outAbs, routes: [...pages.keys()], files: fileCount };
+  return { out: outAbs, routes: [...pages.keys(), ...blogPages.keys()], files: fileCount };
 }
 
 // ------------------------------------------------------------------ CLI

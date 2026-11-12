@@ -64,8 +64,10 @@ export const OG_DIMENSIONS = Object.freeze({
  * updated together.
  */
 export const JSON_LD_SITE = Object.freeze({ '@context': 'https://schema.org', '@type': 'WebSite', name: 'Bet Gaffer', url: 'https://betgaffer.com/' });
+/** One JSON-LD data block's text: each `<` escaped so the data can never close the script element. */
+export const ldText = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 /** The exact <script type="application/ld+json"> text content every page carries. */
-export const JSON_LD_CONTENT = JSON.stringify(JSON_LD_SITE).replace(/</g, '\\u003c');
+export const JSON_LD_CONTENT = ldText(JSON_LD_SITE);
 const OG_ALT = Object.freeze({
   [OG_FOUNDING]: `Bet Gaffer: become a founding member. ${fmtInt(TOTAL_PLACES)} places.`,
   [OG_HOME]: 'Bet Gaffer: football match predictions, probability by probability.',
@@ -174,7 +176,12 @@ function header(path) {
 </header>`;
 }
 
-function footer(op, year) {
+function footer(op, year, blog) {
+  const blogCol = blog ? `<nav class="bg-foot__col" aria-label="Blog">
+<h2 class="t-lbl t-lbl--quiet"><a href="/blog/">Blog</a></h2>
+<ul role="list"><li><a href="/blog/learn/">Learn</a></li></ul>
+</nav>
+` : '';
   const legal = LEGAL.map(([href, label]) => `<li><a href="${escAttr(href)}">${escHtml(label)}</a></li>`).join('');
   const social = SOCIAL.map(([href, label]) => `<li><a href="${escAttr(href)}" rel="me">${escHtml(label)}</a></li>`).join('');
   const ident = [
@@ -183,7 +190,7 @@ function footer(op, year) {
     escHtml(op.address),
   ].filter(Boolean).join(' · ');
   return `<footer class="bg-foot">
-<div class="bg-wrap bg-foot__in">
+<div class="bg-wrap bg-foot__in${blog ? ' bg-foot__in--blog' : ''}">
 <div class="bg-foot__brand">
 <p class="bg-wordmark bg-foot__mark" aria-hidden="true">Bet<em>Gaffer</em></p>
 <p class="bg-foot__statement">${escHtml(NOT_A_BOOKMAKER)}</p>
@@ -194,7 +201,7 @@ function footer(op, year) {
 <h2 class="t-lbl t-lbl--quiet">Legal</h2>
 <ul role="list">${legal}</ul>
 </nav>
-<div class="bg-foot__col">
+${blogCol}<div class="bg-foot__col">
 <h2 class="t-lbl t-lbl--quiet">Contact</h2>
 <p><a href="mailto:${escAttr(op.contact_email)}">${escHtml(op.contact_email)}</a></p>
 </div>
@@ -236,10 +243,16 @@ function footer(op, year) {
  * @param {number} [o.ogImageWidth]  the image's real pixel width; defaults to OG_DIMENSIONS[ogImage],
  *                                 else 1200 (OG_FOUNDING's own); required for any other image
  * @param {number} [o.ogImageHeight] as ogImageWidth, default 630
+ * @param {string} [o.ogType]     og:type (default 'website')
+ * @param {string} [o.fullTitle]  the whole <title>/og:title when it is not "<title> — <brand>"
+ * @param {string} [o.robots]     a robots directive on an INDEXED page (the canonical stays), e.g. 'index,follow'
+ * @param {object[]} [o.jsonLd]   extra per-page JSON-LD objects, after the site's own
+ * @param {boolean} [o.blog]      the footer's Blog column (only when the blog exists)
  */
 export function page({
   path, title, description, body, scripts = [], noindex = false, mainData = {},
   config, year, canonicalPath, banner: withBanner = true, ogImage, ogImageAlt, ogImageWidth, ogImageHeight,
+  ogType = 'website', fullTitle: fullTitleOverride, robots, jsonLd: extraLd = [], blog = false,
 } = {}) {
   if (config === null || typeof config !== 'object' || Array.isArray(config)) {
     throw new TypeError('page: config is required (pass the site config object explicitly)');
@@ -277,7 +290,7 @@ export function page({
   const y = year === undefined ? Number(lagosToday().slice(0, 4)) : year;
   if (!Number.isInteger(y)) throw new TypeError('page: year must be an integer');
 
-  const fullTitle = `${title} — ${config.brand || 'Bet Gaffer'}`;
+  const fullTitle = fullTitleOverride ?? `${title} — ${config.brand || 'Bet Gaffer'}`;
   const url = config.origin + (canonicalPath ?? path);
   // banner.js first, so a dismissed card is removed before any other module runs (spec §2); then
   // nav.js on every page (spec §16.3); then the page's own scripts. Each at most once.
@@ -294,7 +307,7 @@ export function page({
 <meta name="twitter:title" content="${escAttr(fullTitle)}">
 <meta name="twitter:description" content="${escAttr(description)}">
 ${ogImage === undefined ? '' : `<meta name="twitter:image" content="${escAttr(config.origin + ogImage)}">\n<meta name="twitter:image:alt" content="${escAttr(ogAlt)}">\n`}`;
-  const jsonLd = `<script type="application/ld+json">${JSON_LD_CONTENT}</script>\n`;
+  const jsonLd = [JSON_LD_CONTENT, ...extraLd.map(ldText)].map((j) => `<script type="application/ld+json">${j}</script>\n`).join('');
 
   return `<!doctype html>
 <html lang="en-NG">
@@ -303,7 +316,7 @@ ${ogImage === undefined ? '' : `<meta name="twitter:image" content="${escAttr(co
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escHtml(fullTitle)}</title>
 <meta name="description" content="${escAttr(description)}">
-${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${escAttr(url)}">`}
+${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${escAttr(url)}">`}${robots ? `\n<meta name="robots" content="${escAttr(robots)}">` : ''}
 <meta name="theme-color" content="#0B1017">
 <meta name="color-scheme" content="dark">
 <meta name="format-detection" content="telephone=no">
@@ -313,7 +326,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="preload" href="/assets/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin>
 ${withBanner ? `<script src="${escAttr(EARLY_SCRIPT)}"></script>\n` : ''}<link rel="stylesheet" href="/assets/css/site.css">
 <noscript><link rel="stylesheet" href="${escAttr(NOJS_CSS)}"></noscript>
-<meta property="og:type" content="website">
+<meta property="og:type" content="${escAttr(ogType)}">
 <meta property="og:site_name" content="${escAttr(config.brand || 'Bet Gaffer')}">
 <meta property="og:title" content="${escAttr(fullTitle)}">
 <meta property="og:description" content="${escAttr(description)}">
@@ -324,7 +337,7 @@ ${withBanner ? `${foundingCard(variantFor(path))}\n` : ''}<main id="main" class=
 <div class="stale" role="status" hidden></div>
 ${body}
 </main>
-${footer(op, y)}
+${footer(op, y, blog)}
 </body>
 </html>
 `;
