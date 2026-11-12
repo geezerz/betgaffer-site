@@ -8,7 +8,7 @@
 import { escHtml } from '../lib/esc.js';
 import { fmtInt } from '../lib/num.js';
 import {
-  BENEFITS, TOPUP_BONUS_PCT, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS, SUPPORT_REPLY_HOURS,
+  BENEFITS, DISCOUNT_PCT, TOPUP_BONUS_PCT, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS, SUPPORT_REPLY_HOURS,
 } from '../lib/founding.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
@@ -55,7 +55,7 @@ function founding() {
 <ul>
 ${benefits}
 </ul>
-<p>The discount applies at every subscription payment for as long as Bet Gaffer offers subscriptions. It does not combine with other percentage discounts: if one applies, you get whichever saves you more.</p>
+<p>The discount is ${offer(`${DISCOUNT_PCT}% off`)} the plan's price at every subscription payment made after your place is given to you, while you keep it and for as long as BetGaffer offers subscriptions. It doesn't combine with other percentage discounts, such as a challenge reward: the bigger one applies to that payment.</p>
 <p>Double plan Credits means double the plan's monthly Credit allowance, every month, and the limit on how many plan Credits you can hold is doubled too. As for every member, new plan Credits aren't added while you're at that limit. Top-ups get ${offer(`${TOPUP_BONUS_PCT}% extra`)} Credits instead, not double.</p>
 <p>Votes count twice in polls on features and improvements that are open to members. Fixes, security updates and changes the law requires go to everyone at once. Founding members also help build new features, by testing them and giving feedback.</p>
 <p>Priority support means a first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>

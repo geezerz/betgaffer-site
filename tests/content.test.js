@@ -928,3 +928,9 @@ test('Terms: priority support is stated as Legal cleared it (Addendum 3, c976fd4
   assert.ok(html.includes("<p>Priority support means a first reply from a person within 12 hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>"));
   assert.doesNotMatch(html, /Priority support covers messages/);
 });
+
+test('Terms: the discount line is Legal addendum 6 (4df74b3fc), the source rule', () => {
+  const html = terms.render(cfg());
+  assert.ok(html.includes('<p>The discount is <span data-figure="offer">30% off</span> the plan\'s price at every subscription payment made after your place is given to you, while you keep it and for as long as BetGaffer offers subscriptions. It doesn\'t combine with other percentage discounts, such as a challenge reward: the bigger one applies to that payment.</p>'));
+  assert.doesNotMatch(html, /The discount applies at every subscription payment/);
+});
