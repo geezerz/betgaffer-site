@@ -46,6 +46,14 @@ const dated = (a) => `Published <time datetime="${escAttr(a.published)}">${fmtSh
 
 export const pathOf = (a) => `${a.section === 'learn' ? '/blog/learn/' : '/blog/'}${a.slug}/`;
 
+/**
+ * Slugs that would go live for the first time with a past date (Marketing R-210): published before today and
+ * not in the live sitemap. Run before every merge (site/preflight.mjs); never in the 2-hourly build.
+ */
+export function backdated(articles, liveUrls, today, origin) {
+  return articles.filter((a) => isDate(a.published) && a.published < today && !liveUrls.has(origin + pathOf(a))).map((a) => a.slug);
+}
+
 /** Read content/blog. null when there is no blog.json; throws on unparsable JSON. */
 export async function readBlog(dir) {
   let raw;
