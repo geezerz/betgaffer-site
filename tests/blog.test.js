@@ -185,6 +185,13 @@ describe('publication dates (operator R-210: true and identical in the byline, J
     const s = sample();
     s.data.articles[0].updated = '2026-10-30';
     assert.ok(blogErrors(s).some((e) => /updated is before published/.test(e)));
+    // WR3 11-12: updated <= max(published, today): a scheduled piece keeps updated == published; a live one never claims a future update.
+    const live = sample();
+    live.data.articles[0].updated = '2026-11-13';
+    assert.ok(blogErrors(live, TODAY).some((e) => /updated is in the future/.test(e)));
+    const sched = sample();
+    Object.assign(sched.data.articles[0], { published: '2026-11-20', updated: '2026-11-20' });
+    assert.deepEqual(blogErrors(sched, TODAY), []);
   });
 });
 
