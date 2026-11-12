@@ -62,7 +62,8 @@ const hasDayTools = (body) => /\bdata-day-tools[\s>]/.test(body);
  *  exception for exactly that content, never 'unsafe-inline'. */
 export const JSON_LD_CSP_HASH = `'sha256-${createHash('sha256').update(JSON_LD_CONTENT, 'utf8').digest('base64')}'`;
 
-/** dist/_headers (Cloudflare Pages), exactly as the plan states it. */
+/** dist/_headers (Cloudflare Pages), exactly as the plan states it. The pages.dev host (production alias and
+ *  every branch preview) is a duplicate of betgaffer.com: kept out of search (blog plan 2026-11-12 §3.7). */
 export const HEADERS = `/*
   Content-Security-Policy: default-src 'self'; script-src 'self' ${JSON_LD_CSP_HASH} https://static.cloudflareinsights.com; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'
   X-Content-Type-Options: nosniff
@@ -75,6 +76,8 @@ export const HEADERS = `/*
   Cache-Control: public, max-age=120
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
 `;
 
 /**

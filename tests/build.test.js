@@ -125,6 +125,8 @@ describe('build of the fixture artifact', () => {
       '  Cache-Control: public, max-age=120',
       '/assets/fonts/*',
       '  Cache-Control: public, max-age=31536000, immutable',
+      'https://:project.pages.dev/*',
+      '  X-Robots-Tag: noindex',
       '',
     ].join('\n'));
     assert.doesNotMatch(h, /no-referrer(?!-when)/, 'never no-referrer: the Function rejects a POST whose Origin is withheld');
