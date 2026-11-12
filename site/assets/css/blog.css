@@ -145,3 +145,93 @@
 .lr-art .lr-quotes p{ margin:0 0 10px; font:600 13px/1.5 var(--font-ui); color:var(--ink); }
 .lr-art .lr-quotes ul{ margin:0; padding-left:18px; }
 .lr-art .lr-quotes li{ margin:0 0 6px; font-size:14px; line-height:1.55; color:var(--ink-2); }
+.lr-art section p.lr-ex{ margin:20px 0 8px; font:700 11px var(--font-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }   /* "Example", directly above its scene (Legal) */
+/* Blog scenes (plan bf2caf460 §3, approach A). Kit tokens as literals: the same bytes ship in the teaser blog.css and bg-blog.css.
+   The markup is the FINAL frame; every keyframe animates FROM an earlier state, so no motion = the finished scene, still. */
+.scn{display:block;width:100%;height:auto;aspect-ratio:4/3;view-timeline:--scn block;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.scn .mo,.scn .mu{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.scn .bgc{fill:#101822;stroke:#22303F}
+.scn .c2{fill:#131C27}
+.scn .c2s{fill:#131C27;stroke:#22303F}
+.scn .c3{fill:#192432}
+.scn .c4{fill:#22303F}
+.scn .tx{fill:#EDF1F6;font-size:15px;font-weight:700}
+.scn .t2{fill:#C0CAD8;font-size:12px;font-weight:500}
+.scn .mu{fill:#8494A8;font-size:9.5px;font-weight:500;letter-spacing:.06em}
+.scn .ac{fill:#22C55E}
+.scn .go{fill:#F5B301}
+.scn .ho{fill:#F0B542}
+.scn .lo{fill:#E5484D}
+.scn .acq{fill:rgba(34,197,94,.12);stroke:#22C55E;stroke-width:1.5}
+.scn .hos{fill:none;stroke:#F0B542}
+.scn .tk{stroke:#EDF1F6;stroke-width:2}
+.scn .wk{fill:rgba(240,181,66,.08)}
+.scn .gav{fill:#131C27;stroke:#22C55E;stroke-width:2}
+.scn .rg{fill:none;stroke:#192432;stroke-width:14}
+.scn .sk-ac,.scn .sk-lo{fill:none;stroke-width:14}
+.scn .sk-ac{stroke:#22C55E}
+.scn .sk-lo{stroke:#E5484D}
+.scn .ink{fill:none;stroke:#22C55E;stroke-width:2}
+.scn .mid{text-anchor:middle}
+.scn .end{text-anchor:end}
+.scn .a{transform-box:fill-box;transform-origin:center}
+.scn .ol{transform-origin:left center}
+.scn .gone{opacity:0}
+.scn .dm{opacity:.45}
+.scn .rot{transform:rotate(-4deg)}
+.scn .ink.a{transform:scale(1.25)}
+.scn .dy32{--dy:32px}
+.scn .dy64{--dy:64px}
+/* sizes and weights after the base classes, so they win */
+.scn .b6{font-weight:600}
+.scn .b7{font-weight:700}
+.scn .fs11{font-size:11px}
+.scn .fs13{font-size:13px}
+.scn .fs15{font-size:15px}
+.scn .fs22{font-size:22px}
+.scn .fs26{font-size:26px}
+.scn .fs8_5{font-size:8.5px}
+.scn .fs8{font-size:8px}
+.scn .stp{fill:#101822;stroke:#22C55E;stroke-width:1.5}
+.scn .lnk{stroke:#22303F}
+/* Stages along the scene's own view timeline: done by the time the scene is centred (cover 50%). */
+.scn .s1{--r:cover 10% cover 30%}
+.scn .s2{--r:cover 22% cover 38%}
+.scn .s3{--r:cover 30% cover 46%}
+.scn .s4{--r:cover 38% cover 54%}
+.scn .s5{--r:cover 48% cover 58%}
+.scn .w1{--r:cover 10% cover 38%}
+.scn .g1{--r:cover 14% cover 20%}
+.scn .g2{--r:cover 17% cover 23%}
+.scn .g3{--r:cover 20% cover 26%}
+.scn .g4{--r:cover 23% cover 29%}
+.scn .g5{--r:cover 26% cover 32%}
+.scn .g6{--r:cover 29% cover 35%}
+.scn .g7{--r:cover 32% cover 38%}
+.scn .g8{--r:cover 35% cover 41%}
+.scn .g9{--r:cover 38% cover 44%}
+.scn .g10{--r:cover 41% cover 47%}
+.scn .in{--k:k-in}
+.scn .out{--k:k-out}
+.scn .up{--k:k-up}
+.scn .mv{--k:k-mv}
+.scn .gx{--k:k-gx}
+.scn .win{--k:k-win}
+.scn .dim{--k:k-dim}
+.scn .pop{--k:k-pop}
+.scn .ink{--k:k-ink}
+/* WR3 (1): every keyframe sits under no-preference; Firefox (no view()) and reduce both keep the final frame. */
+@media (prefers-reduced-motion:no-preference){
+  @supports (animation-timeline:view()){
+    .scn .a{animation:var(--k) linear both;animation-timeline:--scn;animation-range:var(--r)}
+    @keyframes k-in{from{opacity:0}}
+    @keyframes k-out{from{opacity:1}}
+    @keyframes k-up{from{opacity:0;transform:translateY(10px)}}
+    @keyframes k-mv{from{transform:translateY(var(--dy))}}
+    @keyframes k-gx{from{transform:scaleX(0)}}
+    @keyframes k-win{0%{opacity:0}15%,85%{opacity:1}to{opacity:0}}
+    @keyframes k-dim{from{opacity:1}}
+    @keyframes k-pop{from{opacity:0;transform:scale(1.35) rotate(-4deg)}}
+    @keyframes k-ink{0%{opacity:0;transform:scale(.7)}35%{opacity:.5}to{opacity:0}}
+  }
+}

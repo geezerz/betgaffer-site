@@ -69,7 +69,7 @@ describe('validator', () => {
     ['next not exactly one level up', (s) => { s.data.articles[0].next = 'p1'; }, /next must be one level up/],
     ['start_with to a higher level', (s) => { s.data.articles[0].start_with = 'g2'; }, /start_with must not be a higher level/],
     ['article token to a missing slug', (s) => { s.bodies.g1 = bodyOf('{{article:ghost:Ghost}}'); }, /links a missing article 'ghost'/],
-    ['SportyBet named without the notice', (s) => { s.bodies.g1 = bodyOf('SportyBet settles it. Rules can change, so check yours.'); }, /without the notice/],
+    ['SportyBet in the title without the notice', (s) => { s.data.articles[0].title = 'How SportyBet settles it'; s.bodies.g1 = bodyOf('Rules can change, so check yours.'); }, /without the notice/],
     ['SportyBet named without the rules line', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf('SportyBet settles it.'); }, /Rules can change, so check/],
     ['a second SportyBet link', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf(`Rules can change, so check ${SB_LINK}x</a> ${SB_LINK}y</a>.`); }, /more than one SportyBet link/],
     ['a tracked SportyBet link', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf('Rules can change, so check <a href="https://www.sportybet.com/ng/m/help?ref=x" rel="nofollow">x</a>.'); }, /must be exactly https:\/\/www\.sportybet\.com\/ng\/m\/help/],
@@ -215,14 +215,17 @@ describe('Learn guides 11-12 (WR3): notice and article links', () => {
   test('the notice sits under the h1; an article token links a live guide and is inert for a planned one', async () => {
     const { ws, done } = await buildBlog((s) => {
       Object.assign(s.data.articles[0], { notice: SB_NOTICE });
-      s.bodies.g1 = bodyOf(`On SportyBet it settles. Rules can change, so check ${SB_LINK}their rules</a>. See {{article:g2:the next guide}} and {{article:planned:a later one}}.`);
+      s.bodies.g1 = bodyOf(`On SportyBet it settles. Rules can change, so check ${SB_LINK}their rules</a>. See {{article:g2:the next guide}} and {{article:planned:a later one}}.`
+        + ' Gaffer comes with some plans{{when:pricing:; {{link:pricing:Pricing}} shows which}}. {{when:features:<a href="/features/">See it</a>}}');
     });
     try {
       const h = await read(ws, 'blog/learn/g1/index.html');
       assert.match(h, /<h1 class="lr-t">[^<]*<\/h1><p class="lr-notice">BetGaffer isn&#39;t affiliated with or endorsed by SportyBet\.<\/p>/);
       assert.match(h, /<a href="\/blog\/learn\/g2\/">the next guide<\/a>/);
       assert.match(h, /<span class="lr-inert" aria-disabled="true">a later one<\/span>/);
-      assert.doesNotMatch(h, /\{\{/);
+      // {{when:KEY:text}} renders only where this host has a page for KEY (WR3 11-12): no pricing page here, a features page yes.
+      assert.match(h, /Gaffer comes with some plans\. <a href="\/features\/">See it<\/a>/);
+      assert.doesNotMatch(h, /\{\{|shows which/);
     } finally { await done(); }
   });
 });

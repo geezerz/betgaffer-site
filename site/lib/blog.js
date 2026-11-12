@@ -120,9 +120,9 @@ export function blogErrors({ data, bodies }, today = null) {
       if (!/\ssrc\s*=\s*["']\/blog\/media\//i.test(img[0])) err.push(`${id}: <img> src is not under /blog/media/`);
     }
     for (const [, slug] of body.matchAll(/\{\{article:([\w-]+):/g)) if (!by.has(slug)) err.push(`${id}: links a missing article '${slug}'`);
-    // Legal 12 Nov (R-211): a page naming SportyBet carries the non-affiliation notice and the rules-can-change line, and at
-    // most one SportyBet link: their rules page, nofollow, nothing appended (no tracking).
-    if (/sportybet/i.test(`${a.title} ${a.notice ?? ''} ${body}`)) {
+    // Legal 12 Nov (R-211): a page about SportyBet's markets (named in its title or notice) carries the non-affiliation notice
+    // and the rules-can-change line; any page holds at most one SportyBet link: their rules page, nofollow, nothing appended.
+    if (/sportybet/i.test(`${a.title} ${a.notice ?? ''}`)) {
       if (a.notice !== SPORTYBET_NOTICE) err.push(`${id}: names SportyBet without the notice '${SPORTYBET_NOTICE}'`);
       if (!body.includes('Rules can change, so check')) err.push(`${id}: names SportyBet without 'Rules can change, so check …'`);
     }
@@ -168,6 +168,8 @@ function fillBody(a, body, rc, liveBySlug) {
     .replaceAll('{{checked_long}}', a.checked ? fmtLong(a.checked) : '')
     .replaceAll('{{receipt_lines}}', rc.html)
     .replaceAll('{{receipt_href}}', escAttr(rc.href))
+    // {{when:KEY:text}}: the text only where this host has a page for KEY (the {{link}} test); one level of inner {{…}}.
+    .replace(/\{\{when:(\w+):((?:[^{}]|\{\{[^{}]*\}\})*)\}\}/g, (_, key, text) => (Object.hasOwn(LINKS, key) ? text : ''))
     .replace(/\{\{link:(\w+):([^}]+)\}\}/g, (_, key, label) => (Object.hasOwn(LINKS, key)
       ? `<a href="${escAttr(LINKS[key])}">${escHtml(label)}</a>`
       : `<span class="lr-inert" aria-disabled="true">${escHtml(label)}</span>`))
