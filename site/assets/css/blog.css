@@ -136,3 +136,12 @@
 
 /* the footer's Blog column: one more track beside brand, Legal, Contact, Follow */
 @media (min-width:1024px){ .bg-foot__in--blog{ grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr)); } }
+.lr-notice{ margin:0 0 12px; font:500 13px/1.5 var(--font-ui); color:var(--muted); }   /* non-affiliation line, at the top (Legal) */
+.lr-art section ul{ margin:0 0 14px; padding-left:22px; max-width:66ch; }
+.lr-art section li{ margin:0 0 8px; font-size:17px; line-height:1.6; color:var(--ink-2); }
+.lr-settle--text td, .lr-settle.lr-settle--text thead th{ text-align:left; }   /* prose cells read left to right */
+.lr-cell-note{ color:var(--muted); font-size:13px; }
+.lr-quotes{ margin:28px 0 22px; padding:16px 18px; border:1px solid var(--line-2); border-radius:var(--r-2); background:var(--surface); }
+.lr-art .lr-quotes p{ margin:0 0 10px; font:600 13px/1.5 var(--font-ui); color:var(--ink); }
+.lr-art .lr-quotes ul{ margin:0; padding-left:18px; }
+.lr-art .lr-quotes li{ margin:0 0 6px; font-size:14px; line-height:1.55; color:var(--ink-2); }

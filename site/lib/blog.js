@@ -15,6 +15,8 @@ import { addDays, isDate } from './time.js';
 
 export const LEVELS = Object.freeze({ beginner: ['Beginner', 1], regular: ['Regular', 2], sharp: ['Sharp', 3] });
 export const RECEIPTS_FROM = '2026-10-08';
+const SPORTYBET_NOTICE = "BetGaffer isn't affiliated with or endorsed by SportyBet.";
+const SPORTYBET_RULES = 'https://www.sportybet.com/ng/m/help';
 export const MIN_ARTICLES = 3; // below this the blog does not exist at all
 const CHECK_DAYS = 90; // Legal 12 Nov: past this a sourced page is stale; past GONE_DAYS (CHECK_DAYS when strict) it is gone
 const GONE_DAYS = 120;
@@ -87,11 +89,13 @@ export function blogErrors({ data, bodies }, today = null) {
     if (!Object.hasOwn(data.categories ?? {}, a.cat)) err.push(`${id}: unknown topic`);
     if (rank(a) === 0) err.push(`${id}: level must be beginner, regular or sharp`);
     if (typeof a.title !== 'string' || a.title.trim() === '') err.push(`${id}: no title`);
-    for (const [k, step] of [['next', 1], ['start_with', -1]]) {
+    // Next is one level up; Start with is a prerequisite at the same level or below (df 11-12).
+    for (const k of ['next', 'start_with']) {
       if (a[k] === undefined) continue;
       const t = by.get(a[k]);
       if (!t) err.push(`${id}: ${k} points at a missing article`);
-      else if (rank(t) !== rank(a) + step) err.push(`${id}: ${k} must be one level ${step > 0 ? 'up' : 'down'}`);
+      else if (k === 'next' && rank(t) !== rank(a) + 1) err.push(`${id}: next must be one level up`);
+      else if (k === 'start_with' && rank(t) > rank(a)) err.push(`${id}: start_with must not be a higher level`);
     }
     if (a.published === undefined) continue;
     for (const k of ['crumb', 'dek', 'card', 'updated', 'minutes', 'toc']) {
@@ -115,6 +119,16 @@ export function blogErrors({ data, bodies }, today = null) {
     for (const img of body.matchAll(/<img\b[^>]*>/gi)) {
       if (!/\ssrc\s*=\s*["']\/blog\/media\//i.test(img[0])) err.push(`${id}: <img> src is not under /blog/media/`);
     }
+    for (const [, slug] of body.matchAll(/\{\{article:([\w-]+):/g)) if (!by.has(slug)) err.push(`${id}: links a missing article '${slug}'`);
+    // Legal 12 Nov (R-211): a page naming SportyBet carries the non-affiliation notice and the rules-can-change line, and at
+    // most one SportyBet link: their rules page, nofollow, nothing appended (no tracking).
+    if (/sportybet/i.test(`${a.title} ${a.notice ?? ''} ${body}`)) {
+      if (a.notice !== SPORTYBET_NOTICE) err.push(`${id}: names SportyBet without the notice '${SPORTYBET_NOTICE}'`);
+      if (!body.includes('Rules can change, so check')) err.push(`${id}: names SportyBet without 'Rules can change, so check …'`);
+    }
+    const sb = [...body.matchAll(/<a\b[^>]*sportybet\.[^>]*>/gi)].map((m) => m[0]);
+    if (sb.length > 1) err.push(`${id}: more than one SportyBet link`);
+    for (const tag of sb) if (tag !== `<a href="${SPORTYBET_RULES}" rel="nofollow">`) err.push(`${id}: a SportyBet link must be exactly ${SPORTYBET_RULES} with rel="nofollow"`);
   }
   return err;
 }
@@ -149,13 +163,17 @@ const level = (key) => {
   return `<span class="lr-lvl lr-lvl--${n}"><i aria-hidden="true"><b></b><b></b><b></b></i><span class="visually-hidden">Level: </span>${name}</span>`;
 };
 
-function fillBody(a, body, rc) {
+function fillBody(a, body, rc, liveBySlug) {
   return body
     .replaceAll('{{checked_long}}', a.checked ? fmtLong(a.checked) : '')
     .replaceAll('{{receipt_lines}}', rc.html)
     .replaceAll('{{receipt_href}}', escAttr(rc.href))
     .replace(/\{\{link:(\w+):([^}]+)\}\}/g, (_, key, label) => (Object.hasOwn(LINKS, key)
       ? `<a href="${escAttr(LINKS[key])}">${escHtml(label)}</a>`
+      : `<span class="lr-inert" aria-disabled="true">${escHtml(label)}</span>`))
+    // {{article:slug:Label}} links another guide only while it is live; scheduled, planned or gone reads as plain text.
+    .replace(/\{\{article:([\w-]+):([^}]+)\}\}/g, (_, slug, label) => (liveBySlug.has(slug)
+      ? `<a href="${escAttr(pathOf(liveBySlug.get(slug)))}">${escHtml(label)}</a>`
       : `<span class="lr-inert" aria-disabled="true">${escHtml(label)}</span>`));
 }
 
@@ -184,6 +202,7 @@ export function renderBlog(blog, { today, origin, rc }) {
   const cats = data.categories;
   const mark = (a) => ({ ...a, state: freshness(a, today) });
   const live = data.articles.filter((a) => a.published !== undefined && a.published <= today).map(mark).filter((a) => a.state !== 'gone');
+  const liveBySlug = new Map(live.map((a) => [a.slug, a]));
   if (live.length < MIN_ARTICLES) return null;
   const bySlug = new Map(live.map((a) => [a.slug, a]));
   const learn = live.filter((a) => a.section === 'learn');
@@ -250,9 +269,9 @@ export function renderBlog(blog, { today, origin, rc }) {
       jsonLd: [ld, crumbLd(crumbs), org],
       body: `<div class="lr">${SPRITE}${crumbNav(crumbs)}<div class="lr-grid"><article class="lr-art">`
         + `<header class="lr-head"><div class="lr-head__top"><p class="lr-cat">${escHtml(cats[a.cat])}</p>${level(a.level)}</div>`
-        + `<h1 class="lr-t">${escHtml(a.h1 ?? a.title)}</h1><p class="lr-dek">${escHtml(a.dek)}</p>`
+        + `<h1 class="lr-t">${escHtml(a.h1 ?? a.title)}</h1>${a.notice ? `<p class="lr-notice">${escHtml(a.notice)}</p>` : ''}<p class="lr-dek">${escHtml(a.dek)}</p>`
         + `<p class="lr-meta"><span>${dated(a)}</span><span aria-hidden="true">·</span><span>${a.minutes} min read</span></p></header>`
-        + `<details class="lr-toc"><summary>On this page</summary>${toc}</details>${stale}${fillBody(a, bodies[a.slug], rc)}${source}`
+        + `<details class="lr-toc"><summary>On this page</summary>${toc}</details>${stale}${fillBody(a, bodies[a.slug], rc, liveBySlug)}${source}`
         + (next ? `<nav class="lr-path" aria-label="Where to go next">${next}</nav>` : '')
         + `</article><aside class="lr-aside" aria-label="On this page"><p class="lr-aside__h">On this page</p>${toc}</aside></div>`
         + (rel.length ? `<section class="lr-rel" aria-labelledby="lr-rel-h"><div class="lr-rel__head"><h2 id="lr-rel-h">Keep reading</h2>${allGuides}</div>${cards(rel)}</section>` : '')

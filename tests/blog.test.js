@@ -4,10 +4,11 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { build, REPO_ROOT } from '../site/build.mjs';
-import { backdated, blogErrors, freshness, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
+import { backdated, blogErrors, freshness, pathOf, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
 import { lagosToday, addDays } from '../site/lib/time.js';
 import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
-import { parse, findAll, cspViolations, claimViolations, bareCounts } from './html-scan.js';
+import { parse, findAll, cspViolations, claimViolations, bareCounts, visibleText } from './html-scan.js';
+import { findBanned } from '../site/lib/claims.js';
 
 const NOW = Date.parse('2026-11-12T12:00:00Z');
 const TODAY = '2026-11-12';
@@ -19,6 +20,8 @@ const piece = (slug, o = {}) => ({
   slug, section: 'learn', cat: 'maths', level: 'beginner', title: `Title ${slug}`, published: '2026-11-01', updated: '2026-11-02',
   checked: '2026-11-01', crumb: `Crumb ${slug}`, dek: `Dek ${slug}`, card: `Card ${slug}`, minutes: 2, toc: { a: 'Part A' }, ...o,
 });
+const SB_NOTICE = "BetGaffer isn't affiliated with or endorsed by SportyBet.";
+const SB_LINK = '<a href="https://www.sportybet.com/ng/m/help" rel="nofollow">';
 const bodyOf = (extra = '') => `<section aria-labelledby="a"><h2 id="a">Part A</h2><p>Words. ${extra}</p></section>`;
 /** A valid export: two learn guides (beginner -> regular), two posts, one planned piece. */
 const sample = () => ({
@@ -64,7 +67,12 @@ describe('validator', () => {
     ['empty title', (s) => { s.data.articles[0].title = ' '; }, /no title/],
     ['next to a missing slug', (s) => { s.data.articles[0].next = 'ghost'; }, /next points at a missing article/],
     ['next not exactly one level up', (s) => { s.data.articles[0].next = 'p1'; }, /next must be one level up/],
-    ['start_with not one level down', (s) => { s.data.articles[1].start_with = 'g2'; }, /start_with must be one level down/],
+    ['start_with to a higher level', (s) => { s.data.articles[0].start_with = 'g2'; }, /start_with must not be a higher level/],
+    ['article token to a missing slug', (s) => { s.bodies.g1 = bodyOf('{{article:ghost:Ghost}}'); }, /links a missing article 'ghost'/],
+    ['SportyBet named without the notice', (s) => { s.bodies.g1 = bodyOf('SportyBet settles it. Rules can change, so check yours.'); }, /without the notice/],
+    ['SportyBet named without the rules line', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf('SportyBet settles it.'); }, /Rules can change, so check/],
+    ['a second SportyBet link', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf(`Rules can change, so check ${SB_LINK}x</a> ${SB_LINK}y</a>.`); }, /more than one SportyBet link/],
+    ['a tracked SportyBet link', (s) => { Object.assign(s.data.articles[0], { notice: SB_NOTICE }); s.bodies.g1 = bodyOf('Rules can change, so check <a href="https://www.sportybet.com/ng/m/help?ref=x" rel="nofollow">x</a>.'); }, /must be exactly https:\/\/www\.sportybet\.com\/ng\/m\/help/],
     ['published without crumb', (s) => { delete s.data.articles[0].crumb; }, /published without crumb/],
     ['published with an empty toc', (s) => { s.data.articles[0].toc = {}; }, /published without toc/],
     ['bad date', (s) => { s.data.articles[0].updated = '2026-13-40'; }, /updated is not a YYYY-MM-DD/],
@@ -84,6 +92,14 @@ describe('validator', () => {
       assert.match(blogErrors(s).join('\n'), re);
     });
   }
+
+  test('accepts a same-level start_with and a SportyBet page that meets Legal 12 Nov (R-211)', () => {
+    const s = sample();
+    s.data.articles[1].start_with = 'g2';
+    Object.assign(s.data.articles[0], { notice: SB_NOTICE });
+    s.bodies.g1 = bodyOf(`On SportyBet it settles at full time. Rules can change, so check ${SB_LINK}their rules</a>.`);
+    assert.deepEqual(blogErrors(s), []);
+  });
 
   test('accepts an img under /blog/media/, and a pointer to a planned slug is an error only when it does not exist', () => {
     const s = sample();
@@ -192,6 +208,22 @@ describe('publication dates (operator R-210: true and identical in the byline, J
     const sched = sample();
     Object.assign(sched.data.articles[0], { published: '2026-11-20', updated: '2026-11-20' });
     assert.deepEqual(blogErrors(sched, TODAY), []);
+  });
+});
+
+describe('Learn guides 11-12 (WR3): notice and article links', () => {
+  test('the notice sits under the h1; an article token links a live guide and is inert for a planned one', async () => {
+    const { ws, done } = await buildBlog((s) => {
+      Object.assign(s.data.articles[0], { notice: SB_NOTICE });
+      s.bodies.g1 = bodyOf(`On SportyBet it settles. Rules can change, so check ${SB_LINK}their rules</a>. See {{article:g2:the next guide}} and {{article:planned:a later one}}.`);
+    });
+    try {
+      const h = await read(ws, 'blog/learn/g1/index.html');
+      assert.match(h, /<h1 class="lr-t">[^<]*<\/h1><p class="lr-notice">BetGaffer isn&#39;t affiliated with or endorsed by SportyBet\.<\/p>/);
+      assert.match(h, /<a href="\/blog\/learn\/g2\/">the next guide<\/a>/);
+      assert.match(h, /<span class="lr-inert" aria-disabled="true">a later one<\/span>/);
+      assert.doesNotMatch(h, /\{\{/);
+    } finally { await done(); }
   });
 });
 
@@ -353,11 +385,19 @@ describe('the built blog (committed content, real data)', () => {
       assert.doesNotMatch(check, /\{\{/);
       assert.equal(await exists(join(ws.out, 'day/2026-11-12/index.html')), true, 'the receipt link lands on a page that exists');
 
-      for (const rel of ['blog/index.html', 'blog/learn/index.html', 'blog/learn/asian-handicap-0/index.html', 'blog/learn/draw-no-bet/index.html', 'blog/how-to-check-us/index.html']) {
+      const { data } = await readBlog(REAL_BLOG);
+      const pages = ['blog/index.html', 'blog/learn/index.html', ...data.articles.filter((a) => a.published && a.published <= TODAY)
+        .map((a) => `${pathOf(a).slice(1)}index.html`)];
+      assert.ok(pages.length >= 5, 'premise: every live guide and post is scanned');
+      for (const rel of pages) {
         const html = await read(ws, rel);
         assert.doesNotThrow(() => parse(html), rel);
         assert.deepEqual(cspViolations(html), [], rel);
-        assert.deepEqual(claimViolations(html), [], rel);
+        // The charter's figure rules guard the site's own claims (rings, records, offers). A guide's worked examples
+        // ("a 1.50 price implies 67%", "add up to more than 100%") are Legal-cleared teaching copy, so the figure rules
+        // run on the page with the blog's content removed; banned phrases still run on every word.
+        assert.deepEqual(claimViolations(html.replace(/<div class="lr">[\s\S]*<\/div>(?=\s*<\/main>)/, '')), [], rel);
+        assert.deepEqual(findBanned(visibleText(html)), [], rel);
         assert.deepEqual(bareCounts(html), [], rel);
         assert.doesNotMatch(html, /github/i, rel);
         const links = [...html.matchAll(/<a [^>]*href="(\/[^"#]*)/g)].map((m) => m[1]);
