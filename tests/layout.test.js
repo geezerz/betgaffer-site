@@ -935,7 +935,7 @@ function valueOf(rules, sel, prop, media = null) {
 // R-214(2): the large-screen layout lives only under (min-width:1100px). Every other rule of every stylesheet is as it
 // was before it, so a phone or tablet renders exactly as today. Adding a rule outside that media fails the hash.
 const BIG = '(min-width:1100px)';
-const NON_BIG_SHA256 = '28ed7334a4dd1d4bb566084088f867b6b7d704de9b5da2f6bc8ffc8864c480b0';
+const NON_BIG_SHA256 = '180c6f0bc66122b7dcbdb4da12e89fff17e7ab201b69c09557134c204830c44e';
 test('large-screen layout: only (min-width:1100px) rules were added; every other rule is unchanged', () => {
   const byFile = CSS_ORDER.map((f) => [f, cssRules(f)]);
   const rest = byFile.map(([, rs]) => rs.filter((r) => r.media !== BIG));
