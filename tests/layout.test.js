@@ -46,7 +46,7 @@ const cfg = Object.freeze({
   }),
 });
 
-const NOT_A_BOOKMAKER = 'Bet Gaffer is football match intelligence. We are not a bookmaker: '
+const NOT_A_BOOKMAKER = "BetGaffer is a sports prediction platform. We're not a bookmaker: "
   + 'we take no bets, hold no stakes and pay no winnings.';
 
 const base = (o = {}) => page({
@@ -805,7 +805,7 @@ const CARD_BASE_PINNED = [
   ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
 ];
 // The eleven rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
-const CARD_MARKUP_SHA256 = '8580e2170355896d061f55efefb38c04cc5495cda67e2c262ef35ca6fecd17dc';
+const CARD_MARKUP_SHA256 = '7f57c7352670ab3999e24f67393e40d0a1573cf0ff9cf7dfac8290f364115f39';
 const FONT_SHA256 = Object.freeze({
   'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
   'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',
@@ -1186,7 +1186,7 @@ test('navCurrent: exact match, or a section item (href ending in "/") over every
 test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, legal links, © and contact', () => {
   const html = base();
   const foot = html.match(/<footer\b[\s\S]*?<\/footer>/)[0];
-  assert.ok(foot.includes(NOT_A_BOOKMAKER), 'not-a-bookmaker line verbatim');
+  assert.ok(foot.includes(NOT_A_BOOKMAKER.replace("'", "&#39;")), 'not-a-bookmaker line verbatim');
   assert.match(foot, />18\+</, '18+ badge');
   for (const [href, label] of [['/privacy/', 'Privacy'], ['/terms/', 'Terms'], ['/refunds/', 'Refunds']]) {
     assert.match(foot, new RegExp(`<a href="${href.replace(/\//g, '\\/')}"[^>]*>${label}</a>`));

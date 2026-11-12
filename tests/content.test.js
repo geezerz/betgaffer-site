@@ -674,13 +674,13 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
 // =============================================================================================
 
 import { parse, findAll, find, textOf } from './html-scan.js';
-import { SUMMARY, TOTAL_PLACES } from '../site/lib/founding.js';
+import { TOTAL_PLACES } from '../site/lib/founding.js';
 
 test('shipped config: operator identity and published prices', async () => {
   const { default: shipped } = await import('../site/config.js');
   assert.equal(shipped.operator.legal_name, 'BETGAFFER LTD');
   assert.equal(shipped.operator.rc_number, '9885410');
-  assert.equal(shipped.operator.contact_email, 'contact@betgaffer.com');
+  assert.equal(shipped.operator.contact_email, 'support@betgaffer.com');
   assert.equal(shipped.pricing.show_prices, true);
   assert.deepEqual(shipped.pricing.tiers.map((t) => [t.name, t.monthly]),
     [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
@@ -688,8 +688,8 @@ test('shipped config: operator identity and published prices', async () => {
 
 describe('features (teaser copy spec 2026-11-12, section A)', () => {
   const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
-    + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
-  const PRICES_LATER = 'Prices will be published here before any payment is taken.';
+    + 'monthly and yearly plans priced in naira, VAT-inclusive, billed through Paystack.';
+  const PRICES_LATER = 'Prices will be published on BetGaffer before any payment is taken.';
   const INTRO = [
     'BetGaffer is a sports prediction platform. We cover football today, and other sports will follow.',
     "We're not a bookmaker: we take no bets and never hold your stake.",
@@ -880,8 +880,9 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     assert.ok(sec, 'a founding section');
     const offer = find(sec, (n) => n.attrs['data-figure'] === 'offer');
     assert.ok(offer, 'the summary is an offer figure');
-    assert.equal(textOf(offer), SUMMARY);
-    assert.ok(textOf(sec).includes(`Be one of ${String(TOTAL_PLACES).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} founding members`));
+    assert.equal(textOf(offer), '30% off your subscription after your first payment, while you stay subscribed · double plan Credits · early access to new features · priority support');
+    assert.equal(TOTAL_PLACES, 1000, 'premise: the heading prints 1,000');
+    assert.equal(textOf(find(sec, (n) => n.tag === 'h2')), 'Be one of our 1,000 founding members.');
     const btn = findAll(sec, (n) => n.tag === 'a' && cls(n, 'bg-btn--primary'));
     assert.equal(btn.length, 1);
     assert.equal(btn[0].attrs.href, '/waitlist/');

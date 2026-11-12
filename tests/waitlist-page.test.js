@@ -143,9 +143,9 @@ describe('site/content/waitlist.js', () => {
       // The subtle teaser line under the CTA (operator, 2026-10-19): same on every variant.
       const teaser = find(slot, (n) => has(n, 'bg-fd-card__teaser'));
       assert.equal(teaser.tag, 'p', `variant ${i}: teaser`);
-      assert.equal(textOf(teaser), '30% off, double Credits, early access.', `variant ${i}`);
+      assert.equal(textOf(teaser), '30% off after your first payment, double plan Credits, early access.', `variant ${i}`);
       assert.deepEqual(findAll(teaser, (n) => n.tag === 'strong').map((n) => [n.attrs.class, textOf(n)]),
-        [['fd-hl', '30% off'], ['fd-hl', 'double Credits']], `variant ${i}: teaser highlights`);
+        [['fd-hl', '30% off'], ['fd-hl', 'double plan Credits']], `variant ${i}: teaser highlights`);
       assert.equal(find(teaser, (n) => n.attrs['data-figure'] === 'offer') && textOf(find(teaser, (n) => n.attrs['data-figure'] === 'offer')),
         '30% off', `variant ${i}: teaser offer figure`);
       // Rotation dots: one clickable button per variant, the current one marked "on"/pressed,

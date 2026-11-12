@@ -33,8 +33,8 @@ export const INTRO = [
 ];
 
 export const PRICING_INTENT = 'Nothing is sold on this site. At launch Bet Gaffer will offer a free account and paid '
-  + 'monthly plans priced in naira, VAT-inclusive, billed through Paystack.';
-export const PRICES_LATER = 'Prices will be published here before any payment is taken.';
+  + 'monthly and yearly plans priced in naira, VAT-inclusive, billed through Paystack.';
+export const PRICES_LATER = 'Prices will be published on BetGaffer before any payment is taken.';
 
 const NAIRA = String.fromCharCode(0x20a6);
 const AT_LAUNCH = 'At launch';
@@ -169,7 +169,7 @@ ${pricingBody}
 <p class="t-s">See the <a href="/refunds/">refund and cancellation policy</a> and the <a href="/terms/">terms</a>.</p>
 </section>
 <section class="ct-fsec ct-founding" aria-labelledby="ct-founding-h">
-<h2 class="t-d2" id="ct-founding-h">Be one of ${escHtml(fmtInt(TOTAL_PLACES))} founding members</h2>
+<h2 class="t-d2" id="ct-founding-h">Be one of our ${escHtml(fmtInt(TOTAL_PLACES))} founding members.</h2>
 <p class="ct-founding__sum" data-figure="offer">${escHtml(SUMMARY)}</p>
 <div class="ct-founding__cta"><a class="bg-btn bg-btn--primary" href="/waitlist/">Join the founding waitlist</a></div>
 </section>

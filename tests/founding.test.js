@@ -35,7 +35,7 @@ test('the waitlist cap in config is the founding waitlist cap', () => {
 
 test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 2026-10-19)', () => {
   assert.ok(Object.isFrozen(F.CTA_TEASER));
-  assert.equal(md(F.CTA_TEASER), '**30% off**, **double Credits**, early access.');
+  assert.equal(md(F.CTA_TEASER), '**30% off** after your first payment, **double plan Credits**, early access.');
   assert.equal(F.CTA_TEASER.filter((s) => s.offer).length, 1, 'only the percentage is tagged offer');
 });
 

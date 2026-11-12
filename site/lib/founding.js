@@ -26,8 +26,8 @@ export const BENEFITS = Object.freeze([
   { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of your message, every day, on any paid plan — plus a founding-members WhatsApp community with our team.` },
 ].map(Object.freeze));
 
-/** The short summary line used on Features (spec §2). */
-export const SUMMARY = `${DISCOUNT_PCT}% off every subscription payment · double Credits · first look at new features · priority support`;
+/** The founding summary line used on Features (Legal-cleared wording, 2026-11-12). */
+export const SUMMARY = `${DISCOUNT_PCT}% off your subscription after your first payment, while you stay subscribed · double plan Credits · early access to new features · priority support`;
 
 /**
  * One run of card copy. `hl`: a key word (bold, accent colour). `offer` is derived, never typed: every
@@ -79,7 +79,7 @@ export const VARIANTS = Object.freeze([
 ]);
 
 /** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */
-export const CTA_TEASER = Object.freeze([H(OFF), P(', '), H('double Credits'), P(', early access.')]);
+export const CTA_TEASER = Object.freeze([H(OFF), P(' after your first payment, '), H('double plan Credits'), P(', early access.')]);
 
 /**
  * The carousel dots (operator 2026-10-23): on a phone only the previous/current/next dot shows

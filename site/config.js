@@ -14,7 +14,7 @@ const config = {
     trading_name: 'Bet Gaffer',
     address: '1 Bouar Close, off Bangui Street, Wuse 2, Abuja',
     rc_number: '9885410',
-    contact_email: 'contact@betgaffer.com',
+    contact_email: 'support@betgaffer.com',
     privacy_email: null, // defaults to contact_email
     // Optional: who hosts the operator's mailbox that Cloudflare Email Routing forwards to (e.g.
     // 'Google (Gmail)'). Named in the privacy policy; null reads "an email provider". Not required.

@@ -97,7 +97,7 @@ const SOCIAL = Object.freeze([
   ['https://www.threads.com/@betgaffer_', 'Threads'],
 ]);
 
-export const NOT_A_BOOKMAKER = 'Bet Gaffer is football match intelligence. We are not a bookmaker: '
+export const NOT_A_BOOKMAKER = "BetGaffer is a sports prediction platform. We're not a bookmaker: "
   + 'we take no bets, hold no stakes and pay no winnings.';
 
 // A site path: root-relative, never protocol-relative, no quotes/spaces/markup.
