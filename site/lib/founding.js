@@ -18,11 +18,11 @@ export const NOTICE_DAYS = 30;
 
 /** Public benefit cards (spec §3.4), in programme order B1-B6. */
 export const BENEFITS = Object.freeze([
-  { id: 'B1', title: `${DISCOUNT_PCT}% off, every time`, text: `${DISCOUNT_PCT}% off your plan's price at every payment, for as long as you stay subscribed.` },
-  { id: 'B2', title: 'Double Credits', text: "Your plan's monthly Credit allowance is doubled, on any paid plan." },
+  { id: 'B1', title: `${DISCOUNT_PCT}% off while you stay subscribed`, text: `Founding members get ${DISCOUNT_PCT}% off their subscription payments while they stay subscribed. When it starts depends on how you got your place: see the Subscription Terms.` },
+  { id: 'B2', title: 'Double plan Credits', text: "Your plan's monthly Credit allowance is doubled, on any paid plan." },
   { id: 'B3', title: 'More from every top-up', text: `Every Credit top-up comes with ${TOPUP_BONUS_PCT}% extra.` },
   { id: 'B4', title: 'A bigger say', text: 'A founding badge, and your vote counts twice when members vote on new features and improvements.' },
-  { id: 'B5', title: 'First look at new features', text: `New features reach you at least ${EARLY_ACCESS_HOURS} hours before everyone else, and you help shape them while they're built. (Fixes and security updates go to everyone at once.)` },
+  { id: 'B5', title: 'First look at new features', text: `New features reach you at least ${EARLY_ACCESS_HOURS} hours before everyone else, and you help shape them while they're built. Fixes, security updates and legally required changes go to everyone at once.` },
   { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day.` },
 ].map(Object.freeze));
 

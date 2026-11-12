@@ -8,7 +8,7 @@
 import { escHtml } from '../lib/esc.js';
 import { fmtInt } from '../lib/num.js';
 import {
-  BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS, SUPPORT_REPLY_HOURS,
+  BENEFITS, TOPUP_BONUS_PCT, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS, SUPPORT_REPLY_HOURS,
 } from '../lib/founding.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
@@ -56,7 +56,7 @@ function founding() {
 ${benefits}
 </ul>
 <p>The discount applies at every subscription payment for as long as Bet Gaffer offers subscriptions. It does not combine with other percentage discounts: if one applies, you get whichever saves you more.</p>
-<p>Double Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get their own extra Credits, not double.</p>
+<p>Double plan Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get ${offer(`${TOPUP_BONUS_PCT}% extra`)} Credits instead, not double.</p>
 <p>Votes count twice in polls on features and improvements that are open to members. Fixes, security updates and changes the law requires go to everyone at once. Founding members also help build new features, by testing them and giving feedback.</p>
 <p>Priority support means a first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>
 <p><strong>No downgrades.</strong> We will not reduce your founding benefits while you hold the status. If plans, Credits or support channels change, founding members get an equal or better replacement, with ${NOTICE_DAYS} days' notice.</p>

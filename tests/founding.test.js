@@ -79,7 +79,13 @@ test('benefits: six, in programme order, each with a title and one sentence', ()
     assert.ok(b.title.length > 0 && b.text.length > 0, b.id);
     assert.doesNotMatch(b.text, /100%/, 'no bare 100% (charter)');
   }
-  assert.match(F.BENEFITS[0].text, /30% off your plan's price at every payment/);
+  // Legal addendum 5 (11-12): exact cards.
+  const [b1, b2, , , b5] = F.BENEFITS;
+  assert.equal(b1.title, '30% off while you stay subscribed');
+  assert.equal(b1.text, 'Founding members get 30% off their subscription payments while they stay subscribed. When it starts depends on how you got your place: see the Subscription Terms.');
+  assert.equal(b2.title, 'Double plan Credits');
+  assert.equal(b2.text, "Your plan's monthly Credit allowance is doubled, on any paid plan.");
+  assert.equal(b5.text, "New features reach you at least 72 hours before everyone else, and you help shape them while they're built. Fixes, security updates and legally required changes go to everyone at once.");
   assert.match(F.BENEFITS[5].text, /within 12 hours/);
   assert.match(F.BENEFITS[4].text, /at least 72 hours/);
 });

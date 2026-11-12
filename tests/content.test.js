@@ -549,7 +549,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
     for (const s of [
       `${n(F.TOTAL_PLACES)} founding places`, `${n(F.WAITLIST_PLACES)} waitlist places`, `${n(F.LAUNCH_PLACES)} launch places`,
       `within ${F.CLAIM_DAYS} days of the invite`, `${F.GRACE_DAYS} days' grace`, `at least ${F.EARLY_ACCESS_HOURS} hours`,
-      `within ${F.SUPPORT_REPLY_HOURS} hours`, `${F.DISCOUNT_PCT}% off`, `${F.TOPUP_BONUS_PCT}% extra`, 'Double Credits',
+      `within ${F.SUPPORT_REPLY_HOURS} hours`, `${F.DISCOUNT_PCT}% off`, `${F.TOPUP_BONUS_PCT}% extra`, 'Double plan Credits',
       'double the plan', 'counts twice',
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
     assert.equal(F.TOTAL_PLACES, F.WAITLIST_PLACES + F.LAUNCH_PLACES, 'premise: 500 + 500 = 1,000');
@@ -598,7 +598,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
       // 8 (operator decision): claiming a founding place requires a verified phone number.
       'claiming a place requires a verified phone number',
       // 9
-      'Top-ups get their own extra Credits, not double.',
+      `Double plan Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get ${F.TOPUP_BONUS_PCT}% extra Credits instead, not double.`,
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
     for (const gone of ['and any place released later, go to', 'a verified phone number is checked', 'never double',
       'Founding status starts with your first paid subscription']) {
