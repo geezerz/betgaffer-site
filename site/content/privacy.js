@@ -100,6 +100,14 @@ function sections(op) {
 <p>If you choose to join the founding-members WhatsApp community, WhatsApp (Meta) handles your phone number under its own terms and privacy policy, and other members of the community may see it.</p>`,
     },
     {
+      // Legal 11-12 (via 6c): ships now, gate marker dropped. Advertising the community is fine; no join link, QR
+      // code or number collection before launch (tests/content.test.js holds that).
+      id: 'founding-community',
+      title: 'Founding-members community',
+      now: `<p>If you choose to join our founding-members WhatsApp community, other members and our team can see your WhatsApp name and phone number, and WhatsApp (Meta) handles the messages under its own privacy policy. We use your number there only to add you, to remove you when you leave the founding programme, close your account or self-exclude, and to read what you post. Joining is optional.</p>`,
+      launch: SAME,
+    },
+    {
       id: 'transfers-outside-nigeria',
       title: 'Transfers outside Nigeria',
       now: `<p>Waitlist addresses are stored by <strong>Cloudflare, Inc.</strong>, a company in the <strong>United States</strong>, on its global network. Your address therefore leaves Nigeria.</p>

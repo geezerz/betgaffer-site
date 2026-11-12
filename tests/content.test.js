@@ -977,3 +977,10 @@ test("Terms: the founding-members community as Legal cleared it (882ef16fc, oper
   const html = terms.render(cfg());
   assert.ok(html.includes("<p>You can choose to join a founding-members WhatsApp community with our team. Joining is optional. Other members of the community can see your WhatsApp name and phone number, and WhatsApp's own terms apply there. We remove you if you lose your founding place, close your account or self-exclude. The community is for feedback and news about BetGaffer; we don't sell picks or take bets there.</p>"));
 });
+
+test('Privacy: the founding-members community section as Legal cleared it, with no way to join before launch', () => {
+  const html = privacy.render(cfg());
+  assert.ok(privacy.SECTION_TITLES.includes('Founding-members community'));
+  assert.ok(html.includes("If you choose to join our founding-members WhatsApp community, other members and our team can see your WhatsApp name and phone number, and WhatsApp (Meta) handles the messages under its own privacy policy. We use your number there only to add you, to remove you when you leave the founding programme, close your account or self-exclude, and to read what you post. Joining is optional."));
+  assert.doesNotMatch(html, /chat\.whatsapp\.com|wa\.me\/|whatsapp\.com\/channel|qr/i, 'Legal: no join link or QR code before launch');
+});
