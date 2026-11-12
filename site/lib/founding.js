@@ -77,7 +77,7 @@ export const VARIANTS = Object.freeze([
   // membership perk. Joins the same rotation pool (operator: "features cards becomes part of the
   // cards picked at random... still link to founding member registrations").
   variant([P('Coming at launch: '), H('the Lab')],
-    [P("You'll be able to set your stake and Gaffer will build a ticket from our model's rated picks, to your rules.")]),
+    [P("You'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules.")]),
 ]);
 
 /** The short benefit line under the CTA on every variant (spec: subtle, same on phone and desktop). */

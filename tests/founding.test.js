@@ -110,7 +110,7 @@ const SPEC_VARIANTS = Object.freeze([
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
   ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.'],
   ['Get the **founding member** badge', 'A **founding badge**, **30% off** and **double plan Credits**, for our **1,000 founding members**.'],
-  ['Coming at launch: **the Lab**', "You'll be able to set your stake and Gaffer will build a ticket from our model's rated picks, to your rules."],
+  ['Coming at launch: **the Lab**', "You'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules."],
 ]);
 /** Segments -> the spec's **markdown** form. */
 const md = (segs) => segs.map((s) => (s.hl ? `**${s.t}**` : s.t)).join('');

@@ -972,3 +972,8 @@ test('Terms: the discount line is Legal addendum 6 (4df74b3fc), the source rule'
   assert.ok(html.includes('<p>The discount is <span data-figure="offer">30% off</span> the plan\'s price at every subscription payment made after your place is given to you, while you keep it and for as long as BetGaffer offers subscriptions. It doesn\'t combine with other percentage discounts, such as a challenge reward: the bigger one applies to that payment.</p>'));
   assert.doesNotMatch(html, /The discount applies at every subscription payment/);
 });
+
+test("Terms: the founding-members community as Legal cleared it (882ef16fc, operator R-214 community = yes)", () => {
+  const html = terms.render(cfg());
+  assert.ok(html.includes("<p>You can choose to join a founding-members WhatsApp community with our team. Joining is optional. Other members of the community can see your WhatsApp name and phone number, and WhatsApp's own terms apply there. We remove you if you lose your founding place, close your account or self-exclude. The community is for feedback and news about BetGaffer; we don't sell picks or take bets there.</p>"));
+});

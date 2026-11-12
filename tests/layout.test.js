@@ -805,7 +805,7 @@ const CARD_BASE_PINNED = [
   ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
 ];
 // The eleven rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
-const CARD_MARKUP_SHA256 = '95ce581c62e69f16162bf91b67203ea59e07d808a7bcbccaa7bc13f0b83dfe45';
+const CARD_MARKUP_SHA256 = '033da002f131c8adf35e4d03e00e718210bb150ae39a502905100a87ac0ef138'; // re-measured 2026-11-12 after banner #10 (Legal): tallest per width unchanged (#0)
 const FONT_SHA256 = Object.freeze({
   'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
   'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',
