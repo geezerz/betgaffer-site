@@ -24,6 +24,10 @@ export const NAV = Object.freeze([
   Object.freeze({ href: '/waitlist/', label: 'Founding', cls: 'bg-topbar__founding', section: true }),
 ]);
 
+const BLOG_NAV = Object.freeze({ href: '/blog/', label: 'Blog', section: true });
+/** The topbar links: Blog takes Features' place while the blog is live (operator 2026-11-12), so the bar never links a 404. */
+export const navItems = (blog) => (blog ? NAV.map((n) => (n.href === '/features/' ? BLOG_NAV : n)) : NAV);
+
 /** The founding card's script (dismiss + variant rotation): the FIRST module script on every page with the card. */
 export const BANNER_SCRIPT = '/assets/js/banner.js';
 /**
@@ -155,8 +159,8 @@ export function navCurrent({ href, section }, path) {
  * From 600 px the panel is display:contents, so the nav sits inline exactly as before, and the
  * button and the legal list are not displayed.
  */
-function header(path) {
-  const items = NAV.map((item) => {
+function header(path, blog) {
+  const items = navItems(blog).map((item) => {
     const { href, label, cls } = item;
     const current = navCurrent(item, path) ? ' aria-current="page"' : '';
     const klass = cls ? ` class="${escAttr(cls)}"` : '';
@@ -332,7 +336,7 @@ ${withBanner ? `<script src="${escAttr(EARLY_SCRIPT)}"></script>\n` : ''}<link r
 <meta property="og:description" content="${escAttr(description)}">
 ${noindex ? '' : `<meta property="og:url" content="${escAttr(url)}">\n`}${ogImageTags}${twitterTags}${jsonLd}${scriptTags ? `${scriptTags}\n` : ''}</head>
 <body>
-${header(path)}
+${header(path, blog)}
 ${withBanner ? `${foundingCard(variantFor(path))}\n` : ''}<main id="main" class="bg-wrap bg-page" tabindex="-1"${dataAttrs(mainData)}>
 <div class="stale" role="status" hidden></div>
 ${body}

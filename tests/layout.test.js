@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import vm from 'node:vm';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
-import { page, NAV, OG_FOUNDING, navCurrent, JSON_LD_SITE, JSON_LD_CONTENT } from '../site/lib/layout.js';
+import { page, NAV, OG_FOUNDING, navCurrent, navItems, JSON_LD_SITE, JSON_LD_CONTENT } from '../site/lib/layout.js';
 import { lagosToday } from '../site/lib/time.js';
 import { isNear, VARIANTS, variantFor } from '../site/lib/founding.js';
 import { foundingCard } from '../site/content/waitlist.js';
@@ -1415,4 +1415,15 @@ test('machine-readable names use the one-word company spelling BetGaffer (R-35/R
   assert.match(html, /<meta property="og:site_name" content="BetGaffer">/);
   assert.equal(JSON_LD_SITE.name, 'BetGaffer');
   assert.ok(html.includes(JSON_LD_CONTENT), 'the page carries that WebSite block');
+});
+
+test('the topbar swaps Features for Blog while the blog is live (operator 2026-11-12); without a blog, Features stays', () => {
+  for (const [blog, want] of [
+    [false, ['/', '/our-record/', '/features/', '/waitlist/']],
+    [true, ['/', '/our-record/', '/blog/', '/waitlist/']],
+  ]) assert.deepEqual(navItems(blog).map((n) => n.href), want, `blog=${blog}`);
+  const html = base({ blog: true, path: '/blog/learn/draw-no-bet/' });
+  const nav = html.match(/<nav class="bg-topbar__nav"[\s\S]*?<\/nav>/)[0];
+  assert.match(nav, /<a href="\/blog\/" aria-current="page">Blog<\/a>/, 'Blog is current anywhere under /blog/');
+  assert.doesNotMatch(nav, /\/features\//);
 });
