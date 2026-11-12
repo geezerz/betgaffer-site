@@ -364,7 +364,9 @@ html.fd-hidden [data-banner]{ display:none; }
    Last in the file on purpose: it overrides the 1024px grid and the 1024-1279px steps rule above at equal
    specificity. The aside needs `.bg-fd >` to beat `.bg-fd > .bg-fd__gaffer` (span 7) in the 1024px rule. */
 @media (min-width:1100px){
-  .bg-fd{ grid-template-columns:minmax(0,1fr) 360px; column-gap:56px; row-gap:40px; }
+  .bg-fd{ grid-template-columns:minmax(0,1fr) 360px; grid-template-rows:auto auto 1fr; column-gap:56px; row-gap:40px; }
+  /* the tall Gaffer card spans rows 1-3: the last row absorbs its slack, so the left column packs to the top (UI/UX 11-12) */
+  .bg-fd__join{ align-self:start; }
   .bg-fd > .bg-fd__gaffer{ grid-row:1 / span 3; }
   .bg-fd__counts{ grid-template-columns:repeat(3,minmax(0,1fr)); }
   .bg-fd__count{ font-size:clamp(22px, 1.9vw, 28px); }
