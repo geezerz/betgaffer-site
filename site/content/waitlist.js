@@ -60,24 +60,22 @@ const QUESTIONS = Object.freeze([
     + 'the place passes to the next member in line.'],
 ]);
 
-// The Gaffer column (spec §17.3): a static, coming-soon list. Gaffer is not live, so the cards continue a
+// The Gaffer column (spec §17.3): Gaffer ships at launch on the plans that include it, so the cards continue a
 // lead-in ("When Gaffer launches, it will:") as verb phrases — nothing reads as a feature you can use today.
-// The headings are the spec's; the sentences are the ux-copy wording (one sentence each). No prices, dates,
-// Credits or figures; "booking code" only in card 3, and never a claim that Gaffer makes one
-// (tests/waitlist-page.test.js holds the ban list and the booking-code allowlist).
-const GAFFER_HEADING = 'Gaffer, your betting assistant';
-const GAFFER_LINE = 'Coming soon — founding members first.';
+// Legal addendum 7 wording, one sentence each. No prices, dates, Credits or figures; "booking code" only in
+// card 1, and never a claim that Gaffer makes one (tests/waitlist-page.test.js holds the ban list and allowlist).
+const GAFFER_HEADING = 'Gaffer, your AI football assistant';
+const GAFFER_LINE = 'At launch, on the plans that include it.';
 const GAFFER_LEAD = 'When Gaffer launches, it will:';
 const GAFFER = Object.freeze([
-  ['Check your slip', 'Show the chance the whole slip lands and which leg is weakest, before you place it.'],
-  ['Spot repeated legs', "Warn you when a leg you're adding is already on another of your slips, before one bad result "
-    + 'sinks several.'],
-  ['Read a booking code', 'Open the slip behind a booking code you paste and check every leg.'],
-  ['Build a slip to your odds', 'Suggest a slip around the odds you want, and build it only when you confirm.'],
-  ['Swap a weak leg', 'Offer replacements for a weak leg, from our recommended picks only.'],
-  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and lineups in one reply.'],
+  // Legal addendum 7 (Marketing 5214dbeb2), fact-checked against the code. Card 2 is R-206 (launch scope, 6c 11-12);
+  // card 6 stays only while the Lab is "Coming at launch".
+  ['Check your slip', 'Read a SportyBet booking code you paste, show how likely we rate the slip to win, and give our read on each leg it can match.'],
+  ['Spot shared matches', "Warn you when a new ticket shares a match with one you've already played and, where we can, how likely both are to lose there."],
+  ['Swap a weak leg', 'Suggest a replacement for a weak leg, from our own recommended picks, on the plans that include swaps.'],
+  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and our probabilities in one reply.'],
   ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
-  ['How your bets are doing', "Recap your own slips in plain words, so you're not scrolling through screenshots."],
+  ['How your bets are doing', 'Recap your Lab tickets in plain words.'],
 ]);
 
 const hasPct = (s) => /%/.test(s);

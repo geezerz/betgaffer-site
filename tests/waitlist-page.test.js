@@ -49,20 +49,20 @@ const THANKS = "You're on the founding waitlist. We'll email your invite when it
 const RESULT_KINDS = ['thanks', 'invalid', 'slow-down', 'unavailable'];
 
 // spec §17.3: the Gaffer column. Headings are the spec's; sentences are the final ux-copy wording.
-const GAFFER_HEADING = 'Gaffer, your betting assistant';
-const GAFFER_LINE = 'Coming soon — founding members first.';
+const GAFFER_HEADING = 'Gaffer, your AI football assistant';
+const GAFFER_LINE = 'At launch, on the plans that include it.';
 // Gaffer is not live (D4 review): a lead-in under the coming-soon line, and every card sentence continues it
 // as a verb phrase ("When Gaffer launches, it will: Show …"), so no card reads as a feature you can use today.
 const GAFFER_LEAD = 'When Gaffer launches, it will:';
 const GAFFER_CARDS = [
-  ['Check your slip', 'Show the chance the whole slip lands and which leg is weakest, before you place it.'],
-  ['Spot repeated legs', "Warn you when a leg you're adding is already on another of your slips, before one bad result sinks several."],
-  ['Read a booking code', 'Open the slip behind a booking code you paste and check every leg.'],
-  ['Build a slip to your odds', 'Suggest a slip around the odds you want, and build it only when you confirm.'],
-  ['Swap a weak leg', 'Offer replacements for a weak leg, from our recommended picks only.'],
-  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and lineups in one reply.'],
+  // Legal addendum 7 (Marketing 5214dbeb2), fact-checked against the code. Card 2 is R-206 (launch scope, 6c 11-12);
+  // card 6 stays only while the Lab is "Coming at launch".
+  ['Check your slip', 'Read a SportyBet booking code you paste, show how likely we rate the slip to win, and give our read on each leg it can match.'],
+  ['Spot shared matches', "Warn you when a new ticket shares a match with one you've already played and, where we can, how likely both are to lose there."],
+  ['Swap a weak leg', 'Suggest a replacement for a weak leg, from our own recommended picks, on the plans that include swaps.'],
+  ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and our probabilities in one reply.'],
   ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
-  ['How your bets are doing', "Recap your own slips in plain words, so you're not scrolling through screenshots."],
+  ['How your bets are doing', 'Recap your Lab tickets in plain words.'],
 ];
 /**
  * The aside's own ban list (spec §17.3): phrases the features page bans for its own reasons plus the ones
@@ -427,7 +427,7 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.ok(start > -1, 'premise: the aside markup');
     const html = page.slice(start, page.indexOf('</aside>', start) + '</aside>'.length);
     const text = textOf(parse(html));
-    assert.ok(text.includes(GAFFER_HEADING) && text.includes(GAFFER_CARDS[7][1]), 'premise: the whole aside was sliced');
+    assert.ok(text.includes(GAFFER_HEADING) && text.includes(GAFFER_CARDS.at(-1)[1]), 'premise: the whole aside was sliced');
     assert.deepEqual(gafferViolations(text), []);
     assert.deepEqual(findBanned(html), []);
     assert.deepEqual(claimViolations(page), []);
@@ -435,7 +435,7 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.match(visibleText(page), /\bCredits\b/, 'premise: the rest of the page names Credits');
     // Prove each guard fires on a planted sentence inside the aside.
     // Plant into card 7: its sentence has no apostrophe, so the raw text is also the escaped HTML.
-    const last = GAFFER_CARDS[6][1];
+    const last = GAFFER_CARDS.at(-2)[1];
     assert.ok(html.includes(last), 'premise: the plant target is in the markup verbatim');
     const plant = (s) => textOf(parse(html.replace(last, s)));
     for (const [s, hit] of [
@@ -454,34 +454,34 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.ok(claimViolations(page.replace(last, 'Right 84% of the time.')).some((m) => /84%/.test(m)), 'a stray percentage');
   });
 
-  test('booking codes appear in card 3 only (heading + its sentence, exactly twice); planted anywhere else they are caught', () => {
+  test('booking codes appear in card 1 only (its sentence, exactly once; Legal addendum 7 merged the old card 3 into it); planted anywhere else they are caught', () => {
     const start = page.indexOf('<aside class="bg-fd__gaffer"');
     const html = page.slice(start, page.indexOf('</aside>', start) + '</aside>'.length);
     const BC = /booking codes?/gi;
-    /** Allowlist on the premise: every mention is inside card 3, and card 3 has exactly its two. */
+    /** Allowlist on the premise: every mention is inside card 1, and card 1 has exactly its one. */
     const bookingCodeViolations = (asideHtml) => {
       const d = parse(asideHtml);
       const cards = findAll(d, (n) => n.tag === 'li');
       const out = [];
       if (cards.length !== GAFFER_CARDS.length) out.push(`${cards.length} cards`);
-      const inCard3 = (textOf(cards[2] ?? { children: [] }).match(BC) ?? []).length;
+      const inCard1 = (textOf(cards[0] ?? { children: [] }).match(BC) ?? []).length;
       const total = (textOf(d).match(BC) ?? []).length;
-      if (inCard3 !== 2) out.push(`card 3 mentions booking codes ${inCard3} times, not 2`);
-      if (total !== inCard3) out.push(`${total - inCard3} mention(s) outside card 3`);
+      if (inCard1 !== 1) out.push(`card 1 mentions booking codes ${inCard1} times, not 1`);
+      if (total !== inCard1) out.push(`${total - inCard1} mention(s) outside card 1`);
       return out;
     };
     assert.deepEqual(bookingCodeViolations(html), []);
-    assert.equal((textOf(parse(html)).match(BC) ?? []).length, 2, 'premise: the heading and the sentence');
-    const other = GAFFER_CARDS[6][1];
+    assert.equal((textOf(parse(html)).match(BC) ?? []).length, 1, 'premise: card 1 sentence');
+    const other = GAFFER_CARDS.at(-2)[1];
     assert.ok(html.includes(other), 'premise: the plant target');
     for (const s of ['Help with making a booking code.', 'Help with creating a booking code.', 'Gaffer builds a booking code.',
       'It turns your slip into a booking code.', 'Share booking codes with friends.']) {
-      assert.ok(bookingCodeViolations(html.replace(other, s)).some((m) => /outside card 3/.test(m)), s);
+      assert.ok(bookingCodeViolations(html.replace(other, s)).some((m) => /outside card 1/.test(m)), s);
     }
-    // Card 3 itself can't grow a third mention or lose one.
-    const c3 = GAFFER_CARDS[2][1];
-    assert.ok(bookingCodeViolations(html.replace(c3, `${c3.slice(0, -1)} and turn it into a booking code.`)).some((m) => /card 3/.test(m)));
-    assert.ok(bookingCodeViolations(html.replace(c3, 'Open the slip you paste and check every leg.')).some((m) => /card 3/.test(m)));
+    // Card 1 itself can't grow a second mention or lose its one.
+    const c1 = GAFFER_CARDS[0][1];
+    assert.ok(bookingCodeViolations(html.replace(c1, `${c1.slice(0, -1)} and turn it into a booking code.`)).some((m) => /card 1/.test(m)));
+    assert.ok(bookingCodeViolations(html.replace(c1, 'Read a slip you paste and give our read on each leg it can match.')).some((m) => /card 1/.test(m)));
   });
 
   test('the Gaffer aside is on /waitlist/ only, not on its result pages', async () => {

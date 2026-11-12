@@ -80,8 +80,8 @@ export const ROWS = [
 export const COMING_H2 = "What's coming";
 export const COMING = [
   ['The Lab', 'Building a ticket to a target takes ages.',
-    "Coming at launch: the Lab, where you'll be able to set your stake and Gaffer will build a ticket from our "
-    + "model's rated picks, to your rules."],
+    "Coming at launch: the Lab, where you'll be able to set your stake and target odds and get a ticket built from "
+    + "our model's rated picks, to your rules."],
   ['Power Picks', null,
     'Coming soon: Power Picks, our recommended picks on the matches we single out, on the plans that include them.'],
   ['Booking codes', 'Typing a ticket in leg by leg is slow.',
