@@ -453,8 +453,8 @@ test('a 100% day renders its fraction, 100% and a full arc via renderDay, same p
   day.accuracy = { won: 3, lost: 0, pushes: 1, graded: 3, pct: 100 };
   const ringHtml = /<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0];
   assert.match(text(ringHtml), /3 of 3 landed/);
-  assert.match(text(ringHtml), /100%/);
-  assert.match(ringHtml, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
+  assert.match(text(ringHtml), /100\.0%/);
+  assert.match(ringHtml, /class="ring__arc"[^>]*stroke-dasharray="100\.0 100"/);
 });
 
 test('every percentage sits inside data-figure="pick-prob" or data-figure="ring"', () => {
@@ -845,7 +845,7 @@ test('rule 2: a 100% day (moved kickoff included) renders its real 100%, same pa
   const counted = day.fixtures.filter((f) => !f.withdrawn && f.pick && f.grade === 'won');
   assert.equal(counted.length, 4);
   assert.ok(counted.some((f) => f.fx === 900011), 'premise: the moved-kickoff pick is one of them');
-  assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), /4 of 4 landed.*100%/s);
+  assert.match(text(/<div class="ring"[\s\S]*?<\/div>/.exec(renderDay(day, opts()))[0]), /4 of 4 landed.*100\.0%/s);
 });
 
 test('rule 2: no moved note, no uncounted marker; a legacy late row with a pick renders like any pick', () => {

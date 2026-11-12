@@ -26,11 +26,17 @@ const DEFAULT_LABEL = 'Published picks, settled so far';
 
 const isCount = (v) => Number.isInteger(v) && v >= 0;
 
-/** A published percentage as text, up to 2 decimals ('85.71', '85.7', '50'). */
+/** THE accuracy text: exactly one decimal, half-up ('85.5', '85.0', '100.0'); the 1e-9 absorbs binary error (85.35 -> 85.4). */
 export function fmtPct(pct) {
   if (typeof pct !== 'number' || !Number.isFinite(pct)) throw new TypeError(`fmtPct: not a finite number: ${String(pct)}`);
-  return String(Math.round(pct * 100) / 100);
+  return (Math.round(pct * 10 + 1e-9) / 10).toFixed(1);
 }
+
+/** fmtPct, or null for a non-perfect record that rounds up to 100.0: that would claim a perfect record. */
+export const pctShown = (pct, perfect) => {
+  const p = fmtPct(pct);
+  return !perfect && p === '100.0' ? null : p;
+};
 
 function checkAccuracy(a) {
   if (a === null || typeof a !== 'object' || Array.isArray(a)) throw new TypeError('ring: accuracy must be an object');
@@ -90,7 +96,7 @@ export function ring(accuracy, { dayLabel, date, relDay } = {}) {
       + '</div>';
   }
 
-  const pctText = fmtPct(accuracy.pct);
+  const pctText = pctShown(accuracy.pct, won === graded) ?? '99.9';   // a non-perfect record never reads 100.0
   const fraction = `${fmtInt(won)} of ${fmtInt(graded)} landed`;
   const flame = accuracy.pct >= FLAME_AT ? '🔥' : '';
   const arc = `<circle class="ring__arc" cx="24" cy="24" r="20" pathLength="100" stroke-dasharray="${escAttr(pctText)} 100" transform="rotate(-90 24 24)"/>`;

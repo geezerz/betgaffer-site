@@ -11,7 +11,7 @@
 //     data-period) whose visible text carries its "n of m" fraction and its period (a strip day by
 //     its full date, e.g. "Wed 7 Oct 2026");
 //   - no figure ever prints as a bare 100%: a perfect window, day or month shows its fraction and
-//     words instead ("Every pick right", "All right"); a non-perfect one that rounded up is 99.99%.
+//     words instead ("Every pick right", "All right"); a non-perfect one that rounded up is 99.9%.
 // Green figures (spec §17.5): every right count and every percentage carries .rec-won (bold, --won);
 // a total ("of Y") never does.
 // Status: only the current Lagos month says "In progress" (whatever the ledger says); today's strip
@@ -22,18 +22,19 @@
 import { escHtml, escAttr } from './esc.js';
 import { isDate, isIsoZ, fmtDayLong, fmtStamp } from './time.js';
 import { fmtInt } from './num.js';
+import { fmtPct } from './ring.js';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
   'September', 'October', 'November', 'December'];
 
 // ------------------------------------------------------------------ numbers
 
-const pct2 = (v) => `${v.toFixed(2)}%`;
+const pct1 = (v) => `${fmtPct(v)}%`;
 /**
  * A grain's published pct for display. Only a perfect grain may reach 100, and it is never printed
- * as a percentage (see isPerfect); a non-perfect one that rounded up is shown as 99.99%.
+ * as a percentage (see isPerfect); a non-perfect one that rounded up is shown as 99.9%.
  */
-const shownPct = (g) => (g.won < g.graded && g.pct > 99.99 ? 99.99 : g.pct);
+const shownPct = (g) => (g.won < g.graded && g.pct > 99.9 ? 99.9 : g.pct);
 
 /** A won/graded grain that settled every graded pick: never printed as a percentage. */
 const isPerfect = (g) => g.graded > 0 && g.won === g.graded;
@@ -77,7 +78,7 @@ function headline(rec) {
     const graded = fmtInt(g.graded);
     const hero = isPerfect(g)
       ? '<p class="rec-hero rec-hero--words rec-won" data-hero>Every pick right</p>'
-      : `<p class="rec-hero rec-won" data-hero>${escHtml(pct2(shownPct(g)))}<span class="vh"> of picks right</span></p>`;
+      : `<p class="rec-hero rec-won" data-hero>${escHtml(pct1(shownPct(g)))}<span class="vh"> of picks right</span></p>`;
     body = `${hero}
 <p class="rec-count"><strong class="rec-won">${won}</strong> of ${graded} picks right</p>
 <p class="rec-hero__cap">Our recommended picks were right ${won} times out of ${graded}.</p>`;
@@ -99,7 +100,7 @@ function stripFigure(g) {
   const frac = `<p class="rec-day__frac"><strong class="rec-won mono">${fmtInt(g.won)}</strong> of <span class="mono">${fmtInt(g.graded)}</span> right</p>`;
   // A perfect day says so in words, so no card or row looks like it is missing its value.
   if (isPerfect(g)) return `${frac}\n<p class="rec-day__pct rec-won">All right</p>`;
-  return `${frac}\n<p class="rec-day__pct rec-won mono">${escHtml(pct2(shownPct(g)))}</p>`;
+  return `${frac}\n<p class="rec-day__pct rec-won mono">${escHtml(pct1(shownPct(g)))}</p>`;
 }
 
 function stripDay(g, { today, listed }) {
@@ -142,7 +143,7 @@ function monthRow(g, currentMonth) {
   const cells = isEmpty(g)
     ? '<td class="num" colspan="2" data-label="Right">No picks settled</td>'
     : `<td class="num" data-label="Right"><span><strong class="rec-won">${fmtInt(g.won)}</strong> of ${fmtInt(g.graded)} right</span></td>
-<td class="num" data-label="Accuracy"><strong class="rec-won">${isPerfect(g) ? 'Every pick right' : escHtml(pct2(shownPct(g)))}</strong></td>`;
+<td class="num" data-label="Accuracy"><strong class="rec-won">${isPerfect(g) ? 'Every pick right' : escHtml(pct1(shownPct(g)))}</strong></td>`;
   return `<tr data-figure="record-row" data-period="${escAttr(g.period)}">
 <th scope="row"><span class="rec-month">${escHtml(monthName(g.period))}</span>${chip}</th>
 ${cells}

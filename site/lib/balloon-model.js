@@ -16,7 +16,7 @@
 // Day words follow the relabel rules (stale.js relLabel): Today / Tomorrow for the visitor's Lagos
 // date, otherwise the date. The line under it is always the shown day minus one.
 
-import { fmtPct, FLAME_AT } from './ring.js';
+import { pctShown, FLAME_AT } from './ring.js';
 import { fmtDayLong, isDate, lagosToday } from './time.js';
 import { fmtInt } from './num.js';
 
@@ -125,10 +125,7 @@ const shortDay = (date) => fmtDayLong(date).replace(/ \d{4}$/, ''); // 'Wed 7 Oc
 function figure(a) {
   if (a.graded === 0) return null;
   const perfect = a.won === a.graded;
-  const p = fmtPct(a.pct);
-  // A non-perfect day whose pct rounds up to "100" would be a false claim; a genuinely perfect
-  // day's own 100 is shown like any other percentage.
-  const pctText = !perfect && p === '100' ? null : p;
+  const pctText = pctShown(a.pct, perfect);   // null: a non-perfect day that rounds up to 100.0 would be a false claim
   return { pctText, fracText: `${fmtInt(a.won)} of ${fmtInt(a.graded)}`, perfect, flame: a.pct >= FLAME_AT };
 }
 

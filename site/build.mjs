@@ -132,7 +132,7 @@ const MON_LONG = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', 
 /**
  * A day's accuracy as a pill percentage (spec §17.1): one decimal, rounded half up on the published
  * two decimals (87.55 -> '87.6%'). A day with a wrong pick never reads 100.0% (capped at 99.9%, as
- * record.js caps its two-decimal figures) -- that would be false. A genuinely perfect day (every
+ * record.js caps its figures) -- that would be false. A genuinely perfect day (every
  * graded pick won) reads its real 100.0%, same pattern as any other day (operator, 2026-10-27).
  * null when nothing is graded.
  */

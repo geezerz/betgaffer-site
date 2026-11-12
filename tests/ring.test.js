@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { ring, fmtPct } from '../site/lib/ring.js';
+import { ring, fmtPct, pctShown } from '../site/lib/ring.js';
 
 const SRC_RAW = readFileSync(fileURLToPath(new URL('../site/lib/ring.js', import.meta.url)), 'utf8');
 // Code only: a comment that NAMES a banned API must neither pass nor fail the isomorphism check.
@@ -69,16 +69,16 @@ test('graded > 0: fraction is the hero, pct secondary, date, pushes, arc from pc
   const t = text(html);
   assert.match(html, /data-figure="ring"/);
   assert.match(t, /6 of 7 landed/);
-  assert.match(t, /85\.71%/);
+  assert.match(t, /85\.7%/);
   assert.match(t, /Wed 7 Oct 2026/);
   assert.match(t, /2 pushes not counted/);
-  assert.match(html, /<circle[^>]*class="ring__arc"[^>]*stroke-dasharray="85\.71 100"/);
+  assert.match(html, /<circle[^>]*class="ring__arc"[^>]*stroke-dasharray="85\.7 100"/);
   assert.match(html, /pathLength="100"/);
   // The hero fraction precedes the percentage in reading order.
-  assert.ok(t.indexOf('6 of 7') < t.indexOf('85.71%'));
+  assert.ok(t.indexOf('6 of 7') < t.indexOf('85.7%'));
   const label = ariaLabel(html);
   assert.match(label, /6 of 7 landed/);
-  assert.match(label, /85\.71%/);
+  assert.match(label, /85\.7%/);
   assert.match(label, /2 pushes not counted/);
 });
 
@@ -86,12 +86,16 @@ test('no pushes line when pushes === 0', () => {
   assert.ok(!/push/i.test(text(ring(acc(3, 1, 0, 75), { dayLabel: 'X' }))));
 });
 
-test('pct rendered as published, up to 2 decimals', () => {
-  assert.equal(fmtPct(85.71), '85.71');
-  assert.equal(fmtPct(85.7), '85.7');
-  assert.equal(fmtPct(50), '50');
-  assert.equal(fmtPct(66.666), '66.67');
-  assert.equal(fmtPct(99.996), '100');
+test('pct rendered with exactly one decimal, half up; a non-perfect record never shows 100.0', () => {
+  for (const [pct, want] of [[85.71, '85.7'], [85.35, '85.4'], [85.45, '85.5'], [87.55, '87.6'], [50, '50.0'], [66.666, '66.7'], [100, '100.0']]) {
+    assert.equal(fmtPct(pct), want, String(pct));
+  }
+  assert.equal(pctShown(99.96, false), null, 'non-perfect that rounds to 100.0 is withheld');
+  assert.equal(pctShown(100, true), '100.0');
+  assert.equal(pctShown(85.35, false), '85.4');
+  const html = ring(acc(2499, 1, 0, 99.96), { dayLabel: 'X' });
+  assert.match(text(html), /99\.9%/);
+  assert.doesNotMatch(text(html), /100\.0%/);
 });
 
 test('label is always visible, defaults sensibly, and is escaped', () => {
@@ -108,15 +112,15 @@ test('100% carries its denominator and a full arc, exactly like any other percen
   const html = ring(acc(3, 0, 0, 100), { dayLabel: "Today's published picks, settled so far" });
   const t = text(html);
   assert.match(t, /3 of 3 landed/);
-  assert.match(t, /100%/);
-  assert.match(ariaLabel(html), /100%/);
-  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
+  assert.match(t, /100\.0%/);
+  assert.match(ariaLabel(html), /100\.0%/);
+  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100\.0 100"/);
 });
 
-test('a pct that rounds to 100 (e.g. 99.996) reads 100% with the same full arc', () => {
+test('a pct that rounds to 100 (e.g. 99.996) reads 100.0% with the same full arc', () => {
   const html = ring(acc(3, 0, 0, 99.996), { dayLabel: 'X' });
-  assert.match(text(html), /100%/);
-  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100 100"/);
+  assert.match(text(html), /100\.0%/);
+  assert.match(html, /class="ring__arc"[^>]*stroke-dasharray="100\.0 100"/);
 });
 
 test('the flame shows at 90% and up, never below', () => {

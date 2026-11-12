@@ -45,13 +45,13 @@ describe('ringModel', () => {
   test('partial: the published percentage with its fraction, the arc at that percentage', () => {
     const m = ringModel(A24, { date: TODAY, yesterday: Y18, nowMs: NOW });
     assert.equal(m.state, 'partial');
-    assert.equal(m.pctText, '82.76');
+    assert.equal(m.pctText, '82.8');
     assert.equal(m.fracText, '24 of 29');
     assert.equal(m.dayText, 'Today');
     assert.equal(m.arc, 82.76);
     assert.equal(m.flame, false, 'under 90%');
-    assert.deepEqual(m.yday, { dayText: 'Yesterday', pctText: '81.82', fracText: '18 of 22', flame: false });
-    assert.equal(m.aria, "Today's published picks: 24 of 29 landed (82.76%). Yesterday: 18 of 22 (81.82%). Opens Our Record.");
+    assert.deepEqual(m.yday, { dayText: 'Yesterday', pctText: '81.8', fracText: '18 of 22', flame: false });
+    assert.equal(m.aria, "Today's published picks: 24 of 29 landed (82.8%). Yesterday: 18 of 22 (81.8%). Opens Our Record.");
   });
 
   test('none: "No results yet", no percentage, no fraction, no arc', () => {
@@ -61,28 +61,28 @@ describe('ringModel', () => {
     assert.equal(m.fracText, null);
     assert.equal(m.label, 'No results yet');
     assert.equal(m.arc, null);
-    assert.equal(m.aria, "Today's published picks: no results yet. Yesterday: 18 of 22 (81.82%). Opens Our Record.");
+    assert.equal(m.aria, "Today's published picks: no results yet. Yesterday: 18 of 22 (81.8%). Opens Our Record.");
   });
 
   test('perfect: its real 100%, a full arc and the flame, same pattern as any other percentage', () => {
     const m = ringModel(acc(5, 0, 100), { date: TODAY, nowMs: NOW });
     assert.equal(m.state, 'perfect');
-    assert.equal(m.pctText, '100');
+    assert.equal(m.pctText, '100.0');
     assert.equal(m.fracText, '5 of 5');
     assert.equal(m.label, null);
     assert.equal(m.arc, 100);
     assert.equal(m.flame, true, '100% earns the flame');
     assert.equal(m.yday, null);
-    assert.equal(m.aria, "Today's published picks: 5 of 5 landed (100%). Opens Our Record.");
+    assert.equal(m.aria, "Today's published picks: 5 of 5 landed (100.0%). Opens Our Record.");
   });
 
   test('a real 0-of-n day shows 0% WITH its fraction', () => {
     const m = ringModel(acc(0, 4, 0), { date: TODAY, nowMs: NOW });
     assert.equal(m.state, 'partial');
-    assert.equal(m.pctText, '0');
+    assert.equal(m.pctText, '0.0');
     assert.equal(m.fracText, '0 of 4');
     assert.equal(m.arc, 0);
-    assert.match(m.aria, /0 of 4 landed \(0%\)/);
+    assert.match(m.aria, /0 of 4 landed \(0\.0%\)/);
   });
 
   test('a percentage that would display as 100 without every pick landing is withheld (and draws no arc)', () => {
@@ -98,17 +98,17 @@ describe('ringModel', () => {
     assert.equal(ringModel(A24, { date: TODAY, nowMs: NOW }).yday, null, 'missing');
     assert.equal(ringModel(A24, { date: TODAY, yesterday: acc(0, 0), nowMs: NOW }).yday, null, 'nothing graded');
     const p = ringModel(A24, { date: TODAY, yesterday: acc(6, 0, 100), nowMs: NOW });
-    assert.deepEqual(p.yday, { dayText: 'Yesterday', pctText: '100', fracText: '6 of 6', flame: true });
-    assert.match(p.aria, /Yesterday: 6 of 6 \(100%\)\./);
+    assert.deepEqual(p.yday, { dayText: 'Yesterday', pctText: '100.0', fracText: '6 of 6', flame: true });
+    assert.match(p.aria, /Yesterday: 6 of 6 \(100\.0%\)\./);
     assert.deepEqual(ringModel(A24, { date: TODAY, yesterday: acc(0, 3, 0), nowMs: NOW }).yday,
-      { dayText: 'Yesterday', pctText: '0', fracText: '0 of 3', flame: false });
+      { dayText: 'Yesterday', pctText: '0.0', fracText: '0 of 3', flame: false });
   });
 
   test('compact (the phone ring) never carries yesterday', () => {
     const m = ringModel(A24, { date: TODAY, yesterday: Y18, compact: true, nowMs: NOW });
     assert.equal(m.yday, null);
-    assert.equal(m.aria, "Today's published picks: 24 of 29 landed (82.76%). Opens Our Record.");
-    assert.equal(m.pctText, '82.76');
+    assert.equal(m.aria, "Today's published picks: 24 of 29 landed (82.8%). Opens Our Record.");
+    assert.equal(m.pctText, '82.8');
     assert.equal(m.fracText, '24 of 29');
   });
 
@@ -116,11 +116,11 @@ describe('ringModel', () => {
     const past = ringModel(acc(2, 1, 66.67), { date: '2026-10-05', yesterday: acc(30, 6, 83.33), nowMs: NOW });
     assert.equal(past.dayText, 'Mon 5 Oct');
     assert.equal(past.yday.dayText, 'Sun 4 Oct');
-    assert.equal(past.aria, 'Picks published for Mon 5 Oct 2026: 2 of 3 landed (66.67%). Sun 4 Oct 2026: 30 of 36 (83.33%). Opens Our Record.');
+    assert.equal(past.aria, 'Picks published for Mon 5 Oct 2026: 2 of 3 landed (66.7%). Sun 4 Oct 2026: 30 of 36 (83.3%). Opens Our Record.');
     const tomorrow = ringModel(acc(0, 0), { date: '2026-10-08', yesterday: A24, nowMs: NOW });
     assert.equal(tomorrow.dayText, 'Tomorrow');
     assert.equal(tomorrow.yday.dayText, 'Today');
-    assert.equal(tomorrow.aria, "Tomorrow's published picks: no results yet. Today: 24 of 29 (82.76%). Opens Our Record.");
+    assert.equal(tomorrow.aria, "Tomorrow's published picks: no results yet. Today: 24 of 29 (82.8%). Opens Our Record.");
     // Yesterday's page, read today: its own label is its date, and the line under it is the day before.
     const yday = ringModel(A24, { date: '2026-10-06', yesterday: Y18, nowMs: NOW });
     assert.equal(yday.dayText, 'Tue 6 Oct');
@@ -145,7 +145,7 @@ describe('ringModel', () => {
             // fraction (the only invariant left to prove here).
             for (const part of m.aria.split('. ')) if (/%/.test(part)) assert.match(part, /\d+ of \d+/, part);
             if (won === 0 && lost === 0) assert.equal(m.pctText, null, '0 graded is never 0%');
-            if (won > 0 && won === g) assert.equal(m.pctText, '100', 'a genuinely perfect day reads its real 100');
+            if (won > 0 && won === g) assert.equal(m.pctText, '100.0', 'a genuinely perfect day reads its real 100');
             cases++;
           }
         }
@@ -180,7 +180,7 @@ describe('readFigures (fail closed on the <main> data)', () => {
   test('an unrounded published pct (any finite number in [0, 100]) is accepted; the ring rounds it', () => {
     const f = readFigures(attrs({ ...RING, 'ring-pct': '83.33333333333333' }));
     assert.equal(f.today.pct, 83.33333333333333);
-    assert.equal(ringModel(f.today, { date: TODAY }).pctText, '83.33');
+    assert.equal(ringModel(f.today, { date: TODAY }).pctText, '83.3');
     for (const ok of ['0', '100', '100.0', '0.5', '99.99999999999999']) assert.notEqual(readFigures(attrs({ ...RING, 'ring-pct': ok })), null, ok);
     for (const bad of ['1e2', '8.3e1', 'Infinity', '100.01', '.5', '5.', '+5', '0x10', '1_0']) assert.equal(readFigures(attrs({ ...RING, 'ring-pct': bad })), null, bad);
   });
@@ -374,9 +374,9 @@ describe('balloon.js: rendering', () => {
     assert.equal(a.getAttribute('data-state'), 'partial');
     assert.equal(a.hidden, false);
     assert.ok(s.has(), 'html.has-balloon');
-    assert.equal(a.getAttribute('aria-label'), "Today's published picks: 24 of 29 landed (82.76%). Yesterday: 18 of 22 (81.82%). Opens Our Record.");
+    assert.equal(a.getAttribute('aria-label'), "Today's published picks: 24 of 29 landed (82.8%). Yesterday: 18 of 22 (81.8%). Opens Our Record.");
     const text = a.textContent;
-    for (const t of ['82.76%', 'Today', '24 of 29', 'Yesterday', '81.82%', '18 of 22']) assert.ok(text.includes(t), t);
+    for (const t of ['82.8%', 'Today', '24 of 29', 'Yesterday', '81.8%', '18 of 22']) assert.ok(text.includes(t), t);
     assert.equal(s.doc.querySelectorAll('.bg-balloon').length, 1);
   });
 
@@ -394,7 +394,7 @@ describe('balloon.js: rendering', () => {
     assert.equal(p.style('--pct'), '100');
     assert.ok(p.el.hasAttribute('data-arc'));
     assert.match(p.el.textContent, /5 of 5/);
-    assert.match(p.el.textContent, /100%/);
+    assert.match(p.el.textContent, /100.0%/);
     assert.match(p.el.textContent, /🔥/);
     assert.doesNotMatch(p.el.textContent, /landed so far/);
     const n = setup({ html: pageOf({ today: acc(0, 0), yesterday: null }) });
@@ -415,7 +415,7 @@ describe('balloon.js: rendering', () => {
       }
     }
     // Premise: the scanner does fire on a percentage outside the ring.
-    assert.notDeepEqual(claimViolations('<!doctype html><html><head><title>t</title></head><body><p>82.76%</p></body></html>'), []);
+    assert.notDeepEqual(claimViolations('<!doctype html><html><head><title>t</title></head><body><p>82.8%</p></body></html>'), []);
   });
 
   test('phone (< 1024): the small ring, today only, no yesterday', () => {
@@ -423,8 +423,8 @@ describe('balloon.js: rendering', () => {
     assert.equal(s.el.getAttribute('data-size'), 'compact');
     assert.equal(s.el.hidden, false);
     const text = s.el.textContent;
-    assert.ok(text.includes('82.76%') && text.includes('24 of 29'));
-    assert.doesNotMatch(text, /Yesterday|81\.82|18 of 22/);
+    assert.ok(text.includes('82.8%') && text.includes('24 of 29'));
+    assert.doesNotMatch(text, /Yesterday|81\.8|18 of 22/);
     assert.doesNotMatch(s.el.getAttribute('aria-label'), /Yesterday/);
   });
 
@@ -907,7 +907,7 @@ describe('balloon.js and balloon-model.js: source', () => {
     assert.match(strip(JS), /style\.setProperty\(\s*'--pct'/, '--pct through CSSOM');
     assert.match(strip(JS), /setPointerCapture/);
     assert.match(strip(JS), /from '\.\/lib\/balloon-model\.js'/);
-    assert.match(strip(MODEL), /import \{ fmtPct, FLAME_AT \} from '\.\/ring\.js'/, 'reuses the ring\'s percentage format and flame threshold');
+    assert.match(strip(MODEL), /import \{ pctShown, FLAME_AT \} from '\.\/ring\.js'/, 'reuses the ring\'s percentage format (pctShown) and flame threshold');
     assert.doesNotMatch(strip(JS), /data-auth/, 'no auth gating');
   });
 

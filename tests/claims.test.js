@@ -125,7 +125,7 @@ describe('every built page passes the claim scan', () => {
     const rec = await readFile(join(builds.plain.out, 'our-record/index.html'), 'utf8');
     assert.match(rec, /data-claim="headline"/);
     assert.match(rec, /data-figure="record-row"/);
-    assert.match(visibleText(rec), /84\.48%/);
+    assert.match(visibleText(rec), /84\.5%/);
     const rec7 = await readFile(join(builds.last7.out, 'our-record/index.html'), 'utf8');
     assert.match(visibleText(rec7), /The last seven days/);
     assert.equal((rec7.match(/<li class="rec-day" data-figure="record-row"/g) || []).length, 7);
@@ -134,10 +134,10 @@ describe('every built page passes the claim scan', () => {
     assert.match(visibleText(home), /\d+%/);
     const stub = await readFile(join(builds.archive.out, 'day/2026-10-05/index.html'), 'utf8');
     assert.match(visibleText(stub), /30 of 36 landed/);
-    assert.match(visibleText(stub), /83\.33%/);
+    assert.match(visibleText(stub), /83\.3%/);
     const edge = visibleText(await readFile(join(builds.edge.out, 'index.html'), 'utf8'));
     assert.match(edge, /2 of 3 landed/);
-    assert.match(edge, /66\.67%/);
+    assert.match(edge, /66\.7%/);
     const mixed = visibleText(await readFile(join(builds.mixed.out, 'index.html'), 'utf8'));
     assert.match(mixed, /2 of 3 landed/);
   });
@@ -156,7 +156,7 @@ describe('every built page passes the claim scan', () => {
   test('the 100% rule: a perfect day shows its real 100%, same pattern as any other percentage', async () => {
     const text = visibleText(await readFile(join(builds.perfect.out, 'index.html'), 'utf8'));
     assert.match(text, /3 of 3 landed/);
-    assert.match(text, /100%/, 'premise: the ring states 100%');
+    assert.match(text, /100\.0%/, 'premise: the ring states 100%');
     // The perfect day's own page and its strip entry pass too (scanned above): still allowed,
     // because the ring/record-row figure already carries its own fraction (claimViolations).
   });
@@ -235,7 +235,7 @@ describe('premise: the scanner reports each injected violation', () => {
     const w = await built(grade(2, 1));
     try {
       const html = await readFile(join(w.out, 'index.html'), 'utf8');
-      assert.match(html, /aria-label="[^"]*\(66\.67%\)/);
+      assert.match(html, /aria-label="[^"]*\(66\.7%\)/);
       assert.deepEqual(claimViolations(html), []);
     } finally {
       await w.cleanup();
@@ -255,16 +255,16 @@ describe('premise: the scanner reports each injected violation', () => {
       const html = rec.replace(`data-claim-part="${part}"`, 'data-x="removed"');
       assert.notEqual(html, rec, `premise: ${part} present`);
       const v = claimViolations(html);
-      assert.ok(v.some((m) => /84\.48%" outside an allowed figure/.test(m)), `${part}: ${v}`);
+      assert.ok(v.some((m) => /84\.5%" outside an allowed figure/.test(m)), `${part}: ${v}`);
     }
     // A period part with no text licenses nothing either.
     const blank = rec.replace(/(<p [^>]*data-claim-part="period"[^>]*>)[^]*?(<\/p>)/, '$1$2');
     assert.notEqual(blank, rec);
-    assert.ok(claimViolations(blank).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'blank period');
+    assert.ok(claimViolations(blank).some((m) => /84\.5%" outside an allowed figure/.test(m)), 'blank period');
     // A headline whose text lost every "X of Y" fraction no longer licenses its percentage.
     const noFrac = rec.replace(/<p class="rec-count">[^]*?<\/p>/, '');
     assert.notEqual(noFrac, rec);
-    assert.ok(claimViolations(noFrac).some((m) => /84\.48%" outside an allowed figure/.test(m)), 'no fraction');
+    assert.ok(claimViolations(noFrac).some((m) => /84\.5%" outside an allowed figure/.test(m)), 'no fraction');
   });
 
   test('a record row whose text lacks its period, or its fraction, is reported', () => {

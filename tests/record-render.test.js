@@ -7,6 +7,7 @@ import { validateIndex } from '../site/lib/data.js';
 import { renderRecord } from '../site/lib/record.js';
 import { CSS_ORDER } from '../site/build.mjs';
 import { fmtDayLong } from '../site/lib/time.js';
+import { fmtPct } from '../site/lib/ring.js';
 import { claimViolations } from './html-scan.js';
 import { toLast7 } from './site-fixtures.js';
 
@@ -35,7 +36,7 @@ const REC7 = rec7();
 /** 12154 -> '12,154', independent of the renderer's own formatter. */
 const fmt = (n) => n.toLocaleString('en-US');
 /** A published pct as the page prints it. */
-const pctText = (v) => `${v.toFixed(2)}%`;
+const pctText = (v) => `${fmtPct(v)}%`;
 const isPerfectG = (g) => g.graded > 0 && g.won === g.graded;
 const isEmptyG = (g) => g.graded === 0 || g.pct === null;
 
@@ -174,7 +175,7 @@ test('headline: a perfect window\'s hero reads "Every pick right", the count lin
   assert.doesNotMatch(t, /%/);
 });
 
-test('headline: a non-perfect window that rounds to 100 shows 99.99%, never 100.00%', () => {
+test('headline: a non-perfect window that rounds to 100 shows 99.9%, never 100.0%', () => {
   const r = rec((x) => {
     Object.assign(x.last_30, { won: 29999, lost: 1, graded: 30000, pct: 100, finished_fixtures: 30000, coverage: 1 });
     Object.assign(x.last_6[1], { won: 29999, lost: 1, graded: 30000, pct: 100, finished_fixtures: 30000, coverage: 1 });
@@ -182,10 +183,10 @@ test('headline: a non-perfect window that rounds to 100 shows 99.99%, never 100.
   });
   const html = renderRecord(r, OPTS);
   assert.doesNotMatch(text(html), /100(\.0+)?%/);
-  assert.equal(seen(elementWith(headOf(html), 'data-hero').html), '99.99%');
+  assert.equal(seen(elementWith(headOf(html), 'data-hero').html), '99.9%');
   assert.ok(text(headOf(html)).includes('29,999 of 30,000 picks right Our recommended picks were right 29,999 times out of 30,000.'));
-  assert.match(text(stripRows(html)[1]), /29,999 of 30,000 right 99\.99%/);
-  assert.match(text(monthRows(html)[0]), /29,999 of 30,000 right 99\.99%/);
+  assert.match(text(stripRows(html)[1]), /29,999 of 30,000 right 99\.9%/);
+  assert.match(text(monthRows(html)[0]), /29,999 of 30,000 right 99\.9%/);
 });
 
 test('removed: no coverage, confidence, status, selection rule, uncertainty or price band in the visible text', () => {
@@ -253,10 +254,10 @@ test('strip: record-rows, each "<full date> <won> of <graded> right <pct>%"', ()
   REC7.recent.forEach((d, i) => {
     assert.ok(rows[i].includes(`data-period="${d.period}"`), `row ${i} period attribute`);
     assert.ok(rows[i].includes(`datetime="${d.period}"`), `row ${i} time element`);
-    const want = `${fmtDayLong(d.period)} ${d.won.toLocaleString('en-US')} of ${d.graded.toLocaleString('en-US')} right ${d.pct.toFixed(2)}%`;
+    const want = `${fmtDayLong(d.period)} ${d.won.toLocaleString('en-US')} of ${d.graded.toLocaleString('en-US')} right ${pctText(d.pct)}`;
     assert.equal(text(rows[i]).replace(/ — open this day's card$/, ''), want);
   });
-  assert.match(text(rows[0]), /^Wed 7 Oct 2026 8 of 9 right 88\.89%/);
+  assert.match(text(rows[0]), /^Wed 7 Oct 2026 8 of 9 right 88\.9%/);
 });
 
 test('strip: today is tagged for "Today · so far" (empty and hidden statically); no other day is tagged', () => {
@@ -318,9 +319,9 @@ test('months: one record-row per month, newest first, "<Month YYYY> <won> of <gr
   const html = renderRecord(REC, OPTS);
   const rows = monthRows(html);
   assert.deepEqual(rows.map(text), [
-    'October 2026 In progress 2,004 of 2,339 right 85.68%',
-    'September 2026 10,936 of 13,190 right 82.91%',
-    'August 2026 7,837 of 9,764 right 80.26%',
+    'October 2026 In progress 2,004 of 2,339 right 85.7%',
+    'September 2026 10,936 of 13,190 right 82.9%',
+    'August 2026 7,837 of 9,764 right 80.3%',
   ]);
   REC.months.forEach((m, i) => assert.ok(rows[i].includes(`data-period="${m.period}"`)));
   // Stacks below 640px: every data cell names its column.
@@ -529,7 +530,7 @@ function greens(html) {
   }
   return out;
 }
-const shown = (g) => (g.won < g.graded && g.pct > 99.99 ? 99.99 : g.pct);
+const shown = (g) => (g.won < g.graded && g.pct > 99.9 ? 99.9 : g.pct);
 /** What the page must paint green, from the data: every right count and every percentage, no total. */
 function expectedGreens(r) {
   const out = [];

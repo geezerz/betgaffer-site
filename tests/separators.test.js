@@ -14,7 +14,7 @@ import { join } from 'node:path';
 
 import { build, dayPills } from '../site/build.mjs';
 import { renderDay } from '../site/lib/fixtures.js';
-import { ring } from '../site/lib/ring.js';
+import { ring, fmtPct } from '../site/lib/ring.js';
 import { ringModel } from '../site/lib/balloon-model.js';
 import { parse, find, findAll, textOf, visibleText, bareCounts, bareRuns, claimViolations } from './html-scan.js';
 import { testConfig, workspace, copyArtifact, addArchive, bigArtifact, BIG, syntheticDay, htmlFiles } from './site-fixtures.js';
@@ -99,7 +99,7 @@ describe('the ring (ring.js): fraction, pushes and the aria-label', () => {
       const t = visibleText(page(html));
       assert.ok(t.includes(`${frac} landed`), t);
       assert.ok(t.includes(`Sat 10 Oct 2026 · ${pushes} pushes not counted`), t);
-      assert.equal(ariaOf(html), `Picks published for Sat 10 Oct 2026, settled so far: ${frac} landed (${a.pct}%). ${pushes} pushes not counted.`);
+      assert.equal(ariaOf(html), `Picks published for Sat 10 Oct 2026, settled so far: ${frac} landed (${fmtPct(a.pct)}%). ${pushes} pushes not counted.`);
       assert.deepEqual(bareCounts(page(html)), []);
       assert.deepEqual(claimViolations(page(html)), [], 'the claim scanner still reads the separated fraction');
     });
@@ -119,13 +119,13 @@ describe('the floating ring captions (balloon-model.js ringModel)', () => {
     const m = ringModel(A4, { date: D, yesterday: A5, nowMs: at });
     assert.equal(m.fracText, '1,131 of 1,308');
     assert.equal(m.yday.fracText, '10,081 of 12,154');
-    assert.equal(m.aria, "Today's published picks: 1,131 of 1,308 landed (86.47%). Yesterday: 10,081 of 12,154 (82.94%). Opens Our Record.");
+    assert.equal(m.aria, "Today's published picks: 1,131 of 1,308 landed (86.5%). Yesterday: 10,081 of 12,154 (82.9%). Opens Our Record.");
     const swap = ringModel(A5, { date: D, yesterday: A4, nowMs: at });
     assert.equal(swap.fracText, '10,081 of 12,154');
     assert.equal(swap.yday.fracText, '1,131 of 1,308');
   });
   test('a perfect day', () => {
-    assert.equal(ringModel(acc(1200, 0, 0, 100), { date: D, nowMs: at }).aria, "Today's published picks: 1,200 of 1,200 landed (100%). Opens Our Record.");
+    assert.equal(ringModel(acc(1200, 0, 0, 100), { date: D, nowMs: at }).aria, "Today's published picks: 1,200 of 1,200 landed (100.0%). Opens Our Record.");
     assert.equal(ringModel(acc(12000, 0, 0, 100), { date: D, nowMs: at }).fracText, '12,000 of 12,000');
   });
 });
@@ -234,7 +234,7 @@ describe('a build whose every count runs to four or five digits', () => {
       assert.ok(t.includes(` · ${us(active.length)} fixtures · by kickoff`), `${rel}: day bar`);
       assert.ok(t.includes(`${us(a.won)} of ${us(a.graded)} landed`), `${rel}: ring`);
       const ringEl = find(parse(html), (n) => n.attrs['data-figure'] === 'ring');
-      assert.ok(ringEl.attrs['aria-label'].includes(`: ${us(a.won)} of ${us(a.graded)} landed (${a.pct}%).`), ringEl.attrs['aria-label']);
+      assert.ok(ringEl.attrs['aria-label'].includes(`: ${us(a.won)} of ${us(a.graded)} landed (${fmtPct(a.pct)}%).`), ringEl.attrs['aria-label']);
       assert.ok(t.includes(`Of the ${us(ps.ledger_match_n)} fixtures checked against the graded record, the card showed a pick for ${us(ps.ledger_match_served_n)}, all of them the same pick the record grades, and no pick for ${us(ps.ledger_match_unserved)}.`), `${rel}: how built`);
       // data-* attributes stay raw integers: balloon.js reads them
       const main = find(parse(html), (n) => n.tag === 'main');

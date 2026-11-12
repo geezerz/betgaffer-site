@@ -355,7 +355,7 @@ describe('build of the fixture artifact', () => {
   test('no-JS: the record page carries the 30-day fraction, its period and every month', async () => {
     const text = visibleText(await read(ws, 'our-record/index.html'));
     assert.match(text, /10,268 of 12,154/);
-    assert.match(text, /84\.48%/);
+    assert.match(text, /84\.5%/);
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     assert.ok(INDEX.record.months.length > 0);
     for (const m of INDEX.record.months) {
