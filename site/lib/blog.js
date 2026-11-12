@@ -118,7 +118,16 @@ export function receipts(hashed, today) {
   const html = since === null ? '' : `<p class="lr-ans">Since ${fmtLong(since)} every day's card shows its receipt code.</p>`
     + (since > RECEIPTS_FROM ? `<p>Cards before ${fmtLong(since)} don't show a receipt code here.</p>` : '');
   const latest = [...hashed].filter((d) => d <= yesterday).sort().at(-1);
-  return { html, href: latest ? `/day/${latest}/` : '/' };
+  return { html, href: latest ? `/day/${latest}/` : '/', since };
+}
+
+/**
+ * The site footer's receipt sentence (Legal 12 Nov): "every pick" only while the run is unbroken back to
+ * RECEIPTS_FROM; after a gap it names S; with no receipt yesterday it drops (never over-claims).
+ */
+export function receiptFooter(since) {
+  if (since === RECEIPTS_FROM) return 'Every pick carries a receipt code. ';
+  return since === null ? '' : `Picks carry a receipt code from ${fmtLong(since)}. `;
 }
 
 const level = (key) => {

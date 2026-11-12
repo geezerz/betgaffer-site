@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { build, REPO_ROOT } from '../site/build.mjs';
-import { blogErrors, freshness, readBlog, receipts } from '../site/lib/blog.js';
+import { blogErrors, freshness, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
 import { lagosToday, addDays } from '../site/lib/time.js';
 import { workspace, copyArtifact, testConfig } from './site-fixtures.js';
 import { parse, findAll, cspViolations, claimViolations, bareCounts } from './html-scan.js';
@@ -124,6 +124,18 @@ describe('freshness (Legal 12 Nov)', () => {
 });
 
 describe('receipts', () => {
+  test('the site footer never claims every pick past a gap (Legal 12 Nov)', () => {
+    for (const [since, want] of [
+      ['2026-10-08', 'Every pick carries a receipt code. '],
+      ['2026-11-06', 'Picks carry a receipt code from 6 November 2026. '],
+      [null, ''],
+    ]) assert.equal(receiptFooter(since), want, String(since));
+  });
+  test('receipts() reports the start of the run it vouches for', () => {
+    const set = new Set(['2026-11-10', '2026-11-11', '2026-11-12']);
+    assert.equal(receipts(set, '2026-11-13').since, '2026-11-10');
+    assert.equal(receipts(set, '2026-11-14').since, null, 'nothing yesterday');
+  });
   const days = (from, to) => { const o = []; for (let d = from; d <= to; d = addDays(d, 1)) o.push(d); return new Set(o); };
   test('a run back to the first day: one line only', () => {
     const r = receipts(days('2026-10-08', '2026-11-12'), '2026-11-13');

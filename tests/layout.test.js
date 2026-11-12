@@ -1198,7 +1198,10 @@ test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, l
   // Legal 11-10 (D15 withdrawn): the line claims nothing about kickoff for the pick itself; this site
   // may LIST one after kickoff, and counts it with its real grade. Never made / frozen / listed before
   // kickoff, nor that a row shows its listing time.
-  assert.ok(brand.includes('<p class="bg-foot__receipts">Every pick carries a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</p>'), brand);
+  const TAIL = 'A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</p>';
+  // No receiptLine passed: the footer claims no receipts at all (Legal 12 Nov: never over-claim).
+  assert.ok(brand.includes(`<p class="bg-foot__receipts">${TAIL}`), brand);
+  assert.ok(base({ receiptLine: 'Every pick carries a receipt code. ' }).includes(`<p class="bg-foot__receipts">Every pick carries a receipt code. ${TAIL}`));
   assert.doesNotMatch(brand, /before kick-?off|shows its listing time/i);
   assert.doesNotMatch(foot, /github|reposit|Receipts</i);
   assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
