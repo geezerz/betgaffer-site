@@ -8,7 +8,7 @@
 import { escHtml } from '../lib/esc.js';
 import { fmtInt } from '../lib/num.js';
 import {
-  BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS,
+  BENEFITS, TOTAL_PLACES, WAITLIST_PLACES, LAUNCH_PLACES, CLAIM_DAYS, GRACE_DAYS, NOTICE_DAYS, SUPPORT_REPLY_HOURS,
 } from '../lib/founding.js';
 import { legalDoc, operatorOf, operatorLine, mailto, SAME } from './common.js';
 
@@ -58,7 +58,7 @@ ${benefits}
 <p>The discount applies at every subscription payment for as long as Bet Gaffer offers subscriptions. It does not combine with other percentage discounts: if one applies, you get whichever saves you more.</p>
 <p>Double Credits means double the plan's monthly Credit allowance, every month, and the most your Credit balance can hold is doubled too, so the extra is never cut off. Top-ups get their own extra Credits, not double.</p>
 <p>Votes count twice in polls on features and improvements that are open to members. Fixes, security updates and changes the law requires go to everyone at once. Founding members also help build new features, by testing them and giving feedback.</p>
-<p>Priority support covers messages to our contact address and our in-app support channel.</p>
+<p>Priority support means a first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>
 <p><strong>No downgrades.</strong> We will not reduce your founding benefits while you hold the status. If plans, Credits or support channels change, founding members get an equal or better replacement, with ${NOTICE_DAYS} days' notice.</p>
 <p><strong>Keeping it.</strong> Turning off auto-renewal is not a lapse while your paid period runs. If your last paid period ends without renewal (a cancelled renewal, a failed payment that is not recovered, or a move to the free account), you have ${GRACE_DAYS} days' grace from the end of that period. Subscribe to any paid plan in those ${GRACE_DAYS} days and everything is restored. During grace your benefits pause, your badge stays visible, and votes and early access resume when you come back.</p>
 <p><strong>When it ends.</strong> After ${GRACE_DAYS} days without a paid subscription, founding status ends for good. It also ends if you close your account, or if we close it for a breach of these terms or fraud. Either way, the place passes to the next member in line: the paying member without a place ranked highest by how early they first paid, how consistently they have subscribed and how much they have spent. Until that ranking is published, it goes to the earliest-paying subscriber without a place.</p>`,

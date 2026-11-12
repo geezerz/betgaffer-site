@@ -6,7 +6,7 @@
 // APPROVED_SOURCES below, with the spec section or founding constant it comes from. Never add a sentence
 // just to make the guard pass: change the page instead, or get the promise approved first.
 
-import { BENEFITS, CLAIM_DAYS, WAITLIST_PLACES } from './founding.js';
+import { BENEFITS, CLAIM_DAYS, SUPPORT_REPLY_HOURS, WAITLIST_PLACES } from './founding.js';
 
 const APOS = new RegExp(`[${String.fromCharCode(0x2018, 0x2019, 0x02bc)}]`, 'g');
 const DQUOTE = new RegExp(`[${String.fromCharCode(0x201c, 0x201d)}]`, 'g');
@@ -110,6 +110,7 @@ export const APPROVED_SOURCES = Object.freeze([
   { text: `Start any paid plan within ${CLAIM_DAYS} days of it and the place is yours.`, routes: ['/waitlist/'], source: 'spec §3.5 step 2' },
   { text: `The first ${WAITLIST_PLACES} people on the waitlist get a founding place, claimed with a paid subscription within ${CLAIM_DAYS} days of launch.`, routes: ['/privacy/'], source: 'Legal addendum 3 (11-12): accepted dated commitment, claim date = launch + 30; the line changes the day that date moves' },
   { text: `A paid subscription started within ${CLAIM_DAYS} days of the invite claims the place; subscribing before the invite arrives also claims it.`, routes: ['/terms/'], source: 'programme §1' },
+  { text: `Priority support means a first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan.`, routes: ['/terms/'], source: 'Legal addendum 3 (11-12): Terms line 61' },
   // Spec §9 "Kept": 30-day data-request replies, 72-hour breach notice.
   { text: 'We will reply within 30 days, and we may ask you to confirm the request from that address before acting on it.', routes: ['/privacy/'], source: 'spec §9 kept: data requests' },
   { text: 'We will publish how to exercise each one from your account before accounts open; email will always work, and we will reply within 30 days.', routes: ['/privacy/'], source: 'spec §9 kept: data requests' },
