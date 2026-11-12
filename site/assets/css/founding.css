@@ -24,8 +24,8 @@
    tallest reading taken; each min-height is that tallest reading + a flat
    8px margin.
      width   min-height   tallest variant
-      320       317px        308.28px
-      360       293px        284.78px
+      320       333px        324.78px   (re-measured 2026-11-12: the longer CTA line wraps)
+      360       311px        302.28px   (re-measured 2026-11-12)
       480       271px        262.28px
       520       244px        235.89px
      1024       176px        167.19px
@@ -47,7 +47,7 @@ html.fd-hidden [data-banner]{ display:none; }
 .bg-fd-card{
   position:relative;
   display:flex; flex-direction:column; justify-content:space-between; gap:16px;
-  min-height:317px;
+  min-height:333px;
   padding:18px 16px 16px;
   border:1px solid var(--accent); border-radius:var(--r-2);
   background:
@@ -104,7 +104,7 @@ html.fd-hidden [data-banner]{ display:none; }
 
 /* The reservation steps (measured; see the table above). 244px holds from 520px
    to 1023px: at 640px only the button's own width changes (auto, still centered). */
-@media (min-width:360px){ .bg-fd-card{ min-height:293px; } }
+@media (min-width:360px){ .bg-fd-card{ min-height:311px; } }
 @media (min-width:480px){ .bg-fd-card{ min-height:271px; } }
 @media (min-width:520px){ .bg-fd-card{ min-height:244px; } }
 @media (min-width:640px){

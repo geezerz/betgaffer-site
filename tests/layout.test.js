@@ -738,7 +738,7 @@ test('founding.css: the stand-out card — green border, accent gradient, 44px c
 // shortcut: one rendering pass at the five step widths, not the original ten-variant dual-scrollbar
 // sweep across every intermediate width (2026-10-08, see git history) -- each min-height below is the
 // tallest reading + a flat 8px margin instead of a tight, per-width +3/-30px budget.
-const CARD_LONGEST = Object.freeze({ 320: 308.28, 360: 284.78, 480: 262.28, 520: 235.89, 1024: 167.19 });
+const CARD_LONGEST = Object.freeze({ 320: 324.78, 360: 302.28, 480: 262.28, 520: 235.89, 1024: 167.19 });
 // What those measurements depend on. ANY change here invalidates them: re-measure every width above
 // (founding.css header says how), then update CARD_LONGEST, the header comment and these pins together.
 const CARD_PAINT_ONLY = new Set(['color', 'background', 'background-color', 'border-color', 'box-shadow', 'transition', 'cursor',
@@ -748,7 +748,7 @@ const CARD_RULES_PINNED = [
   [null, 'html.fd-hidden [data-banner]', ['display:none']],
   [null, '.bg-fd-slot', ['padding-top:14px']],
   [null, '.bg-fd-card', ['position:relative', 'display:flex', 'flex-direction:column', 'justify-content:space-between', 'gap:16px',
-    'min-height:317px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
+    'min-height:333px', 'padding:18px 16px 16px', 'border:1px solid var(--accent)', 'border-radius:var(--r-2)', 'overflow-wrap:anywhere']],
   [null, '.bg-fd-card__row', ['display:flex', 'flex-direction:column', 'gap:16px']],
   [null, '.bg-fd-card__body', ['display:flex', 'flex-direction:column', 'gap:6px', 'min-width:0']],
   [null, '.bg-fd-card__title', ['margin:0', 'font-family:var(--font-display)', 'font-size:22px', 'font-weight:800', 'line-height:1.2',
@@ -769,7 +769,7 @@ const CARD_RULES_PINNED = [
     'font:inherit', 'font-size:22px', 'line-height:1']],
   [null, '.bg-fd-card__x:hover', []],
   [null, '.bg-fd-card__x[hidden]', ['display:none']],
-  ['(min-width:360px)', '.bg-fd-card', ['min-height:293px']],
+  ['(min-width:360px)', '.bg-fd-card', ['min-height:311px']],
   ['(min-width:480px)', '.bg-fd-card', ['min-height:271px']],
   ['(min-width:520px)', '.bg-fd-card', ['min-height:244px']],
   ['(min-width:640px)', '.bg-fd-card__cta', ['width:auto']],
