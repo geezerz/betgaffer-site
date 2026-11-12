@@ -12,7 +12,7 @@ export const DISCOUNT_PCT = 30;
 export const TOPUP_BONUS_PCT = 20;
 export const VOTE_WEIGHT = 2;
 export const EARLY_ACCESS_HOURS = 72;
-export const SUPPORT_REPLY_HOURS = 12;
+export const SUPPORT_REPLY_HOURS = 24; // operator R-214: option C (Legal addendum 4), staffed every day
 /** Notice before an equal-or-better replacement of a founding benefit (programme §2, "No downgrades"). */
 export const NOTICE_DAYS = 30;
 

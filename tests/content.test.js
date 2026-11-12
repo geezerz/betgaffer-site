@@ -925,7 +925,7 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
 
 test('Terms: priority support is stated as Legal cleared it (Addendum 3, c976fd471)', () => {
   const html = terms.render(cfg());
-  assert.ok(html.includes("<p>Priority support means a first reply from a person within 12 hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>"));
+  assert.ok(html.includes("<p>Priority support means a first reply from a person within 24 hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>"));
   assert.doesNotMatch(html, /Priority support covers messages/);
 });
 

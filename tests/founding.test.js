@@ -14,7 +14,7 @@ test('founding numbers match the programme rules (founding-member-programme.md ย
   assert.equal(F.TOPUP_BONUS_PCT, 20);
   assert.equal(F.VOTE_WEIGHT, 2);
   assert.equal(F.EARLY_ACCESS_HOURS, 72);
-  assert.equal(F.SUPPORT_REPLY_HOURS, 12);
+  assert.equal(F.SUPPORT_REPLY_HOURS, 24);
   // Programme ยง2 "No downgrades": an equal or better replacement, with 30 days' notice.
   assert.equal(F.NOTICE_DAYS, 30);
 });
@@ -45,7 +45,7 @@ test('Legal addendum 2: no variant says "every payment" or "double Credits" with
 
 test('Legal addendum 3: B6 card text; the Lab banner names "Coming at launch" once', () => {
   assert.equal(F.BENEFITS.find((b) => b.id === 'B6').text,
-    'A first reply from a person within 12 hours of a message to support@betgaffer.com or in-app support, every day.');
+    'A first reply from a person within 24 hours of a message to support@betgaffer.com or in-app support, every day.');
   const t = (v) => [...v.heading, ...v.line].map((s) => s.t).join('');
   assert.equal(t(F.VARIANTS[10]).split('Coming at launch').length, 2);
 });
@@ -86,7 +86,7 @@ test('benefits: six, in programme order, each with a title and one sentence', ()
   assert.equal(b2.title, 'Double plan Credits');
   assert.equal(b2.text, "Your plan's monthly Credit allowance is doubled, on any paid plan.");
   assert.equal(b5.text, "New features reach you at least 72 hours before everyone else, and you help shape them while they're built. Fixes, security updates and legally required changes go to everyone at once.");
-  assert.match(F.BENEFITS[5].text, /within 12 hours/);
+  assert.match(F.BENEFITS[5].text, /within 24 hours/);
   assert.match(F.BENEFITS[4].text, /at least 72 hours/);
 });
 

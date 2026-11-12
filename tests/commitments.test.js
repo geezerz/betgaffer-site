@@ -81,7 +81,7 @@ describe('commitments guard over the built policy pages (spec §9)', () => {
       assert.ok(scan[route].commitments.length > 0, `${route} has time commitments to check`);
     }
     // The approved founding promises are on the Terms page, so the scan sees them there.
-    for (const s of ['at least 72 hours', 'within 12 hours', 'within 30 days']) {
+    for (const s of ['at least 72 hours', `within ${SUPPORT_REPLY_HOURS} hours`, 'within 30 days']) {
       assert.ok(scan['/terms/'].commitments.some((c) => c.includes(s)), `terms commitments include "${s}"`);
     }
   });
