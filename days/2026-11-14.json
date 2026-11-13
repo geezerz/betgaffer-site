@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-13T22:15:04Z",
+    "grades_as_of": "2026-11-13T23:10:02Z",
     "prev_hash": "sha256:6db34b56bcb5aa2a6e127ffb6388d783cae63065e5fcb2287bed8317effa7a10",
-    "picks_hash": "sha256:620bd42e1e4f66b043800c5d64c72529a56ae1e6cba34d2d2db1a24d4378a5d2",
+    "picks_hash": "sha256:5868c69d4878279db831bbdd5c0faee386f3f524ceaabedef12346ed55939583",
     "counts": {
         "fixtures": 1036,
         "priced": 1026,
-        "recommended": 936,
+        "recommended": 938,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -65,12 +65,19 @@
             "home_id": 743,
             "away_id": 2714,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 84,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-13T23:10:02Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -132,7 +139,7 @@
             "away": "Uruguay",
             "home_id": 800,
             "away_id": 801,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -157,7 +164,7 @@
             "away": "El Salvador",
             "home_id": 410,
             "away_id": 331,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -182,12 +189,12 @@
             "away": "Peru U20",
             "home_id": 1202,
             "away_id": 1218,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -4388,12 +4395,19 @@
             "home_id": 3742,
             "away_id": 3777,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 92,
+                "price": 1.16,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-13T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {

@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-12T22:15:06Z",
-    "grades_as_of": "2026-11-13T22:15:04Z",
+    "grades_as_of": "2026-11-13T23:10:02Z",
     "prev_hash": "sha256:d2906a2827daea5a62c287e4fa7dad63a7ca01477a3ed9248e02454b441f0a4d",
     "picks_hash": "sha256:6db34b56bcb5aa2a6e127ffb6388d783cae63065e5fcb2287bed8317effa7a10",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 130,
+        "won": 132,
         "lost": 19,
         "pushes": 5,
-        "graded": 149,
-        "pct": 87.25
+        "graded": 151,
+        "pct": 87.42
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -6546,7 +6546,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 5,
                 "away": 1,
@@ -6622,7 +6622,7 @@
             "away": "Real Madrid II",
             "home_id": 5471,
             "away_id": 6510,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -6635,8 +6635,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1382654,
@@ -6647,7 +6654,7 @@
             "away": "Real Apodaca",
             "home_id": 760538,
             "away_id": 760522,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -6672,7 +6679,7 @@
             "away": "Nacional AC MG",
             "home_id": 919842,
             "away_id": 919852,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -6722,7 +6729,7 @@
             "away": "Racing Club",
             "home_id": 4452,
             "away_id": 221,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
