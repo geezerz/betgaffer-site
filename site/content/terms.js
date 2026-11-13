@@ -81,7 +81,7 @@ function sections(op) {
       title: 'What this site is',
       now: `<p>An informational website. For each day it lists the fixtures in the competitions we cover, at most one pick per fixture with the probability our model gives it, and a graded public record of how earlier picks turned out.</p>
 <p>It is free. There are no accounts, and nothing is sold.</p>`,
-      launch: `<p>A subscription service with accounts, a free account and paid monthly plans, plus features such as Ask Gaffer and the Lab. Each paid feature, and its price, will be described before any payment is taken.</p>`,
+      launch: `<p>A subscription service with accounts, a free account and paid monthly plans, plus features such as Ask Gaffer and the Ticket Builder. Each paid feature, and its price, will be described before any payment is taken.</p>`,
     },
     {
       id: 'not-advice',
@@ -89,7 +89,7 @@ function sections(op) {
       now: `<p>This site is information, not betting advice. Nothing on it is a recommendation to place a bet. A pick is the market our model selects for a fixture under the rules stated on Our Record; it is information.</p>
 <p>Our probabilities are <strong>estimates</strong> produced by statistical models. They <strong>can be wrong</strong>, and some will be; the record shows the ones that were. We give <strong>no guarantee of any outcome</strong>. <strong>Past results do not predict future results.</strong></p>
 <p>If you choose to bet, the decision, and its consequences, are yours alone.</p>`,
-      launch: `<p>The same applies to every feature, including Gaffer's explanations and the Lab's assessments of a slip: they are information, not betting advice.</p>`,
+      launch: `<p>The same applies to every feature, including Gaffer's explanations and the Ticket Builder's assessments of a slip: they are information, not betting advice.</p>`,
     },
     {
       id: 'age',
@@ -153,8 +153,8 @@ function sections(op) {
       id: 'credits',
       title: 'Credits',
       now: `<p>No Credits exist and nothing is sold on this site.</p>`,
-      launch: `<p>Credits will pay for actions that cost us to run, such as Lab generations and Gaffer conversations. Credits have no cash value, cannot be withdrawn or transferred, and are never a stake or a wager. Their prices and terms will be published before any are sold.</p>
-<p>Credits and top-ups are not refundable, except a charge we made in error or where the law requires a refund (see the refund policy). Credits returned when a Lab slip you marked as played loses are a Credit return, not a refund.</p>`,
+      launch: `<p>Credits will pay for actions that cost us to run, such as Ticket Builder generations and Gaffer conversations. Credits have no cash value, cannot be withdrawn or transferred, and are never a stake or a wager. Their prices and terms will be published before any are sold.</p>
+<p>Credits and top-ups are not refundable, except a charge we made in error or where the law requires a refund (see the refund policy). Credits returned when a Ticket Builder slip you marked as played loses are a Credit return, not a refund.</p>`,
     },
     {
       id: 'subscriptions',
