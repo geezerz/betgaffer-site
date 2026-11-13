@@ -197,7 +197,7 @@ describe('refundableCredits', () => {
       'Credits, including top-ups and any unused balance, are not refundable and have no cash value.',
       'Credits and top-ups are not refundable.', 'Credits are non-refundable.', "Top-ups aren't refundable.",
       "Credits can't be refunded.", 'Credits cannot be refunded.', 'Credits are never refunded.', 'We do not refund Credits.',
-      "We don't refund top-ups.", 'Credits returned when a Ticket Builder slip you marked as played loses are a Credit return, not a refund.',
+      "We don't refund top-ups.", 'Credits returned when a ticket from the Ticket Builder you marked as played loses are a Credit return, not a refund.',
       'This covers the subscription payment only, not Credit top-ups.',
       'We will refund the amount charged in error.',
     ]) assert.deepEqual(refundableCredits(s), [], s);
