@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-12T22:15:06Z",
-    "grades_as_of": "2026-11-12T23:10:05Z",
+    "grades_as_of": "2026-11-13T01:10:03Z",
     "prev_hash": "sha256:c24873fed9e686b4ef0169487348516844e1af3b8b13e4f8c3e4849ab1714c6d",
-    "picks_hash": "sha256:93de941943ea2add45d28efc5d1c94dafd2eb70a70322baaf5f80c20d4be202f",
+    "picks_hash": "sha256:ec9c6bf485a70e43d2f87cb3e6cfa46d055417699684cbf029aa2c4930f0d157",
     "counts": {
         "fixtures": 221,
         "priced": 221,
-        "recommended": 197,
+        "recommended": 198,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Athletic Club",
             "home_id": 300,
             "away_id": 297,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -64,7 +64,7 @@
             "away": "Progreso",
             "home_id": 4544,
             "away_id": 4117,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -77,8 +77,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724830,
@@ -89,14 +96,21 @@
             "away": "Trinidad and Tobago",
             "home_id": 407,
             "away_id": 326,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1725321,
@@ -107,7 +121,7 @@
             "away": "Nacional Potosí",
             "home_id": 177,
             "away_id": 164,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -132,7 +146,7 @@
             "away": "Chico",
             "home_id": 288,
             "away_id": 258,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1019,12 +1033,19 @@
             "home_id": 585365,
             "away_id": 765599,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 81,
+                "price": 1.18,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-13T01:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
