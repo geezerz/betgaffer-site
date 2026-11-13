@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-12T22:15:06Z",
-    "grades_as_of": "2026-11-13T03:10:03Z",
-    "prev_hash": "sha256:c24873fed9e686b4ef0169487348516844e1af3b8b13e4f8c3e4849ab1714c6d",
-    "picks_hash": "sha256:ec9c6bf485a70e43d2f87cb3e6cfa46d055417699684cbf029aa2c4930f0d157",
+    "grades_as_of": "2026-11-13T05:10:02Z",
+    "prev_hash": "sha256:f507948c1afdad3e715d07307786c2143acf740b183f5eb1c47337abeec18599",
+    "picks_hash": "sha256:aff53bc71d93c4aeb9d12814121d43553a08596949e4df2eff74594b96a0a6ce",
     "counts": {
         "fixtures": 221,
         "priced": 221,
-        "recommended": 198,
+        "recommended": 199,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -242,7 +242,7 @@
             "away": "Hunters",
             "home_id": 19061,
             "away_id": 921642,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -668,12 +668,19 @@
             "home_id": 566703,
             "away_id": 566710,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 87,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-13T05:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -1935,31 +1942,6 @@
             "score": null
         },
         {
-            "fx": 1728820,
-            "api_fx": 1649542,
-            "ko": "2026-11-13T14:00:00Z",
-            "comp": "Friendlies (World)",
-            "home": "Kuwait",
-            "away": "Syria",
-            "home_id": 400,
-            "away_id": 424,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 82,
-                "price": 1.1,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-12T22:15:06Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 1729036,
             "api_fx": 1649658,
             "ko": "2026-11-13T14:00:00Z",
@@ -2654,6 +2636,31 @@
                 "pct": 82,
                 "price": 1.19,
                 "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-12T22:15:06Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1728820,
+            "api_fx": 1649542,
+            "ko": "2026-11-13T16:30:00Z",
+            "comp": "Friendlies (World)",
+            "home": "Kuwait",
+            "away": "Syria",
+            "home_id": 400,
+            "away_id": 424,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 82,
+                "price": 1.1,
+                "price_est": true,
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-12T22:15:06Z",
