@@ -3,20 +3,20 @@
     "lagos_day": "2026-11-13",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-12T22:15:06Z",
-    "grades_as_of": "2026-11-13T05:10:02Z",
-    "prev_hash": "sha256:f507948c1afdad3e715d07307786c2143acf740b183f5eb1c47337abeec18599",
-    "picks_hash": "sha256:aff53bc71d93c4aeb9d12814121d43553a08596949e4df2eff74594b96a0a6ce",
+    "grades_as_of": "2026-11-13T07:10:02Z",
+    "prev_hash": "sha256:d2906a2827daea5a62c287e4fa7dad63a7ca01477a3ed9248e02454b441f0a4d",
+    "picks_hash": "sha256:372276971ff80a4ba71479033dbcf7626dafb12a6ad8e3c82fe2e2ff03a54bb6",
     "counts": {
-        "fixtures": 221,
+        "fixtures": 222,
         "priced": 221,
-        "recommended": 199,
+        "recommended": 200,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 4,
+        "won": 6,
         "lost": 0,
         "pushes": 0,
-        "graded": 4,
+        "graded": 6,
         "pct": 100.0
     },
     "accuracy_rule": 2,
@@ -30,6 +30,38 @@
         "ledger_match_unserved": 4
     },
     "fixtures": [
+        {
+            "fx": 149500,
+            "api_fx": 1549868,
+            "ko": "2026-11-12T23:00:00Z",
+            "comp": "Primera A (Colombia)",
+            "home": "Deportivo Pasto",
+            "away": "Junior",
+            "home_id": 249,
+            "away_id": 247,
+            "status": "FT",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-13T07:10:02Z",
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
+        },
         {
             "fx": 149561,
             "api_fx": 1520978,
@@ -242,7 +274,7 @@
             "away": "Hunters",
             "home_id": 19061,
             "away_id": 921642,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -255,8 +287,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 7,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1698601,
@@ -2254,9 +2293,11 @@
             },
             "frozen_at": "2026-11-12T22:15:06Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
