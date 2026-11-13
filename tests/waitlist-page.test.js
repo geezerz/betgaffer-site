@@ -62,7 +62,7 @@ const GAFFER_CARDS = [
   ['Swap a weak leg', 'Suggest a replacement for a weak leg, from our own recommended picks, on the plans that include swaps.'],
   ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and our probabilities in one reply.'],
   ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
-  ['How your bets are doing', 'Recap your Lab tickets in plain words.'],
+  ['How your bets are doing', 'Recap your Ticket Builder tickets in plain words.'],
 ];
 /**
  * The aside's own ban list (spec §17.3): phrases the features page bans for its own reasons plus the ones

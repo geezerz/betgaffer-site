@@ -69,13 +69,13 @@ const GAFFER_LINE = 'At launch, on the plans that include it.';
 const GAFFER_LEAD = 'When Gaffer launches, it will:';
 const GAFFER = Object.freeze([
   // Legal addendum 7 (Marketing 5214dbeb2), fact-checked against the code. Card 2 is R-206 (launch scope, 6c 11-12);
-  // card 6 stays only while the Lab is "Coming at launch".
+  // card 6 stays only while the Ticket Builder is "Coming at launch".
   ['Check your slip', 'Read a SportyBet booking code you paste, show how likely we rate the slip to win, and give our read on each leg it can match.'],
   ['Spot shared matches', "Warn you when a new ticket shares a match with one you've already played and, where we can, how likely both are to lose there."],
   ['Swap a weak leg', 'Suggest a replacement for a weak leg, from our own recommended picks, on the plans that include swaps.'],
   ['Match opinions', 'Answer questions about a match with form, head-to-head, the table and our probabilities in one reply.'],
   ['The pick, explained', 'Lead with our recommended pick, then explain why.'],
-  ['How your bets are doing', 'Recap your Lab tickets in plain words.'],
+  ['How your bets are doing', 'Recap your Ticket Builder tickets in plain words.'],
 ]);
 
 const hasPct = (s) => /%/.test(s);

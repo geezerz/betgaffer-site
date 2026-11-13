@@ -43,7 +43,7 @@ test('Legal addendum 2: no variant says "every payment" or "double Credits" with
   assert.match('double Credits every month', /double credits/i);
 });
 
-test('Legal addendum 3: B6 card text; the Lab banner names "Coming at launch" once', () => {
+test('Legal addendum 3: B6 card text; the Ticket Builder banner names "Coming at launch" once', () => {
   assert.equal(F.BENEFITS.find((b) => b.id === 'B6').text,
     'A first reply from a person within 24 hours of a message to support@betgaffer.com or in-app support, every day.');
   const t = (v) => [...v.heading, ...v.line].map((s) => s.t).join('');
@@ -110,7 +110,7 @@ const SPEC_VARIANTS = Object.freeze([
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
   ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.'],
   ['Get the **founding member** badge', 'A **founding badge**, **30% off** and **double plan Credits**, for our **1,000 founding members**.'],
-  ['Coming at launch: **the Lab**', "You'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules."],
+  ['Coming at launch: **the Ticket Builder**', "You'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules."],
 ]);
 /** Segments -> the spec's **markdown** form. */
 const md = (segs) => segs.map((s) => (s.hl ? `**${s.t}**` : s.t)).join('');

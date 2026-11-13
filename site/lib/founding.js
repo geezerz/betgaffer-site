@@ -76,7 +76,7 @@ export const VARIANTS = Object.freeze([
   // founding-waitlist ask like every other variant — it just leads with what's coming instead of a
   // membership perk. Joins the same rotation pool (operator: "features cards becomes part of the
   // cards picked at random... still link to founding member registrations").
-  variant([P('Coming at launch: '), H('the Lab')],
+  variant([P('Coming at launch: '), H('the Ticket Builder')],
     [P("You'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules.")]),
 ]);
 

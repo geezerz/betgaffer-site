@@ -726,8 +726,8 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
       'Plain guides to how bets work and settle.', 'Live now'],
   ];
   const COMING = [
-    ['The Lab', 'Building a ticket to a target takes ages.',
-      "Coming at launch: the Lab, where you'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules."],
+    ['The Ticket Builder', 'Building a ticket to a target takes ages.',
+      "Coming at launch: the Ticket Builder, where you'll be able to set your stake and target odds and get a ticket built from our model's rated picks, to your rules."],
     ['Power Picks', null,
       'Coming soon: Power Picks, our recommended picks on the matches we single out, on the plans that include them.'],
     ['Booking codes', 'Typing a ticket in leg by leg is slow.',
@@ -789,7 +789,7 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     assert.deepEqual(hrefs[11], ['/blog/']);
   });
 
-  test("What's coming: H2 and the Lab, Power Picks, Booking codes lines verbatim (no problem line on Power Picks)", () => {
+  test("What's coming: H2 and the Ticket Builder, Power Picks, Booking codes lines verbatim (no problem line on Power Picks)", () => {
     const html = render();
     assert.ok(findAll(doc(html), (n) => n.tag === 'h2').map(textOf).includes("What's coming"));
     const arts = articles(html).slice(SPEC.length);
