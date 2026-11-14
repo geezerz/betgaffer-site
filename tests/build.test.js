@@ -1394,7 +1394,7 @@ describe('no "late" wording in anything the build ships (Plan E1, operator order
           }
         }
         // The receipt sentence before it depends on the receipt run at build time (receiptFooter, tests/blog.test.js).
-        assert.ok(t.includes('A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.'), `${rel}: the footer line`);
+        assert.ok(t.includes("A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in the day's data file."), `${rel}: the footer line`);
         assert.ok(t.includes('For adults aged 18 and over. Betting carries risk. Only bet what you can afford to lose, and play responsibly.'), `${rel}: the 18+ and responsible-play line (Legal 12 Nov)`);
       }
     }

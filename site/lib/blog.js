@@ -156,7 +156,7 @@ export function receipts(hashed, today) {
   const html = since === null ? '' : `<p class="lr-ans">Since ${fmtLong(since)} every day's card shows its receipt code.</p>`
     + (since > RECEIPTS_FROM ? `<p>Cards before ${fmtLong(since)} don't show a receipt code here.</p>` : '');
   const latest = [...hashed].filter((d) => d <= yesterday).sort().at(-1);
-  return { html, href: latest ? `/day/${latest}/` : '/', since };
+  return { html, href: latest ? `/day/${latest}/` : '/', since, latest: latest ?? null };
 }
 
 /**

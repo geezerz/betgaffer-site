@@ -180,7 +180,7 @@ function header(path, blog) {
 </header>`;
 }
 
-function footer(op, year, blog, receiptLine) {
+function footer(op, year, blog, receiptLine, dataHref) {
   const blogCol = blog ? `<nav class="bg-foot__col" aria-label="Blog">
 <h2 class="t-lbl t-lbl--quiet"><a href="/blog/">Blog</a></h2>
 <ul role="list"><li><a href="/blog/learn/">Learn</a></li></ul>
@@ -198,7 +198,7 @@ function footer(op, year, blog, receiptLine) {
 <div class="bg-foot__brand">
 <p class="bg-wordmark bg-foot__mark" aria-hidden="true">Bet<em>Gaffer</em></p>
 <p class="bg-foot__statement">${escHtml(NOT_A_BOOKMAKER)}</p>
-<p class="bg-foot__receipts">${receiptLine}A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</p>
+<p class="bg-foot__receipts">${receiptLine}A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in ${dataHref ? `<a href="${escAttr(dataHref)}">the day's data file</a>` : "the day's data file"}.</p>
 <p class="bg-foot__age"><span class="bg-age">18+</span><span>For adults aged 18 and over. Betting carries risk. Only bet what you can afford to lose, and play responsibly.</span></p>
 </div>
 <nav class="bg-foot__col" aria-label="Legal">
@@ -256,7 +256,7 @@ ${blogCol}<div class="bg-foot__col">
 export function page({
   path, title, description, body, scripts = [], noindex = false, mainData = {},
   config, year, canonicalPath, banner: withBanner = true, ogImage, ogImageAlt, ogImageWidth, ogImageHeight,
-  ogType = 'website', fullTitle: fullTitleOverride, robots, jsonLd: extraLd = [], blog = false, receiptLine = '',
+  ogType = 'website', fullTitle: fullTitleOverride, robots, jsonLd: extraLd = [], blog = false, receiptLine = '', dataHref = '',
 } = {}) {
   if (config === null || typeof config !== 'object' || Array.isArray(config)) {
     throw new TypeError('page: config is required (pass the site config object explicitly)');
@@ -341,7 +341,7 @@ ${withBanner ? `${foundingCard(variantFor(path))}\n` : ''}<main id="main" class=
 <div class="stale" role="status" hidden></div>
 ${body}
 </main>
-${footer(op, y, blog, receiptLine)}
+${footer(op, y, blog, receiptLine, dataHref)}
 </body>
 </html>
 `;

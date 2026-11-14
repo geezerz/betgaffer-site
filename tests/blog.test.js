@@ -263,8 +263,11 @@ describe('the built blog (fixture content)', () => {
     try {
       for (const rel of ['index.html', 'our-record/index.html', 'waitlist/index.html', '404.html', 'blog/learn/g1/index.html']) {
         const foot = (await read(ws, rel)).match(/<footer\b[\s\S]*?<\/footer>/)[0];
-        assert.deepEqual([...foot.matchAll(/<a href="([^"]*)"/g)].map((m) => m[1]).slice(0, 6),
-          ['/privacy/', '/terms/', '/refunds/', '/blog/', '/blog/learn/', 'mailto:hello@example.com'], rel);
+        const links = [...foot.matchAll(/<a href="([^"]*)"/g)].map((m) => m[1]);
+        // Legal 11-14: the brand column links the latest published day's data file first; it must exist in the build (no 404).
+        assert.ok(links[0].startsWith("/days/") && links[0].endsWith(".json"), rel);
+        assert.ok(await exists(join(ws.out, links[0])), `${rel}: the data-file link is not a 404`);
+        assert.deepEqual(links.slice(1, 7), ['/privacy/', '/terms/', '/refunds/', '/blog/', '/blog/learn/', 'mailto:hello@example.com'], rel);
       }
     } finally { await done(); }
   });
