@@ -181,7 +181,7 @@ function intro() {
 </header>`;
 }
 
-function footnotes(rec, listed, since, dataHref) {
+function footnotes(rec, listed, since) {
   // months[] is newest first, but take the minimum by value rather than trust the order.
   const oldestMonth = rec.months.reduce((m, g) => (m === null || g.period < m ? g.period : m), null);
   const starts = oldestMonth === null ? '' : `<li>${escHtml(`Record starts ${monthName(oldestMonth)}.`)}</li>\n`;
@@ -196,10 +196,10 @@ function footnotes(rec, listed, since, dataHref) {
   // line, "Since {date}, every pick locks 30 minutes before kickoff.", comes back after that lock ships).
   // Legal 11-14: the date is the start of the unbroken receipt run when the caller knows it (receipts() in blog.js).
   const oldestDay = since ?? [...listed].sort()[0];
-  const dataFile = dataHref ? `<a href="${escAttr(dataHref)}">the day's data file</a>` : escHtml("the day's data file");
   const receipt = oldestDay === undefined
     ? ''
-    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code. A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in `)}${dataFile}.</li>\n`;
+    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code.`)}</li>
+`;
   return `<ul class="rec-foot t-s" role="list">
 ${starts}${updated}${recent}${receipt}</ul>`;
 }
@@ -226,7 +226,7 @@ function toSet(days) {
  * @param {Set<string>|Map|string[]} opts.days  REQUIRED: dates listed in index.days ([] when none) —
  *   strip days link to /day/<d>/ only when listed; the oldest dates the receipt footnote
  */
-export function renderRecord(record, { today, days, since, dataHref } = {}) {
+export function renderRecord(record, { today, days, since } = {}) {
   if (!isDate(today)) throw new TypeError(`renderRecord: today must be a real YYYY-MM-DD date, got ${String(today)}`);
   const listed = toSet(days);
 
@@ -244,5 +244,5 @@ export function renderRecord(record, { today, days, since, dataHref } = {}) {
 ${headline(record)}
 ${strip(record, { today, listed })}
 ${months(record, today)}
-${footnotes(record, listed, since, dataHref)}`;
+${footnotes(record, listed, since)}`;
 }

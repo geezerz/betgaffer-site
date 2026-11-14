@@ -480,8 +480,6 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const lagosDay = lagosToday(now);
   const rc = receipts(new Set(listed.filter((e) => e.picks_hash).map((e) => e.day)), lagosDay);
   const receiptLine = receiptFooter(rc.since);
-  // Legal 11-14: the footer names the day file and links the latest published one (a listed day, so its json is copied below).
-  const dataHref = rc.latest ? `/days/${rc.latest}.json` : '';
   const blog = renderBlog(await readBlog(blogDir), { today: lagosDay, origin: config.origin, rc });
 
   // 4–5. Render every page in memory first: a renderer that throws stops the build before disk.
@@ -489,7 +487,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
   const blogPages = new Map(); // not in sitemap.xml: the blog has its own
   const add = (o, into = pages) => {
     if (pages.has(o.path) || blogPages.has(o.path)) throw new Error(`build: route ${o.path} rendered twice`);
-    into.set(o.path, page({ config, year, blog: blog !== null, receiptLine, dataHref, ...o }));
+    into.set(o.path, page({ config, year, blog: blog !== null, receiptLine, ...o }));
   };
   for (const o of blog?.pages ?? []) add(o, blogPages);
 
@@ -556,7 +554,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     path: '/our-record/',
     title: 'Our Record',
     description: recordDescription,
-    body: renderRecord(index ? index.record : null, { today, days: listedAsc, since: rc.since ?? undefined, dataHref }),
+    body: renderRecord(index ? index.record : null, { today, days: listedAsc, since: rc.since ?? undefined }),
     scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the stale-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
     ogImage: OG_RECORD,

@@ -1215,12 +1215,11 @@ test('the footer carries the not-a-bookmaker line, the receipt-code line, 18+, l
   // Legal 11-10 (D15 withdrawn): the line claims nothing about kickoff for the pick itself; this site
   // may LIST one after kickoff, and counts it with its real grade. Never made / frozen / listed before
   // kickoff, nor that a row shows its listing time.
-  const TAIL = "A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in the day's data file.</p>";
-  const LINKED = `A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in <a href="/days/2026-11-12.json">the day's data file</a>.</p>`;
-  assert.ok(base({ dataHref: "/days/2026-11-12.json" }).includes(LINKED), "Legal 11-14: 'data file' links to a published day's file");
-  // No receiptLine passed: the footer claims no receipts at all (Legal 12 Nov: never over-claim).
-  assert.ok(brand.includes(`<p class="bg-foot__receipts">${TAIL}`), brand);
-  assert.ok(base({ receiptLine: 'Every pick carries a receipt code. ' }).includes(`<p class="bg-foot__receipts">Every pick carries a receipt code. ${TAIL}`));
+  // Operator R-263 (14 Nov), Legal 11-14 item 4: the footer says nothing about picks listed after kickoff. It carries only the
+  // gap-aware receipt sentence, and no paragraph at all when the caller has none (never over-claim).
+  assert.doesNotMatch(foot, /after kick-?off|listing time|data file/i);
+  assert.ok(!brand.includes('bg-foot__receipts'), 'no receipt claim without a receipt run');
+  assert.ok(base({ receiptLine: 'Every pick carries a receipt code. ' }).includes('<p class="bg-foot__receipts">Every pick carries a receipt code.</p>'));
   assert.doesNotMatch(brand, /before kick-?off|shows its listing time/i);
   assert.doesNotMatch(foot, /github|reposit|Receipts</i);
   assert.ok(!foot.includes(cfg.repo), 'the repo slug never reaches the footer');
