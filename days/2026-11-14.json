@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-14T03:10:02Z",
-    "prev_hash": "sha256:6db34b56bcb5aa2a6e127ffb6388d783cae63065e5fcb2287bed8317effa7a10",
-    "picks_hash": "sha256:965f7060bde6431fb866320fcc832a5e4b62e9b9024466b474e2b13ff7050050",
+    "grades_as_of": "2026-11-14T05:10:04Z",
+    "prev_hash": "sha256:60d18dcb9c5014c19cc4ba4fbd6d1b319577a045608bc5752703684129af70f2",
+    "picks_hash": "sha256:74b54aee434c080e6d79d0b2632accd0dcd4afd59d63a3a4b4964b0e10d4606a",
     "counts": {
         "fixtures": 1036,
-        "priced": 1026,
-        "recommended": 946,
+        "priced": 1013,
+        "recommended": 947,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 8,
-        "lost": 0,
-        "pushes": 0,
-        "graded": 8,
-        "pct": 100.0
+        "won": 14,
+        "lost": 1,
+        "pushes": 1,
+        "graded": 15,
+        "pct": 93.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -50,9 +50,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -75,9 +77,11 @@
             },
             "frozen_at": "2026-11-13T23:10:02Z",
             "pre_ko": false,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -100,9 +104,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -367,9 +373,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -381,7 +389,7 @@
             "away": "FC Santiago",
             "home_id": 760580,
             "away_id": 760576,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -394,8 +402,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1696499,
@@ -470,7 +485,7 @@
             "away": "Santa Fe",
             "home_id": 250,
             "away_id": 252,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -483,8 +498,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1219085,
@@ -495,7 +517,7 @@
             "away": "Alianza FC",
             "home_id": 598895,
             "away_id": 5169,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -508,8 +530,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1219086,
@@ -520,7 +549,7 @@
             "away": "CD Arabe Unido",
             "home_id": 7997,
             "away_id": 303097,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -533,8 +562,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1219087,
@@ -545,7 +581,7 @@
             "away": "Plaza Amador",
             "home_id": 598890,
             "away_id": 598896,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -558,8 +594,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538087,
@@ -570,7 +613,7 @@
             "away": "Jaguares de Chiapas",
             "home_id": 760501,
             "away_id": 760509,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -583,8 +626,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538088,
@@ -595,7 +645,7 @@
             "away": "Racing de Veracruz",
             "home_id": 5963,
             "away_id": 760497,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -608,8 +658,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1698835,
@@ -620,7 +677,7 @@
             "away": "Canada",
             "home_id": 332,
             "away_id": 327,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -633,8 +690,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1609995,
@@ -645,7 +709,7 @@
             "away": "South Melbourne",
             "home_id": 4607,
             "away_id": 2332,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -670,7 +734,7 @@
             "away": "Wollongong Wolves",
             "home_id": 9080,
             "away_id": 4288,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -745,7 +809,7 @@
             "away": "Yokohama FC",
             "home_id": 4295,
             "away_id": 4303,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -770,7 +834,7 @@
             "away": "Tochigi City",
             "home_id": 7276,
             "away_id": 3983,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -795,7 +859,7 @@
             "away": "Tegevajaro Miyazaki",
             "home_id": 7799,
             "away_id": 3985,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -820,7 +884,7 @@
             "away": "Montedio Yamagata",
             "home_id": 7337,
             "away_id": 7800,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -845,13 +909,20 @@
             "away": "Ventforet Kofu",
             "home_id": 4302,
             "away_id": 7809,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 80,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-14T05:10:04Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -863,7 +934,7 @@
             "away": "Matsumoto Yamaga",
             "home_id": 7439,
             "away_id": 7591,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -888,7 +959,7 @@
             "away": "Thespakusatsu Gunma",
             "home_id": 3766,
             "away_id": 7298,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -913,7 +984,7 @@
             "away": "Sagamihara",
             "home_id": 8528,
             "away_id": 8403,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -938,7 +1009,7 @@
             "away": "Nojima Stella W",
             "home_id": 582566,
             "away_id": 582569,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -963,7 +1034,7 @@
             "away": "JEF United W",
             "home_id": 582559,
             "away_id": 582561,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1095,31 +1166,6 @@
             "withdrawn": false,
             "state": "coming",
             "grade": null,
-            "score": null
-        },
-        {
-            "fx": 1541053,
-            "api_fx": 1640877,
-            "ko": "2026-11-14T08:00:00Z",
-            "comp": "Diski Challenge (South-Africa)",
-            "home": "AmaZulu U23",
-            "away": "Mamelodi Sundowns U23",
-            "home_id": 921773,
-            "away_id": 921772,
-            "status": "NS",
-            "pick": {
-                "market": "over_1_5",
-                "label": "Over 1.5 Goals",
-                "pct": 84,
-                "price": 1.15,
-                "price_est": true,
-                "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-11-13T22:15:04Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
             "score": null
         },
         {
@@ -2527,6 +2573,31 @@
             "score": null
         },
         {
+            "fx": 1379246,
+            "api_fx": 1629122,
+            "ko": "2026-11-14T10:30:00Z",
+            "comp": "FKF Premier League (Kenya)",
+            "home": "Ulinzi Stars",
+            "away": "Migori Youth",
+            "home_id": 278590,
+            "away_id": 760160,
+            "status": "NS",
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 84,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-13T22:15:04Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1723104,
             "api_fx": 1646624,
             "ko": "2026-11-14T10:30:00Z",
@@ -3235,6 +3306,31 @@
             "withdrawn": false,
             "state": "coming",
             "grade": null,
+            "score": null
+        },
+        {
+            "fx": 1541053,
+            "api_fx": 1640877,
+            "ko": "2026-11-14T11:00:00Z",
+            "comp": "Diski Challenge (South-Africa)",
+            "home": "AmaZulu U23",
+            "away": "Mamelodi Sundowns U23",
+            "home_id": 921773,
+            "away_id": 921772,
+            "status": "NS",
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 84,
+                "price": 1.15,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-13T22:15:04Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -5415,31 +5511,6 @@
                 "price": 1.11,
                 "price_est": true,
                 "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-13T22:15:04Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1379246,
-            "api_fx": 1629122,
-            "ko": "2026-11-14T12:00:00Z",
-            "comp": "FKF Premier League (Kenya)",
-            "home": "Ulinzi Stars",
-            "away": "Migori Youth",
-            "home_id": 278590,
-            "away_id": 760160,
-            "status": "NS",
-            "pick": {
-                "market": "three_in_a_row_no",
-                "label": "Any Team 3 Goals in a Row - No",
-                "pct": 84,
-                "price": 1.12,
-                "price_est": true,
-                "why": "Calibrated across thousands of similar fixtures"
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
@@ -8997,7 +9068,7 @@
             "away": "SV Sandhausen",
             "home_id": 3432,
             "away_id": 3249,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -9010,7 +9081,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -10294,9 +10365,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -10580,8 +10653,10 @@
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
-            "withdrawn": false,
-            "state": "coming",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
             "grade": null,
             "score": null
         },
@@ -10880,9 +10955,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -11994,7 +12071,7 @@
             "away": "Austria Wien W",
             "home_id": 9063,
             "away_id": 931,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "away_score_2h",
                 "label": "Away Scores 2nd Half",
@@ -12007,7 +12084,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -19645,9 +19722,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -20639,9 +20718,11 @@
             },
             "frozen_at": "2026-11-14T01:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -20664,9 +20745,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -20714,9 +20797,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -24583,9 +24668,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -24658,9 +24745,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
