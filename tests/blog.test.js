@@ -458,3 +458,11 @@ describe('WR3 SEO crawl (6c approved for both hosts)', () => {
     } finally { await done(); }
   });
 });
+
+test('tombstone: the pulled post answers 404 from a Function, uncached, with no redirect (operator R-263)', async () => {
+  const { onRequest } = await import('../functions/blog/how-to-check-us/index.js');
+  const res = onRequest();
+  assert.equal(res.status, 404);
+  assert.equal(res.headers.get('cache-control'), 'no-store');
+  assert.equal(res.headers.get('location'), null);
+});
