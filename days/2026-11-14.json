@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-14T01:10:02Z",
+    "grades_as_of": "2026-11-14T03:10:02Z",
     "prev_hash": "sha256:6db34b56bcb5aa2a6e127ffb6388d783cae63065e5fcb2287bed8317effa7a10",
     "picks_hash": "sha256:965f7060bde6431fb866320fcc832a5e4b62e9b9024466b474e2b13ff7050050",
     "counts": {
@@ -13,10 +13,10 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 1,
+        "won": 8,
         "lost": 0,
         "pushes": 0,
-        "graded": 1,
+        "graded": 8,
         "pct": 100.0
     },
     "accuracy_rule": 2,
@@ -139,7 +139,7 @@
             "away": "Uruguay",
             "home_id": 800,
             "away_id": 801,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -152,8 +152,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724831,
@@ -221,7 +228,7 @@
             "away": "Chile",
             "home_id": 805,
             "away_id": 495,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -234,8 +241,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1696500,
@@ -246,7 +260,7 @@
             "away": "Costa Rica",
             "home_id": 497,
             "away_id": 335,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -259,8 +273,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724832,
@@ -271,7 +292,7 @@
             "away": "Nicaragua",
             "home_id": 346,
             "away_id": 417,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -284,8 +305,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1243160,
@@ -296,7 +324,7 @@
             "away": "Fort Lauderdale United W",
             "home_id": 613950,
             "away_id": 613952,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -309,8 +337,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 521413,
@@ -346,7 +381,7 @@
             "away": "FC Santiago",
             "home_id": 760580,
             "away_id": 760576,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -371,7 +406,7 @@
             "away": "Bolivia",
             "home_id": 804,
             "away_id": 496,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -384,8 +419,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1699300,
@@ -396,7 +438,7 @@
             "away": "Auckland City",
             "home_id": 583218,
             "away_id": 583221,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_score_2h",
                 "label": "Away Scores 2nd Half",
@@ -409,8 +451,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149501,
@@ -421,7 +470,7 @@
             "away": "Santa Fe",
             "home_id": 250,
             "away_id": 252,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -446,7 +495,7 @@
             "away": "Alianza FC",
             "home_id": 598895,
             "away_id": 5169,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -471,7 +520,7 @@
             "away": "CD Arabe Unido",
             "home_id": 7997,
             "away_id": 303097,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -496,7 +545,7 @@
             "away": "Plaza Amador",
             "home_id": 598890,
             "away_id": 598896,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -521,7 +570,7 @@
             "away": "Jaguares de Chiapas",
             "home_id": 760501,
             "away_id": 760509,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -546,7 +595,7 @@
             "away": "Racing de Veracruz",
             "home_id": 5963,
             "away_id": 760497,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -571,7 +620,7 @@
             "away": "Canada",
             "home_id": 332,
             "away_id": 327,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
