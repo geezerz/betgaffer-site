@@ -393,16 +393,14 @@ describe('the built blog (committed content, real data)', () => {
       const now = Date.parse('2026-11-14T10:00:00Z');
       const r = await build({ root: REPO_ROOT, out: ws.out, config: testConfig(), now, warn: () => {} });
       for (const rel of ['blog/index.html', 'blog/learn/index.html', 'blog/learn/asian-handicap-0/index.html', 'blog/learn/draw-no-bet/index.html',
-        'blog/how-to-check-us/index.html', 'sitemap-blog.xml', 'blog/feed.xml']) assert.ok(await exists(join(ws.out, rel)), rel);
-      assert.ok(r.routes.includes('/blog/how-to-check-us/'));
-
-      const check = await read(ws, 'blog/how-to-check-us/index.html');
-      assert.ok(check.includes('<p class="lr-ans">Since 8 October 2026 every day\'s card shows its receipt code.</p>'));
-      assert.doesNotMatch(check, /don't show a receipt code here/);
-      assert.ok(check.includes('<a href="/day/2026-11-13/">on the page</a>'));
-      assert.match(check, /<a href="\/our-record\/">Our Record<\/a>/);
-      assert.doesNotMatch(check, /\{\{/);
-      assert.equal(await exists(join(ws.out, 'day/2026-11-13/index.html')), true, 'the receipt link lands on a page that exists');
+        'blog/how-to-use-football-predictions/index.html', 'sitemap-blog.xml', 'blog/feed.xml']) assert.ok(await exists(join(ws.out, rel)), rel);
+      // Operator R-263 (14 Nov): how-to-check-us is pulled until it is rewritten, Legal truth-cleared and 6c has OK'd it.
+      // No page, no sitemap/feed/llms/index entry, no link to it from any page, and no redirect.
+      assert.ok(!r.routes.includes('/blog/how-to-check-us/'));
+      assert.equal(await exists(join(ws.out, 'blog/how-to-check-us/index.html')), false, 'no page');
+      for (const rel of ['sitemap-blog.xml', 'blog/feed.xml', 'llms.txt', 'blog/index.html', 'blog/learn/index.html', 'blog/how-to-use-football-predictions/index.html']) {
+        assert.ok(!(await read(ws, rel)).includes('how-to-check-us'), `${rel} does not mention the pulled post`);
+      }
 
       const { data } = await readBlog(REAL_BLOG);
       const pages = ['blog/index.html', 'blog/learn/index.html', ...data.articles.filter((a) => a.published && a.published <= '2026-11-14')
