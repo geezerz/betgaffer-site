@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-15",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-14T21:10:05Z",
-    "grades_as_of": "2026-11-14T22:15:03Z",
+    "grades_as_of": "2026-11-14T23:10:03Z",
     "prev_hash": "sha256:72dab6b3d57b5b993f51f9ba7a6775d8745fc0da61cc5a4389480b62e7df7562",
-    "picks_hash": "sha256:9a79db8398982f7c5bfcd797d85b217126a3f8bd31f65a64723d462ab88c40d1",
+    "picks_hash": "sha256:d3c39dc8a6cdcfd465651d9208fb383fa7c1f7d3a559f209949dfa9040873b11",
     "counts": {
         "fixtures": 805,
         "priced": 803,
-        "recommended": 736,
+        "recommended": 738,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,13 +39,20 @@
             "away": "Monterrey",
             "home_id": 2983,
             "away_id": 3257,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 84,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-14T23:10:03Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -57,7 +64,7 @@
             "away": "Cobán Imperial",
             "home_id": 9115,
             "away_id": 9236,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -132,7 +139,7 @@
             "away": "Almirante Brown",
             "home_id": 2499,
             "away_id": 2504,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -157,7 +164,7 @@
             "away": "Albion FC",
             "home_id": 4115,
             "away_id": 4113,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -182,7 +189,7 @@
             "away": "Louisville City",
             "home_id": 1702,
             "away_id": 1708,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -207,7 +214,7 @@
             "away": "Pumas UNAM W",
             "home_id": 9314,
             "away_id": 9318,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -18206,12 +18213,19 @@
             "home_id": 317,
             "away_id": 305,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 80,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-14T23:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
