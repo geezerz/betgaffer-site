@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-14T07:10:02Z",
+    "grades_as_of": "2026-11-14T09:10:02Z",
     "prev_hash": "sha256:60d18dcb9c5014c19cc4ba4fbd6d1b319577a045608bc5752703684129af70f2",
     "picks_hash": "sha256:f65dce3b0ba77071322f90baa750b3e1faf3ae6465fc84d5aee7471758e18ea2",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 21,
+        "won": 24,
         "lost": 6,
         "pushes": 1,
-        "graded": 27,
-        "pct": 77.78
+        "graded": 30,
+        "pct": 80.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1143,7 +1143,7 @@
             "away": "Albirex Niigata W",
             "home_id": 582564,
             "away_id": 582567,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1156,8 +1156,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182553,
@@ -1168,7 +1175,7 @@
             "away": "Elfen Saitama W",
             "home_id": 582565,
             "away_id": 582563,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1181,8 +1188,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1695899,
@@ -1218,7 +1232,7 @@
             "away": "Yemen",
             "home_id": 385,
             "away_id": 382,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1231,8 +1245,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1722727,
@@ -1261,7 +1282,7 @@
             "away": "Chippa United U23",
             "home_id": 921767,
             "away_id": 921777,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1336,7 +1357,7 @@
             "away": "TS Galaxy U23",
             "home_id": 921776,
             "away_id": 921766,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1361,7 +1382,7 @@
             "away": "Luxembourg U17",
             "home_id": 1161,
             "away_id": 1163,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1386,12 +1407,12 @@
             "away": "Singapore U23",
             "home_id": 1179,
             "away_id": 1849,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -1404,7 +1425,7 @@
             "away": "Sydney Olympic",
             "home_id": 7088,
             "away_id": 4287,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1454,7 +1475,7 @@
             "away": "Hlinsko",
             "home_id": 7524,
             "away_id": 8519,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1479,7 +1500,7 @@
             "away": "San Marino U17",
             "home_id": 1123,
             "away_id": 652298,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
