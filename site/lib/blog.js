@@ -180,6 +180,14 @@ function fillBody(a, body, rc, liveBySlug) {
     // Legal R-214's unlinked variant: the app links the public day files, which this site never names.
     .replaceAll('{{receipt_chain}}', "<p>Each day's results page shows that day's receipt code, and each day's code is built from the day before it.</p>")
     .replaceAll('{{receipt_href}}', escAttr(rc.href))
+    // Per-host text (WR3 rewrite batch 1): {{teaser:TEXT}} keeps TEXT here, {{app:TEXT}} is the app's and is dropped; one level of inner {{…}}.
+    .replace(/\{\{teaser:((?:[^{}]|\{\{[^{}]*\}\})*)\}\}/g, (_, text) => text)
+    .replace(/\{\{app:((?:[^{}]|\{\{[^{}]*\}\})*)\}\}/g, '')
+    // {{data_file}}: the latest published day's file. The build fails rather than ship a link with no file behind it.
+    .replaceAll('{{data_file}}', () => {
+      if (rc.latest === null) throw new Error(`blog: ${a.slug} uses {{data_file}} but no published day exists to link`);
+      return `<a href="/days/${escAttr(rc.latest)}.json">the day's data file</a>`;
+    })
     // {{when:KEY:text}}: the text only where this host has a page for KEY (the {{link}} test); one level of inner {{…}}.
     .replace(/\{\{when:(\w+):((?:[^{}]|\{\{[^{}]*\}\})*)\}\}/g, (_, key, text) => (Object.hasOwn(LINKS, key) ? text : ''))
     .replace(/\{\{link:(\w+):([^}]+)\}\}/g, (_, key, label) => (Object.hasOwn(LINKS, key)

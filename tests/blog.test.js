@@ -230,6 +230,19 @@ describe('Learn guides 11-12 (WR3): notice and article links', () => {
   });
 });
 
+describe('per-host tokens (WR3 rewrite batch 1): {{teaser:}}, {{app:}}, {{data_file}}', () => {
+  const body = bodyOf('{{teaser:Listed picks are recorded in {{data_file}}.}}{{app:APP-ONLY LINE}} Done.');
+  test('teaser text stays, app text is dropped, data_file links the latest published day', async () => {
+    const { ws, done } = await buildBlog((s) => { s.bodies.g1 = body; });
+    try {
+      const h = await read(ws, 'blog/learn/g1/index.html');
+      assert.ok(h.includes("Listed picks are recorded in <a href=\"/days/2026-10-08.json\">the day's data file</a>."));
+      assert.ok(!h.includes('APP-ONLY') && !h.includes('{{'));
+      assert.ok(await exists(join(ws.out, 'days/2026-10-08.json')), 'the linked file is in the build (no 404)');
+    } finally { await done(); }
+  });
+});
+
 describe('merge preflight: a piece going live for the first time is dated today (Marketing R-210)', () => {
   test('only pieces not yet in the live sitemap, published before today, are backdated', () => {
     const arts = [piece('live1'), piece('new-ok', { published: TODAY, updated: TODAY }), piece('new-old'), piece('later', { published: '2026-11-20', updated: '2026-11-20' }), { slug: 'planned' }];
