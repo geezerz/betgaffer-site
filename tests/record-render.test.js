@@ -386,7 +386,7 @@ test('footer: record start, updated stamp, the recent-figures line and the recei
     'Record starts August 2026.',
     'Updated 7 Oct 2026, 06:05 WAT.',
     'Recent figures can change slightly while final results are checked.',
-    "From 7 October 2026, each day's card is published with a receipt code.",
+    "Each day's card now carries a receipt code.",
   ]);
   // "Record starts" follows the oldest month by value, not by order.
   const r = rec((x) => { x.months.pop(); x.months.reverse(); });
@@ -400,13 +400,13 @@ test('footnotes (spec §10, Legal 11-10): the receipt footnote dated from the ol
   const html = renderRecord(REC, OPTS);
   const t = text(html);
   const foot = footOf(html);
-  assert.ok(foot.includes("<li>From 7 October 2026, each day&#39;s card is published with a receipt code.</li>"), foot);
+  assert.ok(foot.includes("<li>Each day&#39;s card now carries a receipt code.</li>"), foot);
   assert.doesNotMatch(foot, /<a\b|href=/, 'the footnotes link nowhere');
   assert.doesNotMatch(t, /github|reposit|committed|open source/i);
   assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
   assert.doesNotMatch(t, /Every pick is committed|before its day begins/);
-  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From 30 September 2026, each day's card is published with a receipt code\./);
-  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2027-01-01'] })), /From 1 January 2027, each day's card is published with a receipt code\./, 'no leading zero, full month name');
+  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /Each day's card now carries a receipt code./, 'no implementation date');
+  assert.doesNotMatch(text(renderRecord(REC, { ...OPTS, days: ['2027-01-01'] })), /From d{1,2} [A-Z][a-z]+ d{4}/, 'never a "From <date>" start date (R-263)');
   const none = text(renderRecord(REC, { ...OPTS, days: [] }));
   assert.doesNotMatch(none, /published with a receipt code|after kickoff|listing time/);
   assert.doesNotMatch(none, /kick-?off/i, 'with no listed day nothing speaks of kickoff');
@@ -649,8 +649,9 @@ test('record.css: day-card columns follow the data (7 or 6 from 1024px), 4 from 
   assert.match(phone, /\.rec-day__link,\s*\.rec-day__in\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+(\d+(\.\d+)?(ch|rem|px)|minmax\(\d+(\.\d+)?(ch|rem|px),\s*max-content\))\s*;/);
 });
 
-test('Our Record receipt line (R-263): only the receipt sentence, dated from the receipt run; nothing about listing after kickoff', () => {
+test('Our Record receipt line (R-263): no implementation date, nothing about listing after kickoff; a broken receipt run drops the line', () => {
   const html = renderRecord(REC, { ...OPTS, days: ['2026-10-08'], since: '2026-11-06' });
-  assert.ok(html.includes("<li>From 6 November 2026, each day&#39;s card is published with a receipt code.</li>"));
-  assert.doesNotMatch(html, /after kick-?off|listing time|data file/i);
+  assert.ok(html.includes("<li>Each day&#39;s card now carries a receipt code.</li>"));
+  assert.doesNotMatch(html, /after kick-?off|listing time|data file|From d{1,2} [A-Z][a-z]+ d{4}/i);
+  assert.doesNotMatch(renderRecord(REC, { ...OPTS, days: ['2026-10-08'], since: null }), /receipt code/, 'no receipt run, no claim');
 });

@@ -194,12 +194,11 @@ function footnotes(rec, listed, since) {
   // after kickoff, and that it was chosen from pre-kickoff data is unproven (FCCPA s.123). Nothing here
   // says a pick was made, frozen or listed before kickoff until Legal clears it again (the T-30
   // line, "Since {date}, every pick locks 30 minutes before kickoff.", comes back after that lock ships).
-  // Legal 11-14: the date is the start of the unbroken receipt run when the caller knows it (receipts() in blog.js).
-  const oldestDay = since ?? [...listed].sort()[0];
-  const receipt = oldestDay === undefined
-    ? ''
-    : `<li>${escHtml(`From ${dateName(oldestDay)}, each day's card is published with a receipt code.`)}</li>
-`;
+  // Operator R-263: no implementation date. The line shows while the receipt run holds (since !== null; unknown, undefined, falls
+  // back to "any day is listed"), and "now" keeps it true.
+  const hasReceipts = since === undefined ? listed.size > 0 : since !== null;
+  const receipt = hasReceipts ? `<li>${escHtml("Each day's card now carries a receipt code.")}</li>
+` : '';
   return `<ul class="rec-foot t-s" role="list">
 ${starts}${updated}${recent}${receipt}</ul>`;
 }

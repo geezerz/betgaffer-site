@@ -144,7 +144,7 @@ describe('receipts', () => {
   test('the site footer never claims every pick past a gap (Legal 12 Nov)', () => {
     for (const [since, want] of [
       ['2026-10-08', 'Every pick carries a receipt code. '],
-      ['2026-11-06', 'Picks carry a receipt code from 6 November 2026. '],
+      ['2026-11-06', ''], // a broken receipt run shows no paragraph at all, never a "from <date>" (R-263)
       [null, ''],
     ]) assert.equal(receiptFooter(since), want, String(since));
   });

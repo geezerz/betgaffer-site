@@ -165,7 +165,7 @@ export function receipts(hashed, today) {
  */
 export function receiptFooter(since) {
   if (since === RECEIPTS_FROM) return 'Every pick carries a receipt code. ';
-  return since === null ? '' : `Picks carry a receipt code from ${fmtLong(since)}. `;
+  return ''; // a broken run, or none, shows no paragraph: never a "from <date>" (operator R-263)
 }
 
 const level = (key) => {

@@ -554,7 +554,7 @@ async function buildLocked({ rootAbs, outAbs, config, now = Date.now(), warn, be
     path: '/our-record/',
     title: 'Our Record',
     description: recordDescription,
-    body: renderRecord(index ? index.record : null, { today, days: listedAsc, since: rc.since ?? undefined }),
+    body: renderRecord(index ? index.record : null, { today, days: listedAsc, since: rc.since }),
     scripts: [SCRIPT.stale], // labels today's strip row "Today · so far"; the stale-data banner
     mainData: { generatedAt: index ? index.generated_at : null, view: 'record', staleAfterHours },
     ogImage: OG_RECORD,
