@@ -390,7 +390,7 @@ describe('the built blog (committed content, real data)', () => {
   test('pages, receipts, tokens and scanners', async () => {
     const ws = await workspace();
     try {
-      const now = Date.parse('2026-11-13T10:00:00Z');
+      const now = Date.parse('2026-11-14T10:00:00Z');
       const r = await build({ root: REPO_ROOT, out: ws.out, config: testConfig(), now, warn: () => {} });
       for (const rel of ['blog/index.html', 'blog/learn/index.html', 'blog/learn/asian-handicap-0/index.html', 'blog/learn/draw-no-bet/index.html',
         'blog/how-to-check-us/index.html', 'sitemap-blog.xml', 'blog/feed.xml']) assert.ok(await exists(join(ws.out, rel)), rel);
@@ -399,13 +399,13 @@ describe('the built blog (committed content, real data)', () => {
       const check = await read(ws, 'blog/how-to-check-us/index.html');
       assert.ok(check.includes('<p class="lr-ans">Since 8 October 2026 every day\'s card shows its receipt code.</p>'));
       assert.doesNotMatch(check, /don't show a receipt code here/);
-      assert.match(check, /<a href="\/day\/2026-11-12\/">on the page<\/a>/);
+      assert.ok(check.includes('<a href="/day/2026-11-13/">on the page</a>'));
       assert.match(check, /<a href="\/our-record\/">Our Record<\/a>/);
       assert.doesNotMatch(check, /\{\{/);
-      assert.equal(await exists(join(ws.out, 'day/2026-11-12/index.html')), true, 'the receipt link lands on a page that exists');
+      assert.equal(await exists(join(ws.out, 'day/2026-11-13/index.html')), true, 'the receipt link lands on a page that exists');
 
       const { data } = await readBlog(REAL_BLOG);
-      const pages = ['blog/index.html', 'blog/learn/index.html', ...data.articles.filter((a) => a.published && a.published <= TODAY)
+      const pages = ['blog/index.html', 'blog/learn/index.html', ...data.articles.filter((a) => a.published && a.published <= '2026-11-14')
         .map((a) => `${pathOf(a).slice(1)}index.html`)];
       assert.ok(pages.length >= 5, 'premise: every live guide and post is scanned');
       for (const rel of pages) {
