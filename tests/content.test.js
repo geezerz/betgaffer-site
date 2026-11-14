@@ -713,8 +713,8 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
       'Which leagues each plan covers, grouped by country.', 'At launch'],
     ['Daily Slips', 'Building a slip from scratch takes time.',
       "Ready-made slips, from lower to higher odds, built from our model's picks.", 'At launch'],
-    ['Ask Gaffer', 'A slip can look strong and still hide a weak leg.',
-      'Gaffer is our AI football assistant. Bring your slip, and Gaffer finds the weak legs. Gaffer comes with some plans.', 'At launch'],
+    ['Ask Gaffer', 'A ticket can look strong and still hide a weak leg.',
+      'Gaffer is our AI football assistant. Bring your ticket, and Gaffer finds the weak legs. Gaffer comes with some plans.', 'At launch'],
     ['Our Record', 'Anyone can claim a big number.',
       'Every recommended pick is graded in public after full time, misses included, month by month.', 'At launch'],
     ['Credits', "Some features you'll only want now and then.",
@@ -722,7 +722,7 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
     ['Breaks and limits', 'Betting should stay fun, and sometimes that means a break.',
       'Profile, billing, notifications, limits on buying Credits, and Breaks & limits: email us to take a break (self-exclusion) '
       + 'and we set it up. When it ends, you ask for your access back, and it returns 24 hours later.', 'At launch'],
-    ['Blog and Learn', 'Words like 1UP or GG on a slip can be confusing.',
+    ['Blog and Learn', 'Words like 1UP or GG on a ticket can be confusing.',
       'Plain guides to how bets work and settle.', 'Live now'],
   ];
   const COMING = [

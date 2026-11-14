@@ -386,7 +386,7 @@ test('footer: record start, updated stamp, the recent-figures line and the recei
     'Record starts August 2026.',
     'Updated 7 Oct 2026, 06:05 WAT.',
     'Recent figures can change slightly while final results are checked.',
-    "From 7 October 2026, each day's card is published with a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.",
+    "From 7 October 2026, each day's card is published with a receipt code. A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in the day's data file.",
   ]);
   // "Record starts" follows the oldest month by value, not by order.
   const r = rec((x) => { x.months.pop(); x.months.reverse(); });
@@ -400,12 +400,12 @@ test('footnotes (spec §10, Legal 11-10): the receipt footnote dated from the ol
   const html = renderRecord(REC, OPTS);
   const t = text(html);
   const foot = footOf(html);
-  assert.ok(foot.includes("<li>From 7 October 2026, each day&#39;s card is published with a receipt code. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade.</li>"), foot);
+  assert.ok(foot.includes("<li>From 7 October 2026, each day&#39;s card is published with a receipt code. A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in the day&#39;s data file.</li>"), foot);
   assert.doesNotMatch(foot, /<a\b|href=/, 'the footnotes link nowhere');
   assert.doesNotMatch(t, /github|reposit|committed|open source/i);
   assert.ok(!html.includes('geezerz/betgaffer-site'), 'the repo slug never reaches the page');
   assert.doesNotMatch(t, /Every pick is committed|before its day begins/);
-  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From 30 September 2026, each day's card is published with a receipt code\. A pick this site listed after kickoff is recorded with its listing time and counted with its real grade\./);
+  assert.match(text(renderRecord(REC, { ...OPTS, days: ['2026-10-08', '2026-09-30', '2026-10-01'] })), /From 30 September 2026, each day's card is published with a receipt code\. A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in the day's data file\./);
   assert.match(text(renderRecord(REC, { ...OPTS, days: ['2027-01-01'] })), /From 1 January 2027, each day's card is published with a receipt code\./, 'no leading zero, full month name');
   const none = text(renderRecord(REC, { ...OPTS, days: [] }));
   assert.doesNotMatch(none, /published with a receipt code|after kickoff|listing time/);
@@ -647,4 +647,9 @@ test('record.css: day-card columns follow the data (7 or 6 from 1024px), 4 from 
   // A fixed-width last track (growing only if its text would not fit), so every row's fraction lines
   // up whatever its third cell holds.
   assert.match(phone, /\.rec-day__link,\s*\.rec-day__in\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto\s+(\d+(\.\d+)?(ch|rem|px)|minmax\(\d+(\.\d+)?(ch|rem|px),\s*max-content\))\s*;/);
+});
+
+test('Our Record receipt line (Legal 11-14): the date follows the receipt run, and "the day\'s data file" links the latest published day', () => {
+  const html = renderRecord(REC, { ...OPTS, days: ['2026-10-08'], since: '2026-11-06', dataHref: '/days/2026-11-13.json' });
+  assert.ok(html.includes("<li>From 6 November 2026, each day&#39;s card is published with a receipt code. A pick this site listed after kickoff is counted with its real grade, and its listing time is recorded in <a href=\"/days/2026-11-13.json\">the day's data file</a>.</li>"));
 });
