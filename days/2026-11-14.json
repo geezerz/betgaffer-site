@@ -3,30 +3,30 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-14T05:10:04Z",
+    "grades_as_of": "2026-11-14T07:10:02Z",
     "prev_hash": "sha256:60d18dcb9c5014c19cc4ba4fbd6d1b319577a045608bc5752703684129af70f2",
-    "picks_hash": "sha256:74b54aee434c080e6d79d0b2632accd0dcd4afd59d63a3a4b4964b0e10d4606a",
+    "picks_hash": "sha256:f65dce3b0ba77071322f90baa750b3e1faf3ae6465fc84d5aee7471758e18ea2",
     "counts": {
-        "fixtures": 1036,
-        "priced": 1013,
-        "recommended": 947,
+        "fixtures": 1037,
+        "priced": 1009,
+        "recommended": 948,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 14,
-        "lost": 1,
+        "won": 21,
+        "lost": 6,
         "pushes": 1,
-        "graded": 15,
-        "pct": 93.33
+        "graded": 27,
+        "pct": 77.78
     },
     "accuracy_rule": 2,
     "pick_source": {
         "strategy": "edge_reliability",
         "fallback": "probability_range",
         "ledger_match_rate": 1.0,
-        "ledger_match_n": 622,
-        "ledger_match_matched": 599,
-        "ledger_match_served_n": 599,
+        "ledger_match_n": 623,
+        "ledger_match_matched": 600,
+        "ledger_match_served_n": 600,
         "ledger_match_unserved": 23
     },
     "fixtures": [
@@ -709,7 +709,7 @@
             "away": "South Melbourne",
             "home_id": 4607,
             "away_id": 2332,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -722,8 +722,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1609996,
@@ -734,7 +741,7 @@
             "away": "Wollongong Wolves",
             "home_id": 9080,
             "away_id": 4288,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -747,8 +754,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1695897,
@@ -809,7 +823,7 @@
             "away": "Yokohama FC",
             "home_id": 4295,
             "away_id": 4303,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -822,8 +836,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 163677,
@@ -834,7 +855,7 @@
             "away": "Tochigi City",
             "home_id": 7276,
             "away_id": 3983,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -847,8 +868,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 6,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 163678,
@@ -859,7 +887,7 @@
             "away": "Tegevajaro Miyazaki",
             "home_id": 7799,
             "away_id": 3985,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -872,8 +900,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 163679,
@@ -884,7 +919,7 @@
             "away": "Montedio Yamagata",
             "home_id": 7337,
             "away_id": 7800,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -897,8 +932,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 163680,
@@ -909,7 +951,7 @@
             "away": "Ventforet Kofu",
             "home_id": 4302,
             "away_id": 7809,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "draw_10min",
                 "label": "Draw at 10 Min",
@@ -922,8 +964,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 165078,
@@ -934,7 +983,7 @@
             "away": "Matsumoto Yamaga",
             "home_id": 7439,
             "away_id": 7591,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -947,8 +996,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 165079,
@@ -959,7 +1015,7 @@
             "away": "Thespakusatsu Gunma",
             "home_id": 3766,
             "away_id": 7298,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -972,8 +1028,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 165080,
@@ -984,7 +1047,7 @@
             "away": "Sagamihara",
             "home_id": 8528,
             "away_id": 8403,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -997,8 +1060,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182549,
@@ -1009,7 +1079,7 @@
             "away": "Nojima Stella W",
             "home_id": 582566,
             "away_id": 582569,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -1022,8 +1092,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182550,
@@ -1034,7 +1111,7 @@
             "away": "JEF United W",
             "home_id": 582559,
             "away_id": 582561,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1047,8 +1124,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182551,
@@ -1059,7 +1143,7 @@
             "away": "Albirex Niigata W",
             "home_id": 582564,
             "away_id": 582567,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1084,7 +1168,7 @@
             "away": "Elfen Saitama W",
             "home_id": 582565,
             "away_id": 582563,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1134,7 +1218,7 @@
             "away": "Yemen",
             "home_id": 385,
             "away_id": 382,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -1164,7 +1248,7 @@
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -2370,31 +2454,6 @@
             "withdrawn": false,
             "state": "coming",
             "grade": null,
-            "score": null
-        },
-        {
-            "fx": 1699235,
-            "api_fx": 1559473,
-            "ko": "2026-11-14T10:00:00Z",
-            "comp": "UEFA U17 Championship - Qualification (World)",
-            "home": "Croatia U17",
-            "away": "Kosovo U17",
-            "home_id": 1154,
-            "away_id": 652297,
-            "status": "NS",
-            "pick": {
-                "market": "home_or_away",
-                "label": "Home or Away (No Draw)",
-                "pct": 85,
-                "price": 1.14,
-                "price_est": true,
-                "why": "Form, expected goals and home edge"
-            },
-            "frozen_at": "2026-11-13T22:15:04Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
             "score": null
         },
         {
@@ -7950,7 +8009,7 @@
             "away": "1880 Wasserburg",
             "home_id": 3315,
             "away_id": 5946,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7963,7 +8022,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -10271,31 +10330,6 @@
             "score": null
         },
         {
-            "fx": 1466193,
-            "api_fx": 1635787,
-            "ko": "2026-11-14T13:00:00Z",
-            "comp": "UEFA U19 Championship - Qualification (World)",
-            "home": "Hungary U19",
-            "away": "Netherlands U19",
-            "home_id": 1776,
-            "away_id": 1802,
-            "status": "NS",
-            "pick": {
-                "market": "over_1_5",
-                "label": "Over 1.5 Goals",
-                "pct": 86,
-                "price": 1.14,
-                "price_est": true,
-                "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-11-13T22:15:04Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
             "fx": 1532026,
             "api_fx": 1637464,
             "ko": "2026-11-14T13:00:00Z",
@@ -10564,6 +10598,31 @@
                 "price": 1.18,
                 "price_est": false,
                 "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-13T22:15:04Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1699235,
+            "api_fx": 1559473,
+            "ko": "2026-11-14T13:00:00Z",
+            "comp": "UEFA U17 Championship - Qualification (World)",
+            "home": "Croatia U17",
+            "away": "Kosovo U17",
+            "home_id": 1154,
+            "away_id": 652297,
+            "status": "NS",
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 85,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Form, expected goals and home edge"
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
@@ -13858,7 +13917,7 @@
             "away": "Oxford United",
             "home_id": 18,
             "away_id": 38,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -13871,7 +13930,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -16939,9 +16998,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -16964,9 +17025,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -21898,9 +21961,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -22020,6 +22085,31 @@
                 "price": 1.15,
                 "price_est": true,
                 "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-13T22:15:04Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1466193,
+            "api_fx": 1635787,
+            "ko": "2026-11-14T17:30:00Z",
+            "comp": "UEFA U19 Championship - Qualification (World)",
+            "home": "Hungary U19",
+            "away": "Netherlands U19",
+            "home_id": 1776,
+            "away_id": 1802,
+            "status": "NS",
+            "pick": {
+                "market": "over_1_5",
+                "label": "Over 1.5 Goals",
+                "pct": 86,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
@@ -22416,9 +22506,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -22746,9 +22838,11 @@
             },
             "frozen_at": "2026-11-13T22:15:04Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -25171,6 +25265,31 @@
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-13T22:15:04Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1538090,
+            "api_fx": 1636036,
+            "ko": "2026-11-14T21:30:00Z",
+            "comp": "Primera Premier (Mexico)",
+            "home": "Cordobés",
+            "away": "Pioneros de Cancún",
+            "home_id": 760639,
+            "away_id": 760496,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-14T07:10:02Z",
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
