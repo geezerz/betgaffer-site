@@ -2,6 +2,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, writeFile, mkdir, access } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { build, REPO_ROOT } from '../site/build.mjs';
 import { backdated, blogErrors, freshness, keepReading, pathOf, readBlog, receiptFooter, receipts } from '../site/lib/blog.js';
@@ -394,14 +395,17 @@ describe('the built blog (committed content, real data)', () => {
       const r = await build({ root: REPO_ROOT, out: ws.out, config: testConfig(), now, warn: () => {} });
       for (const rel of ['blog/index.html', 'blog/learn/index.html', 'blog/learn/asian-handicap-0/index.html', 'blog/learn/draw-no-bet/index.html',
         'blog/how-to-use-football-predictions/index.html', 'sitemap-blog.xml', 'blog/feed.xml']) assert.ok(await exists(join(ws.out, rel)), rel);
-      // Operator R-263 (14 Nov): how-to-check-us is pulled until it is rewritten, Legal truth-cleared and 6c has OK'd it.
-      // No page, no sitemap/feed/llms/index entry, no link to it from any page, and no redirect.
-      assert.ok(!r.routes.includes('/blog/how-to-check-us/'));
-      assert.equal(await exists(join(ws.out, 'blog/how-to-check-us/index.html')), false, 'no page');
-      for (const rel of ['sitemap-blog.xml', 'blog/feed.xml', 'llms.txt', 'blog/index.html', 'blog/learn/index.html', 'blog/how-to-use-football-predictions/index.html']) {
-        assert.ok(!(await read(ws, rel)).includes('how-to-check-us'), `${rel} does not mention the pulled post`);
-      }
-
+      // Operator R-263: how-to-check-us is back as v3.3 (6c OK, Legal truth-clear): present, no admissions or dates in its body.
+      assert.ok(r.routes.includes('/blog/how-to-check-us/'));
+      const check = await read(ws, 'blog/how-to-check-us/index.html');
+      // The article's own words (the site footer carries Legal's cleared "listed after kickoff" line on every page).
+      const body = readFileSync(join(REAL_BLOG, 'how-to-check-us.html'), 'utf8');
+      for (const word of ['12 October', 'after kickoff', 'tipster']) assert.ok(!body.includes(word), `the post body does not say "${word}"`);
+      assert.ok(check.includes('BetGaffer opens at launch. This is how its picks work.'));
+      assert.ok(check.includes('Each pick is set to freeze no later than 30 minutes before kick-off.'));
+      assert.ok(!check.includes('{{') && !body.includes('{{data_file}}'), 'no raw tokens, no data-file link in the body');
+      assert.ok(check.includes('<meta name="description" content="At launch, picks are set to freeze before kick-off and don&#39;t change after that. Here&#39;s how to check us yourself.">'), 'the meta description is the cleared dek');
+      assert.ok((await read(ws, 'sitemap-blog.xml')).includes('/blog/how-to-check-us/'));
       const { data } = await readBlog(REAL_BLOG);
       const pages = ['blog/index.html', 'blog/learn/index.html', ...data.articles.filter((a) => a.published && a.published <= '2026-11-14')
         .map((a) => `${pathOf(a).slice(1)}index.html`)];
@@ -459,10 +463,3 @@ describe('WR3 SEO crawl (6c approved for both hosts)', () => {
   });
 });
 
-test('tombstone: the pulled post answers 404 from a Function, uncached, with no redirect (operator R-263)', async () => {
-  const { onRequest } = await import('../functions/blog/how-to-check-us/index.js');
-  const res = onRequest();
-  assert.equal(res.status, 404);
-  assert.equal(res.headers.get('cache-control'), 'no-store');
-  assert.equal(res.headers.get('location'), null);
-});
