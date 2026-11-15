@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-15T22:15:02Z",
+    "grades_as_of": "2026-11-15T23:10:01Z",
     "prev_hash": "sha256:595c238a08967256666627c871e43b8d1b47372c0e7a223db1c8a90ac6e22a0c",
-    "picks_hash": "sha256:7e48b9c4291901c1e5ded6e96b31e63c181fbad5c7dcd13c769d08290e5109a6",
+    "picks_hash": "sha256:dba80aee1f72e7a28cb17f4b7b2364f81ff302c163ab8746869385a7bc0a07ac",
     "counts": {
         "fixtures": 75,
         "priced": 75,
-        "recommended": 58,
+        "recommended": 59,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Águila",
             "home_id": 9301,
             "away_id": 9298,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -64,7 +64,7 @@
             "away": "Penarol",
             "home_id": 3173,
             "away_id": 4119,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -89,12 +89,12 @@
             "away": "Curaçao",
             "home_id": 338,
             "away_id": 416,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -132,13 +132,20 @@
             "away": "Real Cundinamarca",
             "home_id": 565979,
             "away_id": 8591,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "draw_10min",
+                "label": "Draw at 10 Min",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-15T23:10:01Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
