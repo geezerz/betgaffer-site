@@ -109,8 +109,8 @@ describe('site/content/waitlist.js', () => {
     assert.doesNotThrow(() => waitlist.render(testConfig(), { waitlistHtml: waitlistForm({ places: false }) }));
   });
 
-  test('foundingCard(i): all eleven variants render the stand-out card (spec §16.5)', () => {
-    assert.equal(F.VARIANTS.length, 11, 'premise: eleven variants');
+  test('foundingCard(i): all ten variants render the stand-out card (spec §16.5)', () => {
+    assert.equal(F.VARIANTS.length, 10, 'premise: ten variants');
     for (const [i, v] of F.VARIANTS.entries()) {
       const html = waitlist.foundingCard(i);
       const doc = parse(html);
@@ -326,10 +326,10 @@ describe('/waitlist/ and the founding card in the built site', () => {
     assert.ok(page.indexOf('data-waitlist-full') < page.indexOf('<form'), 'above the form');
   });
 
-  test('benefits: six cards in programme order, each the founding.js title + sentence; percentages in offer figures', () => {
+  test('benefits: five cards in programme order, each the founding.js title + sentence; percentages in offer figures', () => {
     const cards = findAll(doc, (n) => n.tag === 'li' && has(n, 'bg-fd__benefit'));
     assert.equal(cards.length, F.BENEFITS.length);
-    assert.equal(cards.length, 6);
+    assert.equal(cards.length, 5);
     cards.forEach((c, i) => {
       const b = F.BENEFITS[i];
       assert.equal(c.attrs['data-benefit'], b.id);

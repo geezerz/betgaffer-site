@@ -517,7 +517,7 @@ test('banner.js: picks a variant, swaps the copy in with DOM nodes identical to 
   for (let want = 0; want < VARIANTS.length; want++) {
     const doc = fakeDocument(base());
     const storage = fakeStorage();
-    // No last variant stored: random() picks from all eleven.
+    // No last variant stored: random() picks from all ten.
     bannerInit({ doc, storage, random: () => (want + 0.5) / VARIANTS.length });
     assert.equal(storage.m.get('bg.founding.v'), String(want));
     assert.equal(liveBanner(doc).getAttribute('data-variant'), String(want));
@@ -804,8 +804,8 @@ const CARD_BASE_PINNED = [
   [null, '.bg-btn--primary:active', ['transform:none']],
   ['(max-width:399.98px)', '.bg-btn', ['white-space:normal', 'text-align:center']],
 ];
-// The eleven rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
-const CARD_MARKUP_SHA256 = 'b22c315f463766cb3cb799256678ff10d2df58deeaf9cd7504133580032f4465'; // re-measured 2026-11-13 after banner #10 rename to Ticket Builder: #10 still shorter than #0 at every width
+// The ten rendered cards (copy, highlights, classes, the CTA label, the teaser, the dots) and the two font files.
+const CARD_MARKUP_SHA256 = '9936ffb693835c61d491c1f938461cc72f231159ecbe1261a2c9da8129e588e5'; // 2026-11-15: 'A bigger say' variant removed (no voting feature, Legal); measured heights unchanged, the tallest-variant reservation only gets looseruilder: #10 still shorter than #0 at every width
 const FONT_SHA256 = Object.freeze({
   'inter-latin.woff2': '3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62',
   'jetbrains-mono-latin.woff2': '18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e',

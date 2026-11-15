@@ -12,7 +12,6 @@ test('founding numbers match the programme rules (founding-member-programme.md �
   assert.equal(F.GRACE_DAYS, 90);
   assert.equal(F.DISCOUNT_PCT, 30);
   assert.equal(F.TOPUP_BONUS_PCT, 20);
-  assert.equal(F.VOTE_WEIGHT, 2);
   assert.equal(F.EARLY_ACCESS_HOURS, 72);
   assert.equal(F.SUPPORT_REPLY_HOURS, 24);
   // Programme §2 "No downgrades": an equal or better replacement, with 30 days' notice.
@@ -45,9 +44,9 @@ test('Legal addendum 2: no variant says "every payment" or "double Credits" with
 
 test('Legal addendum 3: B6 card text; the Ticket Builder banner names "Coming at launch" once', () => {
   assert.equal(F.BENEFITS.find((b) => b.id === 'B6').text,
-    'A first reply from a person within 24 hours of a message to support@betgaffer.com or in-app support, every day.');
+    'A first reply from a person within 24 hours of a message to support@betgaffer.com, every day.');
   const t = (v) => [...v.heading, ...v.line].map((s) => s.t).join('');
-  assert.equal(t(F.VARIANTS[10]).split('Coming at launch').length, 2);
+  assert.equal(t(F.VARIANTS[9]).split('Coming at launch').length, 2);
 });
 
 test('the waitlist cap in config is the founding waitlist cap', () => {
@@ -61,10 +60,10 @@ test('CTA_TEASER: the subtle benefit line under every variant\'s CTA (operator, 
 });
 
 test('isNear: itself and one step away, circularly (the phone carousel window, operator 2026-10-23)', () => {
-  // n=11 (the real VARIANTS count): the middle of the pool, and both wrapped ends.
-  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 5, 11)), [4, 5, 6]);
-  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 0, 11)), [0, 1, 10], 'wraps at the low end');
-  assert.deepEqual([...Array(11).keys()].filter((k) => F.isNear(k, 10, 11)), [0, 9, 10], 'wraps at the high end');
+  // n=10 (the real VARIANTS count): the middle of the pool, and both wrapped ends.
+  assert.deepEqual([...Array(10).keys()].filter((k) => F.isNear(k, 5, 10)), [4, 5, 6]);
+  assert.deepEqual([...Array(10).keys()].filter((k) => F.isNear(k, 0, 10)), [0, 1, 9], 'wraps at the low end');
+  assert.deepEqual([...Array(10).keys()].filter((k) => F.isNear(k, 9, 10)), [0, 8, 9], 'wraps at the high end');
   // Small n: every dot ends up within one step of any other, so every dot is near.
   for (const n of [1, 2, 3]) {
     for (let i = 0; i < n; i++) assert.deepEqual([...Array(n).keys()].filter((k) => F.isNear(k, i, n)), [...Array(n).keys()], `n=${n} i=${i}`);
@@ -73,21 +72,21 @@ test('isNear: itself and one step away, circularly (the phone carousel window, o
 // md() (defined below, alongside SPEC_VARIANTS) is in scope here: test callbacks run after the whole
 // module's synchronous top level has already executed, so md is assigned by the time this one fires.
 
-test('benefits: six, in programme order, each with a title and one sentence', () => {
-  assert.deepEqual(F.BENEFITS.map((b) => b.id), ['B1', 'B2', 'B3', 'B4', 'B5', 'B6']);
+test('benefits: five, in programme order, each with a title and one sentence', () => {
+  assert.deepEqual(F.BENEFITS.map((b) => b.id), ['B1', 'B2', 'B3', 'B5', 'B6']);
   for (const b of F.BENEFITS) {
     assert.ok(b.title.length > 0 && b.text.length > 0, b.id);
     assert.doesNotMatch(b.text, /100%/, 'no bare 100% (charter)');
   }
   // Legal addendum 5 (11-12): exact cards.
-  const [b1, b2, , , b5] = F.BENEFITS;
+  const [b1, b2, , b5] = F.BENEFITS;
   assert.equal(b1.title, '30% off while you stay subscribed');
   assert.equal(b1.text, 'Founding members get 30% off their subscription payments while they stay subscribed. When it starts depends on how you got your place: see the Subscription Terms.');
   assert.equal(b2.title, 'Double plan Credits');
   assert.equal(b2.text, "Your plan's monthly Credit allowance is doubled, on any paid plan.");
   assert.equal(b5.text, "New features reach you at least 72 hours before everyone else, and you help shape them while they're built. Fixes, security updates and legally required changes go to everyone at once.");
-  assert.match(F.BENEFITS[5].text, /within 24 hours/);
-  assert.match(F.BENEFITS[4].text, /at least 72 hours/);
+  assert.match(F.BENEFITS[4].text, /within 24 hours/);
+  assert.match(F.BENEFITS[3].text, /at least 72 hours/);
 });
 
 test('plans are the operator-decided prices (2026-10-08)', () => {
@@ -96,7 +95,7 @@ test('plans are the operator-decided prices (2026-10-08)', () => {
     [['Free account', 0], ['Starter', 1500], ['Pro', 3000], ['Elite', 5000]]);
 });
 
-// ── The founding card's eleven copy variants (spec §16.5, variants 4 and 9 as corrected in the spec) ──
+// ── The founding card's ten copy variants (spec §16.5, variants 4 and 9 as corrected in the spec) ──
 // Typed out from the spec table on purpose (never derived from founding.js): **bold** marks the words
 // the card highlights (bold, in the accent colour).
 const SPEC_VARIANTS = Object.freeze([
@@ -105,7 +104,6 @@ const SPEC_VARIANTS = Object.freeze([
   ['Reserve your **founding place**', 'The first **500** people on the waitlist get a founding place, claimed with a paid subscription within **30 days** of launch. Joining the waitlist is **free**.'],
   ["Your plan's Credits, **doubled**", 'Founding members get **double plan Credits** every month on any paid plan, and **20% extra** Credits on every top-up.'],
   ['See new features **before everyone else**', "Founding members get **early access** to new features and help **shape them** while they're built."],
-  ['A **bigger say** in what we build', 'As a founding member, your vote counts **twice** when members vote on new features and improvements.'],
   ['Help when you need it, **first**', '**Priority support** on any paid plan, plus a founding-members **WhatsApp community** with our team.'],
   ['Only **1,000 founding places**', '**500** for the waitlist and **500** for the first subscribers at launch.'],
   ['Founding benefits that **stay with you**', 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.'],
@@ -116,8 +114,8 @@ const SPEC_VARIANTS = Object.freeze([
 const md = (segs) => segs.map((s) => (s.hl ? `**${s.t}**` : s.t)).join('');
 
 describe('VARIANTS: the founding card copy (spec §16.5)', () => {
-  test('eleven variants, each the spec heading and line, with the spec highlights', () => {
-    assert.equal(F.VARIANTS.length, 11);
+  test('ten variants, each the spec heading and line, with the spec highlights', () => {
+    assert.equal(F.VARIANTS.length, 10);
     F.VARIANTS.forEach((v, i) => {
       assert.deepEqual(Object.keys(v).sort(), ['heading', 'line'], `variant ${i + 1}`);
       assert.equal(md(v.heading), SPEC_VARIANTS[i][0], `variant ${i + 1} heading`);
@@ -127,7 +125,7 @@ describe('VARIANTS: the founding card copy (spec §16.5)', () => {
 
   test('variants 4 and 9 carry the corrected spec copy (plan C amendments)', () => {
     assert.equal(md(F.VARIANTS[3].line), 'Founding members get **double plan Credits** every month on any paid plan, and **20% extra** Credits on every top-up.');
-    assert.equal(md(F.VARIANTS[8].line), 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.');
+    assert.equal(md(F.VARIANTS[7].line), 'Stay subscribed and keep your **30% off**, **double plan Credits** and **priority support**.');
   });
 
   test('segments: a non-empty string t, hl only as true, offer exactly when the segment prints a %', () => {
@@ -156,7 +154,7 @@ describe('VARIANTS: the founding card copy (spec §16.5)', () => {
   test('the place counts track the constants (1,000 with a thousands separator)', () => {
     const text = (v) => [...v.heading, ...v.line].map((s) => s.t).join('');
     assert.match(text(F.VARIANTS[0]), /1,000 founding members/);
-    assert.match(text(F.VARIANTS[7]), /^Only 1,000 founding places500 for the waitlist and 500 for the first/);
+    assert.match(text(F.VARIANTS[6]), /^Only 1,000 founding places500 for the waitlist and 500 for the first/);
     assert.ok(F.VARIANTS.every((v) => !/\b1000\b/.test(text(v))), 'never "1000"');
   });
 

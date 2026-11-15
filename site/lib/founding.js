@@ -10,7 +10,6 @@ export const CLAIM_DAYS = 30;
 export const GRACE_DAYS = 90;
 export const DISCOUNT_PCT = 30;
 export const TOPUP_BONUS_PCT = 20;
-export const VOTE_WEIGHT = 2;
 export const EARLY_ACCESS_HOURS = 72;
 export const SUPPORT_REPLY_HOURS = 24; // operator R-214: option C (Legal addendum 4), staffed every day
 /** Notice before an equal-or-better replacement of a founding benefit (programme §2, "No downgrades"). */
@@ -21,9 +20,8 @@ export const BENEFITS = Object.freeze([
   { id: 'B1', title: `${DISCOUNT_PCT}% off while you stay subscribed`, text: `Founding members get ${DISCOUNT_PCT}% off their subscription payments while they stay subscribed. When it starts depends on how you got your place: see the Subscription Terms.` },
   { id: 'B2', title: 'Double plan Credits', text: "Your plan's monthly Credit allowance is doubled, on any paid plan." },
   { id: 'B3', title: 'More from every top-up', text: `Every Credit top-up comes with ${TOPUP_BONUS_PCT}% extra.` },
-  { id: 'B4', title: 'A bigger say', text: 'A founding badge, and your vote counts twice when members vote on new features and improvements.' },
   { id: 'B5', title: 'First look at new features', text: `New features reach you at least ${EARLY_ACCESS_HOURS} hours before everyone else, and you help shape them while they're built. Fixes, security updates and legally required changes go to everyone at once.` },
-  { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com or in-app support, every day.` },
+  { id: 'B6', title: 'Priority support', text: `A first reply from a person within ${SUPPORT_REPLY_HOURS} hours of a message to support@betgaffer.com, every day.` },
 ].map(Object.freeze));
 
 /** The founding summary line used on Features (Legal-cleared wording, 2026-11-12). */
@@ -62,8 +60,6 @@ export const VARIANTS = Object.freeze([
     [P('Founding members get '), H('double plan Credits'), P(' every month on any paid plan, and '), H(`${TOPUP_BONUS_PCT}% extra`), P(' Credits on every top-up.')]),
   variant([P('See new features '), H('before everyone else')],
     [P('Founding members get '), H('early access'), P(' to new features and help '), H('shape them'), P(" while they're built.")]),
-  variant([P('A '), H('bigger say'), P(' in what we build')],
-    [P('As a founding member, your vote counts '), H('twice'), P(' when members vote on new features and improvements.')]),
   variant([P('Help when you need it, '), H('first')],
     [H('Priority support'), P(' on any paid plan, plus a founding-members '), H('WhatsApp community'), P(' with our team.')]),
   variant([P('Only '), H(`${ALL} founding places`)],
@@ -115,9 +111,9 @@ export const PAGE_VARIANTS = Object.freeze({
   '/our-record/': 1, // 30% off for as long as you subscribe
   '/features/': 4, // See new features before everyone else
   '/privacy/': 2, // Reserve your founding place
-  '/terms/': 8, // Founding benefits that stay with you
-  '/refunds/': 6, // Help when you need it, first
-  '/404.html': 7, // Only 1,000 founding places
+  '/terms/': 7, // Founding benefits that stay with you
+  '/refunds/': 5, // Help when you need it, first
+  '/404.html': 6, // Only 1,000 founding places
 });
 
 /** The variant a page's static HTML carries: its PAGE_VARIANTS entry, else a stable hash of its site path. */

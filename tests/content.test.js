@@ -550,7 +550,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
       `${n(F.TOTAL_PLACES)} founding places`, `${n(F.WAITLIST_PLACES)} waitlist places`, `${n(F.LAUNCH_PLACES)} launch places`,
       `within ${F.CLAIM_DAYS} days of the invite`, `${F.GRACE_DAYS} days' grace`, `at least ${F.EARLY_ACCESS_HOURS} hours`,
       `within ${F.SUPPORT_REPLY_HOURS} hours`, `${F.DISCOUNT_PCT}% off`, `${F.TOPUP_BONUS_PCT}% extra`, 'Double plan Credits',
-      'double the plan', 'counts twice',
+      'double the plan',
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
     assert.equal(F.TOTAL_PLACES, F.WAITLIST_PLACES + F.LAUNCH_PLACES, 'premise: 500 + 500 = 1,000');
     // Every percentage is an offer figure, and only the two offer numbers appear.
@@ -581,7 +581,7 @@ describe('policy pages (Plan A Task 7, spec §4 and §9)', () => {
       `you have ${F.GRACE_DAYS} days' grace from the end of that period`,
       'Turning off auto-renewal is not a lapse while your paid period runs.',
       'ranked highest by how early they first paid, how consistently they have subscribed and how much they have spent',
-      'Fixes, security updates and changes the law requires go to everyone at once.',
+      'Founding members can give us feedback on what we build, by email to support@betgaffer.com or, if they choose to join it, in the founding-members WhatsApp community. Early access to new features starts when it launches.',
     ]) assert.ok(launch.includes(s), `founding launch column says: ${s}`);
   });
 
@@ -963,7 +963,7 @@ describe('features (teaser copy spec 2026-11-12, section A)', () => {
 
 test('Terms: priority support is stated as Legal cleared it (Addendum 3, c976fd471)', () => {
   const html = terms.render(cfg());
-  assert.ok(html.includes("<p>Priority support means a first reply from a person within 24 hours of a message to support@betgaffer.com or in-app support, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>"));
+  assert.ok(html.includes("<p>Priority support means a first reply from a person within 24 hours of a message to support@betgaffer.com, every day, while you're a founding member on a paid plan. A first reply isn't always a full answer.</p>"));
   assert.doesNotMatch(html, /Priority support covers messages/);
 });
 
