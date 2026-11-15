@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-15T11:10:02Z",
+    "grades_as_of": "2026-11-15T13:10:01Z",
     "prev_hash": "sha256:4674fdaaf0b430c91ce804d9d40903293cb434f33fe2e3db312e11863e8514d6",
     "picks_hash": "sha256:c316fc9fcf6c33611cedc0a99e1fdc8f227b16d058dc52337ff783303b03ccde",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 700,
+        "won": 701,
         "lost": 141,
         "pushes": 34,
-        "graded": 841,
-        "pct": 83.23
+        "graded": 842,
+        "pct": 83.25
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2123,7 +2123,7 @@
             "away": "Ahrobiznes Volochysk",
             "home_id": 2800,
             "away_id": 2797,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -2136,8 +2136,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 473425,
