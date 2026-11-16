@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-14",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-13T22:15:04Z",
-    "grades_as_of": "2026-11-16T05:10:03Z",
+    "grades_as_of": "2026-11-16T17:10:02Z",
     "prev_hash": "sha256:4674fdaaf0b430c91ce804d9d40903293cb434f33fe2e3db312e11863e8514d6",
     "picks_hash": "sha256:4eff77e3a56f362dcc02b0acbde4baea7818605c412796c43b426e2df1d94cd8",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 703,
+        "won": 704,
         "lost": 142,
         "pushes": 33,
-        "graded": 845,
-        "pct": 83.2
+        "graded": 846,
+        "pct": 83.22
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -28829,7 +28829,7 @@
             "away": "Panambi",
             "home_id": 873690,
             "away_id": 874174,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -28842,8 +28842,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1725445,
