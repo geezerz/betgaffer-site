@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-16T22:15:02Z",
+    "grades_as_of": "2026-11-16T23:10:02Z",
     "prev_hash": "sha256:58515a921210cfc6a135dc1c600528ba795e4d4aa7738b78be975d545939150a",
     "picks_hash": "sha256:fb734184eaa3fa6c95f52310ebd4e250da49a4da936b49deabab868d709a6a92",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 44,
+        "won": 47,
         "lost": 7,
         "pushes": 5,
-        "graded": 51,
-        "pct": 86.27
+        "graded": 54,
+        "pct": 87.04
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2283,7 +2283,7 @@
             "away": "ADT",
             "home_id": 4206,
             "away_id": 4203,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -2296,8 +2296,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149570,
@@ -2308,7 +2315,7 @@
             "away": "Atletico Grau",
             "home_id": 4201,
             "away_id": 4204,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "corners_over_6_5",
                 "label": "Corners Over 6.5",
@@ -2321,8 +2328,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1138565,
@@ -2333,7 +2347,7 @@
             "away": "Deportes Rengo",
             "home_id": 5029,
             "away_id": 564981,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -2346,8 +2360,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
