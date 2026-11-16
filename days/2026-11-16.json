@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-16T09:10:03Z",
+    "grades_as_of": "2026-11-16T11:10:02Z",
     "prev_hash": "sha256:05a4daa6a086660798abf7abafb2a22f29142a5a672631867e05177b935a4012",
-    "picks_hash": "sha256:2e3c88939879734fccfbf95ea2b35ae0b1cc1c676dac3470bd556e43f02c462f",
+    "picks_hash": "sha256:1e5b2553aca908a199732206b5bb52257737ebb6cb6814b55daade487b301122",
     "counts": {
         "fixtures": 76,
         "priced": 76,
-        "recommended": 60,
+        "recommended": 61,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -434,7 +434,7 @@
             "away": "Probiy Horodenka",
             "home_id": 3361,
             "away_id": 7656,
-            "status": "PST",
+            "status": "INT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
@@ -452,7 +452,7 @@
             "away": "Lokomotiv Kyiv",
             "home_id": 3996,
             "away_id": 3301,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -465,7 +465,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -477,7 +477,7 @@
             "away": "Polissya II",
             "home_id": 3106,
             "away_id": 4352,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -490,7 +490,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -507,7 +507,7 @@
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -1812,12 +1812,19 @@
             "home_id": 6389,
             "away_id": 8210,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 83,
+                "price": 1.27,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-16T11:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
