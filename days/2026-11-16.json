@@ -3,30 +3,30 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-15T23:10:01Z",
-    "prev_hash": "sha256:595c238a08967256666627c871e43b8d1b47372c0e7a223db1c8a90ac6e22a0c",
-    "picks_hash": "sha256:dba80aee1f72e7a28cb17f4b7b2364f81ff302c163ab8746869385a7bc0a07ac",
+    "grades_as_of": "2026-11-16T01:10:04Z",
+    "prev_hash": "sha256:c2ca54293479a89eb189b8e559974df941517281c7bdfa232f2cc01a30607f97",
+    "picks_hash": "sha256:2e3c88939879734fccfbf95ea2b35ae0b1cc1c676dac3470bd556e43f02c462f",
     "counts": {
-        "fixtures": 75,
-        "priced": 75,
-        "recommended": 59,
+        "fixtures": 76,
+        "priced": 76,
+        "recommended": 60,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
-        "lost": 0,
+        "won": 1,
+        "lost": 1,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 2,
+        "pct": 50.0
     },
     "accuracy_rule": 2,
     "pick_source": {
         "strategy": "edge_reliability",
         "fallback": "probability_range",
         "ledger_match_rate": 1.0,
-        "ledger_match_n": 56,
-        "ledger_match_matched": 51,
-        "ledger_match_served_n": 51,
+        "ledger_match_n": 57,
+        "ledger_match_matched": 52,
+        "ledger_match_served_n": 52,
         "ledger_match_unserved": 5
     },
     "fixtures": [
@@ -39,7 +39,7 @@
             "away": "Águila",
             "home_id": 9301,
             "away_id": 9298,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -64,7 +64,7 @@
             "away": "Penarol",
             "home_id": 3173,
             "away_id": 4119,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_or_draw",
                 "label": "Away or Draw",
@@ -77,8 +77,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724833,
@@ -89,14 +96,21 @@
             "away": "Curaçao",
             "home_id": 338,
             "away_id": 416,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 525982,
@@ -107,7 +121,7 @@
             "away": "Antigua GFC",
             "home_id": 8984,
             "away_id": 9235,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -132,7 +146,7 @@
             "away": "Real Cundinamarca",
             "home_id": 565979,
             "away_id": 8591,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "draw_10min",
                 "label": "Draw at 10 Min",
@@ -145,8 +159,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149234,
@@ -157,7 +178,7 @@
             "away": "Deportes Iquique",
             "home_id": 4246,
             "away_id": 4241,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -182,7 +203,7 @@
             "away": "Gimnasia Y Tiro",
             "home_id": 2507,
             "away_id": 2494,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -207,7 +228,7 @@
             "away": "Colón",
             "home_id": 4093,
             "away_id": 4551,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -257,7 +278,7 @@
             "away": "Pachuca W",
             "home_id": 9317,
             "away_id": 9313,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -367,6 +388,31 @@
             "score": null
         },
         {
+            "fx": 464804,
+            "api_fx": 1581969,
+            "ko": "2026-11-16T10:00:00Z",
+            "comp": "Persha Liga (Ukraine)",
+            "home": "Chernihiv",
+            "away": "Lokomotiv Kyiv",
+            "home_id": 3996,
+            "away_id": 3301,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-15T22:15:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 464807,
             "api_fx": 1581975,
             "ko": "2026-11-16T10:00:00Z",
@@ -383,31 +429,6 @@
                 "price": 1.15,
                 "price_est": true,
                 "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-11-15T22:15:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 464804,
-            "api_fx": 1581969,
-            "ko": "2026-11-16T10:30:00Z",
-            "comp": "Persha Liga (Ukraine)",
-            "home": "Chernihiv",
-            "away": "Lokomotiv Kyiv",
-            "home_id": 3996,
-            "away_id": 3301,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 90,
-                "price": 1.12,
-                "price_est": false,
-                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-15T22:15:02Z",
             "pre_ko": true,
@@ -596,6 +617,31 @@
                 "why": "Attacking output vs both defenses"
             },
             "frozen_at": "2026-11-15T22:15:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1734228,
+            "api_fx": 1650044,
+            "ko": "2026-11-16T12:00:00Z",
+            "comp": "Liga E Pare (Kosovo)",
+            "home": "Trepça Mitrovicë",
+            "away": "2 Korriku",
+            "home_id": 7825,
+            "away_id": 7924,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 82,
+                "price": 1.16,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-16T01:10:04Z",
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
