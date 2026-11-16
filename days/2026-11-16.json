@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-16T01:10:04Z",
+    "grades_as_of": "2026-11-16T03:11:04Z",
     "prev_hash": "sha256:c2ca54293479a89eb189b8e559974df941517281c7bdfa232f2cc01a30607f97",
     "picks_hash": "sha256:2e3c88939879734fccfbf95ea2b35ae0b1cc1c676dac3470bd556e43f02c462f",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 1,
+        "won": 5,
         "lost": 1,
-        "pushes": 0,
-        "graded": 2,
-        "pct": 50.0
+        "pushes": 1,
+        "graded": 6,
+        "pct": 83.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Águila",
             "home_id": 9301,
             "away_id": 9298,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1721816,
@@ -121,7 +128,7 @@
             "away": "Antigua GFC",
             "home_id": 8984,
             "away_id": 9235,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -134,8 +141,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1695803,
@@ -178,7 +192,7 @@
             "away": "Deportes Iquique",
             "home_id": 4246,
             "away_id": 4241,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -191,8 +205,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1721588,
@@ -203,7 +224,7 @@
             "away": "Gimnasia Y Tiro",
             "home_id": 2507,
             "away_id": 2494,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -216,8 +237,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "push",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1734682,
@@ -228,7 +256,7 @@
             "away": "Colón",
             "home_id": 4093,
             "away_id": 4551,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -241,8 +269,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1736834,
@@ -278,7 +313,7 @@
             "away": "Pachuca W",
             "home_id": 9317,
             "away_id": 9313,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -292,7 +327,14 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
-            "score": null
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1695804,
@@ -303,7 +345,7 @@
             "away": "Real Cartagena",
             "home_id": 264,
             "away_id": 565975,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
