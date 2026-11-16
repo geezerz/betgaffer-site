@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-15",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-14T21:10:05Z",
-    "grades_as_of": "2026-11-16T05:10:03Z",
+    "grades_as_of": "2026-11-16T07:10:02Z",
     "prev_hash": "sha256:4eff77e3a56f362dcc02b0acbde4baea7818605c412796c43b426e2df1d94cd8",
-    "picks_hash": "sha256:c2ca54293479a89eb189b8e559974df941517281c7bdfa232f2cc01a30607f97",
+    "picks_hash": "sha256:05a4daa6a086660798abf7abafb2a22f29142a5a672631867e05177b935a4012",
     "counts": {
         "fixtures": 811,
-        "priced": 768,
+        "priced": 766,
         "recommended": 773,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 569,
+        "won": 571,
         "lost": 104,
         "pushes": 30,
-        "graded": 673,
-        "pct": 84.55
+        "graded": 675,
+        "pct": 84.59
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1350,7 +1350,7 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 3,
                 "away": 2,
@@ -10721,7 +10721,7 @@
             "away": "Peterborough United W",
             "home_id": 1102013,
             "away_id": 1102014,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -10734,8 +10734,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1696290,
@@ -13060,9 +13067,11 @@
             },
             "frozen_at": "2026-11-14T21:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -13405,9 +13414,11 @@
             },
             "frozen_at": "2026-11-14T21:10:05Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
