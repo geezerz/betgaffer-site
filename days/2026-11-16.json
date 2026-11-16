@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-16",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-15T22:15:02Z",
-    "grades_as_of": "2026-11-16T11:10:02Z",
+    "grades_as_of": "2026-11-16T13:10:03Z",
     "prev_hash": "sha256:05a4daa6a086660798abf7abafb2a22f29142a5a672631867e05177b935a4012",
-    "picks_hash": "sha256:1e5b2553aca908a199732206b5bb52257737ebb6cb6814b55daade487b301122",
+    "picks_hash": "sha256:9779cf7e08b308bad16b850846d79eac3bba91e3311a4b533d9e30f2601cf4a0",
     "counts": {
         "fixtures": 76,
         "priced": 76,
-        "recommended": 61,
+        "recommended": 62,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -502,14 +502,21 @@
             "away": "Czechia U18",
             "home_id": 976,
             "away_id": 960,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1696059,
@@ -520,7 +527,7 @@
             "away": "Shahin Bandar Ameri",
             "home_id": 598808,
             "away_id": 1054459,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -570,12 +577,12 @@
             "away": "Saipa",
             "home_id": 1062552,
             "away_id": 1054456,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -588,7 +595,7 @@
             "away": "Mes Soongoun",
             "home_id": 1062549,
             "away_id": 1054460,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -613,7 +620,7 @@
             "away": "FK Vozdovac",
             "home_id": 4955,
             "away_id": 3968,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "draw_10min",
                 "label": "Draw at 10 Min",
@@ -638,7 +645,7 @@
             "away": "Semendrija 1924",
             "home_id": 9041,
             "away_id": 7383,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -663,7 +670,7 @@
             "away": "Zakynthos",
             "home_id": 578536,
             "away_id": 598602,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -713,7 +720,7 @@
             "away": "Olympiakos Piraeus II",
             "home_id": 6905,
             "away_id": 278594,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -788,7 +795,7 @@
             "away": "Novin Ahvaz",
             "home_id": 1062550,
             "away_id": 1054454,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -813,7 +820,7 @@
             "away": "Niroye Zamini",
             "home_id": 1054457,
             "away_id": 1062551,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -838,7 +845,7 @@
             "away": "Pyrgos 1968",
             "home_id": 6930,
             "away_id": 598780,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -863,7 +870,7 @@
             "away": "Cameroon",
             "home_id": 359,
             "away_id": 301,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -888,12 +895,12 @@
             "away": "Senegal",
             "home_id": 317,
             "away_id": 305,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -911,7 +918,7 @@
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -1415,12 +1422,19 @@
             "home_id": 2485,
             "away_id": 2476,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-16T13:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
