@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-17",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-16T21:10:02Z",
-    "grades_as_of": "2026-11-16T23:10:02Z",
+    "grades_as_of": "2026-11-17T01:10:02Z",
     "prev_hash": "sha256:fb734184eaa3fa6c95f52310ebd4e250da49a4da936b49deabab868d709a6a92",
     "picks_hash": "sha256:c39eacb70844c5b89f925e68d274b8a96b786a8819cedf72a431b103af013e03",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Juventud",
             "home_id": 4116,
             "away_id": 4114,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1736944,
@@ -64,14 +71,21 @@
             "away": "Peru U20",
             "home_id": 1202,
             "away_id": 1218,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 9,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1724834,
@@ -82,12 +96,12 @@
             "away": "Antigua and Barbuda",
             "home_id": 326,
             "away_id": 407,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -100,12 +114,12 @@
             "away": "Aruba",
             "home_id": 328,
             "away_id": 411,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -118,12 +132,12 @@
             "away": "Rosario",
             "home_id": 566010,
             "away_id": 1225052,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -136,12 +150,12 @@
             "away": "Guatemala",
             "home_id": 327,
             "away_id": 332,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
