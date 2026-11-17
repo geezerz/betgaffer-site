@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-18",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-17T21:10:02Z",
-    "grades_as_of": "2026-11-17T22:15:01Z",
+    "grades_as_of": "2026-11-17T23:10:03Z",
     "prev_hash": "sha256:2fb7cc9b40cfcef1cd7ee3eaef9dd90a7cca0f78fa4c5451fece204f5cfa53f4",
-    "picks_hash": "sha256:f110a81a2784a799b6601fa4fec5284f21ba12876f7065f9719c42758463331d",
+    "picks_hash": "sha256:9e2454bf565109c366232c0061b5471a294a40193fa4fd02807b847f6bda2062",
     "counts": {
         "fixtures": 155,
         "priced": 155,
-        "recommended": 144,
+        "recommended": 145,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Costa Rica",
             "home_id": 800,
             "away_id": 335,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -64,7 +64,7 @@
             "away": "Colombia",
             "home_id": 495,
             "away_id": 805,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -3620,12 +3620,19 @@
             "home_id": 99,
             "away_id": 104,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 87,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-17T23:10:03Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
