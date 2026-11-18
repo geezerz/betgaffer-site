@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-18",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-17T21:10:02Z",
-    "grades_as_of": "2026-11-18T05:10:02Z",
+    "grades_as_of": "2026-11-18T07:10:02Z",
     "prev_hash": "sha256:b42668dcc30766fe7ee348852c479a16867ee14cb20a7fe58529935c3ad4f01f",
-    "picks_hash": "sha256:5ffcb4e80d9e6ae40c32f04b65f73f58cb30fa9f9bc7fc1868f4a39c19621b3d",
+    "picks_hash": "sha256:d3a11ac23331cdb95d989574b09c503cdc6c542547e155bd1268abc711a0a4b3",
     "counts": {
         "fixtures": 157,
-        "priced": 148,
-        "recommended": 147,
+        "priced": 149,
+        "recommended": 148,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 11,
-        "lost": 2,
+        "won": 13,
+        "lost": 3,
         "pushes": 0,
-        "graded": 13,
-        "pct": 84.62
+        "graded": 16,
+        "pct": 81.25
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -455,7 +455,7 @@
             "away": "Parceiro Nagano W",
             "home_id": 582561,
             "away_id": 582566,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -468,8 +468,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182557,
@@ -480,7 +487,7 @@
             "away": "Elfen Saitama W",
             "home_id": 582567,
             "away_id": 582563,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -493,8 +500,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182559,
@@ -505,7 +519,7 @@
             "away": "Tokyo Verdy Beleza W",
             "home_id": 582560,
             "away_id": 582564,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -518,8 +532,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182556,
@@ -1274,12 +1295,19 @@
             "home_id": 755142,
             "away_id": 755145,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 85,
+                "price": 1.12,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-18T07:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
