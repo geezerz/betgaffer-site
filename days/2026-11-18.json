@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-18",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-17T21:10:02Z",
-    "grades_as_of": "2026-11-17T23:10:03Z",
+    "grades_as_of": "2026-11-18T01:10:07Z",
     "prev_hash": "sha256:2fb7cc9b40cfcef1cd7ee3eaef9dd90a7cca0f78fa4c5451fece204f5cfa53f4",
-    "picks_hash": "sha256:9e2454bf565109c366232c0061b5471a294a40193fa4fd02807b847f6bda2062",
+    "picks_hash": "sha256:8be61591e2951c1c6031ffe2f981a07751294b31c0af24bd2bfd904257199b53",
     "counts": {
         "fixtures": 155,
         "priced": 155,
-        "recommended": 145,
+        "recommended": 146,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Costa Rica",
             "home_id": 800,
             "away_id": 335,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 7,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1722753,
@@ -64,7 +71,7 @@
             "away": "Colombia",
             "home_id": 495,
             "away_id": 805,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -89,7 +96,7 @@
             "away": "Kimberley Mar del Plata",
             "home_id": 2517,
             "away_id": 2564,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -114,7 +121,7 @@
             "away": "Dominican Republic",
             "home_id": 801,
             "away_id": 406,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -139,7 +146,7 @@
             "away": "Bolivia",
             "home_id": 497,
             "away_id": 496,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -164,7 +171,7 @@
             "away": "Once Caldas",
             "home_id": 251,
             "away_id": 256,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -189,7 +196,7 @@
             "away": "St. Vincent / Grenadines",
             "home_id": 342,
             "away_id": 343,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -214,7 +221,7 @@
             "away": "Haiti",
             "home_id": 329,
             "away_id": 330,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -239,7 +246,7 @@
             "away": "Saint Martin",
             "home_id": 331,
             "away_id": 410,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -290,12 +297,19 @@
             "home_id": 303097,
             "away_id": 598901,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 80,
+                "price": 1.17,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-18T01:10:07Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
