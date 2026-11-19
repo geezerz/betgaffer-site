@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-18",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-17T21:10:02Z",
-    "grades_as_of": "2026-11-19T05:10:02Z",
+    "grades_as_of": "2026-11-19T07:10:02Z",
     "prev_hash": "sha256:b42668dcc30766fe7ee348852c479a16867ee14cb20a7fe58529935c3ad4f01f",
     "picks_hash": "sha256:a5da46158402d4eadc29b136cfbbc18b995199b0b940712b9d1ad32185b9685f",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 108,
+        "won": 111,
         "lost": 24,
         "pushes": 4,
-        "graded": 132,
-        "pct": 81.82
+        "graded": 135,
+        "pct": 82.22
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1152,7 +1152,7 @@
             "away": "Metalist 1925 U19",
             "home_id": 2211,
             "away_id": 589168,
-            "status": "PST",
+            "status": "NS",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1165,7 +1165,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2566,7 +2566,7 @@
             "away": "Formentera",
             "home_id": 771270,
             "away_id": 768830,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -2579,8 +2579,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1192669,
@@ -3160,7 +3167,7 @@
             "away": "TuS Koblenz",
             "home_id": 3963,
             "away_id": 3085,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -3173,8 +3180,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 704417,
@@ -4508,7 +4522,7 @@
             "away": "H&W Welders",
             "home_id": 3156,
             "away_id": 2978,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -4521,8 +4535,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149567,
