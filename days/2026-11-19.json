@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-18T21:10:02Z",
-    "grades_as_of": "2026-11-19T09:10:01Z",
+    "grades_as_of": "2026-11-19T11:10:01Z",
     "prev_hash": "sha256:a5da46158402d4eadc29b136cfbbc18b995199b0b940712b9d1ad32185b9685f",
     "picks_hash": "sha256:715a9b1d9aa5e08a180f6bfbe94ddf1c4cd6fdcec1e480377eea5bacc108d86d",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 6,
-        "lost": 3,
+        "won": 7,
+        "lost": 4,
         "pushes": 0,
-        "graded": 9,
-        "pct": 66.67
+        "graded": 11,
+        "pct": 63.64
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -327,7 +327,7 @@
             "away": "Wollongong Wolves",
             "home_id": 5060,
             "away_id": 4288,
-            "status": "1H",
+            "status": "PEN",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -340,8 +340,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": 5,
+                "pen_away": 3
+            }
         },
         {
             "fx": 1610001,
@@ -352,14 +359,21 @@
             "away": "South Hobart",
             "home_id": 2349,
             "away_id": 9080,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 6,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182560,
@@ -370,7 +384,7 @@
             "away": "INAC Kobe Leonessa W",
             "home_id": 582562,
             "away_id": 582558,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -383,8 +397,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 5,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1721615,
@@ -395,7 +416,7 @@
             "away": "Səbail",
             "home_id": 50060,
             "away_id": 6538,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -470,12 +491,12 @@
             "away": "Shillong Lajong",
             "home_id": 8799,
             "away_id": 579177,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
