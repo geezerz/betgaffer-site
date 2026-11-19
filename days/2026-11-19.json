@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-18T21:10:02Z",
-    "grades_as_of": "2026-11-19T03:10:01Z",
+    "grades_as_of": "2026-11-19T05:10:02Z",
     "prev_hash": "sha256:a5da46158402d4eadc29b136cfbbc18b995199b0b940712b9d1ad32185b9685f",
     "picks_hash": "sha256:580ff974376286d487f478b52992a1f2054d1b63750ec2b1e1958a087d628d87",
     "counts": {
@@ -14,10 +14,10 @@
     },
     "accuracy": {
         "won": 6,
-        "lost": 2,
+        "lost": 3,
         "pushes": 0,
-        "graded": 8,
-        "pct": 75.0
+        "graded": 9,
+        "pct": 66.67
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -295,7 +295,7 @@
             "away": "Tauro FC",
             "home_id": 598889,
             "away_id": 598895,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -308,8 +308,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1610000,
@@ -514,6 +521,31 @@
                 "price": 1.12,
                 "price_est": true,
                 "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-18T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1645989,
+            "api_fx": 1645698,
+            "ko": "2026-11-19T12:00:00Z",
+            "comp": "Premier League (Syria)",
+            "home": "Shorta",
+            "away": "Tishreen",
+            "home_id": 1063340,
+            "away_id": 18936,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 83,
+                "price": 1.15,
+                "price_est": true,
+                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-18T21:10:02Z",
             "pre_ko": true,
@@ -980,31 +1012,6 @@
                 "label": "AH Away +1.5",
                 "pct": 85,
                 "price": 1.13,
-                "price_est": true,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-18T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1645989,
-            "api_fx": 1645698,
-            "ko": "2026-11-19T13:00:00Z",
-            "comp": "Premier League (Syria)",
-            "home": "Shorta",
-            "away": "Tishreen",
-            "home_id": 1063340,
-            "away_id": 18936,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 83,
-                "price": 1.15,
                 "price_est": true,
                 "why": "Projected margin against the line"
             },
@@ -2250,7 +2257,7 @@
             "away": "Popayan",
             "home_id": 275,
             "away_id": 8355,
-            "status": "PST",
+            "status": "NS",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
@@ -2268,7 +2275,7 @@
             "away": "Envigado",
             "home_id": 605494,
             "away_id": 246,
-            "status": "PST",
+            "status": "NS",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
