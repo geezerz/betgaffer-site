@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-18T21:10:02Z",
-    "grades_as_of": "2026-11-18T23:10:02Z",
+    "grades_as_of": "2026-11-19T01:10:02Z",
     "prev_hash": "sha256:a5da46158402d4eadc29b136cfbbc18b995199b0b940712b9d1ad32185b9685f",
-    "picks_hash": "sha256:593e367af642bdc370c933fd0ca61088a885b1455a1013d32cf19dfbbe1e02fb",
+    "picks_hash": "sha256:580ff974376286d487f478b52992a1f2054d1b63750ec2b1e1958a087d628d87",
     "counts": {
         "fixtures": 91,
         "priced": 88,
-        "recommended": 78,
+        "recommended": 79,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
-        "lost": 0,
+        "won": 1,
+        "lost": 1,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 2,
+        "pct": 50.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Chapecoense-sc",
             "home_id": 191,
             "away_id": 214,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1643902,
@@ -89,7 +96,7 @@
             "away": "Caracas FC",
             "home_id": 5643,
             "away_id": 8450,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -102,8 +109,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149599,
@@ -114,7 +128,7 @@
             "away": "Atletico Paranaense",
             "home_id": 208,
             "away_id": 216,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_win_either_half",
                 "label": "Home Win Either Half",
@@ -139,7 +153,7 @@
             "away": "Palmeiras",
             "home_id": 193,
             "away_id": 209,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -164,7 +178,7 @@
             "away": "Real Potosí",
             "home_id": 169,
             "away_id": 177,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -189,7 +203,7 @@
             "away": "Bahia",
             "home_id": 211,
             "away_id": 202,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -214,13 +228,20 @@
             "away": "Botafogo",
             "home_id": 212,
             "away_id": 185,
-            "status": "NS",
-            "pick": null,
-            "frozen_at": null,
+            "status": "1H",
+            "pick": {
+                "market": "three_in_a_row_no",
+                "label": "Any Team 3 Goals in a Row - No",
+                "pct": 86,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Calibrated across thousands of similar fixtures"
+            },
+            "frozen_at": "2026-11-19T01:10:02Z",
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {

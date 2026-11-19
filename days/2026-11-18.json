@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-18",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-17T21:10:02Z",
-    "grades_as_of": "2026-11-18T23:10:02Z",
+    "grades_as_of": "2026-11-19T01:10:02Z",
     "prev_hash": "sha256:b42668dcc30766fe7ee348852c479a16867ee14cb20a7fe58529935c3ad4f01f",
     "picks_hash": "sha256:a5da46158402d4eadc29b136cfbbc18b995199b0b940712b9d1ad32185b9685f",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 89,
+        "won": 94,
         "lost": 22,
         "pushes": 2,
-        "graded": 111,
-        "pct": 80.18
+        "graded": 116,
+        "pct": 81.03
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4535,7 +4535,7 @@
             "away": "Zamora FC",
             "home_id": 7904,
             "away_id": 6658,
-            "status": "P",
+            "status": "PEN",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4548,8 +4548,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 0,
+                "aet_away": 0,
+                "pen_home": 9,
+                "pen_away": 8
+            }
         },
         {
             "fx": 704415,
@@ -4695,7 +4702,7 @@
             "away": "Cañoneros Marina",
             "home_id": 760537,
             "away_id": 760578,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4708,8 +4715,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1725417,
@@ -4720,7 +4734,7 @@
             "away": "Puerto Cabello",
             "home_id": 7191,
             "away_id": 5639,
-            "status": "2H",
+            "status": "PEN",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4733,8 +4747,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": 0,
+                "aet_away": 0,
+                "pen_home": 4,
+                "pen_away": 5
+            }
         },
         {
             "fx": 149605,
@@ -4745,7 +4766,7 @@
             "away": "Santos",
             "home_id": 194,
             "away_id": 203,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -4758,8 +4779,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1739127,
@@ -4770,7 +4798,7 @@
             "away": "Oriental",
             "home_id": 4551,
             "away_id": 4093,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4783,8 +4811,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
