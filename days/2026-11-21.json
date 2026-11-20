@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-20T21:10:01Z",
-    "grades_as_of": "2026-11-20T21:10:01Z",
+    "grades_as_of": "2026-11-20T22:15:02Z",
     "prev_hash": "sha256:a00d29cea1d4263359df44d6dc006140e48002dfcf68531f0616a04b765ab7ea",
-    "picks_hash": "sha256:d5be3084db26358251de9ea3849d3b1df2d1490138502eb7a61fa90284161ebe",
+    "picks_hash": "sha256:6fbe49484127e82583474efb0f02e3ba36b59ba7339098d699f2774671279a96",
     "counts": {
         "fixtures": 1275,
         "priced": 1266,
-        "recommended": 1227,
+        "recommended": 1229,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -1887,12 +1887,19 @@
             "home_id": 5580,
             "away_id": 3772,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 83,
+                "price": 1.27,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-20T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2030,12 +2037,19 @@
             "home_id": 2925,
             "away_id": 7380,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_win_either_half",
+                "label": "Home Win Either Half",
+                "pct": 85,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Half-by-half scoring pattern"
+            },
+            "frozen_at": "2026-11-20T22:15:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
