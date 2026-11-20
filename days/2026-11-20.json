@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-20",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-19T21:10:02Z",
-    "grades_as_of": "2026-11-20T03:10:01Z",
+    "grades_as_of": "2026-11-20T07:10:06Z",
     "prev_hash": "sha256:ab2566226f220431ba2f720b2e5a246c46c9212a85a12c73707be570a4f54047",
-    "picks_hash": "sha256:a41e8f724185e6dcd75f38df2a11f1751b04a3857c37954578c67bb174c87d07",
+    "picks_hash": "sha256:54634710bcc66727e2b4b2a680fa9fb0d7a47d65306b3bba7b927644b85aac43",
     "counts": {
         "fixtures": 354,
-        "priced": 353,
+        "priced": 350,
         "recommended": 342,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 4,
+        "won": 5,
         "lost": 1,
         "pushes": 0,
-        "graded": 5,
-        "pct": 80.0
+        "graded": 6,
+        "pct": 83.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -199,7 +199,7 @@
             "away": "Real Salt Lake",
             "home_id": 1698,
             "away_id": 1697,
-            "status": "NS",
+            "status": "PEN",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -212,8 +212,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": 2,
+                "pen_away": 4
+            }
         },
         {
             "fx": 1722287,
@@ -941,6 +948,56 @@
             "score": null
         },
         {
+            "fx": 1379254,
+            "api_fx": 1629123,
+            "ko": "2026-11-20T11:00:00Z",
+            "comp": "FKF Premier League (Kenya)",
+            "home": "Bandari",
+            "away": "Murang'a SEAL",
+            "home_id": 278601,
+            "away_id": 278596,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 83,
+                "price": 1.22,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-19T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1379255,
+            "api_fx": 1629125,
+            "ko": "2026-11-20T11:00:00Z",
+            "comp": "FKF Premier League (Kenya)",
+            "home": "Mathare United",
+            "away": "Homeboyz",
+            "home_id": 760121,
+            "away_id": 303888,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 82,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-19T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
             "fx": 1392809,
             "api_fx": 1633694,
             "ko": "2026-11-20T11:00:00Z",
@@ -1382,56 +1439,6 @@
                 "price": 1.16,
                 "price_est": false,
                 "why": "Form, expected goals and home edge"
-            },
-            "frozen_at": "2026-11-19T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1379254,
-            "api_fx": 1629123,
-            "ko": "2026-11-20T12:00:00Z",
-            "comp": "FKF Premier League (Kenya)",
-            "home": "Bandari",
-            "away": "Murang'a SEAL",
-            "home_id": 278601,
-            "away_id": 278596,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1",
-                "label": "AH Away +1",
-                "pct": 83,
-                "price": 1.22,
-                "price_est": false,
-                "why": "Projected margin against the line"
-            },
-            "frozen_at": "2026-11-19T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1379255,
-            "api_fx": 1629125,
-            "ko": "2026-11-20T12:00:00Z",
-            "comp": "FKF Premier League (Kenya)",
-            "home": "Mathare United",
-            "away": "Homeboyz",
-            "home_id": 760121,
-            "away_id": 303888,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1",
-                "label": "AH Away +1",
-                "pct": 82,
-                "price": 1.1,
-                "price_est": false,
-                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-19T21:10:02Z",
             "pre_ko": true,
@@ -2510,9 +2517,11 @@
             },
             "frozen_at": "2026-11-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3557,9 +3566,11 @@
             },
             "frozen_at": "2026-11-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -5818,7 +5829,7 @@
             "away": "ASV Neumarkt",
             "home_id": 3389,
             "away_id": 4317,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5831,7 +5842,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5843,7 +5854,7 @@
             "away": "DJK Bamberg",
             "home_id": 7411,
             "away_id": 6001,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -5856,7 +5867,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -6908,9 +6919,11 @@
             },
             "frozen_at": "2026-11-19T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {

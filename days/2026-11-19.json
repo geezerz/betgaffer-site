@@ -3,8 +3,8 @@
     "lagos_day": "2026-11-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-18T21:10:02Z",
-    "grades_as_of": "2026-11-20T01:10:01Z",
-    "prev_hash": "sha256:8930d8b3bcf681aad611ff2f6d56e956d1e932826fd972ed1ae1d63b8808c998",
+    "grades_as_of": "2026-11-20T07:10:06Z",
+    "prev_hash": "sha256:ede4a580e173b6cfe17165687a1312cb070875f6668dac0d8c157115525bb3cb",
     "picks_hash": "sha256:ab2566226f220431ba2f720b2e5a246c46c9212a85a12c73707be570a4f54047",
     "counts": {
         "fixtures": 94,
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 62,
+        "won": 63,
         "lost": 13,
         "pushes": 2,
-        "graded": 75,
-        "pct": 82.67
+        "graded": 76,
+        "pct": 82.89
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -601,7 +601,7 @@
             "away": "Rudar Prijedor",
             "home_id": 8340,
             "away_id": 7064,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -614,8 +614,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1645989,
