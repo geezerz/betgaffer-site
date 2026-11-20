@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-20T21:10:01Z",
-    "grades_as_of": "2026-11-20T22:15:02Z",
+    "grades_as_of": "2026-11-20T23:10:02Z",
     "prev_hash": "sha256:a00d29cea1d4263359df44d6dc006140e48002dfcf68531f0616a04b765ab7ea",
-    "picks_hash": "sha256:6fbe49484127e82583474efb0f02e3ba36b59ba7339098d699f2774671279a96",
+    "picks_hash": "sha256:2d6609c2ec6b45ae08ff8e4a34333ab34febbf496922ad01ab8a344c8ec4620b",
     "counts": {
         "fixtures": 1275,
         "priced": 1266,
-        "recommended": 1229,
+        "recommended": 1231,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Club Guarani",
             "home_id": 594049,
             "away_id": 301691,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -64,7 +64,7 @@
             "away": "Belgrano Cordoba",
             "home_id": 230,
             "away_id": 286,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -13521,12 +13521,19 @@
             "home_id": 629077,
             "away_id": 621961,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 87,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-20T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -18443,12 +18450,19 @@
             "home_id": 33,
             "away_id": 18,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 86,
+                "price": 1.24,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-20T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
