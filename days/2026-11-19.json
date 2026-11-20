@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-19",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-18T21:10:02Z",
-    "grades_as_of": "2026-11-19T23:10:01Z",
+    "grades_as_of": "2026-11-20T01:10:01Z",
     "prev_hash": "sha256:8930d8b3bcf681aad611ff2f6d56e956d1e932826fd972ed1ae1d63b8808c998",
     "picks_hash": "sha256:ab2566226f220431ba2f720b2e5a246c46c9212a85a12c73707be570a4f54047",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 59,
+        "won": 62,
         "lost": 13,
         "pushes": 2,
-        "graded": 72,
-        "pct": 81.94
+        "graded": 75,
+        "pct": 82.67
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -2763,7 +2763,7 @@
             "away": "Internacional",
             "home_id": 188,
             "away_id": 218,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -2776,8 +2776,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149604,
@@ -2788,7 +2795,7 @@
             "away": "RB Bragantino",
             "home_id": 183,
             "away_id": 215,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -2801,8 +2808,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1725419,
@@ -2813,7 +2827,7 @@
             "away": "Anzoátegui FC",
             "home_id": 7391,
             "away_id": 9113,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -2826,8 +2840,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1733012,
@@ -2838,14 +2859,21 @@
             "away": "Popayan",
             "home_id": 275,
             "away_id": 8355,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1733013,
@@ -2856,14 +2884,21 @@
             "away": "Envigado",
             "home_id": 605494,
             "away_id": 246,
-            "status": "1H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
