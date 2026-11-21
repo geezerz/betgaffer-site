@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-21",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-20T21:10:01Z",
-    "grades_as_of": "2026-11-20T23:10:02Z",
+    "grades_as_of": "2026-11-21T01:10:02Z",
     "prev_hash": "sha256:a00d29cea1d4263359df44d6dc006140e48002dfcf68531f0616a04b765ab7ea",
-    "picks_hash": "sha256:2d6609c2ec6b45ae08ff8e4a34333ab34febbf496922ad01ab8a344c8ec4620b",
+    "picks_hash": "sha256:233b2724177a7360b500872b58f24055bdec3405381a6448a75a72f8e46ca5e0",
     "counts": {
         "fixtures": 1275,
         "priced": 1266,
-        "recommended": 1231,
+        "recommended": 1232,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 1,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 1,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Club Guarani",
             "home_id": 594049,
             "away_id": 301691,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1740069,
@@ -64,7 +71,7 @@
             "away": "Belgrano Cordoba",
             "home_id": 230,
             "away_id": 286,
-            "status": "1H",
+            "status": "ET",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -89,7 +96,7 @@
             "away": "Union La Calera",
             "home_id": 9057,
             "away_id": 9056,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -114,7 +121,7 @@
             "away": "America de Cali",
             "home_id": 257,
             "away_id": 262,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -139,7 +146,7 @@
             "away": "Atlante U21",
             "home_id": 598855,
             "away_id": 598854,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -164,7 +171,7 @@
             "away": "Dragones de Oaxaca",
             "home_id": 760576,
             "away_id": 760569,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -189,12 +196,12 @@
             "away": "H2O Purepechas",
             "home_id": 760738,
             "away_id": 921587,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -207,7 +214,7 @@
             "away": "Napier City Rovers",
             "home_id": 583221,
             "away_id": 583222,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -232,7 +239,7 @@
             "away": "Jalapa",
             "home_id": 763939,
             "away_id": 763937,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -257,7 +264,7 @@
             "away": "Atletico San Luis",
             "home_id": 2871,
             "away_id": 2870,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -282,7 +289,7 @@
             "away": "Guerreros del Pacifico",
             "home_id": 760513,
             "away_id": 760580,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -307,7 +314,7 @@
             "away": "Cashmere Technical",
             "home_id": 763283,
             "away_id": 7607,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -332,7 +339,7 @@
             "away": "Birkenhead United",
             "home_id": 8818,
             "away_id": 8392,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -24054,12 +24061,19 @@
             "home_id": 1104,
             "away_id": 4434,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 82,
+                "price": 1.27,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-21T01:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {

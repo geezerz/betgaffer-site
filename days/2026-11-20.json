@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-20",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-19T21:10:02Z",
-    "grades_as_of": "2026-11-20T23:10:02Z",
+    "grades_as_of": "2026-11-21T01:10:02Z",
     "prev_hash": "sha256:ab2566226f220431ba2f720b2e5a246c46c9212a85a12c73707be570a4f54047",
     "picks_hash": "sha256:a00d29cea1d4263359df44d6dc006140e48002dfcf68531f0616a04b765ab7ea",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 216,
-        "lost": 53,
+        "won": 217,
+        "lost": 55,
         "pushes": 8,
-        "graded": 269,
-        "pct": 80.3
+        "graded": 272,
+        "pct": 79.78
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -10611,7 +10611,7 @@
             "away": "Mons Calpe",
             "home_id": 6037,
             "away_id": 679,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -10624,8 +10624,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1398561,
@@ -10796,7 +10803,7 @@
             "away": "Paredes",
             "home_id": 572,
             "away_id": 4322,
-            "status": "ET",
+            "status": "PEN",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -10809,8 +10816,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": 1,
+                "aet_away": 1,
+                "pen_home": 3,
+                "pen_away": 1
+            }
         },
         {
             "fx": 663169,
@@ -10917,7 +10931,7 @@
             "away": "Gorilas de Juanacatlan",
             "home_id": 763128,
             "away_id": 763143,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -10930,8 +10944,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1747733,
@@ -10942,7 +10963,7 @@
             "away": "Santa Fe",
             "home_id": 248,
             "away_id": 252,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
