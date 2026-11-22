@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-22",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-21T21:10:02Z",
-    "grades_as_of": "2026-11-21T23:10:01Z",
+    "grades_as_of": "2026-11-22T01:10:01Z",
     "prev_hash": "sha256:e5f5d31658c8dbef0781a06d71ce3d28063a5ed7b01229c7062dc7aa420ecd8a",
-    "picks_hash": "sha256:b5eec4add664c3a7974649170fffd33494fd99641866271eb363e0c1d5264200",
+    "picks_hash": "sha256:4be1e8f08f3f52f163aee8be2a04a29efe1d3ca80db380f596d7df245c402c22",
     "counts": {
         "fixtures": 865,
         "priced": 864,
-        "recommended": 821,
+        "recommended": 824,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
-        "lost": 0,
+        "won": 2,
+        "lost": 1,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 3,
+        "pct": 66.67
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Leon",
             "home_id": 3735,
             "away_id": 2981,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1243163,
@@ -64,7 +71,7 @@
             "away": "Brooklyn W",
             "home_id": 613955,
             "away_id": 613951,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -77,8 +84,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1538096,
@@ -89,7 +103,7 @@
             "away": "Irapuato",
             "home_id": 760506,
             "away_id": 229133,
-            "status": "1H",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -139,7 +153,7 @@
             "away": "Columbus Crew",
             "home_id": 1684,
             "away_id": 1675,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -164,7 +178,7 @@
             "away": "Matagalpa",
             "home_id": 763936,
             "away_id": 763940,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -177,8 +191,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1721675,
@@ -189,12 +210,12 @@
             "away": "Lobos Upnfm",
             "home_id": 1042044,
             "away_id": 605772,
-            "status": "NS",
+            "status": "2H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -207,7 +228,7 @@
             "away": "Nublense",
             "home_id": 5028,
             "away_id": 7018,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -232,7 +253,7 @@
             "away": "CS Herediano",
             "home_id": 565943,
             "away_id": 6002,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -257,7 +278,7 @@
             "away": "Independiente Petrolero",
             "home_id": 174,
             "away_id": 176,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -282,7 +303,7 @@
             "away": "Cruzeiro",
             "home_id": 214,
             "away_id": 193,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -332,7 +353,7 @@
             "away": "Los Cabos United",
             "home_id": 760509,
             "away_id": 760523,
-            "status": "NS",
+            "status": "HT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -357,14 +378,21 @@
             "away": "Cordobés",
             "home_id": 760517,
             "away_id": 760639,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 0,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1753409,
@@ -375,7 +403,7 @@
             "away": "Antofagasta",
             "home_id": 4242,
             "away_id": 4596,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -400,7 +428,7 @@
             "away": "Deportivo Madryn",
             "home_id": 2499,
             "away_id": 2510,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -425,7 +453,7 @@
             "away": "Monterrey",
             "home_id": 3271,
             "away_id": 3257,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -475,7 +503,7 @@
             "away": "Zacatepec 1948",
             "home_id": 7933,
             "away_id": 760498,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -500,7 +528,7 @@
             "away": "Real Estelí",
             "home_id": 1038341,
             "away_id": 605213,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -3148,12 +3176,19 @@
             "home_id": 2814,
             "away_id": 2815,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1",
+                "label": "AH Away +1",
+                "pct": 91,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-22T01:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -4084,12 +4119,19 @@
             "home_id": 8398,
             "away_id": 303916,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 84,
+                "price": 1.24,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-22T01:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -14401,12 +14443,19 @@
             "home_id": 703,
             "away_id": 7779,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_win_either_half",
+                "label": "Home Win Either Half",
+                "pct": 83,
+                "price": 1.1,
+                "price_est": false,
+                "why": "Half-by-half scoring pattern"
+            },
+            "frozen_at": "2026-11-22T01:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
