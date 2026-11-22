@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-22T21:10:02Z",
-    "grades_as_of": "2026-11-22T21:10:02Z",
+    "grades_as_of": "2026-11-22T22:15:23Z",
     "prev_hash": "sha256:62bb936e57695f16e70c69b55b95f69cdff2aa868b48bbff9c57284605286d11",
-    "picks_hash": "sha256:469223ff57e1f9ece3c903bf0cd3ccab393bc4450b62c787ec548a22c5dab8ba",
+    "picks_hash": "sha256:df3d16b8a03a9621fb424feddbb7a44dfaf12fbcbf00a1abf29f69f1b2d4e1d6",
     "counts": {
         "fixtures": 127,
         "priced": 127,
-        "recommended": 115,
+        "recommended": 116,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -558,12 +558,19 @@
             "home_id": 763087,
             "away_id": 763080,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 86,
+                "price": 1.14,
+                "price_est": true,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-22T22:15:23Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
