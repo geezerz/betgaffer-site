@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-22",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-21T21:10:02Z",
-    "grades_as_of": "2026-11-22T07:10:01Z",
+    "grades_as_of": "2026-11-22T09:10:02Z",
     "prev_hash": "sha256:0cee987d4b1f6fb0a151948db1f8d52965ef098165ff6355d95f936d1925ef37",
     "picks_hash": "sha256:f9e79be0bded34c5ed62d0ed6d441bf586b0ca9365e291928037b6f4c8e41e2a",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 28,
-        "lost": 6,
+        "won": 29,
+        "lost": 7,
         "pushes": 1,
-        "graded": 34,
-        "pct": 82.35
+        "graded": 36,
+        "pct": 80.56
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1311,14 +1311,21 @@
             "away": "Kamatamare Sanuki",
             "home_id": 4608,
             "away_id": 7916,
-            "status": "2H",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1166253,
@@ -1329,7 +1336,7 @@
             "away": "Eastern",
             "home_id": 43199,
             "away_id": 18927,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -1342,8 +1349,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1698610,
@@ -1354,7 +1368,7 @@
             "away": "Kaya",
             "home_id": 763982,
             "away_id": 18823,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -1367,8 +1381,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 149702,
@@ -1379,7 +1400,7 @@
             "away": "Asan Mugunghwa",
             "home_id": 4220,
             "away_id": 4224,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5_early",
                 "label": "Over 1.5 (Early)",
@@ -1404,7 +1425,7 @@
             "away": "Cheonan City",
             "home_id": 4586,
             "away_id": 4588,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1",
                 "label": "AH Away +1",
@@ -1429,7 +1450,7 @@
             "away": "Guizhou Zhucheng",
             "home_id": 4191,
             "away_id": 4641,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -1454,7 +1475,7 @@
             "away": "Polokwane City U23",
             "home_id": 921776,
             "away_id": 921767,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -1484,7 +1505,7 @@
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -1497,7 +1518,7 @@
             "away": "Ural",
             "home_id": 4565,
             "away_id": 3074,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -1522,7 +1543,7 @@
             "away": "Pusamania Borneo",
             "home_id": 579324,
             "away_id": 302696,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",

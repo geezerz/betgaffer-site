@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-20",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-19T21:10:02Z",
-    "grades_as_of": "2026-11-21T15:10:02Z",
+    "grades_as_of": "2026-11-22T09:10:02Z",
     "prev_hash": "sha256:ab2566226f220431ba2f720b2e5a246c46c9212a85a12c73707be570a4f54047",
     "picks_hash": "sha256:0819eb668e26dca232c2eb57b8783fbb39de1419a4a090611480242936142cc9",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 242,
+        "won": 243,
         "lost": 60,
         "pushes": 8,
-        "graded": 302,
-        "pct": 80.13
+        "graded": 303,
+        "pct": 80.2
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -5946,7 +5946,7 @@
             "away": "Heroes de Zaci 2",
             "home_id": 763146,
             "away_id": 763144,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5959,8 +5959,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385557,
@@ -5971,7 +5978,7 @@
             "away": "Cruz Azul Lagunas",
             "home_id": 760747,
             "away_id": 763142,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -5984,7 +5991,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
