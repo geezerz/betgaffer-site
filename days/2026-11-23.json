@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-22T21:10:02Z",
-    "grades_as_of": "2026-11-23T09:10:01Z",
+    "grades_as_of": "2026-11-23T11:10:01Z",
     "prev_hash": "sha256:65a71ea946be797601112b6f6c2a3f3551be79bda5550b4046f56e723e337551",
-    "picks_hash": "sha256:d6ec31c684fc733a333465ec03aa775fa63d7b909aede57aae477ab1afb3f181",
+    "picks_hash": "sha256:8a234e8eb36a0a6de7c42c1a7d21f22c6435595ef526ec66446feaff340b2035",
     "counts": {
         "fixtures": 127,
         "priced": 127,
-        "recommended": 120,
+        "recommended": 125,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 15,
+        "won": 16,
         "lost": 4,
         "pushes": 1,
-        "graded": 19,
-        "pct": 78.95
+        "graded": 20,
+        "pct": 80.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -679,7 +679,7 @@
             "away": "Hantharwady United",
             "home_id": 763102,
             "away_id": 763086,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -692,8 +692,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1385353,
@@ -704,7 +711,7 @@
             "away": "Ayeyawady United",
             "home_id": 763087,
             "away_id": 763080,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -754,7 +761,7 @@
             "away": "Epitsentr Dunayivtsi",
             "home_id": 2781,
             "away_id": 2796,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -779,7 +786,7 @@
             "away": "Polessya",
             "home_id": 2725,
             "away_id": 1094,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "under_3_5",
                 "label": "Under 3.5 Goals",
@@ -804,7 +811,7 @@
             "away": "Istiqlol",
             "home_id": 766679,
             "away_id": 7098,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
@@ -822,7 +829,7 @@
             "away": "Corum U19",
             "home_id": 2209,
             "away_id": 788867,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -872,7 +879,7 @@
             "away": "Be'sat Kermanshah",
             "home_id": 1062555,
             "away_id": 1062549,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -1073,12 +1080,19 @@
             "home_id": 8939,
             "away_id": 42286,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 92,
+                "price": 1.14,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-23T11:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -1566,12 +1580,19 @@
             "home_id": 1062554,
             "away_id": 1054457,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 82,
+                "price": 1.24,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-23T11:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -1934,12 +1955,19 @@
             "home_id": 8161,
             "away_id": 8326,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "away_over_0_5",
+                "label": "Away Over 0.5 Goals",
+                "pct": 80,
+                "price": 1.22,
+                "price_est": false,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-23T11:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2327,12 +2355,19 @@
             "home_id": 8067,
             "away_id": 7820,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_home_plus_1",
+                "label": "AH Home +1",
+                "pct": 84,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-23T11:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -3188,12 +3223,19 @@
             "home_id": 594267,
             "away_id": 599080,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_draw",
+                "label": "Home or Draw",
+                "pct": 84,
+                "price": 1.15,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-23T11:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
