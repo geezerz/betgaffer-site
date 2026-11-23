@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-22T21:10:02Z",
-    "grades_as_of": "2026-11-23T05:11:10Z",
+    "grades_as_of": "2026-11-23T07:11:02Z",
     "prev_hash": "sha256:65a71ea946be797601112b6f6c2a3f3551be79bda5550b4046f56e723e337551",
     "picks_hash": "sha256:d6ec31c684fc733a333465ec03aa775fa63d7b909aede57aae477ab1afb3f181",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 11,
+        "won": 14,
         "lost": 4,
         "pushes": 1,
-        "graded": 15,
-        "pct": 73.33
+        "graded": 18,
+        "pct": 77.78
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -551,7 +551,7 @@
             "away": "Omiya Ardija Ventus W",
             "home_id": 582569,
             "away_id": 582562,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -564,8 +564,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182564,
@@ -576,7 +583,7 @@
             "away": "Sanfrecce Hiroshima W",
             "home_id": 582567,
             "away_id": 582559,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -589,8 +596,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182565,
@@ -601,7 +615,7 @@
             "away": "Urawa Reds W",
             "home_id": 582566,
             "away_id": 582565,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -614,8 +628,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1182566,
@@ -626,7 +647,7 @@
             "away": "INAC Kobe Leonessa W",
             "home_id": 582564,
             "away_id": 582558,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
