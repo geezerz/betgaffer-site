@@ -65,7 +65,7 @@ export const ROWS = [
   ['Daily Slips', 'Building a slip from scratch takes time.',
     "Ready-made slips, from lower to higher odds, built from our model's picks."],
   ['Ask Gaffer', 'A ticket can look strong and still hide a weak leg.',
-    'Gaffer is our AI football assistant. Bring your ticket, and Gaffer finds the weak legs. Gaffer comes with some plans.'],
+    'Gaffer is our AI football assistant. Bring your ticket, and Gaffer finds the weak legs. Gaffer answers use Credits on every plan.'],
   ['Our Record', 'Anyone can claim a big number.',
     'Every recommended pick is graded in public after full time, misses included, month by month.'],
   ['Credits', "Some features you'll only want now and then.",
