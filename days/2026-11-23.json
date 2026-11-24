@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-22T21:10:02Z",
-    "grades_as_of": "2026-11-24T11:10:01Z",
-    "prev_hash": "sha256:65a71ea946be797601112b6f6c2a3f3551be79bda5550b4046f56e723e337551",
-    "picks_hash": "sha256:aa0d8e1cf98f3ce9e10f51459049a648102ee0e5c1504c841e5b1f89debfa61e",
+    "grades_as_of": "2026-11-24T13:10:02Z",
+    "prev_hash": "sha256:83945cf3a9bfc4e674115b82be791ca45187067ffc27b73e41f050330eb5b7f0",
+    "picks_hash": "sha256:18a49c1f0886a91104f60a9b31e7a4e8fced689ce90f4213e858bb308d306a33",
     "counts": {
         "fixtures": 128,
-        "priced": 127,
+        "priced": 125,
         "recommended": 127,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 94,
+        "won": 93,
         "lost": 20,
         "pushes": 6,
-        "graded": 114,
-        "pct": 82.46
+        "graded": 113,
+        "pct": 82.3
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -939,9 +939,11 @@
             },
             "frozen_at": "2026-11-22T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -1425,9 +1427,11 @@
             },
             "frozen_at": "2026-11-22T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "won",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": {
                 "home": 4,
                 "away": 2,
