@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-23",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-22T21:10:02Z",
-    "grades_as_of": "2026-11-23T23:10:02Z",
+    "grades_as_of": "2026-11-24T01:10:02Z",
     "prev_hash": "sha256:65a71ea946be797601112b6f6c2a3f3551be79bda5550b4046f56e723e337551",
     "picks_hash": "sha256:aa0d8e1cf98f3ce9e10f51459049a648102ee0e5c1504c841e5b1f89debfa61e",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 89,
-        "lost": 19,
+        "won": 91,
+        "lost": 20,
         "pushes": 6,
-        "graded": 108,
-        "pct": 82.41
+        "graded": 111,
+        "pct": 81.98
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -3946,7 +3946,7 @@
             "away": "Gualberto Villarroel SJ",
             "home_id": 266,
             "away_id": 270,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -3959,8 +3959,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1739471,
@@ -3996,7 +4003,7 @@
             "away": "Vitoria",
             "home_id": 218,
             "away_id": 183,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4009,8 +4016,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 5,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1757500,
@@ -4021,7 +4035,7 @@
             "away": "Danubio",
             "home_id": 4113,
             "away_id": 4648,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4034,8 +4048,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
