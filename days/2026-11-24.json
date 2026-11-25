@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-24",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-23T21:10:02Z",
-    "grades_as_of": "2026-11-24T23:41:05Z",
+    "grades_as_of": "2026-11-25T01:10:02Z",
     "prev_hash": "sha256:18a49c1f0886a91104f60a9b31e7a4e8fced689ce90f4213e858bb308d306a33",
-    "picks_hash": "sha256:416edd1ffb861419e83ed7c5437c3eecced6a36ffb5bc8304623a31b87769141",
+    "picks_hash": "sha256:130e9b569a1c6da4d70bb904dc151264d8509cd609cd988d33f037ffdb29d730",
     "counts": {
         "fixtures": 192,
-        "priced": 191,
+        "priced": 187,
         "recommended": 181,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 137,
+        "won": 141,
         "lost": 27,
         "pushes": 1,
-        "graded": 164,
-        "pct": 83.54
+        "graded": 168,
+        "pct": 83.93
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -601,7 +601,7 @@
             "away": "Don Bosco",
             "home_id": 752953,
             "away_id": 1063993,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -614,8 +614,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1740557,
@@ -1626,9 +1633,11 @@
             },
             "frozen_at": "2026-11-23T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4515,9 +4524,11 @@
             },
             "frozen_at": "2026-11-23T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4604,9 +4615,11 @@
             },
             "frozen_at": "2026-11-23T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4942,9 +4955,11 @@
             },
             "frozen_at": "2026-11-23T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -4956,7 +4971,7 @@
             "away": "Racing Club Warwick",
             "home_id": 5980,
             "away_id": 8202,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -4969,8 +4984,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1152134,
@@ -5621,7 +5643,7 @@
             "away": "Aberdeen",
             "home_id": 544,
             "away_id": 771,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -5634,8 +5656,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 2,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 719471,
@@ -5934,7 +5963,7 @@
             "away": "Union La Calera",
             "home_id": 5026,
             "away_id": 9056,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -5947,8 +5976,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
