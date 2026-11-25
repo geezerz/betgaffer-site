@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-24",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-23T21:10:02Z",
-    "grades_as_of": "2026-11-25T01:10:02Z",
+    "grades_as_of": "2026-11-25T03:10:01Z",
     "prev_hash": "sha256:18a49c1f0886a91104f60a9b31e7a4e8fced689ce90f4213e858bb308d306a33",
     "picks_hash": "sha256:130e9b569a1c6da4d70bb904dc151264d8509cd609cd988d33f037ffdb29d730",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 141,
+        "won": 143,
         "lost": 27,
         "pushes": 1,
-        "graded": 168,
-        "pct": 83.93
+        "graded": 170,
+        "pct": 84.12
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -633,7 +633,7 @@
             "away": "Havadar",
             "home_id": 1062551,
             "away_id": 278177,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -646,8 +646,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 1,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1741062,
@@ -5528,7 +5535,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 3,
                 "away": 0,
