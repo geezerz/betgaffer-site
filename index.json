@@ -1,21 +1,34 @@
 {
     "schema": 1,
-    "generated_at": "2026-11-25T03:10:01Z",
-    "today": "2026-11-25",
-    "newest_day": "2026-11-25",
+    "generated_at": "2026-11-25T23:10:01Z",
+    "today": "2026-11-26",
+    "newest_day": "2026-11-26",
     "strategy": "edge_reliability",
     "days": [
         {
-            "day": "2026-11-25",
+            "day": "2026-11-26",
             "compacted": false,
-            "picks_hash": "sha256:74438531f26e8b184aeacffb54b6af5fbe1e66052ae33222f3a898e0b3df9684",
-            "fixtures": 210,
+            "picks_hash": "sha256:98e9fbb03e863cef73ce9286ef0728bdad914b53e6b56b083da43f4c98ed19b4",
+            "fixtures": 110,
             "accuracy": {
-                "won": 4,
+                "won": 0,
                 "lost": 0,
                 "pushes": 0,
-                "graded": 4,
-                "pct": 100.0
+                "graded": 0,
+                "pct": null
+            }
+        },
+        {
+            "day": "2026-11-25",
+            "compacted": false,
+            "picks_hash": "sha256:7cbf103bde375737a03657b77ffeb8265d720823e2de9e65c23f8352835eb38e",
+            "fixtures": 210,
+            "accuracy": {
+                "won": 114,
+                "lost": 22,
+                "pushes": 9,
+                "graded": 136,
+                "pct": 83.82
             }
         },
         {
@@ -24,11 +37,11 @@
             "picks_hash": "sha256:130e9b569a1c6da4d70bb904dc151264d8509cd609cd988d33f037ffdb29d730",
             "fixtures": 192,
             "accuracy": {
-                "won": 143,
-                "lost": 27,
+                "won": 144,
+                "lost": 28,
                 "pushes": 1,
-                "graded": 170,
-                "pct": 84.12
+                "graded": 172,
+                "pct": 83.72
             }
         },
         {
@@ -655,42 +668,53 @@
             "max_odds": 1.8,
             "effective_since_date": "2026-11-13"
         },
-        "as_of": "2026-11-25T03:10:01Z",
+        "as_of": "2026-11-25T23:10:01Z",
         "last_30": {
-            "period": "2026-10-27..2026-11-25",
-            "won": 9981,
-            "lost": 1885,
+            "period": "2026-10-28..2026-11-26",
+            "won": 9876,
+            "lost": 1874,
             "pushes": 370,
-            "graded": 11866,
-            "finished_fixtures": 12813,
-            "pct": 84.11,
-            "coverage": 0.9261,
+            "graded": 11750,
+            "finished_fixtures": 12708,
+            "pct": 84.05,
+            "coverage": 0.9246,
             "status_days": {
                 "live": 25,
-                "provisional": 5
+                "provisional": 4
             }
         },
         "last_7": [
             {
-                "period": "2026-11-25",
-                "won": 4,
+                "period": "2026-11-26",
+                "won": 0,
                 "lost": 0,
                 "pushes": 0,
-                "graded": 4,
-                "finished_fixtures": 4,
-                "pct": 100.0,
-                "coverage": 1.0,
+                "graded": 0,
+                "finished_fixtures": 0,
+                "pct": null,
+                "coverage": null,
+                "status": null
+            },
+            {
+                "period": "2026-11-25",
+                "won": 114,
+                "lost": 22,
+                "pushes": 9,
+                "graded": 136,
+                "finished_fixtures": 161,
+                "pct": 83.82,
+                "coverage": 0.8447,
                 "status": "live"
             },
             {
                 "period": "2026-11-24",
-                "won": 143,
-                "lost": 27,
+                "won": 144,
+                "lost": 28,
                 "pushes": 1,
-                "graded": 170,
+                "graded": 172,
                 "finished_fixtures": 176,
-                "pct": 84.12,
-                "coverage": 0.9659,
+                "pct": 83.72,
+                "coverage": 0.9773,
                 "status": "live"
             },
             {
@@ -699,9 +723,9 @@
                 "lost": 20,
                 "pushes": 6,
                 "graded": 113,
-                "finished_fixtures": 121,
+                "finished_fixtures": 122,
                 "pct": 82.3,
-                "coverage": 0.9339,
+                "coverage": 0.9262,
                 "status": "live"
             },
             {
@@ -736,29 +760,18 @@
                 "pct": 80.2,
                 "coverage": 0.9498,
                 "status": "live"
-            },
-            {
-                "period": "2026-11-19",
-                "won": 63,
-                "lost": 13,
-                "pushes": 2,
-                "graded": 76,
-                "finished_fixtures": 86,
-                "pct": 82.89,
-                "coverage": 0.8837,
-                "status": "live"
             }
         ],
         "months": [
             {
                 "period": "2026-11",
-                "won": 7876,
-                "lost": 1481,
-                "pushes": 310,
-                "graded": 9357,
-                "finished_fixtures": 10161,
-                "pct": 84.17,
-                "coverage": 0.9209,
+                "won": 7987,
+                "lost": 1504,
+                "pushes": 319,
+                "graded": 9491,
+                "finished_fixtures": 10319,
+                "pct": 84.15,
+                "coverage": 0.9198,
                 "status": "live"
             },
             {
