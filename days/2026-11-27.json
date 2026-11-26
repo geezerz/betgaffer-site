@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-26T21:10:02Z",
-    "prev_hash": "sha256:aff7c2120f53f36ab0f4ebfa9cbf6cec41c3496824ad12795195f78358c2cc72",
-    "picks_hash": "sha256:1df8285a9cc3ecda66b984b3f299bbd2fe751ef435386e0149d896989a87c7eb",
+    "grades_as_of": "2026-11-26T22:15:01Z",
+    "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
+    "picks_hash": "sha256:0aa2ab2bd474469378953257543ff05789d31ba1318c744fe28d2e6fb962b9a0",
     "counts": {
         "fixtures": 313,
         "priced": 313,
-        "recommended": 298,
+        "recommended": 300,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -3855,12 +3855,19 @@
             "home_id": 8703,
             "away_id": 4342,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "corners_home_more",
+                "label": "Home Most Corners",
+                "pct": 90,
+                "price": 1.11,
+                "price_est": false,
+                "why": "Match tempo and wide play"
+            },
+            "frozen_at": "2026-11-26T22:15:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -4427,12 +4434,19 @@
             "home_id": 18828,
             "away_id": 698009,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "home_or_away",
+                "label": "Home or Away (No Draw)",
+                "pct": 81,
+                "price": 1.16,
+                "price_est": false,
+                "why": "Form, expected goals and home edge"
+            },
+            "frozen_at": "2026-11-26T22:15:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
