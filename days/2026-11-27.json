@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-26T23:10:02Z",
+    "grades_as_of": "2026-11-27T01:10:02Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
     "picks_hash": "sha256:0aa2ab2bd474469378953257543ff05789d31ba1318c744fe28d2e6fb962b9a0",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 0,
+        "won": 2,
         "lost": 0,
         "pushes": 0,
-        "graded": 0,
-        "pct": null
+        "graded": 2,
+        "pct": 100.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -39,7 +39,7 @@
             "away": "Remo",
             "home_id": 204,
             "away_id": 191,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -52,8 +52,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1643923,
@@ -89,7 +96,7 @@
             "away": "Operário PR U20",
             "home_id": 2412,
             "away_id": 757711,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -102,8 +109,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1768023,
@@ -114,7 +128,7 @@
             "away": "Matagalpa",
             "home_id": 605215,
             "away_id": 763940,
-            "status": "NS",
+            "status": "2H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -139,7 +153,7 @@
             "away": "Club Nacional",
             "home_id": 4647,
             "away_id": 4115,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",

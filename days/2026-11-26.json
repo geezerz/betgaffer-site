@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-26",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-25T23:10:01Z",
-    "grades_as_of": "2026-11-26T23:10:02Z",
+    "grades_as_of": "2026-11-27T01:10:02Z",
     "prev_hash": "sha256:80ebc14e618bd5d38b6773927568c84fab0d3889f73069a7ddefe802b9b9ef09",
     "picks_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 84,
-        "lost": 19,
+        "won": 86,
+        "lost": 21,
         "pushes": 1,
-        "graded": 103,
-        "pct": 81.55
+        "graded": 107,
+        "pct": 80.37
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -4142,7 +4142,7 @@
             "away": "Recoleta",
             "home_id": 4247,
             "away_id": 4246,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4155,8 +4155,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 2,
+                "away": 4,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1768022,
@@ -4167,7 +4174,7 @@
             "away": "San Marcos",
             "home_id": 763937,
             "away_id": 1038341,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "three_in_a_row_no",
                 "label": "Any Team 3 Goals in a Row - No",
@@ -4180,8 +4187,15 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1768214,
@@ -4192,7 +4206,7 @@
             "away": "Gimnasia Mendoza 2",
             "home_id": 103,
             "away_id": 122,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -4205,8 +4219,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1763481,
@@ -4217,7 +4238,7 @@
             "away": "Libertad Asuncion",
             "home_id": 8606,
             "away_id": 302315,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -4230,8 +4251,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 3,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
