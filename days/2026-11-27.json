@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-27T05:11:03Z",
+    "grades_as_of": "2026-11-27T07:10:01Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
-    "picks_hash": "sha256:18aa1f10e7553e1b7ae32fe32565795d89cb1f37978cc12e7a611f798bfd4ed2",
+    "picks_hash": "sha256:2f315372226cd9225e80ea58f008d774f5ec6b7f6d6c7ff9d631bb44061003fa",
     "counts": {
         "fixtures": 314,
         "priced": 312,
-        "recommended": 300,
+        "recommended": 301,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -535,9 +535,11 @@
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -625,12 +627,19 @@
             "home_id": 77250,
             "away_id": 76927,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "over_0_5_2h",
+                "label": "Over 0.5 Goals (2H)",
+                "pct": 88,
+                "price": 1.1,
+                "price_est": true,
+                "why": "Attacking output vs both defenses"
+            },
+            "frozen_at": "2026-11-27T07:10:01Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -749,6 +758,31 @@
                 "pct": 86,
                 "price": 1.1,
                 "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-26T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 1455151,
+            "api_fx": 1629491,
+            "ko": "2026-11-27T10:00:00Z",
+            "comp": "U19 league (Turkey)",
+            "home": "Alanyaspor U19",
+            "away": "Konyaspor U19",
+            "home_id": 788879,
+            "away_id": 788870,
+            "status": "NS",
+            "pick": {
+                "market": "ah_home_plus_1_5",
+                "label": "AH Home +1.5",
+                "pct": 94,
+                "price": 1.1,
+                "price_est": false,
                 "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-26T21:10:02Z",
@@ -2479,31 +2513,6 @@
                 "price": 1.17,
                 "price_est": false,
                 "why": "Attacking output vs both defenses"
-            },
-            "frozen_at": "2026-11-26T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1455151,
-            "api_fx": 1629491,
-            "ko": "2026-11-27T12:00:00Z",
-            "comp": "U19 league (Turkey)",
-            "home": "Alanyaspor U19",
-            "away": "Konyaspor U19",
-            "home_id": 788879,
-            "away_id": 788870,
-            "status": "NS",
-            "pick": {
-                "market": "ah_home_plus_1_5",
-                "label": "AH Home +1.5",
-                "pct": 94,
-                "price": 1.1,
-                "price_est": false,
-                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
