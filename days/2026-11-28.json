@@ -3,13 +3,13 @@
     "lagos_day": "2026-11-28",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-27T21:10:02Z",
-    "grades_as_of": "2026-11-27T22:15:01Z",
+    "grades_as_of": "2026-11-27T23:10:02Z",
     "prev_hash": "sha256:f60f89581d8725cf6d27f2f2f6ec691c66e91d0114de3c4c375f330cc38de296",
-    "picks_hash": "sha256:bfafa0accce79429e9651b350e09f27095c7fe0c7094534602b20ff5a28504ac",
+    "picks_hash": "sha256:efed3e94ea35e011c62cbb6ea3eb3e08837f1a6004e725e56220c62231fa9fb6",
     "counts": {
         "fixtures": 1181,
         "priced": 1170,
-        "recommended": 1108,
+        "recommended": 1109,
         "markets_per_fixture": 100
     },
     "accuracy": {
@@ -39,7 +39,7 @@
             "away": "Cruzeiro",
             "home_id": 205,
             "away_id": 193,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -64,7 +64,7 @@
             "away": "Olimpia",
             "home_id": 593821,
             "away_id": 4088,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "away_over_0_5",
                 "label": "Away Over 0.5 Goals",
@@ -89,7 +89,7 @@
             "away": "Real Oruro",
             "home_id": 176,
             "away_id": 271,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "over_0_5_2h",
                 "label": "Over 0.5 Goals (2H)",
@@ -114,7 +114,7 @@
             "away": "Atletico Goianiense",
             "home_id": 184,
             "away_id": 213,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "ah_home_plus_1_5",
                 "label": "AH Home +1.5",
@@ -139,7 +139,7 @@
             "away": "Deportes Copiapo",
             "home_id": 4596,
             "away_id": 4242,
-            "status": "NS",
+            "status": "1H",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -164,12 +164,12 @@
             "away": "Uruguay W",
             "home_id": 1449,
             "away_id": 1422,
-            "status": "NS",
+            "status": "1H",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
-            "state": "coming",
+            "state": "none",
             "grade": null,
             "score": null
         },
@@ -2655,12 +2655,19 @@
             "home_id": 5928,
             "away_id": 7674,
             "status": "NS",
-            "pick": null,
-            "frozen_at": null,
-            "pre_ko": false,
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 90,
+                "price": 1.12,
+                "price_est": false,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-27T23:10:02Z",
+            "pre_ko": true,
             "withdrawn": false,
-            "state": "coming",
-            "grade": null,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
