@@ -3,12 +3,12 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-27T03:10:02Z",
+    "grades_as_of": "2026-11-27T05:11:03Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
-    "picks_hash": "sha256:0aa2ab2bd474469378953257543ff05789d31ba1318c744fe28d2e6fb962b9a0",
+    "picks_hash": "sha256:18aa1f10e7553e1b7ae32fe32565795d89cb1f37978cc12e7a611f798bfd4ed2",
     "counts": {
-        "fixtures": 313,
-        "priced": 313,
+        "fixtures": 314,
+        "priced": 312,
         "recommended": 300,
         "markets_per_fixture": 100
     },
@@ -613,6 +613,24 @@
             "withdrawn": false,
             "state": "pick",
             "grade": "pending",
+            "score": null
+        },
+        {
+            "fx": 295829,
+            "api_fx": 1591102,
+            "ko": "2026-11-27T10:00:00Z",
+            "comp": "3. Lig - Group 3 (Turkey)",
+            "home": "Yeşilyurt Belediyespor",
+            "away": "Ağrı 1970",
+            "home_id": 77250,
+            "away_id": 76927,
+            "status": "NS",
+            "pick": null,
+            "frozen_at": null,
+            "pre_ko": false,
+            "withdrawn": false,
+            "state": "coming",
+            "grade": null,
             "score": null
         },
         {
@@ -1268,31 +1286,6 @@
                 "price": 1.14,
                 "price_est": true,
                 "why": "Form, expected goals and home edge"
-            },
-            "frozen_at": "2026-11-26T21:10:02Z",
-            "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
-            "score": null
-        },
-        {
-            "fx": 1637205,
-            "api_fx": 1644928,
-            "ko": "2026-11-27T11:00:00Z",
-            "comp": "Ligue 1 (Congo-DR)",
-            "home": "Don Bosco",
-            "away": "CS Manika",
-            "home_id": 1063993,
-            "away_id": 1064004,
-            "status": "NS",
-            "pick": {
-                "market": "ah_away_plus_1_5",
-                "label": "AH Away +1.5",
-                "pct": 83,
-                "price": 1.15,
-                "price_est": true,
-                "why": "Projected margin against the line"
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
@@ -2428,7 +2421,7 @@
             "away": "Eskhata",
             "home_id": 766682,
             "away_id": 783794,
-            "status": "TBD",
+            "status": "NS",
             "pick": {
                 "market": "home_or_away",
                 "label": "Home or Away (No Draw)",
@@ -2441,7 +2434,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "void",
+            "grade": "pending",
             "score": null
         },
         {
@@ -2839,9 +2832,11 @@
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -3485,6 +3480,31 @@
             "withdrawn": false,
             "state": "coming",
             "grade": null,
+            "score": null
+        },
+        {
+            "fx": 1637205,
+            "api_fx": 1644928,
+            "ko": "2026-11-27T13:00:00Z",
+            "comp": "Ligue 1 (Congo-DR)",
+            "home": "Don Bosco",
+            "away": "CS Manika",
+            "home_id": 1063993,
+            "away_id": 1064004,
+            "status": "NS",
+            "pick": {
+                "market": "ah_away_plus_1_5",
+                "label": "AH Away +1.5",
+                "pct": 83,
+                "price": 1.15,
+                "price_est": true,
+                "why": "Projected margin against the line"
+            },
+            "frozen_at": "2026-11-26T21:10:02Z",
+            "pre_ko": true,
+            "withdrawn": false,
+            "state": "pick",
+            "grade": "pending",
             "score": null
         },
         {
@@ -5111,7 +5131,7 @@
             "away": "Fortuna Regensburg",
             "home_id": 6001,
             "away_id": 7991,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -5124,7 +5144,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5404,7 +5424,7 @@
             "away": "Hertha BSC II",
             "home_id": 3402,
             "away_id": 3081,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -5417,7 +5437,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
@@ -5554,7 +5574,7 @@
             "away": "TuS Geretsried",
             "home_id": 3293,
             "away_id": 4497,
-            "status": "NS",
+            "status": "PST",
             "pick": {
                 "market": "ah_home_plus_1",
                 "label": "AH Home +1",
@@ -5567,7 +5587,7 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "void",
             "score": null
         },
         {
