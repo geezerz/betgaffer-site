@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-27T01:10:02Z",
+    "grades_as_of": "2026-11-27T03:10:02Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
     "picks_hash": "sha256:0aa2ab2bd474469378953257543ff05789d31ba1318c744fe28d2e6fb962b9a0",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 2,
-        "lost": 0,
+        "won": 4,
+        "lost": 1,
         "pushes": 0,
-        "graded": 2,
-        "pct": 100.0
+        "graded": 5,
+        "pct": 80.0
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -71,7 +71,7 @@
             "away": "Flora",
             "home_id": 651745,
             "away_id": 1047414,
-            "status": "NS",
+            "status": "FT",
             "pick": {
                 "market": "home_1up",
                 "label": "Home Goes 1-Up",
@@ -84,8 +84,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1742639,
@@ -128,7 +135,7 @@
             "away": "Matagalpa",
             "home_id": 605215,
             "away_id": 763940,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -141,8 +148,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 4,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1743496,
@@ -153,7 +167,7 @@
             "away": "Club Nacional",
             "home_id": 4647,
             "away_id": 4115,
-            "status": "1H",
+            "status": "FT",
             "pick": {
                 "market": "over_1_5",
                 "label": "Over 1.5 Goals",
@@ -166,8 +180,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1767977,
