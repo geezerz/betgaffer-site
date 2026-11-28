@@ -3,21 +3,21 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-28T05:10:02Z",
+    "grades_as_of": "2026-11-28T07:10:02Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
-    "picks_hash": "sha256:426260f19bcc84dc75ebe777bdbf342cf5b10f9cfd4be43d0a33fc193332a242",
+    "picks_hash": "sha256:51970b87824fb801d0c59671bb16d0142aa093850e1d58f5c1c64576100c8321",
     "counts": {
         "fixtures": 317,
-        "priced": 309,
+        "priced": 306,
         "recommended": 310,
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 229,
+        "won": 230,
         "lost": 46,
         "pushes": 5,
-        "graded": 275,
-        "pct": 83.27
+        "graded": 276,
+        "pct": 83.33
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -1135,7 +1135,7 @@
             "pre_ko": false,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
+            "grade": "won",
             "score": {
                 "home": 1,
                 "away": 2,
@@ -2248,9 +2248,11 @@
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -6047,9 +6049,11 @@
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "void",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -7579,7 +7583,7 @@
             "away": "Waalwijk",
             "home_id": 3025,
             "away_id": 2707,
-            "status": "PST",
+            "status": "TBD",
             "pick": {
                 "market": "ah_away_plus_1_5",
                 "label": "AH Away +1.5",
@@ -7786,9 +7790,11 @@
             },
             "frozen_at": "2026-11-26T21:10:02Z",
             "pre_ko": true,
-            "withdrawn": false,
-            "state": "pick",
-            "grade": "pending",
+            "withdrawn": true,
+            "state": "withdrawn",
+            "withdrawn_reason": "rescheduled",
+            "reason_source": "platform",
+            "grade": "withdrawn",
             "score": null
         },
         {
@@ -7992,7 +7998,7 @@
             "away": "AC Douane",
             "home_id": 2144,
             "away_id": 752788,
-            "status": "TBD",
+            "status": "PST",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
