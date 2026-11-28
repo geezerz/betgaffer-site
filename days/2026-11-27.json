@@ -3,7 +3,7 @@
     "lagos_day": "2026-11-27",
     "strategy": "edge_reliability",
     "picks_frozen_at": "2026-11-26T21:10:02Z",
-    "grades_as_of": "2026-11-27T23:10:02Z",
+    "grades_as_of": "2026-11-28T01:11:01Z",
     "prev_hash": "sha256:ed022232e9e86a50ab5293709fe4f3b261e6a838ae6532d238fa45abe8c6b7ed",
     "picks_hash": "sha256:f60f89581d8725cf6d27f2f2f6ec691c66e91d0114de3c4c375f330cc38de296",
     "counts": {
@@ -13,11 +13,11 @@
         "markets_per_fixture": 100
     },
     "accuracy": {
-        "won": 205,
-        "lost": 41,
+        "won": 206,
+        "lost": 42,
         "pushes": 5,
-        "graded": 246,
-        "pct": 83.33
+        "graded": 248,
+        "pct": 83.06
     },
     "accuracy_rule": 2,
     "pick_source": {
@@ -9677,14 +9677,21 @@
             "away": "Dominican Republic W",
             "home_id": 1500,
             "away_id": 1435,
-            "status": "NS",
+            "status": "FT",
             "pick": null,
             "frozen_at": null,
             "pre_ko": false,
             "withdrawn": false,
             "state": "none",
             "grade": null,
-            "score": null
+            "score": {
+                "home": 2,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1739785,
@@ -9695,7 +9702,7 @@
             "away": "Manta FC",
             "home_id": 151,
             "away_id": 159,
-            "status": "2H",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -9708,8 +9715,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "won",
+            "score": {
+                "home": 3,
+                "away": 0,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         },
         {
             "fx": 1760486,
@@ -9720,7 +9734,7 @@
             "away": "Ciudad de Bolívar",
             "home_id": 2509,
             "away_id": 2516,
-            "status": "HT",
+            "status": "FT",
             "pick": {
                 "market": "home_or_draw",
                 "label": "Home or Draw",
@@ -9733,8 +9747,15 @@
             "pre_ko": true,
             "withdrawn": false,
             "state": "pick",
-            "grade": "pending",
-            "score": null
+            "grade": "lost",
+            "score": {
+                "home": 0,
+                "away": 1,
+                "aet_home": null,
+                "aet_away": null,
+                "pen_home": null,
+                "pen_away": null
+            }
         }
     ]
 }
